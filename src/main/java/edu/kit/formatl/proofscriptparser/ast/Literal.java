@@ -2,7 +2,6 @@ package edu.kit.formatl.proofscriptparser.ast;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
-import org.graalvm.compiler.nodes.calc.IntegerDivRemNode;
 
 import java.util.Optional;
 
@@ -11,7 +10,7 @@ import java.util.Optional;
  * @version 1 (28.04.17)
  */
 public abstract class Literal extends ASTNode<ParserRuleContext> {
-    protected Optional<Token> token;
+    Optional<Token> token;
 
     public Optional<Token> getToken() {
         return token;

@@ -86,8 +86,8 @@ casesStmt
     ;
 
 casesList
-    :   CASE expression COLON INDENT stmtList DEDENT casesList*
-    |   DEFAULT  COLON INDENT stmtList DEDENT
+    :   CASE expression COLON? INDENT stmtList DEDENT casesList*
+    |   DEFAULT  COLON? INDENT stmtList DEDENT
     ;
 
 forEachStmt
@@ -99,7 +99,7 @@ theOnlyStmt
     ;
 
 scriptCommand
-    :   ID (ID '=' expression)* SEMICOLON
+    :   ID ((ID '=')? expression)* SEMICOLON
     ;
 
 callStmt

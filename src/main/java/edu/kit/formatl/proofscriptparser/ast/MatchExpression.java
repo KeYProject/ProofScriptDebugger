@@ -1,7 +1,6 @@
 package edu.kit.formatl.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
-import org.graalvm.compiler.core.match.MatchPattern;
 
 import java.util.Map;
 
