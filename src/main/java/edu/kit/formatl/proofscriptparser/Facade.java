@@ -5,6 +5,8 @@ import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formatl.proofscriptparser.ast.ProofScript;
 import org.antlr.v4.runtime.*;
 
+import java.util.List;
+
 /**
  * @author Alexander Weigl
  * @version 1 (27.04.17)
@@ -15,4 +17,9 @@ public class Facade {
         return slp.start();
     }
 
+    public List<ProofScript> asAST(CharStream stream) {
+        TransformAst astt = new TransformAst();
+        parseStream(stream).accept(astt);
+        return astt.getScripts();
+    }
 }
