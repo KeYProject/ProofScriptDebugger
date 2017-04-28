@@ -1,9 +1,7 @@
-/** Optional javadoc style comment */
 grammar ScriptLanguage;
 
-
 start
-    :   (SCRIPT ID '(' argList? ')' INDENT stmtList DEDENT)*
+    :   (SCRIPT name=ID '(' paramters=argList? ')' INDENT body=stmtList DEDENT)*
     ;
 
 argList
@@ -21,7 +19,7 @@ type
     ;
 
 stmtList
-    :   statement+
+    :   statement*
     ;
 
 statement
@@ -35,38 +33,44 @@ statement
     ;
 
 assignment
-    :   ID (':' type)? ':=' expression SEMICOLON
+    :   variable=ID (COLON type)? ASSIGN expression SEMICOLON
     ;
 
 expression
-    :   matchPattern
-    |   '-' expression
-    |   'not' expression
-    |   expression MUL expression
-    |   <assoc=right> expression DIV expression
-    |   expression (PLUS|MINUS) expression
-    |   expression LE expression
-    |   expression GE expression
-    |   expression LEQ expression
-    |   expression GEQ expression
-    |   expression EQ expression
-    |   expression NEQ expression
-    |   expression AND expression
-    |   expression OR expression
-    |   expression IMP expression
-    |   expression EQUIV expression
-    |   scriptVar
-    |   ID
-    |   DIGITS
-    |   '(' expression ')'
-    |   TERM
-    |   STRINGLIT
-    |   TRUE
-    |   FALSE
-    ;
+    :
+        MINUS expression   #exprMinus
+    |   NEGATE expression  #exprNegate
+    |   expression MUL expression #exprMultiplication
+    |   <assoc=right> expression DIV expression #exprDivision
+    |   expression op=(PLUS|MINUS) expression #exprLineOperators
+    |   expression op=(LE|GE|LEQ|GEQ) expression #exprComparison
+    |   expression op=(NEQ|EQ) expression  #exprEquality
+    |   expression AND expression   #exprAnd
+    |   expression OR expression    #exprOr
+    |   expression IMP expression   #exprIMP
+    //|   expression EQUIV expression already covered by EQ/NEQ
+    |   '(' expression ')' #exprParen
+    | literals             #exprLiterals
+    | matchPattern         #exprMatch
+;
 
+literals :
+        ID             #literalID
+    |   DIGITS         #literalDigits
+    |   TERM_LITERAL   #literalTerm
+    |   STRING_LITERAL #literalString
+    |   TRUE           #literalTrue
+    |   FALSE          #literalFalse
+;
+
+/**
+ * Example: <pre>
+    match `f(x) ==>` using [x:term]
+
+     </pre>*/
 matchPattern
-    :   'match' TERM 'using' '[' ID COLON type (',' ID COLON type)* ']'
+    :   MATCH ( TERM_LITERAL | ID)
+        (USING LBRACKET argList RBRACKET)?
     ;
 
 scriptVar
@@ -78,12 +82,12 @@ repeatStmt
     ;
 
 casesStmt
-    :   'cases' INDENT casesList+ DEDENT
+    :   CASES INDENT casesList+ DEDENT
     ;
 
 casesList
-    :   'case' expression COLON INDENT stmtList DEDENT casesList*
-    |   'default' COLON INDENT stmtList DEDENT
+    :   CASE expression COLON INDENT stmtList DEDENT casesList*
+    |   DEFAULT  COLON INDENT stmtList DEDENT
     ;
 
 forEachStmt
@@ -105,6 +109,14 @@ callStmt
 
 //LEXER Rules
 WS : [ \t\n\r]+ -> skip ;
+CASES: 'cases';
+CASE: 'case';
+DEFAULT: 'default';
+ASSIGN : ':=';
+LBRACKET: '[';
+RBRACKET:']';
+USING : 'using';
+MATCH : 'match';
 SCRIPT : 'script' ;
 TRUE : 'true' ;
 FALSE : 'false' ;
@@ -122,8 +134,15 @@ INDENT : '{' ;
 DEDENT : '}' ;
 SEMICOLON : ';' ;
 COLON : ':' ;
-STRINGLIT : '"' ~["]* '"' ;
-TERM : '`' ~[`]* '`' ;
+
+STRING_LITERAL
+   : '\'' ('\'\'' | ~ ('\''))* '\''
+   ;
+
+TERM_LITERAL
+   : '`' ~('`')* '`'
+   ;
+
 PLUS : '+' ;
 MINUS : '-' ;
 MUL : '*' ;
@@ -138,8 +157,7 @@ AND : '&' ;
 OR: '|' ;
 IMP : '->' ;
 EQUIV : '<=>' ;
-
-
+NEGATE: 'not';
 
 //options {...}
 //import ... ;
