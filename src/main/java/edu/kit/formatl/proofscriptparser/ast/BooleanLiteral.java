@@ -12,8 +12,10 @@ import java.util.Optional;
 public class BooleanLiteral extends Literal {
     public static final BooleanLiteral FALSE = new BooleanLiteral(false);
     public static final BooleanLiteral TRUE = new BooleanLiteral(true);
+    private final boolean value;
 
     public BooleanLiteral(boolean value, Token token) {
+        this.value = value;
         if (token != null)
             this.token = Optional.of(token);
         else
@@ -31,5 +33,13 @@ public class BooleanLiteral extends Literal {
 
     @Override public ASTNode<ParserRuleContext> clone() {
         return null;
+    }
+
+    @Override public String toString() {
+        return "BooleanLiteral{" + "value=" + value + '}';
+    }
+
+    public boolean getValue() {
+        return value;
     }
 }

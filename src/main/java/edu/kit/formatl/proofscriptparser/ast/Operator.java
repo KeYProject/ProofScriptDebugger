@@ -5,7 +5,8 @@ package edu.kit.formatl.proofscriptparser.ast;
  * @version 1 (28.04.17)
  */
 public enum Operator {
-    MULTIPLY("*"), DIVISION("/"), AND("&&"), OR("||"), IMPLICATION("==>");
+    MULTIPLY("*"), DIVISION("/"), AND("&&"), OR("||"), IMPLICATION("==>"),
+    PLUS("+"), MINUS("-"), EQ("="), NEQ("<>");
 
     private final String symbol;
 

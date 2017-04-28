@@ -16,7 +16,7 @@ import java.util.ArrayList;
 @RunWith(Parameterized.class)
 public class ScriptTest {
     @Parameterized.Parameters(name = "{0}")
-    public static Iterable<Object[]> getStructuredTextFiles() throws IOException {
+    public static Iterable<Object[]> getScripts() throws IOException {
         return TestHelper.getResourcesAsParameters("edu/kit/formal/proofscriptparser/scripts");
     }
 

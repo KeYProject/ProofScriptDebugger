@@ -23,7 +23,8 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         ProofScript s = new ProofScript();
         s.setName(ctx.name.getText());
         s.setRuleContext(ctx);
-        s.setParameters((Map<String, String>) ctx.paramters.accept(this));
+        if (ctx.paramters != null)
+            s.setParameters((Map<String, String>) ctx.paramters.accept(this));
         s.setBody((Statements) ctx.body.accept(this));
         scripts.add(s);
         return s;
@@ -38,11 +39,11 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override public Object visitVarDecl(ScriptLanguageParser.VarDeclContext ctx) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override public Object visitType(ScriptLanguageParser.TypeContext ctx) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override public Statements visitStmtList(ScriptLanguageParser.StmtListContext ctx) {
@@ -60,7 +61,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     @Override public Object visitAssignment(ScriptLanguageParser.AssignmentContext ctx) {
         AssignmentStatement assign = new AssignmentStatement();
         assign.setRuleContext(ctx);
-        assign.setRhs(ctx.variable.getText());
+        assign.setRhs(new Variable(ctx.variable));
         assign.setLhs((Expression) ctx.expression().accept(this));
         return assign;
     }
@@ -79,11 +80,11 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override public Object visitExprMinus(ScriptLanguageParser.ExprMinusContext ctx) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override public Object visitExprNegate(ScriptLanguageParser.ExprNegateContext ctx) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override public Object visitExprComparison(ScriptLanguageParser.ExprComparisonContext ctx) {
@@ -95,7 +96,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
             if (op.symbol().equals(n))
                 return op;
         }
-        return null;
+        throw new IllegalStateException("Operator " + n + " not defined");
     }
 
     @Override public Object visitExprEquality(ScriptLanguageParser.ExprEqualityContext ctx) {
@@ -141,11 +142,11 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override public Object visitLiteralID(ScriptLanguageParser.LiteralIDContext ctx) {
-        return null;
+        return new Variable(ctx.ID().getSymbol());
     }
 
     @Override public Object visitLiteralDigits(ScriptLanguageParser.LiteralDigitsContext ctx) {
-        return null;
+        return new IntegerLiteral(ctx.DIGITS().getSymbol());
     }
 
     @Override public Object visitLiteralTerm(ScriptLanguageParser.LiteralTermContext ctx) {
@@ -178,50 +179,71 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override public Object visitScriptVar(ScriptLanguageParser.ScriptVarContext ctx) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override public Object visitRepeatStmt(ScriptLanguageParser.RepeatStmtContext ctx) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override public Object visitCasesStmt(ScriptLanguageParser.CasesStmtContext ctx) {
-        return null;
+        CasesStatement cases = new CasesStatement();
+        ctx.casesList().forEach(c -> cases.getCases().add((CaseStatement) c.accept(this)));
+        return cases;
     }
 
     @Override public Object visitCasesList(ScriptLanguageParser.CasesListContext ctx) {
-        return null;
+        CaseStatement caseStatement = new CaseStatement();
+        caseStatement.setRuleContext(ctx);
+        caseStatement.setGuard((Expression) ctx.expression().accept(this));
+        caseStatement.setBody((Statements) ctx.stmtList().accept(this));
+        return caseStatement;
     }
 
     @Override public Object visitForEachStmt(ScriptLanguageParser.ForEachStmtContext ctx) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override public Object visitTheOnlyStmt(ScriptLanguageParser.TheOnlyStmtContext ctx) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override public Object visitScriptCommand(ScriptLanguageParser.ScriptCommandContext ctx) {
+        ScriptCallStatement scs = new ScriptCallStatement();
+        scs.setRuleContext(ctx);
+        scs.setCommand(ctx.cmd.getText());
+        int i = 1;
+        if (ctx.parameter() != null) {
+            for (ScriptLanguageParser.ParameterContext p : ctx.parameter()) {
+                Expression expr = (Expression) p.expr.accept(this);
+                String key = p.ID() != null ? p.ID().getText() : "#" + (i++);
+                scs.getParameters().put(key, expr);
+            }
+        }
+        return scs;
+    }
+
+    @Override public Object visitParameter(ScriptLanguageParser.ParameterContext ctx) {
         return null;
     }
 
     @Override public Object visitCallStmt(ScriptLanguageParser.CallStmtContext ctx) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override public Object visit(ParseTree parseTree) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override public Object visitChildren(RuleNode ruleNode) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override public Object visitTerminal(TerminalNode terminalNode) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override public Object visitErrorNode(ErrorNode errorNode) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 }

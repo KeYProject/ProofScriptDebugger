@@ -9,7 +9,7 @@ import java.util.Optional;
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
-public abstract class Literal extends ASTNode<ParserRuleContext> {
+public abstract class Literal extends Expression<ParserRuleContext> {
     Optional<Token> token;
 
     public Optional<Token> getToken() {

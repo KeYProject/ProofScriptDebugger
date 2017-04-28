@@ -7,8 +7,10 @@ import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
  * @version 1 (28.04.17)
  */
 public class AssignmentStatement extends Statement<ScriptLanguageParser.AssignmentContext> {
-    private String rhs;
+    private Variable rhs;
     private Expression lhs;
+
+    //TODO type missing, if initialization
 
     @Override public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
@@ -18,11 +20,11 @@ public class AssignmentStatement extends Statement<ScriptLanguageParser.Assignme
         return null;
     }
 
-    public void setRhs(String rhs) {
+    public void setRhs(Variable rhs) {
         this.rhs = rhs;
     }
 
-    public String getRhs() {
+    public Variable getRhs() {
         return rhs;
     }
 
@@ -32,5 +34,9 @@ public class AssignmentStatement extends Statement<ScriptLanguageParser.Assignme
 
     public Expression getLhs() {
         return lhs;
+    }
+
+    @Override public String toString() {
+        return String.format("%s := %s", rhs, lhs);
     }
 }

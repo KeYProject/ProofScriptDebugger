@@ -99,9 +99,12 @@ theOnlyStmt
     ;
 
 scriptCommand
-    :   ID ((ID '=')? expression)* SEMICOLON
+    :   cmd=ID parameter* SEMICOLON
     ;
 
+
+parameter :  ((pname=ID '=')? expr=expression)
+;
 callStmt
     :   CALL scriptCommand SEMICOLON
     ;

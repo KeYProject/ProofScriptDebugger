@@ -7,17 +7,27 @@ package edu.kit.formatl.proofscriptparser.ast;
 public interface Visitor<T> {
     T visit(ProofScript proofScript);
 
-    T visit(AssignmentStatement assignmentStatement);
+    T visit(AssignmentStatement assign);
 
-    T visit(BinaryExpression binaryExpression);
+    T visit(BinaryExpression e);
 
-    T visit(MatchExpression matchExpression);
+    T visit(MatchExpression match);
 
-    T visit(TermLiteral termLiteral);
+    T visit(TermLiteral term);
 
-    T visit(StringLiteral stringLiteral);
+    T visit(StringLiteral string);
 
     T visit(Variable variable);
 
-    T visit(BooleanLiteral booleanLiteral);
+    T visit(BooleanLiteral bool);
+
+    T visit(Statements statements);
+
+    T visit(IntegerLiteral integer);
+
+    T visit(CasesStatement casesStatement);
+
+    T visit(CaseStatement caseStatement);
+
+    T visit(ScriptCallStatement call);
 }

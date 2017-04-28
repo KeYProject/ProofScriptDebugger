@@ -46,4 +46,5 @@ public abstract class ASTNode<T extends ParserRuleContext> implements Visitable,
     public abstract <T> T accept(Visitor<T> visitor);
 
     @Override public abstract ASTNode<T> clone();
+
 }

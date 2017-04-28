@@ -10,8 +10,12 @@ import java.util.stream.Stream;
  * @author Alexander Weigl
  * @version 1 (27.04.17)
  */
-public class Statements {
-    private List<Statement> statements = new ArrayList<>();
+public class Statements implements Visitable, Iterable<Statement> {
+    private final List<Statement> statements = new ArrayList<>();
+
+    public Iterator<Statement> iterator() {
+        return statements.iterator();
+    }
 
     public int size() {
         return statements.size();
@@ -25,10 +29,6 @@ public class Statements {
         return statements.contains(o);
     }
 
-    public Iterator<Statement> iterator() {
-        return statements.iterator();
-    }
-
     public Object[] toArray() {
         return statements.toArray();
     }
@@ -38,6 +38,8 @@ public class Statements {
     }
 
     public boolean add(Statement statement) {
+        if(statement==null)
+            throw new NullPointerException();
         return statements.add(statement);
     }
 
@@ -113,10 +115,6 @@ public class Statements {
         return statements.subList(fromIndex, toIndex);
     }
 
-    public Spliterator<Statement> spliterator() {
-        return statements.spliterator();
-    }
-
     public boolean removeIf(Predicate<? super Statement> filter) {
         return statements.removeIf(filter);
     }
@@ -132,4 +130,13 @@ public class Statements {
     public void forEach(Consumer<? super Statement> action) {
         statements.forEach(action);
     }
+
+    @Override public String toString() {
+        return "Statements{" + "statements=" + statements + '}';
+    }
+
+    @Override public <T> T accept(Visitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
 }

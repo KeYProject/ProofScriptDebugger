@@ -35,4 +35,17 @@ public class BinaryExpression extends Expression<ParserRuleContext> {
     public Operator getOperator() {
         return operator;
     }
+
+
+    @Override public String toString() {
+        return "BinaryExpression{" + "left=" + left + ", right=" + right + ", operator=" + operator + '}';
+    }
+
+    public Expression getLeft() {
+        return left;
+    }
+
+    public Expression getRight() {
+        return right;
+    }
 }
