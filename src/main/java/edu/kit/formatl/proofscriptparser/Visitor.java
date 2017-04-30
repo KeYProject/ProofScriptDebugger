@@ -42,4 +42,6 @@ public interface Visitor<T> {
     T visit(Signature signature);
 
     T visit(Parameters parameters);
+
+    T visit(UnaryExpression unaryExpression);
 }

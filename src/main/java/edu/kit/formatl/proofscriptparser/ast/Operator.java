@@ -6,7 +6,7 @@ package edu.kit.formatl.proofscriptparser.ast;
  */
 public enum Operator {
     MULTIPLY("*"), DIVISION("/"), AND("&&"), OR("||"), IMPLICATION("==>"),
-    PLUS("+"), MINUS("-"), EQ("="), NEQ("<>");
+    PLUS("+"), MINUS("-"), EQ("="), NEQ("<>"), NEG("!");
 
     private final String symbol;
 

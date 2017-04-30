@@ -5,6 +5,7 @@ import edu.kit.formal.proofscriptparser.ScriptLanguageVisitor;
 import edu.kit.formatl.proofscriptparser.ast.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.*;
+import sun.net.idn.Punycode;
 
 import java.util.*;
 
@@ -75,12 +76,19 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         return be;
     }
 
+    private UnaryExpression createUnaryExpression(ParserRuleContext ctx, ScriptLanguageParser.ExpressionContext expression, Operator op){
+        UnaryExpression ue = new UnaryExpression();
+        ue.setExpression((Expression) expression.accept(this));
+        ue.setOperator(op);
+        return ue;
+    }
     @Override public Object visitExprMinus(ScriptLanguageParser.ExprMinusContext ctx) {
-        throw new IllegalStateException("not implemented");
+       return createUnaryExpression(ctx, ctx.expression(), Operator.MINUS);
     }
 
     @Override public Object visitExprNegate(ScriptLanguageParser.ExprNegateContext ctx) {
-        throw new IllegalStateException("not implemented");
+        return createUnaryExpression(ctx, ctx.expression(), Operator.NEG);
+
     }
 
     @Override public Object visitExprComparison(ScriptLanguageParser.ExprComparisonContext ctx) {
