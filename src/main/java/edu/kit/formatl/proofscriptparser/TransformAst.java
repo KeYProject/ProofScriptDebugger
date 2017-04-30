@@ -179,7 +179,10 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override public Object visitRepeatStmt(ScriptLanguageParser.RepeatStmtContext ctx) {
-        throw new IllegalStateException("not implemented");
+        RepeatStatement rs = new RepeatStatement();
+        rs.setRuleContext(ctx);
+        rs.setBody((Statements) ctx.stmtList().accept(this));
+        return rs;
     }
 
     @Override public Object visitCasesStmt(ScriptLanguageParser.CasesStmtContext ctx) {
