@@ -27,20 +27,38 @@
     </scm>
 
 
+    <organization>
+        <name>Application-oriented Formal Verification</name>
+        <url>http://formal.iti.kit.edu</url>
+    </organization>
+    <inceptionYear>2017</inceptionYear>
+
+
+
+    <licenses>
+        <license>
+            <name>gpl_v3</name>
+        </license>
+    </licenses>
 
     <properties>
+        <licenseName>gpl_v3</licenseName>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
+
     </properties>
 
     <build>
         <plugins>
-                  <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <version>1.12</version>
-      </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.12</version>
+                <configuration>
+                    <licenseName>gpl_v3</licenseName>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>org.antlr</groupId>
