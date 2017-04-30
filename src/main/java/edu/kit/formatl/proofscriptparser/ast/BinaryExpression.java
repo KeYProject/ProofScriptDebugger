@@ -49,4 +49,8 @@ public class BinaryExpression extends Expression<ParserRuleContext> {
     public Expression getRight() {
         return right;
     }
+
+    @Override public int getPrecedence() {
+        return operator.precedence();
+    }
 }

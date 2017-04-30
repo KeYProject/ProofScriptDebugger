@@ -7,4 +7,5 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @version 1 (28.04.17)
  */
 public abstract class Expression<T extends ParserRuleContext> extends ASTNode<T> {
+    public abstract int getPrecedence();
 }

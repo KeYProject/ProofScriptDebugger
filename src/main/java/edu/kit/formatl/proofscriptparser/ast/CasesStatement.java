@@ -12,9 +12,19 @@ import java.util.List;
  */
 public class CasesStatement extends Statement<ScriptLanguageParser.CasesListContext> {
     private List<CaseStatement> cases = new ArrayList<>();
+    private Statements defaultCase = null;
 
     public List<CaseStatement> getCases() {
         return cases;
+    }
+
+    public Statements getDefaultCase() {
+        return defaultCase;
+    }
+
+    public CasesStatement setDefaultCase(Statements defaultCase) {
+        this.defaultCase = defaultCase;
+        return this;
     }
 
     @Override public <T> T accept(Visitor<T> visitor) {

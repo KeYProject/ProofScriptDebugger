@@ -10,8 +10,10 @@ import java.util.Map;
  * @version 1 (28.04.17)
  */
 public class PrettyPrinter extends DefaultASTVisitor<Void> {
+    private static final int MAX_WIDTH = 80;
     private final StringBuilder s = new StringBuilder();
     private int indentation = 0;
+    private int currentLineLength;
 
     @Override public String toString() {
         return s.toString();
@@ -50,14 +52,52 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
     }
 
     @Override public Void visit(BinaryExpression e) {
+        boolean left = e.getPrecedence() < e.getLeft().getPrecedence();
+        boolean right = e.getPrecedence() < e.getRight().getPrecedence();
+
+        if (left) {
+            s.append("(");
+        }
         e.getLeft().accept(this);
+        if (left) {
+            s.append(")");
+        }
+
         s.append(e.getOperator().symbol());
+
+        if (right) {
+            s.append("(");
+        }
         e.getRight().accept(this);
+        if (right) {
+            s.append(")");
+        }
+
         return super.visit(e);
     }
 
-    @Override public Void visit(MatchExpression matchExpression) {
-        return super.visit(matchExpression);
+    @Override public Void visit(MatchExpression match) {
+        s.append("match ");
+        String prefix = getWhitespacePrefix();
+        if (match.getTerm() != null) {
+            match.getTerm().accept(this);
+        }
+
+        if (!match.getSignature().isEmpty()) {
+
+            if (getCurrentLineLength() > MAX_WIDTH) {
+                s.append("\n").append(prefix);
+            }
+            else {
+                s.append(" ");
+            }
+
+            s.append("using [");
+            match.getSignature().accept(this);
+            s.append("]");
+        }
+
+        return null;
     }
 
     @Override public Void visit(CasesStatement casesStatement) {
@@ -67,6 +107,12 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         for (CaseStatement c : casesStatement.getCases()) {
             c.accept(this);
             nl();
+        }
+        if(casesStatement.getDefaultCase()!=null) {
+            s.append("default {");
+            casesStatement.getDefaultCase().accept(this);
+            cl();
+            s.append("}");
         }
         decrementIndent();
         cl();
@@ -95,13 +141,9 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return super.visit(caseStatement);
     }
 
-    @Override public Void visit(ScriptCallStatement call) {
+    @Override public Void visit(CallStatement call) {
         s.append(call.getCommand()).append(' ');
-        call.getParameters().forEach((k, v) -> {
-            s.append(k).append(" = ");
-            v.accept(this);
-            s.append(" ");
-        });
+        call.getParameters().accept(this);
         s.append(";");
         return null;
     }
@@ -127,6 +169,8 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
     }
 
     @Override public Void visit(Statements statements) {
+        if (statements.size() == 0)
+            return null;
         incrementIndent();
         for (Statement s : statements) {
             nl();
@@ -139,6 +183,71 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
     @Override public Void visit(IntegerLiteral integer) {
         s.append(integer.getValue().toString());
         return null;
+    }
+
+    @Override public Void visit(TheOnlyStatement theOnly) {
+        s.append("theonly {");
+        theOnly.getBody().accept(this);
+        cl();
+        s.append("}");
+        return null;
+    }
+
+    @Override public Void visit(ForeachStatement foreach) {
+        s.append("foreach {");
+        foreach.getBody().accept(this);
+        cl();
+        s.append("}");
+        return null;
+    }
+
+    @Override public Void visit(RepeatStatement repeat) {
+        s.append("repeat");
+        s.append("{");
+        repeat.getBody().accept(this);
+        cl();
+        s.append("}");
+        return null;
+
+    }
+
+    @Override public Void visit(Parameters parameters) {
+        int nl = getLastNewline();
+        String indention = getWhitespacePrefix();
+        Iterator<Map.Entry<Variable, Expression>> iter = parameters.entrySet().iterator();
+
+        while (iter.hasNext()) {
+            Map.Entry<Variable, Expression> entry = iter.next();
+            entry.getKey().accept(this);
+            s.append("=");
+            entry.getValue().accept(this);
+            if (iter.hasNext()) {
+                int currentLineLength = getCurrentLineLength();
+                if (currentLineLength > 80) {
+                    s.append("\n").append(indention);
+                }
+                else {
+                    s.append(" ");
+                }
+            }
+        }
+        return null;
+    }
+
+    private int getLastNewline() {
+        int posnewline = s.length() - 1;
+        while (s.charAt(posnewline) != '\n') {
+            posnewline--;
+        }
+        return posnewline;
+    }
+
+    private String getWhitespacePrefix() {
+        return s.substring(getLastNewline() + 1).replaceAll("\\w", " ");
+    }
+
+    @Override public Void visit(UnaryExpression unaryExpression) {
+        return super.visit(unaryExpression);
     }
 
     private void nl() {
@@ -155,4 +264,7 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         indentation++;
     }
 
+    public int getCurrentLineLength() {
+        return s.length() - getLastNewline();
+    }
 }

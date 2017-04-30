@@ -31,19 +31,17 @@ public interface Visitor<T> {
 
     T visit(CaseStatement case_);
 
-    T visit(ScriptCallStatement call);
+    T visit(CallStatement call);
 
     T visit(TheOnlyStatement theOnly);
 
     T visit(ForeachStatement foreach);
 
-    T visit(RepeatStatement repeatStatement);
+    T visit(RepeatStatement repeat);
 
     T visit(Signature signature);
 
     T visit(Parameters parameters);
 
-    T visit(UnaryExpression unaryExpression);
-
-    T visit(VariableDeclaration variableDeclaration);
+    T visit(UnaryExpression e);
 }

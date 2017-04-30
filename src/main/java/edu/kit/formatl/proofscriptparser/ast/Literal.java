@@ -21,6 +21,10 @@ public abstract class Literal extends Expression<ParserRuleContext> {
         return this;
     }
 
+    @Override public int getPrecedence() {
+        return 0;
+    }
+
     @Override public Optional<ParserRuleContext> getRuleContext() {
         return Optional.empty();
     }

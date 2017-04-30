@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @author Alexander Weigl
  * @version 1 (29.04.17)
  */
-public abstract class GoalSelector<T extends ParserRuleContext> extends ASTNode<T> {
+public abstract class GoalSelector<T extends ParserRuleContext> extends Statement<T> {
     private Statements body;
 
     public Statements getBody() {

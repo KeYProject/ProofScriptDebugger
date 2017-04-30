@@ -73,7 +73,7 @@ public class ASTTraversal<T> implements Visitor<T> {
         return null;
     }
 
-    @Override public T visit(ScriptCallStatement call) {
+    @Override public T visit(CallStatement call) {
         for (Expression e : call.getParameters().values()) {
             e.accept(this);
         }
@@ -97,6 +97,10 @@ public class ASTTraversal<T> implements Visitor<T> {
     }
 
     @Override public T visit(Parameters parameters) {
+        return null;
+    }
+
+    @Override public T visit(UnaryExpression e) {
         return null;
     }
 }

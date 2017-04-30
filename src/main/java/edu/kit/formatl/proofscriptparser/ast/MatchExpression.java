@@ -3,14 +3,12 @@ package edu.kit.formatl.proofscriptparser.ast;
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formatl.proofscriptparser.Visitor;
 
-import java.util.Map;
-
 /**
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
 public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatternContext> {
-    private Map<String, String> signature;
+    private Signature signature;
     private TermLiteral term;
     private String variable;
 
@@ -22,11 +20,11 @@ public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatter
         return null;
     }
 
-    public void setSignature(Map<String, String> signature) {
+    public void setSignature(Signature signature) {
         this.signature = signature;
     }
 
-    public Map<String, String> getSignature() {
+    public Signature getSignature() {
         return signature;
     }
 
@@ -40,5 +38,9 @@ public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatter
 
     public TermLiteral getTerm() {
         return term;
+    }
+
+    @Override public int getPrecedence() {
+        return Operator.MATCH.precedence();
     }
 }

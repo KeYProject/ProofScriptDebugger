@@ -5,7 +5,7 @@ start
     ;
 
 argList
-    :   varDecl (',' varDecl)+
+    :   varDecl (',' varDecl)*
     ;
 
 varDecl
@@ -76,12 +76,16 @@ repeatStmt
     ;
 
 casesStmt
-    :   CASES INDENT casesList+ DEDENT
+    :   CASES INDENT
+            casesList*
+        (DEFAULT  COLON? INDENT
+            defList=stmtList
+          DEDENT)?
+        DEDENT
     ;
 
 casesList
-    :   CASE expression COLON? INDENT stmtList DEDENT casesList*
-    |   DEFAULT  COLON? INDENT stmtList DEDENT
+    :   CASE expression COLON? INDENT stmtList DEDENT
     ;
 
 forEachStmt

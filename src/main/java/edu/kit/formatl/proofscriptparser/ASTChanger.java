@@ -3,8 +3,6 @@ package edu.kit.formatl.proofscriptparser;
 import edu.kit.formatl.proofscriptparser.ast.*;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * {@link ASTChanger} provides a visitor with for replacing or substiting nodes (in situ).
@@ -79,12 +77,8 @@ public class ASTChanger extends DefaultASTVisitor<ASTNode> {
         return caseStatement;
     }
 
-    @Override public ScriptCallStatement visit(ScriptCallStatement call) {
-        Map<String, Expression> p = call.getParameters();
-        Set<Map.Entry<String, Expression>> entries = call.getParameters().entrySet();
-        for (Map.Entry<String, Expression> e : entries) {
-            p.put(e.getKey(), (Expression) e.getValue().accept(this));
-        }
+    @Override public CallStatement visit(CallStatement call) {
+        call.setParameters((Parameters) call.getParameters().accept(this));
         return call;
     }
 }

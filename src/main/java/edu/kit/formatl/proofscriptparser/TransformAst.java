@@ -50,6 +50,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         }
         throw new IllegalStateException("Type " + n + " not defined");
     }
+
     //TODO check
     @Override public Object visitVarDecl(ScriptLanguageParser.VarDeclContext ctx) {
         VariableDeclaration varDecl = new VariableDeclaration();
@@ -98,13 +99,20 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         ue.setOperator(op);
         return ue;
     }
+
     @Override public Object visitExprMinus(ScriptLanguageParser.ExprMinusContext ctx) {
-       return createUnaryExpression(ctx, ctx.expression(), Operator.MINUS);
+        UnaryExpression ue = new UnaryExpression();
+ue.setRuleContext(...);
+        ue.setOperator(Operator.MINUS);
+        ue.setExpression((Expression) ctx.expression().accept(this));
+        return ue;
     }
 
     @Override public Object visitExprNegate(ScriptLanguageParser.ExprNegateContext ctx) {
-        return createUnaryExpression(ctx, ctx.expression(), Operator.NEG);
-
+        UnaryExpression ue = new UnaryExpression();
+        ue.setOperator(Operator.NOT);
+        ue.setExpression((Expression) ctx.expression().accept(this));
+        return ue;
     }
 
     @Override public Object visitExprComparison(ScriptLanguageParser.ExprComparisonContext ctx) {
@@ -188,7 +196,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     @Override public Object visitMatchPattern(ScriptLanguageParser.MatchPatternContext ctx) {
         MatchExpression match = new MatchExpression();
         match.setRuleContext(ctx);
-        match.setSignature((Map<String, String>) ctx.argList().accept(this));
+        match.setSignature((Signature) ctx.argList().accept(this));
         if (ctx.TERM_LITERAL() != null) {
             match.setTerm(new TermLiteral(ctx.TERM_LITERAL().getText()));
         }
@@ -212,6 +220,12 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     @Override public Object visitCasesStmt(ScriptLanguageParser.CasesStmtContext ctx) {
         CasesStatement cases = new CasesStatement();
         ctx.casesList().forEach(c -> cases.getCases().add((CaseStatement) c.accept(this)));
+        if (ctx.DEFAULT() != null) {
+            cases.setDefaultCase((Statements)
+                ctx.defList.accept(this)
+            );
+        }
+
         return cases;
     }
 
@@ -238,12 +252,11 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override public Object visitScriptCommand(ScriptLanguageParser.ScriptCommandContext ctx) {
-        ScriptCallStatement scs = new ScriptCallStatement();
+        CallStatement scs = new CallStatement();
         scs.setRuleContext(ctx);
         scs.setCommand(ctx.cmd.getText());
-        int i = 1;
         if (ctx.parameters() != null) {
-            ctx.parameters().accept(this);
+            scs.setParameters((Parameters) ctx.parameters().accept(this));
         }
         return scs;
     }
