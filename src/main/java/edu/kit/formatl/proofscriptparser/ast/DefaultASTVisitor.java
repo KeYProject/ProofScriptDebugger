@@ -1,5 +1,7 @@
 package edu.kit.formatl.proofscriptparser.ast;
 
+import edu.kit.formatl.proofscriptparser.Visitor;
+
 /**
  * @author Alexander Weigl
  * @version 1 (28.04.17)
@@ -54,6 +56,26 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
     }
 
     @Override public T visit(ScriptCallStatement call) {
+        return null;
+    }
+
+    @Override public T visit(TheOnlyStatement theOnly) {
+        return null;
+    }
+
+    @Override public T visit(ForeachStatement foreach) {
+        return null;
+    }
+
+    @Override public T visit(RepeatStatement repeatStatement) {
+        return null;
+    }
+
+    @Override public T visit(Signature signature) {
+        return null;
+    }
+
+    @Override public T visit(Parameters parameters) {
         return null;
     }
 }

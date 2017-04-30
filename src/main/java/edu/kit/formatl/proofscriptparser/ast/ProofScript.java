@@ -1,9 +1,7 @@
 package edu.kit.formatl.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
-
-import java.util.HashMap;
-import java.util.Map;
+import edu.kit.formatl.proofscriptparser.Visitor;
 
 /**
  * @author Alexander Weigl
@@ -12,7 +10,7 @@ import java.util.Map;
 public class ProofScript extends ASTNode<ScriptLanguageParser.StartContext> {
     private String name = "_";
     private Statements body = new Statements();
-    private Map<String, String> parameters = new HashMap<>();
+    private Signature signature = new Signature();
 
     @Override public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
@@ -38,19 +36,19 @@ public class ProofScript extends ASTNode<ScriptLanguageParser.StartContext> {
         this.body = body;
     }
 
-    public Map<String, String> getParameters() {
-        return parameters;
+    public Signature getSignature() {
+        return signature;
     }
 
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
+    public void setSignature(Signature parameters) {
+        this.signature = parameters;
     }
 
     public String toPrettyString() {
-        return String.format("script %s (%s) { %s }", name, parameters, body);
+        return String.format("script %s (%s) { %s }", name, signature, body);
     }
 
     @Override public String toString() {
-        return "ProofScript{" + "name='" + name + '\'' + ", body=" + body + ", parameters=" + parameters + '}';
+        return "ProofScript{" + "name='" + name + '\'' + ", body=" + body + ", signature=" + signature + '}';
     }
 }

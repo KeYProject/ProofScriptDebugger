@@ -1,6 +1,7 @@
 package edu.kit.formatl.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
+import edu.kit.formatl.proofscriptparser.Visitor;
 
 /**
  * @author Alexander Weigl

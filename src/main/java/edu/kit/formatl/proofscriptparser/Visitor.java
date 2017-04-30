@@ -1,4 +1,6 @@
-package edu.kit.formatl.proofscriptparser.ast;
+package edu.kit.formatl.proofscriptparser;
+
+import edu.kit.formatl.proofscriptparser.ast.*;
 
 /**
  * @author Alexander Weigl
@@ -25,9 +27,19 @@ public interface Visitor<T> {
 
     T visit(IntegerLiteral integer);
 
-    T visit(CasesStatement casesStatement);
+    T visit(CasesStatement cases);
 
-    T visit(CaseStatement caseStatement);
+    T visit(CaseStatement case_);
 
     T visit(ScriptCallStatement call);
+
+    T visit(TheOnlyStatement theOnly);
+
+    T visit(ForeachStatement foreach);
+
+    T visit(RepeatStatement repeatStatement);
+
+    T visit(Signature signature);
+
+    T visit(Parameters parameters);
 }

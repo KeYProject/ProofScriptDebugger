@@ -1,7 +1,7 @@
 grammar ScriptLanguage;
 
 start
-    :   (SCRIPT name=ID '(' paramters=argList? ')' INDENT body=stmtList DEDENT)*
+    :   (SCRIPT name=ID '(' signature=argList? ')' INDENT body=stmtList DEDENT)*
     ;
 
 argList
@@ -9,13 +9,7 @@ argList
     ;
 
 varDecl
-    :   ID ':' type
-    ;
-
-type
-    :   INT
-    |   BOOL
-    |   TERMTYPE
+    :   name=ID ':' type=ID
     ;
 
 stmtList
@@ -29,11 +23,11 @@ statement
     |   forEachStmt
     |   theOnlyStmt
     |   scriptCommand
-    |   callStmt
+  //  |   callStmt
     ;
 
 assignment
-    :   variable=ID (COLON type)? ASSIGN expression SEMICOLON
+    :   variable=ID (COLON type=ID)? ASSIGN expression SEMICOLON
     ;
 
 expression
@@ -99,16 +93,17 @@ theOnlyStmt
     ;
 
 scriptCommand
-    :   cmd=ID parameter* SEMICOLON
+    :   cmd=ID parameters? SEMICOLON
     ;
 
+parameters: parameter+;
+parameter :  ((pname=ID '=')? expr=expression);
 
-parameter :  ((pname=ID '=')? expr=expression)
-;
+/*
 callStmt
     :   CALL scriptCommand SEMICOLON
     ;
-
+*/
 
 //LEXER Rules
 WS : [ \t\n\r]+ -> skip ;
@@ -125,9 +120,9 @@ TRUE : 'true' ;
 FALSE : 'false' ;
 CALL : 'call' ;
 REPEAT : 'repeat' ;
-INT : 'int' ;
+/*INT : 'int' ;
 BOOL: 'bool' ;
-TERMTYPE : 'term' ;
+TERMTYPE : 'term' ;*/
 FOREACH : 'foreach' ;
 THEONLY : 'theonly' ;
 ID : [a-zA-Z] [_a-zA-Z0-9]* ;

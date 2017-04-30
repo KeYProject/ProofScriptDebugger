@@ -1,4 +1,4 @@
-package edu.kit.formatl.proofscriptparser.ast;
+package edu.kit.formatl.proofscriptparser;
 
 /**
  * @author Alexander Weigl

@@ -1,5 +1,6 @@
 package edu.kit.formatl.proofscriptparser.ast;
 
+import edu.kit.formatl.proofscriptparser.Visitor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**

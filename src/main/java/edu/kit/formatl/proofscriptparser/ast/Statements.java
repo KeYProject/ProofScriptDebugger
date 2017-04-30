@@ -1,5 +1,9 @@
 package edu.kit.formatl.proofscriptparser.ast;
 
+import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
+import edu.kit.formatl.proofscriptparser.Visitable;
+import edu.kit.formatl.proofscriptparser.Visitor;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -10,7 +14,8 @@ import java.util.stream.Stream;
  * @author Alexander Weigl
  * @version 1 (27.04.17)
  */
-public class Statements implements Visitable, Iterable<Statement> {
+public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
+        implements Visitable, Iterable<Statement> {
     private final List<Statement> statements = new ArrayList<>();
 
     public Iterator<Statement> iterator() {
@@ -38,7 +43,7 @@ public class Statements implements Visitable, Iterable<Statement> {
     }
 
     public boolean add(Statement statement) {
-        if(statement==null)
+        if (statement == null)
             throw new NullPointerException();
         return statements.add(statement);
     }
@@ -137,6 +142,10 @@ public class Statements implements Visitable, Iterable<Statement> {
 
     @Override public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override public ASTNode<ScriptLanguageParser.StmtListContext> clone() {
+        return null;
     }
 
 }

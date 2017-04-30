@@ -23,26 +23,22 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         ProofScript s = new ProofScript();
         s.setName(ctx.name.getText());
         s.setRuleContext(ctx);
-        if (ctx.paramters != null)
-            s.setParameters((Map<String, String>) ctx.paramters.accept(this));
+        if (ctx.signature != null)
+            s.setSignature((Signature) ctx.signature.accept(this));
         s.setBody((Statements) ctx.body.accept(this));
         scripts.add(s);
         return s;
     }
 
-    @Override public Map<String, String> visitArgList(ScriptLanguageParser.ArgListContext ctx) {
-        Map<String, String> signature = new LinkedHashMap<>();
+    @Override public Signature visitArgList(ScriptLanguageParser.ArgListContext ctx) {
+        Signature signature = new Signature();
         for (ScriptLanguageParser.VarDeclContext decl : ctx.varDecl()) {
-            signature.put(decl.ID().getText(), decl.type().getText());
+            signature.put(new Variable(decl.name), decl.type.getText());
         }
         return signature;
     }
 
     @Override public Object visitVarDecl(ScriptLanguageParser.VarDeclContext ctx) {
-        throw new IllegalStateException("not implemented");
-    }
-
-    @Override public Object visitType(ScriptLanguageParser.TypeContext ctx) {
         throw new IllegalStateException("not implemented");
     }
 
@@ -201,11 +197,17 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override public Object visitForEachStmt(ScriptLanguageParser.ForEachStmtContext ctx) {
-        throw new IllegalStateException("not implemented");
+        ForeachStatement f = new ForeachStatement();
+        f.setRuleContext(ctx);
+        f.setBody((Statements) ctx.stmtList().accept(this));
+        return f;
     }
 
     @Override public Object visitTheOnlyStmt(ScriptLanguageParser.TheOnlyStmtContext ctx) {
-        throw new IllegalStateException("not implemented");
+        TheOnlyStatement f = new TheOnlyStatement();
+        f.setRuleContext(ctx);
+        f.setBody((Statements) ctx.stmtList().accept(this));
+        return f;
     }
 
     @Override public Object visitScriptCommand(ScriptLanguageParser.ScriptCommandContext ctx) {
@@ -213,22 +215,25 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         scs.setRuleContext(ctx);
         scs.setCommand(ctx.cmd.getText());
         int i = 1;
-        if (ctx.parameter() != null) {
-            for (ScriptLanguageParser.ParameterContext p : ctx.parameter()) {
-                Expression expr = (Expression) p.expr.accept(this);
-                String key = p.ID() != null ? p.ID().getText() : "#" + (i++);
-                scs.getParameters().put(key, expr);
-            }
+        if (ctx.parameters() != null) {
+            ctx.parameters().accept(this);
         }
         return scs;
     }
 
-    @Override public Object visitParameter(ScriptLanguageParser.ParameterContext ctx) {
-        return null;
+    @Override public Object visitParameters(ScriptLanguageParser.ParametersContext ctx) {
+        Parameters params = new Parameters();
+        int i = 1;
+        for (ScriptLanguageParser.ParameterContext pc : ctx.parameter()) {
+            Expression expr = (Expression) pc.expr.accept(this);
+            Variable key = pc.pname != null ? new Variable(pc.pname) : new Variable("#" + (i++));
+            params.put(key, expr);
+        }
+        return params;
     }
 
-    @Override public Object visitCallStmt(ScriptLanguageParser.CallStmtContext ctx) {
-        throw new IllegalStateException("not implemented");
+    @Override public Object visitParameter(ScriptLanguageParser.ParameterContext ctx) {
+        return null;
     }
 
     @Override public Object visit(ParseTree parseTree) {

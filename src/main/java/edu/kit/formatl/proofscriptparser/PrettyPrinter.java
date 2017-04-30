@@ -21,7 +21,7 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         s.append("script");
         s.append(proofScript.getName());
         s.append(" (");
-        printArglist(proofScript.getParameters());
+        proofScript.getSignature().accept(this);
         s.append(") {");
         proofScript.getBody().accept(this);
         nl();
@@ -29,14 +29,16 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return null;
     }
 
-    private void printArglist(Map<String, String> parameters) {
-        Iterator<Map.Entry<String, String>> iter = parameters.entrySet().iterator();
+    @Override public Void visit(Signature sig) {
+        Iterator<Map.Entry<Variable, String>> iter = sig.entrySet().iterator();
         while (iter.hasNext()) {
-            Map.Entry<String, String> next = iter.next();
-            s.append(next.getKey()).append(" : ").append(next.getValue());
+            Map.Entry<Variable, String> next = iter.next();
+            next.getKey().accept(this);
+            s.append(" : ").append(next.getValue());
             if (iter.hasNext())
                 s.append(", ");
         }
+        return null;
     }
 
     @Override public Void visit(AssignmentStatement assign) {

@@ -1,0 +1,14 @@
+script fc() {
+foreach { theonly {
+    cases {
+        case x = y {
+            print a;
+        }
+
+        default {
+            print `blubb`;
+        }
+    }
+}
+}
+}
