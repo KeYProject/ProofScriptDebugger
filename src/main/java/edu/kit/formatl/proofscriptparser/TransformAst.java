@@ -4,10 +4,14 @@ import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formal.proofscriptparser.ScriptLanguageVisitor;
 import edu.kit.formatl.proofscriptparser.ast.*;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.*;
-import sun.net.idn.Punycode;
+import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.RuleNode;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Alexander Weigl
@@ -39,8 +43,20 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         return signature;
     }
 
+    private Type findType(String n) {
+        for (Type t : Type.values()) {
+            if (t.symbol().equals(n))
+                return t;
+        }
+        throw new IllegalStateException("Type " + n + " not defined");
+    }
+    //TODO check
     @Override public Object visitVarDecl(ScriptLanguageParser.VarDeclContext ctx) {
-        throw new IllegalStateException("not implemented");
+        VariableDeclaration varDecl = new VariableDeclaration();
+        varDecl.setIdentifier(new Variable(ctx.name));
+        varDecl.setType(findType(ctx.type.getText()));
+        return  varDecl;
+
     }
 
     @Override public Statements visitStmtList(ScriptLanguageParser.StmtListContext ctx) {
