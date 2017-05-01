@@ -103,12 +103,12 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override
-    public Object visitExprMinus(ScriptLanguageParser.ExprMinusContext ctx) {
+    public Object visitExprNegate(ScriptLanguageParser.ExprNegateContext ctx) {
         return createUnaryExpression(ctx, ctx.expression(), Operator.NEGATE);
     }
 
     @Override
-    public Object visitExprNegate(ScriptLanguageParser.ExprNegateContext ctx) {
+    public Object visitExprNot(ScriptLanguageParser.ExprNotContext ctx) {
         return createUnaryExpression(ctx, ctx.expression(), Operator.NOT);
     }
 
@@ -118,8 +118,12 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     private Operator findOperator(String n) {
+        return findOperator(n, 2);
+    }
+
+    private Operator findOperator(String n, int arity) {
         for (Operator op : Operator.values()) {
-            if (op.symbol().equals(n))
+            if (op.symbol().equals(n) && op.arity() == arity)
                 return op;
         }
         throw new IllegalStateException("Operator " + n + " not defined");

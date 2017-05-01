@@ -32,8 +32,8 @@ assignment
 
 expression
     :
-        MINUS expression   #exprMinus
-    |   NEGATE expression  #exprNegate
+        MINUS expression   #exprNegate
+    |   NOT expression  #exprNot
     |   expression MUL expression #exprMultiplication
     |   <assoc=right> expression DIV expression #exprDivision
     |   expression op=(PLUS|MINUS) expression #exprLineOperators
@@ -159,7 +159,7 @@ AND : '&' ;
 OR: '|' ;
 IMP : '==>' ;
 EQUIV : '<=>' ;
-NEGATE: 'not';
+NOT: 'not';
 
 //options {...}
 //import ... ;

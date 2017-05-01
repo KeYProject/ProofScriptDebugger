@@ -22,11 +22,13 @@ public class Variable extends Literal {
         setToken(variable);
     }
 
-    @Override public <T> T accept(Visitor<T> visitor) {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
-    @Override public Variable clone() {
+    @Override
+    public Variable clone() {
         Variable v = new Variable(identifier);
         v.token = token;
         return v;
@@ -37,11 +39,15 @@ public class Variable extends Literal {
      * @return
      * @throws NotWelldefinedException
      */
-    @Override public Type getType(Signature signature) throws NotWelldefinedException {
-        return null;
+    @Override
+    public Type getType(Signature signature) throws NotWelldefinedException {
+        if (signature.containsKey(this))
+            return signature.get(this);
+        throw new NotWelldefinedException(toString() + "not defined in signature.", this);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Variable{" + "identifier='" + identifier + '\'' + '}';
     }
 

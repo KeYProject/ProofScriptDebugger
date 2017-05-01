@@ -34,13 +34,14 @@ public class BinaryExpression extends Expression<ParserRuleContext> {
         return be;
     }
 
+
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
         if (operator.arity() != 2)
             throw new NotWelldefinedException("Arity mismatch", this);
 
-        operator.type()[0].equals(left.getType(signature));
-        operator.type()[1].equals(right.getType(signature));
+        checkType(operator.type()[0],left,signature);
+        checkType(operator.type()[1],right,signature);
 
         return operator.returnType();
     }

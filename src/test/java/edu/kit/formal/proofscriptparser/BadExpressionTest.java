@@ -1,5 +1,6 @@
 package edu.kit.formal.proofscriptparser;
 
+import edu.kit.formal.proofscriptparser.ast.Expression;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,11 +19,13 @@ public class BadExpressionTest {
     public String testExpression;
 
 
-    @Test
-    public void test() throws IOException {
+    @Test(expected = NotWelldefinedException.class)
+    public void test() throws IOException, NotWelldefinedException {
         ScriptLanguageParser slp = TestHelper.getParser(testExpression);
-        slp.expression();
-        Assert.assertNotEquals(0, slp.getNumberOfSyntaxErrors());
+        ScriptLanguageParser.ExpressionContext e = slp.expression();
+        //Assert.assertNotEquals(0, slp.getNumberOfSyntaxErrors());
+        Expression expr = (Expression) e.accept(new TransformAst());
+        expr.getType(GoodExpressionTest.createSignature());
     }
 
 }

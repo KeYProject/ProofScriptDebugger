@@ -35,9 +35,9 @@ public class UnaryExpression extends Expression<ParserRuleContext> {
 
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
-        if(operator.arity()!=1)
+        if (operator.arity() != 1)
             throw new NotWelldefinedException("Arity mismatch!", this);
-        operator.type()[0].equals(expression.getType(signature));
+        checkType(operator.type()[0], expression, signature);
         return operator.returnType();
     }
 

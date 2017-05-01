@@ -28,10 +28,20 @@ public class GoodExpressionTest {
         ScriptLanguageParser.ExpressionContext e = slp.expression();
         Assert.assertEquals(0, slp.getNumberOfSyntaxErrors());
 
-       Expression expr = (Expression) e.accept(new TransformAst());
-        Signature s = new Signature();
-        s.put(new Variable("a"), Type.integer);
+        Expression expr = (Expression) e.accept(new TransformAst());
+        Signature s = createSignature();
         System.out.println(expr.getType(s));
+    }
+
+    public static Signature createSignature() {
+        Signature s = new Signature();
+        s.put(new Variable("a"), Type.BOOL);
+        s.put(new Variable("b"), Type.BOOL);
+        s.put(new Variable("c"), Type.BOOL);
+        s.put(new Variable("i"), Type.INT);
+        s.put(new Variable("j"), Type.INT);
+        s.put(new Variable("k"), Type.INT);
+        return s;
     }
 
 }
