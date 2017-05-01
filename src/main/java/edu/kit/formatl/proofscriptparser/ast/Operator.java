@@ -12,43 +12,43 @@ public enum Operator {
     /**
      * special entry for marking match as an atomic expression.
      */
-    MATCH("match", 1000, bool),
+    MATCH("match", 1000, BOOL),
     /**
      *
      */
-    NOT("not", "¬", 10, bool, bool),
+    NOT("not", "¬", 10, BOOL, BOOL),
     /** */
-    NEGATE("-", "-", 10, integer, integer),
+    NEGATE("-", "-", 10, INT, INT),
     /** */
-    MULTIPLY("*", "×", 20, integer, integer, integer),
+    MULTIPLY("*", "×", 20, INT, INT, INT),
     /** */
-    DIVISION("/", "÷", 20, integer, integer, integer),
+    DIVISION("/", "÷", 20, INT, INT, INT),
     /** */
-    PLUS("+", 30, integer, integer, integer),
+    PLUS("+", 30, INT, INT, INT),
     /** */
-    MINUS("-", 30, integer, integer, integer),
+    MINUS("-", 30, INT, INT, INT),
     /** */
-    LE("<", 40, integer, integer, bool),
+    LE("<", 40, INT, INT, BOOL),
     /** */
-    GE(">", 40, integer, integer, bool),
+    GE(">", 40, INT, INT, BOOL),
     /** */
-    LEQ("<=", "≤", 40, integer, integer, bool),
+    LEQ("<=", "≤", 40, INT, INT, BOOL),
     /** */
-    GEQ(">=", "≥", 40, integer, integer, bool),
+    GEQ(">=", "≥", 40, INT, INT, BOOL),
     /** */
-    EQ("=", "≡", 50, integer, integer, bool),
+    EQ("=", "≡", 50, INT, INT, BOOL),
     /** */
-    NEQ("<>", "≢", 50, integer, integer, bool),
+    NEQ("<>", "≢", 50, INT, INT, BOOL),
     /** */
-    AND("&", "∧", 60, bool, bool, bool),
+    AND("&", "∧", 60, BOOL, BOOL, BOOL),
     /** */
-    OR("|", "∨", 70, bool, bool, bool),
+    OR("|", "∨", 70, BOOL, BOOL, BOOL),
     /** */
-    IMPLICATION("==>", "⇒", 80, bool, bool, bool),
+    IMPLICATION("==>", "⇒", 80, BOOL, BOOL, BOOL),
     /**
      *
      * */
-    EQUIVALENCE("<=>", "⇔", 90, bool, bool, bool);
+    EQUIVALENCE("<=>", "⇔", 90, BOOL, BOOL, BOOL);
 
     private final String symbol;
     private final String unicode;

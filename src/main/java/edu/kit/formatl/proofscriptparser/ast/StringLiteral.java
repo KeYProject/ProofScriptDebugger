@@ -26,6 +26,6 @@ public class StringLiteral extends Literal {
 
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
-        return Type.string;
+        return Type.STRING;
     }
 }

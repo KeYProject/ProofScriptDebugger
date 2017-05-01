@@ -34,7 +34,7 @@ public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatter
     public Type getType(Signature signature) throws NotWelldefinedException {
         if(term==null && variable==null)
             throw new NotWelldefinedException("Missing parameter", this);
-        return Type.bool;
+        return Type.BOOL;
     }
 
     @Override public int getPrecedence() {

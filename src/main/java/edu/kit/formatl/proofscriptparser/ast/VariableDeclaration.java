@@ -6,8 +6,8 @@ import edu.kit.formatl.proofscriptparser.Visitor;
 /**
  * Created by sarah on 4/30/17.
  */
-public class VariableDeclaration extends ASTNode<ScriptLanguageParser.VarDeclContext> {
-    private Variable identifier;
+public class VariableDeclaration {//extends ASTNode<ScriptLanguageParser.VarDeclContext> {
+ /*   private Variable identifier;
     private Type type;
 
     public VariableDeclaration setType(Type type){
@@ -29,4 +29,4 @@ public class VariableDeclaration extends ASTNode<ScriptLanguageParser.VarDeclCon
     public ASTNode<ScriptLanguageParser.VarDeclContext> clone() {
         return null;
     }
-}
+*/}

@@ -40,7 +40,7 @@ public class IntegerLiteral extends Literal {
 
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
-        return Type.integer;
+        return Type.INT;
     }
 
 

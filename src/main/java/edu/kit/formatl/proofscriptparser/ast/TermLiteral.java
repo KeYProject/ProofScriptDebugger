@@ -30,6 +30,6 @@ public class TermLiteral extends Literal {
 
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
-        return Type.term;
+        return Type.TERM;
     }
 }

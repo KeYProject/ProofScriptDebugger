@@ -45,6 +45,6 @@ public class BooleanLiteral extends Literal {
 
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
-        return Type.bool;
+        return Type.BOOL;
     }
 }
