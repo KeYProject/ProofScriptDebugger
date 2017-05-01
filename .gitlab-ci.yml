@@ -20,7 +20,7 @@ test:
 
 deploy:
   script: 
-    - "mvn package site:site -DskiptTests=true -B"
+    - "mvn package site:site -DperformRelease=true -DcreateChecksum=true -DskipTests=true -B"
   artifacts: 
     paths:
       - target/*jar
