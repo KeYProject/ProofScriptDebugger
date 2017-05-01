@@ -3,7 +3,10 @@ package edu.kit.formal.proofscriptparser.ast;
 import java.util.Arrays;
 
 /**
- * Created by sarah on 4/30/17.
+ * Represents the possible types.
+ *
+ * Created at 30.04.2017
+ * @author Sarah Grebing
  */
 public enum Type {
     STRING("string"), TERM("term"), ANY("any"),

@@ -10,22 +10,32 @@ import java.util.Optional;
  * @version 1 (28.04.17)
  */
 public abstract class Literal extends Expression<ParserRuleContext> {
-    protected Optional<Token> token;
+    protected Token token;
 
     public Optional<Token> getToken() {
-        return token;
+        return Optional.of(token);
     }
 
     public Literal setToken(Token token) {
-        this.token = Optional.of(token);
+        this.token = token;
         return this;
     }
 
-    @Override public int getPrecedence() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getPrecedence() {
         return 0;
     }
 
-    @Override public Optional<ParserRuleContext> getRuleContext() {
+    /**
+     * {@link Literal}s do not have any {@link ParserRuleContext}
+     *
+     * @return always {@link Optional#empty()}
+     */
+    @Override
+    public Optional<ParserRuleContext> getRuleContext() {
         return Optional.empty();
     }
 }

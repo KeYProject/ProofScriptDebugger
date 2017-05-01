@@ -25,19 +25,28 @@ public class IntegerLiteral extends Literal {
 
     public IntegerLiteral(Token digits) {
         setToken(digits);
-        value = BigInteger.valueOf(Long.parseLong(digits.getText()));
+        value = new BigInteger(digits.getText());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override public IntegerLiteral clone() {
         IntegerLiteral il = new IntegerLiteral(value);
         il.token = token;
         return il;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
         return Type.INT;

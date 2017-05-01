@@ -17,11 +17,19 @@ public class TheOnlyStatement extends GoalSelector<ScriptLanguageParser.TheOnlyS
         super(statements);
     }
 
-    @Override public <T> T accept(Visitor<T> visitor) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
-    @Override public TheOnlyStatement clone() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TheOnlyStatement clone() {
         return new TheOnlyStatement(getBody().clone());
     }
 }

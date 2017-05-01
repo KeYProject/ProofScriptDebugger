@@ -17,10 +17,16 @@ public class ForeachStatement extends GoalSelector<ScriptLanguageParser.ForEachS
         super(statements);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override public ForeachStatement clone() {
         return new ForeachStatement(getBody().clone());
     }

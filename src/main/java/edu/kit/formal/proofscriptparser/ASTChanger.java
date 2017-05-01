@@ -19,8 +19,8 @@ public class ASTChanger extends DefaultASTVisitor<ASTNode> {
     }
 
     @Override public AssignmentStatement visit(AssignmentStatement assign) {
-        assign.setRhs((Variable) assign.getRhs().accept(this));
-        assign.setLhs((Expression) assign.getLhs().accept(this));
+        assign.setRhs((Expression) assign.getRhs().accept(this));
+        assign.setLhs((Variable) assign.getLhs().accept(this));
         return assign;
     }
 

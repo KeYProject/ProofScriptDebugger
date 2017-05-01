@@ -1,25 +1,38 @@
 package edu.kit.formal.proofscriptparser;
 
 import edu.kit.formal.proofscriptparser.ast.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * Pretty printer for ASTs.
+ *
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
 public class PrettyPrinter extends DefaultASTVisitor<Void> {
-    private static final int MAX_WIDTH = 80;
+
+    @Getter
+    @Setter
+    private int maxWidth = 80;
+
+    @Getter
+    @Setter
     private boolean unicode = true;
+
     private final StringBuilder s = new StringBuilder();
     private int indentation = 0;
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return s.toString();
     }
 
-    @Override public Void visit(ProofScript proofScript) {
+    @Override
+    public Void visit(ProofScript proofScript) {
         s.append("script");
         s.append(proofScript.getName());
         s.append(" (");
@@ -31,7 +44,8 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return null;
     }
 
-    @Override public Void visit(Signature sig) {
+    @Override
+    public Void visit(Signature sig) {
         Iterator<Map.Entry<Variable, Type>> iter = sig.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry<Variable, Type> next = iter.next();
@@ -43,7 +57,8 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return null;
     }
 
-    @Override public Void visit(AssignmentStatement assign) {
+    @Override
+    public Void visit(AssignmentStatement assign) {
         assign.getRhs().accept(this);
         s.append(" := ");
         assign.getLhs().accept(this);
@@ -51,7 +66,8 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return null;
     }
 
-    @Override public Void visit(BinaryExpression e) {
+    @Override
+    public Void visit(BinaryExpression e) {
         boolean left = e.getPrecedence() < e.getLeft().getPrecedence();
         boolean right = e.getPrecedence() < e.getRight().getPrecedence();
 
@@ -75,7 +91,8 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return super.visit(e);
     }
 
-    @Override public Void visit(MatchExpression match) {
+    @Override
+    public Void visit(MatchExpression match) {
         s.append("match ");
         String prefix = getWhitespacePrefix();
         if (match.getTerm() != null) {
@@ -84,10 +101,9 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
 
         if (!match.getSignature().isEmpty()) {
 
-            if (getCurrentLineLength() > MAX_WIDTH) {
+            if (getCurrentLineLength() > maxWidth) {
                 s.append("\n").append(prefix);
-            }
-            else {
+            } else {
                 s.append(" ");
             }
 
@@ -99,7 +115,8 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return null;
     }
 
-    @Override public Void visit(CasesStatement casesStatement) {
+    @Override
+    public Void visit(CasesStatement casesStatement) {
         s.append("cases {");
         incrementIndent();
         nl();
@@ -130,7 +147,8 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         nl();
     }
 
-    @Override public Void visit(CaseStatement caseStatement) {
+    @Override
+    public Void visit(CaseStatement caseStatement) {
         s.append("case ");
         caseStatement.getGuard().accept(this);
         s.append(" {");
@@ -140,34 +158,40 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return super.visit(caseStatement);
     }
 
-    @Override public Void visit(CallStatement call) {
+    @Override
+    public Void visit(CallStatement call) {
         s.append(call.getCommand()).append(' ');
         call.getParameters().accept(this);
         s.append(";");
         return null;
     }
 
-    @Override public Void visit(TermLiteral termLiteral) {
+    @Override
+    public Void visit(TermLiteral termLiteral) {
         s.append(String.format("`%s`", termLiteral.getText()));
         return super.visit(termLiteral);
     }
 
-    @Override public Void visit(StringLiteral stringLiteral) {
+    @Override
+    public Void visit(StringLiteral stringLiteral) {
         s.append(String.format("\"%s\"", stringLiteral.getText()));
         return super.visit(stringLiteral);
     }
 
-    @Override public Void visit(Variable variable) {
+    @Override
+    public Void visit(Variable variable) {
         s.append(variable.getIdentifier());
         return super.visit(variable);
     }
 
-    @Override public Void visit(BooleanLiteral bool) {
+    @Override
+    public Void visit(BooleanLiteral bool) {
         s.append(bool.isValue());
         return super.visit(bool);
     }
 
-    @Override public Void visit(Statements statements) {
+    @Override
+    public Void visit(Statements statements) {
         if (statements.size() == 0)
             return null;
         incrementIndent();
@@ -179,12 +203,14 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return super.visit(statements);
     }
 
-    @Override public Void visit(IntegerLiteral integer) {
+    @Override
+    public Void visit(IntegerLiteral integer) {
         s.append(integer.getValue().toString());
         return null;
     }
 
-    @Override public Void visit(TheOnlyStatement theOnly) {
+    @Override
+    public Void visit(TheOnlyStatement theOnly) {
         s.append("theonly {");
         theOnly.getBody().accept(this);
         cl();
@@ -192,7 +218,8 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return null;
     }
 
-    @Override public Void visit(ForeachStatement foreach) {
+    @Override
+    public Void visit(ForeachStatement foreach) {
         s.append("foreach {");
         foreach.getBody().accept(this);
         cl();
@@ -200,7 +227,8 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return null;
     }
 
-    @Override public Void visit(RepeatStatement repeat) {
+    @Override
+    public Void visit(RepeatStatement repeat) {
         s.append("repeat");
         s.append("{");
         repeat.getBody().accept(this);
@@ -210,7 +238,8 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
 
     }
 
-    @Override public Void visit(Parameters parameters) {
+    @Override
+    public Void visit(Parameters parameters) {
         int nl = getLastNewline();
         String indention = getWhitespacePrefix();
         Iterator<Map.Entry<Variable, Expression>> iter = parameters.entrySet().iterator();
@@ -222,10 +251,9 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
             entry.getValue().accept(this);
             if (iter.hasNext()) {
                 int currentLineLength = getCurrentLineLength();
-                if (currentLineLength > MAX_WIDTH) {
+                if (currentLineLength > maxWidth) {
                     s.append("\n").append(indention);
-                }
-                else {
+                } else {
                     s.append(" ");
                 }
             }
@@ -233,7 +261,8 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return null;
     }
 
-    @Override public Void visit(UnaryExpression e) {
+    @Override
+    public Void visit(UnaryExpression e) {
         s.append(unicode ? e.getOperator().unicode() : e.getOperator().symbol());
         if (e.getPrecedence() < e.getExpression().getPrecedence())
             s.append("(");
@@ -277,22 +306,4 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
 
     //endregion
 
-    /**
-     * Flag for indicating, that the unicode operation symbols should be used.
-     *
-     * @return
-     */
-    public boolean isUnicode() {
-        return unicode;
-    }
-
-    /**
-     * @param unicode
-     * @return
-     * @see #isUnicode()
-     */
-    public PrettyPrinter setUnicode(boolean unicode) {
-        this.unicode = unicode;
-        return this;
-    }
 }

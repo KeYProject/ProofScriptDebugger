@@ -5,6 +5,8 @@ import edu.kit.formal.proofscriptparser.Visitor;
 import lombok.*;
 
 /**
+ * A call to a subroutine or atomic function.
+ *
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
@@ -13,14 +15,30 @@ import lombok.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class CallStatement extends Statement<ScriptLanguageParser.ScriptCommandContext> {
-    @NonNull private String command;
+    /**
+     * The name of the command.
+     */
+    @NonNull
+    private String command;
+
+    /**
+     * The list of parameters.
+     */
     private Parameters parameters = new Parameters();
 
-    @Override public <T> T accept(Visitor<T> visitor) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
-    @Override public CallStatement clone() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CallStatement clone() {
         return new CallStatement(command, parameters.clone());
     }
 }

@@ -2,6 +2,7 @@ package edu.kit.formal.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formal.proofscriptparser.Visitor;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,21 +12,21 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class CaseStatement extends Statement<ScriptLanguageParser.CasesListContext> {
     private Expression guard;
     private Statements body;
 
-
-    public CaseStatement(Expression guard, Statements body) {
-        this.guard = guard;
-        this.body = body;
-    }
-
-
+    /**
+     * {@inheritDoc}
+     */
     @Override public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override public CaseStatement clone() {
         return new CaseStatement(guard.clone(), body.clone());
     }

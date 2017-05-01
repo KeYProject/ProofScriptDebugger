@@ -3,6 +3,9 @@ package edu.kit.formal.proofscriptparser.ast;
 import lombok.*;
 import org.antlr.v4.runtime.Token;
 
+/**
+ * @author Alexander Weigl
+ */
 @Data @RequiredArgsConstructor public class Position implements Cloneable {
     @NonNull final int lineNumber;
     @NonNull final int charInLine;
@@ -13,10 +16,6 @@ import org.antlr.v4.runtime.Token;
 
     @Override public Position clone() {
         return new Position(lineNumber, charInLine);
-    }
-
-    @Override public String toString() {
-        return "@" + lineNumber + ":" + charInLine;
     }
 
     public static Position from(Token token) {

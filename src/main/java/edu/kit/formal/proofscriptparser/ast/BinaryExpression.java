@@ -28,13 +28,18 @@ public class BinaryExpression extends Expression<ParserRuleContext> {
         return visitor.visit(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BinaryExpression clone() {
         BinaryExpression be = new BinaryExpression(left.clone(), operator, right.clone());
         return be;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
         if (operator.arity() != 2)
@@ -46,6 +51,9 @@ public class BinaryExpression extends Expression<ParserRuleContext> {
         return operator.returnType();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getPrecedence() {
         return operator.precedence();

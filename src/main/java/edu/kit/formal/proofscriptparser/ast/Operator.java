@@ -3,6 +3,9 @@ package edu.kit.formal.proofscriptparser.ast;
 import static edu.kit.formal.proofscriptparser.ast.Type.*;
 
 /**
+ * An enum which contains meta-data to all operators.
+ * <p>
+ * <p>
  * Precedence: zero is preserved for literals!
  *
  * @author Alexander Weigl
@@ -66,27 +69,54 @@ public enum Operator {
         this.type = type;
     }
 
+    /**
+     * unicode symbol of this operator
+     *
+     * @return a non-null string
+     */
     public String unicode() {
         return unicode;
     }
 
+    /**
+     * a ascii symbol of this operator.
+     *
+     * @return a non-null string
+     */
     public String symbol() {
         return symbol;
     }
 
+    /**
+     * Returns the precedence (bind strength) of this operator.
+     * <p>
+     * A low precedence bind stronger, e.g. literals are 0.
+     */
     public int precedence() {
         return precedence;
     }
 
+    /**
+     * Returns all types (arguments and returntype) of operator.
+     *
+     * @return an array with the last entry is the return type
+     * of this operator and all previous entries are the types of arguments.
+     * @see #returnType()
+     */
     public Type[] type() {
         return type;
     }
 
+    /**
+     * Returns the return type of operator.
+     */
     public Type returnType() {
         return type[type.length - 1];
     }
 
-
+    /**
+     * Number of arguments of this operator.
+     */
     public int arity() {
         return type.length - 1;
     }

@@ -1,7 +1,9 @@
 package edu.kit.formal.proofscriptparser.ast;
 
+import com.sun.xml.internal.ws.wsdl.writer.document.OpenAtts;
 import edu.kit.formal.proofscriptparser.Visitable;
 import edu.kit.formal.proofscriptparser.Visitor;
+import lombok.Data;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Optional;
@@ -10,19 +12,20 @@ import java.util.Optional;
  * @author Alexander Weigl
  * @version 1 (27.04.17)
  */
-public abstract class ASTNode<T extends ParserRuleContext> implements Visitable, Cloneable {
-    private Optional<T> ruleContext;
-    private Position startPosition = new Position();
-    private Position endPosition = new Position();
+public abstract class ASTNode<T extends ParserRuleContext>
+        implements Visitable, Cloneable {
+    protected T ruleContext;
+    protected Position startPosition = new Position();
+    protected Position endPosition = new Position();
 
     public void setRuleContext(T c) {
         startPosition = Position.from(c.getStart());
         endPosition = Position.from(c.getStop());
-        ruleContext = Optional.of(c);
+        ruleContext = c;
     }
 
     public Optional<T> getRuleContext() {
-        return ruleContext;
+        return Optional.of(ruleContext);
     }
 
     public Position getStartPosition() {
@@ -47,6 +50,12 @@ public abstract class ASTNode<T extends ParserRuleContext> implements Visitable,
      */
     public abstract <T> T accept(Visitor<T> visitor);
 
-    @Override public abstract ASTNode<T> clone();
+    /**
+     * Deep copy of the AST hierarchy.
+     *
+     * @return a fresh substree of the AST that is equal to this.
+     */
+    @Override
+    public abstract ASTNode<T> clone();
 
 }

@@ -3,6 +3,7 @@ package edu.kit.formal.proofscriptparser.ast;
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formal.proofscriptparser.Visitor;
 import lombok.Data;
+import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,26 +14,19 @@ import java.util.List;
  */
 @Data
 public class CasesStatement extends Statement<ScriptLanguageParser.CasesListContext> {
-    private List<CaseStatement> cases = new ArrayList<>();
-    private Statements defaultCase = new Statements();
+    @NonNull private final List<CaseStatement> cases = new ArrayList<>();
+    @NonNull private Statements defaultCase = new Statements();
 
-    public List<CaseStatement> getCases() {
-        return cases;
-    }
-
-    public Statements getDefaultCase() {
-        return defaultCase;
-    }
-
-    public CasesStatement setDefaultCase(Statements defaultCase) {
-        this.defaultCase = defaultCase;
-        return this;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override public CasesStatement clone() {
         CasesStatement c = new CasesStatement();
         cases.forEach(caseStatement -> c.cases.add(caseStatement.clone()));

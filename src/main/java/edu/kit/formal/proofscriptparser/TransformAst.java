@@ -75,8 +75,8 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     public Object visitAssignment(ScriptLanguageParser.AssignmentContext ctx) {
         AssignmentStatement assign = new AssignmentStatement();
         assign.setRuleContext(ctx);
-        assign.setRhs(new Variable(ctx.variable));
-        assign.setLhs((Expression) ctx.expression().accept(this));
+        assign.setLhs(new Variable(ctx.variable));
+        assign.setRhs((Expression) ctx.expression().accept(this));
         return assign;
     }
 
@@ -159,7 +159,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
 
     @Override
     public Object visitExprLineOperators(ScriptLanguageParser.ExprLineOperatorsContext ctx) {
-        return createBinaryExpression(ctx, ctx.expression(), findOperator(ctx.op.getText()));
+            return createBinaryExpression(ctx, ctx.expression(), findOperator(ctx.op.getText()));
 
     }
 

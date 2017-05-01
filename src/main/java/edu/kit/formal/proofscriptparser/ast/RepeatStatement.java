@@ -17,11 +17,19 @@ public class RepeatStatement extends GoalSelector<ScriptLanguageParser.RepeatStm
         super(statements);
     }
 
-    @Override public <T> T accept(Visitor<T> visitor) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
-    @Override public RepeatStatement clone() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RepeatStatement clone() {
         return new RepeatStatement(getBody().clone());
     }
 }

@@ -22,17 +22,26 @@ public class UnaryExpression extends Expression<ParserRuleContext> {
     @NonNull
     private Expression expression;
 
+    /**
+     * {@inheritDoc
+     */
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
+    /**
+     * {@inheritDoc
+     */
     @Override
     public UnaryExpression clone() {
         UnaryExpression u = new UnaryExpression(operator, expression.clone());
         return u;
     }
 
+    /**
+     * {@inheritDoc
+     */
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
         if (operator.arity() != 1)
@@ -41,6 +50,9 @@ public class UnaryExpression extends Expression<ParserRuleContext> {
         return operator.returnType();
     }
 
+    /**
+     * {@inheritDoc
+     */
     @Override
     public int getPrecedence() {
         return Operator.NOT.precedence();//a placeholder, because MINUS is used as binary operator,too
