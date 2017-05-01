@@ -1,7 +1,6 @@
 package edu.kit.formal.proofscriptparser;
 
-import edu.kit.formatl.proofscriptparser.Facade;
-import edu.kit.formatl.proofscriptparser.ast.ProofScript;
+import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

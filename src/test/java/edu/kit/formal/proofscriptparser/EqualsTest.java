@@ -1,8 +1,7 @@
 package edu.kit.formal.proofscriptparser;
 
-import edu.kit.formatl.proofscriptparser.Facade;
-import edu.kit.formatl.proofscriptparser.ast.ProofScript;
-import edu.kit.formatl.proofscriptparser.ast.Variable;
+import edu.kit.formal.proofscriptparser.ast.ProofScript;
+import edu.kit.formal.proofscriptparser.ast.Variable;
 import org.junit.Assert;
 import org.junit.Test;
 

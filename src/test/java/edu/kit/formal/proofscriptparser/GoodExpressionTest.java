@@ -1,11 +1,9 @@
 package edu.kit.formal.proofscriptparser;
 
-import edu.kit.formatl.proofscriptparser.NotWelldefinedException;
-import edu.kit.formatl.proofscriptparser.TransformAst;
-import edu.kit.formatl.proofscriptparser.ast.Expression;
-import edu.kit.formatl.proofscriptparser.ast.Signature;
-import edu.kit.formatl.proofscriptparser.ast.Type;
-import edu.kit.formatl.proofscriptparser.ast.Variable;
+import edu.kit.formal.proofscriptparser.ast.Expression;
+import edu.kit.formal.proofscriptparser.ast.Signature;
+import edu.kit.formal.proofscriptparser.ast.Type;
+import edu.kit.formal.proofscriptparser.ast.Variable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
