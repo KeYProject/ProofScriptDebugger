@@ -1,9 +1,7 @@
 package edu.kit.formal.proofscriptparser.ast;
 
-import com.sun.xml.internal.ws.wsdl.writer.document.OpenAtts;
 import edu.kit.formal.proofscriptparser.Visitable;
 import edu.kit.formal.proofscriptparser.Visitor;
-import lombok.Data;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Optional;

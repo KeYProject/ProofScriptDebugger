@@ -13,8 +13,8 @@ import lombok.Data;
 public class NotWelldefinedException extends Exception {
     private final Expression expr;
 
-    public NotWelldefinedException(String message, Expression expr) {
+    public NotWelldefinedException(String message, Expression e) {
         super(message);
-        this.expr = expr;
+        this.expr = e;
     }
 }
