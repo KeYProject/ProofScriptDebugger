@@ -7,17 +7,12 @@ build:
 
 
 test: 
-  dependencies:
-    - build
   script: "mvn test -B"
 
-package: 
-  dependencies:
-    - test
-  script: "mvn package -DskiptTests=true -B"
-  
-
-doc: 
-  dependencies:
-    - test
-  script: "mvn site:site -DskiptTests=true -B"
+deploy:
+  script: 
+    - "mvn package site:site -DskiptTests=true -B"
+  artifacts: 
+    paths:
+      - target/*jar
+      - target/site/*
