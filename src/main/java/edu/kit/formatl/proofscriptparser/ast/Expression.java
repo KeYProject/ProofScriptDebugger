@@ -1,5 +1,6 @@
 package edu.kit.formatl.proofscriptparser.ast;
 
+import edu.kit.formatl.proofscriptparser.NotWelldefinedException;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -8,4 +9,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public abstract class Expression<T extends ParserRuleContext> extends ASTNode<T> {
     public abstract int getPrecedence();
+
+    @Override public abstract Expression clone();
+
+    public abstract Type getType(Signature signature)
+            throws NotWelldefinedException;
+
 }

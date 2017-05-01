@@ -38,7 +38,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     @Override public Signature visitArgList(ScriptLanguageParser.ArgListContext ctx) {
         Signature signature = new Signature();
         for (ScriptLanguageParser.VarDeclContext decl : ctx.varDecl()) {
-            signature.put(new Variable(decl.name), decl.type.getText());
+            signature.put(new Variable(decl.name), Type.valueOf(decl.type.getText()));
         }
         return signature;
     }
@@ -201,7 +201,7 @@ ue.setRuleContext(...);
             match.setTerm(new TermLiteral(ctx.TERM_LITERAL().getText()));
         }
         else {
-            match.setVariable(ctx.ID().getText());
+            match.setVariable(new Variable(ctx.ID().getSymbol()));
         }
         return match;
     }

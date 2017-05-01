@@ -1,43 +1,40 @@
 package edu.kit.formatl.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
+import edu.kit.formatl.proofscriptparser.NotWelldefinedException;
 import edu.kit.formatl.proofscriptparser.Visitor;
+import lombok.Data;
 
 /**
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
+@Data
 public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatternContext> {
     private Signature signature;
     private TermLiteral term;
-    private String variable;
+    private Variable variable;
 
     @Override public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
-    @Override public ASTNode<ScriptLanguageParser.MatchPatternContext> clone() {
-        return null;
+    @Override public MatchExpression clone() {
+        MatchExpression me = new MatchExpression();
+        if(signature!=null)
+            me.signature=signature.clone();
+        if(term!=null)
+            me.term = term.clone();
+        if(variable!=null)
+            me.variable = variable.clone();
+        return me;
     }
 
-    public void setSignature(Signature signature) {
-        this.signature = signature;
-    }
-
-    public Signature getSignature() {
-        return signature;
-    }
-
-    public void setVariable(String variable) {
-        this.variable = variable;
-    }
-
-    public void setTerm(TermLiteral term) {
-        this.term = term;
-    }
-
-    public TermLiteral getTerm() {
-        return term;
+    @Override
+    public Type getType(Signature signature) throws NotWelldefinedException {
+        if(term==null && variable==null)
+            throw new NotWelldefinedException("Missing parameter", this);
+        return Type.bool;
     }
 
     @Override public int getPrecedence() {

@@ -1,6 +1,11 @@
 package edu.kit.formatl.proofscriptparser.ast;
 
+import edu.kit.formatl.proofscriptparser.NotWelldefinedException;
 import edu.kit.formatl.proofscriptparser.Visitor;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -9,35 +14,36 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * @author Sarah Grebing
  * @version 1 (30.04.17)
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UnaryExpression extends Expression<ParserRuleContext> {
-    private Expression expression;
+    @NonNull
     private Operator operator;
+    @NonNull
+    private Expression expression;
 
-    @Override public <T> T accept(Visitor<T> visitor) {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
-    @Override public ASTNode<ParserRuleContext> clone() {
-        return null;
+    @Override
+    public UnaryExpression clone() {
+        UnaryExpression u = new UnaryExpression(operator, expression.clone());
+        return u;
     }
 
-    public void setExpression(Expression expression) {
-        this.expression = expression;
+    @Override
+    public Type getType(Signature signature) throws NotWelldefinedException {
+        if(operator.arity()!=1)
+            throw new NotWelldefinedException("Arity mismatch!", this);
+        operator.type()[0].equals(expression.getType(signature));
+        return operator.returnType();
     }
 
-    public Expression getExpression() {
-        return expression;
-    }
-
-    public void setOperator(Operator operator) {
-        this.operator = operator;
-    }
-
-    public Operator getOperator() {
-        return operator;
-    }
-
-    @Override public int getPrecedence() {
+    @Override
+    public int getPrecedence() {
         return Operator.NOT.precedence();//a placeholder, because MINUS is used as binary operator,too
     }
 }

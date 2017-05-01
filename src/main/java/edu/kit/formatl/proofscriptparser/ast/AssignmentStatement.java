@@ -2,23 +2,25 @@ package edu.kit.formatl.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formatl.proofscriptparser.Visitor;
+import lombok.*;
 
 /**
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
-public class AssignmentStatement extends Statement<ScriptLanguageParser.AssignmentContext> {
-    private Variable rhs;
-    private Expression lhs;
-
-    //TODO type missing, if initialization
+@Data @ToString(includeFieldNames = true) @NoArgsConstructor @RequiredArgsConstructor() @AllArgsConstructor
+public class AssignmentStatement
+        extends Statement<ScriptLanguageParser.AssignmentContext> {
+    @NonNull private Variable rhs;
+    @NonNull private Expression lhs;
+    private Type type;
 
     @Override public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
-    @Override public ASTNode<ScriptLanguageParser.AssignmentContext> clone() {
-        return null;
+    @Override public AssignmentStatement clone() {
+        return new AssignmentStatement(rhs.clone(), lhs.clone());
     }
 
     public void setRhs(Variable rhs) {
@@ -37,7 +39,4 @@ public class AssignmentStatement extends Statement<ScriptLanguageParser.Assignme
         return lhs;
     }
 
-    @Override public String toString() {
-        return String.format("%s := %s", rhs, lhs);
-    }
 }

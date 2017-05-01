@@ -2,6 +2,9 @@ package edu.kit.formatl.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formatl.proofscriptparser.Visitor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -15,6 +18,8 @@ import java.util.function.Function;
  * @author Alexander Weigl
  * @version 1 (29.04.17)
  */
+@EqualsAndHashCode
+@ToString
 public class Parameters extends ASTNode<ScriptLanguageParser.ParametersContext> {
     private final Map<Variable, Expression> parameters = new LinkedHashMap<>();
 
@@ -22,8 +27,10 @@ public class Parameters extends ASTNode<ScriptLanguageParser.ParametersContext> 
         return visitor.visit(this);
     }
 
-    @Override public ASTNode<ScriptLanguageParser.ParametersContext> clone() {
-        return null;
+    @Override public Parameters clone() {
+        Parameters p = new Parameters();
+        forEach((k, v) -> p.put(k.clone(), v.clone()));
+        return p;
     }
 
     public int size() {

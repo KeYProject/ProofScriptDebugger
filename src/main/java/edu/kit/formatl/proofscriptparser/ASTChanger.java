@@ -3,6 +3,8 @@ package edu.kit.formatl.proofscriptparser;
 import edu.kit.formatl.proofscriptparser.ast.*;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * {@link ASTChanger} provides a visitor with for replacing or substiting nodes (in situ).
@@ -80,5 +82,43 @@ public class ASTChanger extends DefaultASTVisitor<ASTNode> {
     @Override public CallStatement visit(CallStatement call) {
         call.setParameters((Parameters) call.getParameters().accept(this));
         return call;
+    }
+
+    @Override public ASTNode visit(TheOnlyStatement theOnly) {
+        theOnly.setBody((Statements) theOnly.getBody().accept(this));
+        return theOnly;
+    }
+
+    @Override public ASTNode visit(ForeachStatement foreach) {
+        foreach.setBody((Statements) foreach.getBody().accept(this));
+        return foreach;
+    }
+
+    @Override public ASTNode visit(RepeatStatement repeat) {
+        repeat.setBody((Statements) repeat.getBody().accept(this));
+        return repeat;
+    }
+
+    @Override public ASTNode visit(Signature signature) {
+        Set<Map.Entry<Variable, Type>> entries = signature.entrySet();
+        signature.clear();
+        for (Map.Entry<Variable, Type> e : entries) {
+            signature.put((Variable) e.getKey().accept(this), e.getValue());
+        }
+        return signature;
+    }
+
+    @Override public ASTNode visit(Parameters parameters) {
+        Set<Map.Entry<Variable, Expression>> entries = parameters.entrySet();
+        parameters.clear();
+        for (Map.Entry<Variable, Expression> e : entries) {
+            parameters.put((Variable) e.getKey().accept(this), e.getValue());
+        }
+        return parameters;
+    }
+
+    @Override public ASTNode visit(UnaryExpression e) {
+        e.setExpression((Expression) e.getExpression().accept(this));
+        return e;
     }
 }

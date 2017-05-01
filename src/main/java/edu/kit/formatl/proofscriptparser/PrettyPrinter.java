@@ -11,9 +11,9 @@ import java.util.Map;
  */
 public class PrettyPrinter extends DefaultASTVisitor<Void> {
     private static final int MAX_WIDTH = 80;
+    private boolean unicode = true;
     private final StringBuilder s = new StringBuilder();
     private int indentation = 0;
-    private int currentLineLength;
 
     @Override public String toString() {
         return s.toString();
@@ -32,9 +32,9 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
     }
 
     @Override public Void visit(Signature sig) {
-        Iterator<Map.Entry<Variable, String>> iter = sig.entrySet().iterator();
+        Iterator<Map.Entry<Variable, Type>> iter = sig.entrySet().iterator();
         while (iter.hasNext()) {
-            Map.Entry<Variable, String> next = iter.next();
+            Map.Entry<Variable, Type> next = iter.next();
             next.getKey().accept(this);
             s.append(" : ").append(next.getValue());
             if (iter.hasNext())
@@ -63,8 +63,7 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
             s.append(")");
         }
 
-        s.append(e.getOperator().symbol());
-
+        s.append(' ').append(unicode ? e.getOperator().unicode() : e.getOperator().symbol()).append(' ');
         if (right) {
             s.append("(");
         }
@@ -108,7 +107,7 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
             c.accept(this);
             nl();
         }
-        if(casesStatement.getDefaultCase()!=null) {
+        if (casesStatement.getDefaultCase() != null) {
             s.append("default {");
             casesStatement.getDefaultCase().accept(this);
             cl();
@@ -163,9 +162,9 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return super.visit(variable);
     }
 
-    @Override public Void visit(BooleanLiteral booleanLiteral) {
-        s.append(booleanLiteral.getValue());
-        return super.visit(booleanLiteral);
+    @Override public Void visit(BooleanLiteral bool) {
+        s.append(bool.isValue());
+        return super.visit(bool);
     }
 
     @Override public Void visit(Statements statements) {
@@ -223,7 +222,7 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
             entry.getValue().accept(this);
             if (iter.hasNext()) {
                 int currentLineLength = getCurrentLineLength();
-                if (currentLineLength > 80) {
+                if (currentLineLength > MAX_WIDTH) {
                     s.append("\n").append(indention);
                 }
                 else {
@@ -233,6 +232,18 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         }
         return null;
     }
+
+    @Override public Void visit(UnaryExpression e) {
+        s.append(unicode ? e.getOperator().unicode() : e.getOperator().symbol());
+        if (e.getPrecedence() < e.getExpression().getPrecedence())
+            s.append("(");
+        e.getExpression().accept(this);
+        if (e.getPrecedence() < e.getExpression().getPrecedence())
+            s.append(")");
+        return null;
+    }
+
+    //region Printers little helper
 
     private int getLastNewline() {
         int posnewline = s.length() - 1;
@@ -244,10 +255,6 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
 
     private String getWhitespacePrefix() {
         return s.substring(getLastNewline() + 1).replaceAll("\\w", " ");
-    }
-
-    @Override public Void visit(UnaryExpression unaryExpression) {
-        return super.visit(unaryExpression);
     }
 
     private void nl() {
@@ -266,5 +273,26 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
 
     public int getCurrentLineLength() {
         return s.length() - getLastNewline();
+    }
+
+    //endregion
+
+    /**
+     * Flag for indicating, that the unicode operation symbols should be used.
+     *
+     * @return
+     */
+    public boolean isUnicode() {
+        return unicode;
+    }
+
+    /**
+     * @param unicode
+     * @return
+     * @see #isUnicode()
+     */
+    public PrettyPrinter setUnicode(boolean unicode) {
+        this.unicode = unicode;
+        return this;
     }
 }

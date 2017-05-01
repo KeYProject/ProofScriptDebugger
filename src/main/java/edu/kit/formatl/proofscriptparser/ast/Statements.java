@@ -3,6 +3,8 @@ package edu.kit.formatl.proofscriptparser.ast;
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formatl.proofscriptparser.Visitable;
 import edu.kit.formatl.proofscriptparser.Visitor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -14,6 +16,8 @@ import java.util.stream.Stream;
  * @author Alexander Weigl
  * @version 1 (27.04.17)
  */
+@EqualsAndHashCode
+@ToString
 public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
         implements Visitable, Iterable<Statement> {
     private final List<Statement> statements = new ArrayList<>();
@@ -144,8 +148,9 @@ public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
         return visitor.visit(this);
     }
 
-    @Override public ASTNode<ScriptLanguageParser.StmtListContext> clone() {
-        return null;
+    @Override public Statements clone() {
+        Statements s = new Statements();
+        forEach(e -> s.add(e.clone()));
+        return s;
     }
-
 }

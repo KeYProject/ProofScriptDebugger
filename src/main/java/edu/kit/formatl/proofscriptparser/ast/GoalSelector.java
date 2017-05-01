@@ -1,20 +1,13 @@
 package edu.kit.formatl.proofscriptparser.ast;
 
+import lombok.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * @author Alexander Weigl
  * @version 1 (29.04.17)
  */
-public abstract class GoalSelector<T extends ParserRuleContext> extends Statement<T> {
-    private Statements body;
-
-    public Statements getBody() {
-        return body;
-    }
-
-    public GoalSelector<T> setBody(Statements body) {
-        this.body = body;
-        return this;
-    }
+@Data @AllArgsConstructor @NoArgsConstructor public abstract class GoalSelector<T extends ParserRuleContext>
+        extends Statement<T> {
+    @NonNull private Statements body = new Statements();
 }

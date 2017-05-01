@@ -10,7 +10,7 @@ import java.util.Optional;
  * @version 1 (28.04.17)
  */
 public abstract class Literal extends Expression<ParserRuleContext> {
-    Optional<Token> token;
+    protected Optional<Token> token;
 
     public Optional<Token> getToken() {
         return token;

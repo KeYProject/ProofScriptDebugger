@@ -2,6 +2,7 @@ package edu.kit.formal.proofscriptparser;
 
 import edu.kit.formatl.proofscriptparser.Facade;
 import edu.kit.formatl.proofscriptparser.ast.ProofScript;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -26,6 +27,7 @@ import java.util.List;
         list.forEach(s -> {
             System.out.println(s);
             System.out.println(Facade.prettyPrint(s));
+            Assert.assertEquals(s, s.clone());
         });
     }
 }

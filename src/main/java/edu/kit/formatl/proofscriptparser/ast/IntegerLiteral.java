@@ -1,7 +1,8 @@
 package edu.kit.formatl.proofscriptparser.ast;
 
+import edu.kit.formatl.proofscriptparser.NotWelldefinedException;
 import edu.kit.formatl.proofscriptparser.Visitor;
-import org.antlr.v4.runtime.ParserRuleContext;
+import lombok.Data;
 import org.antlr.v4.runtime.Token;
 
 import java.math.BigInteger;
@@ -10,8 +11,17 @@ import java.math.BigInteger;
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
+@Data
 public class IntegerLiteral extends Literal {
     private final BigInteger value;
+
+    public IntegerLiteral() {
+        this(BigInteger.ZERO);
+    }
+
+    public IntegerLiteral(BigInteger value) {
+        this.value = value;
+    }
 
     public IntegerLiteral(Token digits) {
         setToken(digits);
@@ -22,9 +32,17 @@ public class IntegerLiteral extends Literal {
         return visitor.visit(this);
     }
 
-    @Override public ASTNode<ParserRuleContext> clone() {
-        return null;
+    @Override public IntegerLiteral clone() {
+        IntegerLiteral il = new IntegerLiteral(value);
+        il.token = token;
+        return il;
     }
+
+    @Override
+    public Type getType(Signature signature) throws NotWelldefinedException {
+        return Type.integer;
+    }
+
 
     public BigInteger getValue() {
         return value;

@@ -157,7 +157,7 @@ GE : '>' ;
 LE : '<' ;
 AND : '&' ;
 OR: '|' ;
-IMP : '->' ;
+IMP : '==>' ;
 EQUIV : '<=>' ;
 NEGATE: 'not';
 

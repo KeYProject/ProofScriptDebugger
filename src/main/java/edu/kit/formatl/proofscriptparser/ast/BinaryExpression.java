@@ -1,56 +1,52 @@
 package edu.kit.formatl.proofscriptparser.ast;
 
+import edu.kit.formatl.proofscriptparser.NotWelldefinedException;
 import edu.kit.formatl.proofscriptparser.Visitor;
+import lombok.Data;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
+@Data
 public class BinaryExpression extends Expression<ParserRuleContext> {
-    private Expression left,right;
+    private Expression left, right;
     private Operator operator;
 
-    public BinaryExpression setLeft(Expression left) {
+    public BinaryExpression() {
+    }
+
+    public BinaryExpression(Expression left, Operator operator, Expression right) {
         this.left = left;
-        return this;
-    }
-
-    public BinaryExpression setRight(Expression right) {
+        this.operator = operator;
         this.right = right;
-        return this;
     }
 
-    @Override public <T> T accept(Visitor<T> visitor) {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
-    @Override public ASTNode<ParserRuleContext> clone() {
-        return null;
+    @Override
+    public BinaryExpression clone() {
+        BinaryExpression be = new BinaryExpression(left.clone(), operator, right.clone());
+        return be;
     }
 
-    public void setOperator(Operator operator) {
-        this.operator = operator;
+    @Override
+    public Type getType(Signature signature) throws NotWelldefinedException {
+        if (operator.arity() != 2)
+            throw new NotWelldefinedException("Arity mismatch", this);
+
+        operator.type()[0].equals(left.getType(signature));
+        operator.type()[1].equals(right.getType(signature));
+
+        return operator.returnType();
     }
 
-    public Operator getOperator() {
-        return operator;
-    }
-
-
-    @Override public String toString() {
-        return "BinaryExpression{" + "left=" + left + ", right=" + right + ", operator=" + operator + '}';
-    }
-
-    public Expression getLeft() {
-        return left;
-    }
-
-    public Expression getRight() {
-        return right;
-    }
-
-    @Override public int getPrecedence() {
+    @Override
+    public int getPrecedence() {
         return operator.precedence();
     }
 }
