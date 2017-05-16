@@ -119,10 +119,7 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
     public Void visit(MatchExpression match) {
         s.append("match ");
         String prefix = getWhitespacePrefix();
-        if (match.getTerm() != null) {
-            match.getTerm().accept(this);
-        }
-
+        match.getPattern().accept(this);
         if (!match.getSignature().isEmpty()) {
 
             if (getCurrentLineLength() > maxWidth) {

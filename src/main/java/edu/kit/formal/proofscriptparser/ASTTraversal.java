@@ -50,9 +50,8 @@ public class ASTTraversal<T> implements Visitor<T> {
     }
 
     @Override public T visit(MatchExpression match) {
-        if (match.getTerm() != null)
-            match.getTerm().accept(this);
-
+        match.getPattern().accept(this);
+        match.getSignature().accept(this);
         return null;
     }
 

@@ -2,9 +2,11 @@ package edu.kit.formal.interpreter;
 
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.ast.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * Class handling evaluation of expressions (visitor for expressions)
@@ -12,11 +14,13 @@ import java.util.Stack;
  * @author S.Grebing
  */
 public class Evaluator extends DefaultASTVisitor<Value> {
-    private State currentState;
-    private Stack<List<GoalNode>> matchedGoals = new Stack<>();
-    private EvaluatorABI abi;
+    private GoalNode currentState;
+    private List<VariableAssignment> matchedVariables = new ArrayList<>();
+    @Getter
+    @Setter
+    private MatcherApi matcher;
 
-    public Evaluator(State s) {
+    public Evaluator(GoalNode s) {
         this.currentState = s;
     }
 
@@ -46,9 +50,16 @@ public class Evaluator extends DefaultASTVisitor<Value> {
      */
     @Override
     public Value visit(MatchExpression match) {
+        Value pattern = (Value) match.getPattern().accept(this);
 
+        List<VariableAssignment> va = null;
+        if (pattern.getType() == Type.STRING) {
+            va = matcher.matchLabel(currentState, (String) pattern.getData());
+        } else if (pattern.getType() == Type.TERM) {
+            va = matcher.matchSeq(currentState, (String) pattern.getData());
+        }
 
-        return Value.TRUE;
+        return va != null && va.size() > 0 ? Value.TRUE : Value.FALSE;
     }
 
     /**
@@ -71,8 +82,7 @@ public class Evaluator extends DefaultASTVisitor<Value> {
     public Value visit(Variable variable) {
         //get variable value
         String id = variable.getIdentifier();
-        GoalNode n = currentState.getSelectedGoalNode();
-        Value v = n.lookupVarValue(id);
+        Value v = currentState.lookupVarValue(id);
         if (v != null) {
             return v;
         } else {

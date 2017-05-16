@@ -60,7 +60,7 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
         if (node != null) {
             Type t = node.lookUpType(var.getIdentifier());
             if (t != null) {
-                Evaluator eval = new Evaluator((State) state);
+                Evaluator eval = new Evaluator(state.getSelectedGoalNode());
                 Value v = (Value) expr.accept(eval);
                 node.getAssignments().setVar(var.getIdentifier(), v);
             } else {

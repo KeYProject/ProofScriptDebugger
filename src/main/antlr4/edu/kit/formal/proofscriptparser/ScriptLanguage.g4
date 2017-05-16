@@ -75,7 +75,7 @@ literals :
 
      </pre>*/
 matchPattern
-    :   MATCH ( TERM_LITERAL | ID)
+    :   MATCH pattern=expression
         (USING LBRACKET argList RBRACKET)?
     ;
 

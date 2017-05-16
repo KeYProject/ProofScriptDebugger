@@ -1,6 +1,7 @@
 package edu.kit.formal.interpreter;
 
 import edu.kit.formal.proofscriptparser.ast.Type;
+import lombok.Getter;
 
 /**
  * Objects of this class represent a GoalNode in a script state
@@ -9,8 +10,8 @@ import edu.kit.formal.proofscriptparser.ast.Type;
  * @author S.Grebing
  */
 public class GoalNode {
-
     //TODO this is only for testing, later Sequent object or similar
+    @Getter
     private String sequent;
 
     private VariableAssignment assignments;
@@ -18,20 +19,13 @@ public class GoalNode {
     private GoalNode parent;
 
     public GoalNode(GoalNode parent, String seq) {
-        if (parent == null) {
-            this.assignments = new VariableAssignment(null);
-        }
+        this.assignments = new VariableAssignment(parent == null ? null : parent.assignments);
         this.parent = parent;
         this.sequent = seq;
     }
 
     public VariableAssignment getAssignments() {
         return assignments;
-    }
-
-    public GoalNode setAssignments(VariableAssignment assignments) {
-        this.assignments = assignments;
-        return this;
     }
 
     public GoalNode getParent() {
@@ -47,7 +41,6 @@ public class GoalNode {
      * @return value of variable if it exists
      */
     public Value lookupVarValue(String varname) {
-
         Value v = assignments.getValue(varname);
         if (v != null) {
             return v;
@@ -85,8 +78,7 @@ public class GoalNode {
      * @param t
      */
     public void addVarDecl(String name, Type t) {
-        this.assignments = getAssignments().addVariable(name, t);
-
+        getAssignments().addVariable(name, t);
     }
 
     /**
@@ -107,16 +99,13 @@ public class GoalNode {
     /**
      * Enter new variable scope and push onto stack
      */
-    public void enterNewVarScope() {
-        this.assignments = this.assignments.push();
+    public VariableAssignment enterNewVarScope() {
+        assignments = assignments.push();
+        return assignments;
     }
 
-    public void exitNewVarScope() {
+    public VariableAssignment exitNewVarScope() {
         this.assignments = this.assignments.pop();
+        return assignments;
     }
-
-    public VariableAssignment peek() {
-        return null;
-    }
-
 }

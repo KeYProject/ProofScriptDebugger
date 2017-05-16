@@ -23,9 +23,8 @@ package edu.kit.formal.proofscriptparser.ast;
  */
 
 
-
-import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formal.proofscriptparser.NotWelldefinedException;
+import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formal.proofscriptparser.Visitor;
 import lombok.Data;
 
@@ -38,27 +37,25 @@ import lombok.Data;
 @Data
 public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatternContext> {
     private Signature signature;
-    private TermLiteral term;
-    private Variable variable;
+    private Expression pattern;
 
     /**
      * {@inheritDoc}
      */
-    @Override public <T> T accept(Visitor<T> visitor) {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override public MatchExpression copy() {
+    @Override
+    public MatchExpression copy() {
         MatchExpression me = new MatchExpression();
-        if(signature!=null)
-            me.signature=signature.copy();
-        if(term!=null)
-            me.term = term.copy();
-        if(variable!=null)
-            me.variable = variable.copy();
+        if (signature != null)
+            me.signature = signature.copy();
+        me.pattern = pattern.copy();
         return me;
     }
 
@@ -67,15 +64,27 @@ public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatter
      */
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
-        if(term==null && variable==null)
-            throw new NotWelldefinedException("Missing parameter", this);
+        Type patternType = pattern.getType(signature);
+        switch (patternType) {
+            case TERM:
+            case STRING:
+                break;
+            default:
+                throw new NotWelldefinedException("Missing parameter", this);
+        }
+
         return Type.BOOL;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override public int getPrecedence() {
+    @Override
+    public int getPrecedence() {
         return Operator.MATCH.precedence();
+    }
+
+    public void setPattern(Expression pattern) {
+        this.pattern = pattern;
     }
 }

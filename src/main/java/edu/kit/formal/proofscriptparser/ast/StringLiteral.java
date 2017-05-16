@@ -23,7 +23,6 @@ package edu.kit.formal.proofscriptparser.ast;
  */
 
 
-
 import edu.kit.formal.proofscriptparser.NotWelldefinedException;
 import edu.kit.formal.proofscriptparser.Visitor;
 import lombok.Data;
@@ -37,10 +36,10 @@ public class StringLiteral extends Literal {
     private final String text;
 
     public StringLiteral(String text) {
-        if (text.charAt(0) == '"')
+        if (text.charAt(0) == '\'')
             text = text.substring(1);
-        if (text.charAt(0) == '"')
-            text = text.substring(0, text.length() - 2);
+        if (text.charAt(text.length()-1) == '\'')
+            text = text.substring(0, text.length() - 1);
         this.text = text;
     }
 

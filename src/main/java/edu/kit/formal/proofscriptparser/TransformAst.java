@@ -239,11 +239,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         match.setRuleContext(ctx);
         if (ctx.argList() != null)
             match.setSignature((Signature) ctx.argList().accept(this));
-        if (ctx.TERM_LITERAL() != null) {
-            match.setTerm(new TermLiteral(ctx.TERM_LITERAL().getText()));
-        } else {
-            match.setVariable(new Variable(ctx.ID().getSymbol()));
-        }
+        match.setPattern((Expression) ctx.pattern.accept(this));
         return match;
     }
 

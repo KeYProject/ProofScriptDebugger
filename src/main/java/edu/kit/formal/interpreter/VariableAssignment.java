@@ -22,6 +22,10 @@ public class VariableAssignment {
         this.parent = parent;
     }
 
+    public VariableAssignment() {
+        this(null);
+    }
+
     public VariableAssignment getParent() {
         return parent;
     }
