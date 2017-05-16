@@ -1,27 +1,32 @@
 image: maven:3.5.0-jdk-8
 
-
-
 cache:
   paths:
     - .m2/
 
 variables:
   MAVEN_OPTS: -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2
-  
-  
 
 build:
   script: "mvn compile -B -T 2"
-
 
 test: 
   script: "mvn test -B"
 
 deploy:
   script: 
-    - "mvn package site:site -DperformRelease=true -DcreateChecksum=true -DskipTests=true -B"
-  artifacts: 
+    - "mvn package -DperformRelease=true -DcreateChecksum=true -DskipTests=true -B"
+  when: manual
+  artifacts:
     paths:
       - target/*jar
       - target/site/*
+
+pages:
+  stage: deploy
+  script:
+    - "mvn site:site"
+    - mv target/site public
+  artifacts:
+    paths:
+    - public

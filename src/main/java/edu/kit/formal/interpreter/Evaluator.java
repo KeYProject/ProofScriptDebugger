@@ -3,6 +3,7 @@ package edu.kit.formal.interpreter;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -12,11 +13,11 @@ import java.util.Stack;
  * @author S.Grebing
  */
 public class Evaluator extends DefaultASTVisitor<Value> {
-    private State currentState;
-    private Stack<List<GoalNode>> matchedGoals = new Stack<>();
+    private GoalNode currentState;
+    private List<VariableAssignment> matchedVariables = new ArrayList<>();
     private EvaluatorABI abi;
 
-    public Evaluator(State s) {
+    public Evaluator(GoalNode s) {
         this.currentState = s;
     }
 
@@ -46,7 +47,7 @@ public class Evaluator extends DefaultASTVisitor<Value> {
      */
     @Override
     public Value visit(MatchExpression match) {
-
+        currentState.getSelectedGoalNode();
 
         return Value.TRUE;
     }
