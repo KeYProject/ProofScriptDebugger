@@ -24,7 +24,6 @@ package edu.kit.formal.proofscriptparser;
 
 
 
-import edu.kit.formal.proofscriptparser.ast.Expression;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +35,7 @@ import java.io.IOException;
 public class BadExpressionTest {
     @Parameterized.Parameters(name = "{0}")
     public static Iterable<Object[]> getBadExpressions() throws IOException {
-        return TestHelper.loadLines("badexpr.txt");
+        return TestHelper.loadLines("badexpr.txt", 1);
     }
 
     @Parameterized.Parameter

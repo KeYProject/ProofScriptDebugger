@@ -40,7 +40,7 @@ import java.io.IOException;
 public class BadlyTypedExpression {
     @Parameterized.Parameters(name = "{0}")
     public static Iterable<Object[]> getBadExpressions() throws IOException {
-        return TestHelper.loadLines("badlytypedexpr.txt");
+        return TestHelper.loadLines("badlytypedexpr.txt", 1);
     }
 
     @Parameterized.Parameter

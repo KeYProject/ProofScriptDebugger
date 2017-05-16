@@ -23,7 +23,6 @@ package edu.kit.formal.proofscriptparser;
  */
 
 
-
 import edu.kit.formal.proofscriptparser.ast.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -183,7 +182,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
 
     @Override
     public Object visitExprLineOperators(ScriptLanguageParser.ExprLineOperatorsContext ctx) {
-            return createBinaryExpression(ctx, ctx.expression(), findOperator(ctx.op.getText()));
+        return createBinaryExpression(ctx, ctx.expression(), findOperator(ctx.op.getText()));
 
     }
 
@@ -226,7 +225,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
 
     @Override
     public Object visitLiteralTrue(ScriptLanguageParser.LiteralTrueContext ctx) {
-        return new BooleanLiteral(false, ctx.TRUE().getSymbol());
+        return new BooleanLiteral(true, ctx.TRUE().getSymbol());
     }
 
     @Override
@@ -238,7 +237,8 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     public Object visitMatchPattern(ScriptLanguageParser.MatchPatternContext ctx) {
         MatchExpression match = new MatchExpression();
         match.setRuleContext(ctx);
-        match.setSignature((Signature) ctx.argList().accept(this));
+        if (ctx.argList() != null)
+            match.setSignature((Signature) ctx.argList().accept(this));
         if (ctx.TERM_LITERAL() != null) {
             match.setTerm(new TermLiteral(ctx.TERM_LITERAL().getText()));
         } else {

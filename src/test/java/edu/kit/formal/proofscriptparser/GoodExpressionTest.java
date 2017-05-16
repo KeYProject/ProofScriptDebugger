@@ -39,7 +39,7 @@ import java.io.IOException;
 public class GoodExpressionTest {
     @Parameterized.Parameters(name = "{0}")
     public static Iterable<Object[]> getGoodExpressions() throws IOException {
-        return TestHelper.loadLines("goodexpr.txt");
+        return TestHelper.loadLines("goodexpr.txt", 1);
     }
 
     @Parameterized.Parameter

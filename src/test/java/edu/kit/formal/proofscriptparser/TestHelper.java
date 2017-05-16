@@ -23,12 +23,8 @@ package edu.kit.formal.proofscriptparser;
  */
 
 
-
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CharStream;
+import edu.kit.formal.proofscriptparser.ast.Expression;
 import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.junit.AssumptionViolatedException;
 
 import java.io.*;
 import java.net.URL;
@@ -46,7 +42,7 @@ public class TestHelper {
 
     public static Iterable<Object[]> getResourcesAsParameters(String folder) {
         File[] files = getResources(folder);
-        return Arrays.stream(files).map(f -> new Object[] { f }).collect(Collectors.toList());
+        return Arrays.stream(files).map(f -> new Object[]{f}).collect(Collectors.toList());
     }
 
     public static final File[] getResources(String folder) {
@@ -59,7 +55,7 @@ public class TestHelper {
         return file.listFiles();
     }
 
-    public static Iterable<Object[]> loadLines(String filename) throws IOException {
+    public static Iterable<Object[]> loadLines(String filename, int expectedArgs) throws IOException {
         List<Object[]> validExpression = new ArrayList<>(4096);
         InputStream ve = TestHelper.class.getResourceAsStream(filename);
 
@@ -71,9 +67,15 @@ public class TestHelper {
         BufferedReader stream = new BufferedReader(new InputStreamReader(ve));
         String tmp = "";
         while ((tmp = stream.readLine()) != null) {
-            if (tmp.startsWith("#"))
+            if (tmp.startsWith("#") || tmp.isEmpty())
                 continue;
-            validExpression.add(new Object[] { tmp });
+            String[] split = tmp.split(">>>");
+            if (split.length != expectedArgs) {
+                System.err.format("Line %s has %d arguments, expected %d. SKIPPED%n",
+                        tmp, split.length, expectedArgs);
+                continue;
+            }
+            validExpression.add(split);
         }
 
         System.out.println("Found: " + filename + " with " + validExpression.size() + " lines!");
@@ -81,17 +83,22 @@ public class TestHelper {
         return validExpression;
     }
 
+
     public static Collection<Object[]> asParameters(String[] cases) {
-        return Arrays.stream(cases).map(s -> new Object[] { s }).collect(Collectors.toList());
+        return Arrays.stream(cases).map(s -> new Object[]{s}).collect(Collectors.toList());
     }
 
     public static ScriptLanguageParser getParser(String input) {
-        return new ScriptLanguageParser(new CommonTokenStream(new ScriptLanguageLexer(CharStreams.fromString(input))));
+        return Facade.getParser(CharStreams.fromString(input));
     }
 
     public static ScriptLanguageParser getParser(File f) throws IOException {
-        org.antlr.v4.runtime.CharStream stream = CharStreams.fromFileName(f.getAbsolutePath());
-        ScriptLanguageLexer lexer = new ScriptLanguageLexer(stream);
-        return new ScriptLanguageParser(new CommonTokenStream(lexer));
+        return Facade.getParser(CharStreams.fromFileName(f.getAbsolutePath()));
+    }
+
+    public static Expression toExpr(String s) {
+        TransformAst v = new TransformAst();
+        Expression e = (Expression) getParser(s).expression().accept(v);
+        return e;
     }
 }

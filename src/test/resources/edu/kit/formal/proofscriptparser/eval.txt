@@ -1,0 +1,16 @@
+2+2 >>> 4
+'abc' >>> 'abc'
+`f(x)` >>> `f(x)`
+2*(5+3) >>> 16
+2*(8) >>> 16
+(5+3) >>> 8
+16163542361*1612316161341421+2+56+2+2+2+2+2+2 >>> 26060740573166968917435051
+match `.*g.*` >>> true
+true >>> true
+false >>> false
+true & false >>> false
+false & true >>> false
+false | true >>> true
+true | false >>> true
+not true >>> false
+not false >>> true

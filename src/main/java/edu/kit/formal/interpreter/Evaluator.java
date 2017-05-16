@@ -3,26 +3,39 @@ package edu.kit.formal.interpreter;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 
+import java.util.List;
+import java.util.Stack;
+
 /**
  * Class handling evaluation of expressions (visitor for expressions)
  *
  * @author S.Grebing
  */
 public class Evaluator extends DefaultASTVisitor<Value> {
-    State currentState;
+    private State currentState;
+    private Stack<List<GoalNode>> matchedGoals = new Stack<>();
+    private EvaluatorABI abi;
 
     public Evaluator(State s) {
         this.currentState = s;
     }
 
+    /**
+     * Evaluation of an expression.
+     *
+     * @param truth
+     * @return
+     */
+    public Value eval(Expression truth) {
+        return (Value) truth.accept(this);
+    }
 
     @Override
     public Value visit(BinaryExpression e) {
         Value v1 = (Value) e.getLeft().accept(this);
-        Value v2 = (Value) e.getLeft().accept(this);
+        Value v2 = (Value) e.getRight().accept(this);
         Operator op = e.getOperator();
         return op.evaluate(v1, v2);
-
     }
 
     /**
@@ -33,7 +46,9 @@ public class Evaluator extends DefaultASTVisitor<Value> {
      */
     @Override
     public Value visit(MatchExpression match) {
-        return null;
+
+
+        return Value.TRUE;
     }
 
     /**
@@ -68,7 +83,7 @@ public class Evaluator extends DefaultASTVisitor<Value> {
 
     @Override
     public Value visit(BooleanLiteral bool) {
-        return Value.from(bool);
+        return bool.isValue() ? Value.TRUE : Value.FALSE;
     }
 
 

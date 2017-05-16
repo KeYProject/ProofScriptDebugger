@@ -17,6 +17,9 @@ import java.math.BigInteger;
  */
 @RequiredArgsConstructor
 public class Value<T> {
+    public static final Value TRUE = new Value<>(Type.BOOL, true);
+    public static final Value FALSE = new Value<>(Type.BOOL, false);
+
     @Getter
     private final Type type;
     @Getter
@@ -32,7 +35,7 @@ public class Value<T> {
     }
 
     public static Value<String> from(StringLiteral s) {
-        return new Value<>(Type.INT, s.getText());
+        return new Value<>(Type.STRING, s.getText());
     }
 
     public static Value<Boolean> from(BooleanLiteral b) {
@@ -45,6 +48,24 @@ public class Value<T> {
 
     public static Value<BigInteger> from(BigInteger apply) {
         return new Value<>(Type.INT, apply);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Value<?> value = (Value<?>) o;
+
+        if (getType() != value.getType()) return false;
+        return getData().equals(value.getData());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getType().hashCode();
+        result = 31 * result + getData().hashCode();
+        return result;
     }
 
     @Override

@@ -146,9 +146,6 @@ BOOL: 'bool' ;
 TERMTYPE : 'term' ;*/
 FOREACH : 'foreach' ;
 THEONLY : 'theonly' ;
-ID : [a-zA-Z] [_a-zA-Z0-9]* ;
-DIGITS : DIGIT+ ;
-fragment DIGIT : [0-9] ;
 INDENT : '{' ;
 DEDENT : '}' ;
 SEMICOLON : ';' ;
@@ -178,8 +175,6 @@ IMP : '==>' ;
 EQUIV : '<=>' ;
 NOT: 'not';
 
-
-
-
-
-
+DIGITS : DIGIT+ ;
+fragment DIGIT : [0-9] ;
+ID : [a-zA-Z] [_a-zA-Z0-9]* ;
