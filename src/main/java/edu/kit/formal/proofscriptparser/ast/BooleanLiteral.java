@@ -26,10 +26,10 @@ package edu.kit.formal.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.NotWelldefinedException;
 import edu.kit.formal.proofscriptparser.Visitor;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.antlr.v4.runtime.Token;
-
-import java.util.Optional;
 
 /**
  * Represents a boolean literal (ie. {@link #FALSE} or {@link #TRUE}).

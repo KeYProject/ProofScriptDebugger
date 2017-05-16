@@ -23,8 +23,14 @@ package edu.kit.formal.proofscriptparser.ast;
  */
 
 
+import edu.kit.formal.interpreter.Value;
 
-import static edu.kit.formal.proofscriptparser.ast.Type.*;
+import java.math.BigInteger;
+import java.util.function.BiFunction;
+import java.util.function.UnaryOperator;
+
+import static edu.kit.formal.proofscriptparser.ast.Type.BOOL;
+import static edu.kit.formal.proofscriptparser.ast.Type.INT;
 
 /**
  * An enum which contains meta-data to all operators.
@@ -36,46 +42,139 @@ import static edu.kit.formal.proofscriptparser.ast.Type.*;
  * @version 1 (28.04.17)
  */
 public enum Operator {
+
     /**
      * special entry for marking match as an atomic expression.
      */
-    MATCH("match", 1000, BOOL),
+    MATCH("match", 1000, BOOL) {
+        @Override
+        public Value evaluate(Value... v) {
+            //return Value.from(v[0].getData().equals(v[1]));
+            return null;
+        }
+    },
     /**
      *
      */
-    NOT("not", "¬", 10, BOOL, BOOL),
+    NOT("not", "¬", 10, BOOL, BOOL) {
+        @Override
+        public Value evaluate(Value... v) {
+            return Value.from(!(Boolean) v[0].getData());
+        }
+    },
     /** */
-    NEGATE("-", "-", 10, INT, INT),
+    NEGATE("-", "-", 10, INT, INT) {
+        @Override
+        public Value evaluate(Value... v) {
+            return evaluate(BigInteger::negate, v);
+        }
+    },
     /** */
-    MULTIPLY("*", "×", 20, INT, INT, INT),
+    MULTIPLY("*", "×", 20, INT, INT, INT) {
+        @Override
+        public Value evaluate(Value... v) {
+            return evaluate(BigInteger::multiply, v);
+        }
+    },
     /** */
-    DIVISION("/", "÷", 20, INT, INT, INT),
+    DIVISION("/", "÷", 20, INT, INT, INT) {
+        @Override
+        public Value evaluate(Value... v) {
+            return evaluate(BigInteger::divide, v);
+        }
+    },
     /** */
-    PLUS("+", 30, INT, INT, INT),
+    PLUS("+", 30, INT, INT, INT) {
+        @Override
+        public Value evaluate(Value... v) {
+            return evaluate(BigInteger::add, v);
+        }
+    },
     /** */
-    MINUS("-", 30, INT, INT, INT),
+    MINUS("-", 30, INT, INT, INT) {
+        @Override
+        public Value evaluate(Value... v) {
+            return evaluate(BigInteger::subtract, v);
+        }
+    },
     /** */
-    LE("<", 40, INT, INT, BOOL),
+    LE("<", 40, INT, INT, BOOL) {
+        @Override
+        public Value evaluate(Value... v) {
+            return Value.from((((BigInteger) v[0].getData()).compareTo((BigInteger) v[1].getData()) < 0));
+        }
+    },
     /** */
-    GE(">", 40, INT, INT, BOOL),
+    GE(">", 40, INT, INT, BOOL) {
+        @Override
+        public Value evaluate(Value... v) {
+
+            return Value.from((((BigInteger) v[0].getData()).compareTo((BigInteger) v[1].getData()) > 0));
+        }
+    },
     /** */
-    LEQ("<=", "≤", 40, INT, INT, BOOL),
+    LEQ("<=", "≤", 40, INT, INT, BOOL) {
+        @Override
+        public Value evaluate(Value... v) {
+
+            return Value.from((((BigInteger) v[0].getData()).compareTo((BigInteger) v[1].getData()) <= 0));
+        }
+    },
     /** */
-    GEQ(">=", "≥", 40, INT, INT, BOOL),
+    GEQ(">=", "≥", 40, INT, INT, BOOL) {
+        @Override
+        public Value evaluate(Value... v) {
+            return Value.from((((BigInteger) v[0].getData()).compareTo((BigInteger) v[1].getData()) >= 0));
+        }
+    },
     /** */
-    EQ("=", "≡", 50, INT, INT, BOOL),
+    EQ("=", "≡", 50, INT, INT, BOOL) {
+        @Override
+        public Value evaluate(Value... v) {
+            return Value.from((((BigInteger) v[0].getData()).compareTo((BigInteger) v[1].getData()) == 0));
+
+        }
+    },
     /** */
-    NEQ("<>", "≢", 50, INT, INT, BOOL),
+    NEQ("<>", "≢", 50, INT, INT, BOOL) {
+        @Override
+        public Value evaluate(Value... v) {
+            return Value.from((((BigInteger) v[0].getData()).compareTo((BigInteger) v[1].getData()) != 0));
+        }
+    },
     /** */
-    AND("&", "∧", 60, BOOL, BOOL, BOOL),
+    AND("&", "∧", 60, BOOL, BOOL, BOOL) {
+        @Override
+        public Value evaluate(Value... v) {
+
+            return Value.from((Boolean) v[0].getData() & (Boolean) v[1].getData());
+        }
+    },
     /** */
-    OR("|", "∨", 70, BOOL, BOOL, BOOL),
+    OR("|", "∨", 70, BOOL, BOOL, BOOL) {
+        @Override
+        public Value evaluate(Value... v) {
+            return Value.from((Boolean) v[0].getData() | (Boolean) v[1].getData());
+
+        }
+    },
     /** */
-    IMPLICATION("==>", "⇒", 80, BOOL, BOOL, BOOL),
+    IMPLICATION("==>", "⇒", 80, BOOL, BOOL, BOOL) {
+        @Override
+        public Value evaluate(Value... v) {
+            return Value.from(!(Boolean) v[0].getData() | (Boolean) v[1].getData());
+        }
+    },
     /**
      *
      * */
-    EQUIVALENCE("<=>", "⇔", 90, BOOL, BOOL, BOOL);
+    EQUIVALENCE("<=>", "⇔", 90, BOOL, BOOL, BOOL) {
+        @Override
+        public Value evaluate(Value... v) {
+            return Value.from((!(Boolean) v[0].getData() | (Boolean) v[1].getData()) & ((Boolean) v[0].getData() | !(Boolean) v[1].getData()));
+        }
+    };
+
 
     private final String symbol;
     private final String unicode;
@@ -92,6 +191,17 @@ public enum Operator {
         this.precedence = precedence;
         this.type = type;
     }
+
+
+    public static Value<BigInteger> evaluate(
+            BiFunction<BigInteger, BigInteger, BigInteger> func, Value<BigInteger>[] v) {
+        return Value.from(func.apply(v[0].getData(), v[1].getData()));
+    }
+
+    public static Value<BigInteger> evaluate(UnaryOperator<BigInteger> func, Value<BigInteger>[] v) {
+        return Value.from(func.apply(v[0].getData()));
+    }
+
 
     /**
      * unicode symbol of this operator
@@ -144,4 +254,13 @@ public enum Operator {
     public int arity() {
         return type.length - 1;
     }
+
+    /**
+     * Evaluate the collection of values using the operator
+     *
+     * @param v
+     * @return
+     */
+    public abstract Value evaluate(Value... v);
+
 }
