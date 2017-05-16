@@ -1,5 +1,10 @@
 grammar ScriptLanguage;
+//TODO There is still sth. missing:import statements at the beginning to allow scripts from other files
 
+/*start
+    : stmtList
+    ;
+*/
 start
     :   (SCRIPT name=ID '(' signature=argList? ')' INDENT body=stmtList DEDENT)*
     ;
@@ -17,7 +22,9 @@ stmtList
     ;
 
 statement
-    :   assignment
+    :   //scriptDecl
+       varDecl
+    |   assignment
     |   repeatStmt
     |   casesStmt
     |   forEachStmt
@@ -26,6 +33,11 @@ statement
   //  |   callStmt
     ;
 
+/*scriptDecl
+    :
+    SCRIPT name=ID '(' signature=argList? ')' INDENT body=stmtList DEDENT
+    ;
+*/
 assignment
     :   variable=ID (COLON type=ID)? ASSIGN expression SEMICOLON
     ;
@@ -166,62 +178,8 @@ IMP : '==>' ;
 EQUIV : '<=>' ;
 NOT: 'not';
 
-//options {...}
-//import ... ;
-
-//tokens {...}
-//channels {...} // lexer only
-//@actionName {...}
-
-/*
-//Script ::= 'script' ID (ARGLIST)? NEWLINE INDENT Cmd DEDENT | Cmd
-
-Cmd ::= //Cmd ';' Cmd |
-        VarAssign |
-        //'repeat' NEWLINE INDENT Cmd+ DEDENT |
-        'cases' NEWLINE DEDENT Case+ ('default:' NEWLINE INDENT Cmd DEDENT)? DEDENT |
-        'foreach' NEWLINE INDENT Cmd+ DEDENT |
-        'theonly'NEWLINE INDENT cmd DEDENT |
-       // Cmd 'on' (ShemaTerm | ShemaVar)+ ('with' (ShemaVar| ShemaTerm))? |
-       'call' scriptCommand;
-
-Case ::= 'case' BoolExpr ':' NEWLINE INDENT Cmd+ DEDENT
-
-VarAssign ::= ID ':' TYPE  |
-              ID ':=' (AExpr| BExpr | ///PosExpr) //PosExp evtl. das matchpattern für Sequents?
-
-//MatchPattern ::= 'match' ('Seq'? ShemaSeq) |
-//                ('matchLabel'| 'matchRule') RegExpr
-
-//                'match' ( `~[`]` | '~[\']' | ID)
-*/
 
 
 
-/*arithExpr
-    :   ID
-    |   DIGITS
-    |   arithExpr arithOp arithExpr
-    ;
 
-arithOp
-    :   '+' | '-' | '*' | '/'
-    ;
 
-boolExpr
-    :   TRUE
-    |   FALSE
-    |   matchPattern
-    |   'not' boolExpr
-    |   boolExpr boolOp boolExpr
-    |   arithExpr relOp arithExpr
-    ;
-
-boolOp
-    :   'and' | 'or'
-    ;
-
-relOp
-    :   '<' | '<=' | '=' | '>' | '>='
-    ;
-*/
