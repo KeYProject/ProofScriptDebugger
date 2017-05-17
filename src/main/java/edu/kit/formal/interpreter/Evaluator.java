@@ -12,6 +12,7 @@ import java.util.List;
  * Class handling evaluation of expressions (visitor for expressions)
  *
  * @author S.Grebing
+ * @author A. Weigl
  */
 public class Evaluator extends DefaultASTVisitor<Value> {
     private GoalNode currentState;

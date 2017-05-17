@@ -11,6 +11,7 @@ import java.util.*;
  * @author S.Grebing
  */
 public class Interpreter<T> extends DefaultASTVisitor<T> {
+    //TODO later also inclulde information about source line for each state (for debugging purposes and rewind purposes)
     public Stack<AbstractState> stateStack;
 
     public HashMap<String, ProofScript> localCommands;
@@ -38,7 +39,28 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
 
     }
 
+    /**
+     * If new Block is entered, a new state has to be created (copy of current state) and opushed to the stack
+     */
+    private void enterScope() {
 
+    }
+
+    /**
+     * If block is extied the top state on the stack has to be removed
+     */
+    private void exitScope() {
+
+    }
+
+    /**
+     * Visit a proof script (context is handled by the call of the script noch by visiting the script itself)
+     * 1) visit its signature
+     * 2) visit its body
+     *
+     * @param proofScript
+     * @return
+     */
     @Override
     public T visit(ProofScript proofScript) {
         //AbstractState currentState = stateStack.pop();
@@ -50,6 +72,11 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
         return null;
     }
 
+    /**
+     * Visiting an assignment results in changing the variables of the current selected goalnode
+     * @param assignmentStatement
+     * @return
+     */
     @Override
     public T visit(AssignmentStatement assignmentStatement) {
         System.out.println("Visiting Assignment " + assignmentStatement.toString());
@@ -71,18 +98,24 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
         return null;
     }
 
-
+    /**
+     * Visiting a statement list results in visiting each statement
+     * @param statements
+     * @return
+     */
     @Override
     public T visit(Statements statements) {
-        Iterator<Statement> iterator = statements.iterator();
-
-        while (iterator.hasNext()) {
-            Statement s = iterator.next();
+        for (Statement s : statements) {
             s.accept(this);
         }
         return null;
     }
 
+    /**
+     *
+     * @param casesStatement
+     * @return
+     */
     @Override
     public T visit(CasesStatement casesStatement) {
         //neuerScope
@@ -91,36 +124,61 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
         return null;
     }
 
+    /**
+     *
+     * @param caseStatement
+     * @return
+     */
     @Override
     public T visit(CaseStatement caseStatement) {
         return null;
     }
 
+    /**
+     * Visiting a call statement results in:
+     * 0) searching for the handler of the called command
+     * 1) saving the context onto the stack and creating a copy of the state and push it onto the stack
+     * 2) adding new Variable Assignments to te selected goal
+     * 3) adding the assigned parameters to the variable assignments
+     * 4) visting the body respec. letting the handler take over
+     * 5) removing the top element form the stack
+     * @param call
+     * @return
+     */
     @Override
     public T visit(CallStatement call) {
         //neuer scope
         State newState = stateStack.peek().copy();
+        Evaluator eval = new Evaluator(newState.getSelectedGoalNode());
 
         String commandName = call.getCommand();
         Parameters parameters = call.getParameters();
-
         ProofScript commandScript;
-        //find body if local script command
+
         //TODO refactor into own interface/facade for proof commands
         if (localCommands.containsKey(commandName)) {
             commandScript = localCommands.get(commandName);
+            Signature sig = commandScript.getSignature();
+            Iterator<Map.Entry<Variable, Expression>> paramIterator = parameters.entrySet().iterator();
+            //Iterator<Map.Entry<Variable, Type>> sigIter = sig.entrySet().iterator();
+            while (paramIterator.hasNext()) {
+                Map.Entry<Variable, Expression> nextP = paramIterator.next();
+                Expression expr = nextP.getValue();
+                Variable var = nextP.getKey();
+                Value val = (Value) expr.accept(eval);
+                newState.getSelectedGoalNode().setVarValue(var.getIdentifier(), val);
+
+            }
+            newState.getSelectedGoalNode().enterNewVarScope();
+            stateStack.push(newState);
+            visit(commandScript.getBody());
+            stateStack.pop().getSelectedGoalNode().exitNewVarScope();
         } else {
             throw new RuntimeException("Command " + commandName + " is not known");
         }
 
         return null;
 
-        //call.getCommand(); on signatur body suchen
-        //state map mit commands die name nach body+parameter
-        //nach schauen
-        //call.getParameters();
-        //ProofScript aktuell;
-        //interpret(aktuell.getBody());
     }
 
     @Override
@@ -129,10 +187,31 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
         return null;
     }
 
+    /**
+     * Visiting foreach:
+     * 1) foreach goal in state create a new state with exact this goal
+     * 2) foreach of these goals visit body of foreach
+     * 3) collect all results after foreach
+     * @param foreach
+     * @return
+     */
     @Override
     public T visit(ForeachStatement foreach) {
-        //neue zustände auf den stack mit jeweils anderem Ziel ausgewählt
-        foreach.getBody();
+        State currentState = (State) stateStack.pop();
+        List<GoalNode> allGoals = currentState.getGoals();
+        List<GoalNode> goalsAfterForeach = new ArrayList<>();
+        Statements body = foreach.getBody();
+        for (GoalNode goal : allGoals) {
+            List<GoalNode> goals = new ArrayList<>();
+            goals.add(goal);
+            State single = new State(goals, goal);
+            stateStack.push(single);
+            visit(body);
+            State afterForeach = (State) stateStack.pop();
+            goalsAfterForeach.addAll(afterForeach.getGoals());
+        }
+        State afterForeach = new State(goalsAfterForeach, null);
+        stateStack.push(afterForeach);
         return null;
     }
 

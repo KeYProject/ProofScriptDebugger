@@ -29,8 +29,5 @@ public abstract class AbstractState {
     public abstract GoalNode getSelectedGoalNode();
 
 
-    public State copy() {
-        // return new State();
-        return null;
-    }
+    public abstract State copy();
 }

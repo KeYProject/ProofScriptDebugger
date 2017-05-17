@@ -13,6 +13,7 @@ import java.math.BigInteger;
  * Class representing the values our variables may have
  *
  * @author S.Grebing
+ * @author A. Weigl
  *         //TODO alle restlichen typen ergaenzen
  */
 @RequiredArgsConstructor

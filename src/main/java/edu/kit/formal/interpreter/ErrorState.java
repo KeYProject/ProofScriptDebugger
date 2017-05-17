@@ -22,4 +22,9 @@ public class ErrorState extends AbstractState {
     public GoalNode getSelectedGoalNode() {
         return null;
     }
+
+    @Override
+    public State copy() {
+        return null;
+    }
 }

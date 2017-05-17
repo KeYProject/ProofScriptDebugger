@@ -1,5 +1,6 @@
 package edu.kit.formal.interpreter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,6 +50,20 @@ public class State extends AbstractState {
 
     public void setSelectedGoalNode(GoalNode selectedGoalNode) {
         this.selectedGoalNode = selectedGoalNode;
+    }
+
+    /**
+     * TODO correct this method, atm does nothing helpful!
+     *
+     * @return
+     */
+    @Override
+    public State copy() {
+        List<GoalNode> copiedGoals = new ArrayList<>();
+        GoalNode refToSelGoal = selectedGoalNode;
+
+
+        return new State(copiedGoals, refToSelGoal);
     }
 
 }

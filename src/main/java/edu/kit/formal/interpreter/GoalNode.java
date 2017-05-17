@@ -108,4 +108,9 @@ public class GoalNode {
         this.assignments = this.assignments.pop();
         return assignments;
     }
+
+    public GoalNode deepCopy() {
+        //TODO method does nothing helpful atm
+        return new GoalNode(this.getParent(), sequent);
+    }
 }
