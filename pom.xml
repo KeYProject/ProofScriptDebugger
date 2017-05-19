@@ -103,6 +103,7 @@
                 <version>2.5</version>
                 <executions>
                     <execution>
+                        <id>keyinstall</id>
                         <phase>initialize</phase>
                         <goals>
                             <goal>install-file</goal>
@@ -115,14 +116,8 @@
                             <file>${basedir}/lib/key.core.jar</file>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5</version>
-                <executions>
                     <execution>
+                        <id>recoderinstall</id>
                         <phase>initialize</phase>
                         <goals>
                             <goal>install-file</goal>
@@ -158,11 +153,11 @@
             <version>1.16.16</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.key-project</groupId>
-            <artifactId>key.core</artifactId>
-            <version>2.7</version>
-        </dependency>
+        <!--    <dependency>
+                <groupId>org.key-project</groupId>
+                <artifactId>key.core</artifactId>
+                <version>2.7</version>
+            </dependency>-->
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr</artifactId>
@@ -178,11 +173,11 @@
             <artifactId>javacc</artifactId>
             <version>4.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.key-project</groupId>
-            <artifactId>recoderKey</artifactId>
-            <version>1.0.0</version>
-        </dependency>
+        <!--    <dependency>
+                <groupId>org.key-project</groupId>
+                <artifactId>recoderKey</artifactId>
+                <version>1.0.0</version>
+            </dependency>-->
     </dependencies>
 
 
