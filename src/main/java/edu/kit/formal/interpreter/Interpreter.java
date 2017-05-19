@@ -86,7 +86,7 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
      */
     @Override
     public T visit(AssignmentStatement assignmentStatement) {
-        System.out.println("Visiting Assignment " + assignmentStatement.toString());
+        //  System.out.println("Visiting Assignment " + assignmentStatement.toString());
         AbstractState state = stateStack.pop();
         GoalNode node = state.getSelectedGoalNode();
         Type t = assignmentStatement.getType();
@@ -185,6 +185,19 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
         //for all remaining goals execute default
         if (!copiedList.isEmpty()) {
             Statements defaultCase = casesStatement.getDefaultCase();
+            Iterator<GoalNode> remainingGoalsIter = copiedList.iterator();
+            while (remainingGoalsIter.hasNext()) {
+                GoalNode next = remainingGoalsIter.next();
+                List<GoalNode> goalList = new ArrayList<>();
+                goalList.add(next);
+                State s = new State(goalList, next);
+                stateStack.push(s);
+                visit(defaultCase);
+                State aftercase = (State) stateStack.pop();
+                goalsAfterCases.addAll(aftercase.getGoals());
+
+            }
+
 
         }
 
