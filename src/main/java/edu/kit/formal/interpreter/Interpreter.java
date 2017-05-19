@@ -146,24 +146,30 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
         List<CaseStatement> cases = casesStatement.getCases();
         Iterator<CaseStatement> casesIter = cases.iterator();
         while (casesIter.hasNext()) {
+            //get information for case
             CaseStatement currentCase = casesIter.next();
             Expression guard = currentCase.getGuard();
             Statements body = currentCase.getBody();
 
+
             Iterator<GoalNode> goalIter = copiedList.iterator();
             Set<GoalNode> forCase = new HashSet<>();
-
+            //iterate over all available goals and select those that evaluate to true with the guard
+            //assumption, matchpattern handles varAssignments
             while (goalIter.hasNext()) {
                 GoalNode g = goalIter.next();
                 Evaluator goalEval = new Evaluator(g);
                 Value eval = goalEval.eval(guard);
-                if (eval.getData().equals(Value.TRUE)) {
+                System.out.println();
+                if (eval.getData().equals(true)) {
+
+//                if (eval.getData().equals(Value.TRUE)) {
                     forCase.add(g);
-                    //copiedList.remove(g);
                 }
             }
             copiedList.removeAll(forCase);
 
+            //for each selected goal put a state onto tze stack and visit the body of the case
             Iterator<GoalNode> caseGoals = forCase.iterator();
             while (caseGoals.hasNext()) {
                 GoalNode current = caseGoals.next();
@@ -172,16 +178,19 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
                 State s = new State(goalList, current);
                 stateStack.push(s);
                 visit(body);
+                //after executing the body collect the newly created goals form the stack and remove the state
                 State aftercase = (State) stateStack.pop();
                 goalsAfterCases.addAll(aftercase.getGoals());
             }
-            //jetzt body auswerten mit der Liste der Ziele
 
         }
-        casesStatement.getDefaultCase();
+        //for all remaining goals execute default
+        if (!copiedList.isEmpty()) {
+            Statements defaultCase = casesStatement.getDefaultCase();
 
+        }
 
-        //exit scope
+        //exit scope and create a new state using the union of all newly created goals
 
         State newStateAfterCases;
         if (!goalsAfterCases.isEmpty()) {
