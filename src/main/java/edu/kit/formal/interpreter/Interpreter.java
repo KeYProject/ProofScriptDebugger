@@ -135,30 +135,67 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
         for (GoalNode node : allGoalsBeforeCases) {
             node.enterNewVarScope();
         }
+        List<GoalNode> goalsAfterCases = new ArrayList<>();
         //copy the list of goal nodes for keeping track of goals
-        List<GoalNode> copiedList = new ArrayList<>();
+        Set<GoalNode> copiedList = new HashSet<>();
         for (GoalNode goalNode : allGoalsBeforeCases) {
             copiedList.add(goalNode);
         }
 
-        //handle cases TODO
+        //handle cases
         List<CaseStatement> cases = casesStatement.getCases();
         Iterator<CaseStatement> casesIter = cases.iterator();
         while (casesIter.hasNext()) {
             CaseStatement currentCase = casesIter.next();
-            currentCase.getGuard();
+            Expression guard = currentCase.getGuard();
+            Statements body = currentCase.getBody();
+
+            Iterator<GoalNode> goalIter = copiedList.iterator();
+            Set<GoalNode> forCase = new HashSet<>();
+
+            while (goalIter.hasNext()) {
+                GoalNode g = goalIter.next();
+                Evaluator goalEval = new Evaluator(g);
+                Value eval = goalEval.eval(guard);
+                if (eval.getData().equals(Value.TRUE)) {
+                    forCase.add(g);
+                    //copiedList.remove(g);
+                }
+            }
+            copiedList.removeAll(forCase);
+
+            Iterator<GoalNode> caseGoals = forCase.iterator();
+            while (caseGoals.hasNext()) {
+                GoalNode current = caseGoals.next();
+                List<GoalNode> goalList = new ArrayList<>();
+                goalList.add(current);
+                State s = new State(goalList, current);
+                stateStack.push(s);
+                visit(body);
+                State aftercase = (State) stateStack.pop();
+                goalsAfterCases.addAll(aftercase.getGoals());
+            }
+            //jetzt body auswerten mit der Liste der Ziele
+
         }
         casesStatement.getDefaultCase();
 
 
         //exit scope
-        State aftercases = (State) stateStack.pop();
-        List<GoalNode> goalsAfterCases = aftercases.getGoals();
+
+        State newStateAfterCases;
         if (!goalsAfterCases.isEmpty()) {
             for (GoalNode goalAfterCases : goalsAfterCases) {
                 goalAfterCases.exitNewVarScope();
             }
+            if (goalsAfterCases.size() == 1) {
+                newStateAfterCases = new State(goalsAfterCases, goalsAfterCases.get(0));
+            } else {
+                newStateAfterCases = new State(goalsAfterCases, null);
+            }
+            stateStack.push(newStateAfterCases);
         }
+
         return null;
     }
 
