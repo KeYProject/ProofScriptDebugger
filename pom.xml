@@ -97,43 +97,46 @@
                     <visitor>true</visitor>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.5</version>
                 <executions>
                     <execution>
-                        <id>install1</id>
-                        <phase>package</phase>
+                        <phase>initialize</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
-                            <file>lib/key.core.jar</file>
                             <groupId>org.key-project</groupId>
                             <artifactId>key.core</artifactId>
                             <version>2.7</version>
                             <packaging>jar</packaging>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>install2</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>lib/recoderKey.jar</file>
-                            <groupId>org.key-project</groupId>
-                            <artifactId>recoderKey</artifactId>
-                            <version>1.0.0</version>
-                            <packaging>jar</packaging>
+                            <file>${basedir}/lib/key.core.jar</file>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>org.key-project</groupId>
+                            <artifactId>recoderKey</artifactId>
+                            <version>1.0.0</version>
+                            <packaging>jar</packaging>
+                            <file>${basedir}/lib/recoderKey.jar</file>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
