@@ -22,6 +22,7 @@ public class VariableAssignment {
         this.parent = parent;
     }
 
+
     public VariableAssignment() {
         this(null);
     }
@@ -117,5 +118,16 @@ public class VariableAssignment {
                 ", values=" + values +
                 ", types=" + types +
                 '}';
+    }
+
+    public VariableAssignment deepCopy() {
+        HashMap<String, Type> typeMapCopy = new HashMap<>();
+        types.forEach((k, v) -> typeMapCopy.put(k, v));
+        HashMap<String, Value> valueMap = new HashMap<>();
+        values.forEach((k, v) -> valueMap.put(k, v));
+        VariableAssignment copy = new VariableAssignment(parent == null ? null : parent.deepCopy());
+        copy.values = valueMap;
+        copy.types = typeMapCopy;
+        return copy;
     }
 }

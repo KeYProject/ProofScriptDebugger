@@ -162,8 +162,6 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
                 Value eval = goalEval.eval(guard);
                 System.out.println();
                 if (eval.getData().equals(true)) {
-
-//                if (eval.getData().equals(Value.TRUE)) {
                     forCase.add(g);
                 }
             }

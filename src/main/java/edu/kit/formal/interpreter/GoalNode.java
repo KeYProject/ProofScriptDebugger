@@ -19,9 +19,14 @@ public class GoalNode {
     private GoalNode parent;
 
     public GoalNode(GoalNode parent, String seq) {
-        this.assignments = new VariableAssignment(parent == null ? null : parent.assignments);
+        //BUG: Hier muesste deepcopy der assignments passieren
+        this.assignments = new VariableAssignment(parent == null ? null : parent.deepCopyAssignments());
         this.parent = parent;
         this.sequent = seq;
+    }
+
+    private VariableAssignment deepCopyAssignments() {
+        return assignments.deepCopy();
     }
 
     public VariableAssignment getAssignments() {
