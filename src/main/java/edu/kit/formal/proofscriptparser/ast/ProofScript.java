@@ -34,7 +34,7 @@ import lombok.NonNull;
  * @version 1 (27.04.17)
  */
 @Data
-public class ProofScript extends ASTNode<ScriptLanguageParser.StartContext> {
+public class ProofScript extends ASTNode<ScriptLanguageParser.ScriptContext> {
     @NonNull private String name = "_";
     private Signature signature = new Signature();
     private Statements body = new Statements();

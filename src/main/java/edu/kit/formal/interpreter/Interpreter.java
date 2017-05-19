@@ -1,5 +1,8 @@
 package edu.kit.formal.interpreter;
 
+import edu.kit.formal.TestCommands.AbstractCommand;
+import edu.kit.formal.TestCommands.PrintCommand;
+import edu.kit.formal.TestCommands.SplitCommand;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 
@@ -11,13 +14,16 @@ import java.util.*;
  * @author S.Grebing
  */
 public class Interpreter<T> extends DefaultASTVisitor<T> {
-    //TODO later also inclulde information about source line for each state (for debugging purposes and rewind purposes)
+    //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
     public Stack<AbstractState> stateStack;
 
     public HashMap<String, ProofScript> localCommands;
+    public HashMap<String, AbstractCommand> commands = new HashMap<>();
 
     public Interpreter() {
         localCommands = new LinkedHashMap<>();
+        commands.put("printState", new PrintCommand());
+        commands.put("splitState", new SplitCommand());
     }
 
     //starting point is a statement list
@@ -40,7 +46,7 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
     }
 
     /**
-     * If new Block is entered, a new state has to be created (copy of current state) and opushed to the stack
+     * If new Block is entered, a new state has to be created (copy of current state) and pushed to the stack
      */
     private void enterScope() {
 
@@ -63,10 +69,11 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
      */
     @Override
     public T visit(ProofScript proofScript) {
-        //AbstractState currentState = stateStack.pop();
+
         System.out.println("Visiting " + proofScript.getName());
         //add vars
         visit(proofScript.getSignature());
+        System.out.println("Visited Signature");
         Statements body = proofScript.getBody();
         visit(body);
         return null;
@@ -82,16 +89,20 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
         System.out.println("Visiting Assignment " + assignmentStatement.toString());
         AbstractState state = stateStack.pop();
         GoalNode node = state.getSelectedGoalNode();
+        Type t = assignmentStatement.getType();
         Variable var = assignmentStatement.getLhs();
         Expression expr = assignmentStatement.getRhs();
-        if (node != null) {
-            Type t = node.lookUpType(var.getIdentifier());
-            if (t != null) {
+        if (t != null) {
+            node.addVarDecl(var.getIdentifier(), t);
+        }
+        if (expr != null) {
+            Type type = node.lookUpType(var.getIdentifier());
+            if (type == null) {
+                throw new RuntimeException("Type of Variable " + var.getIdentifier() + " is not declared yet");
+            } else {
                 Evaluator eval = new Evaluator(state.getSelectedGoalNode());
                 Value v = (Value) expr.accept(eval);
-                node.getAssignments().setVar(var.getIdentifier(), v);
-            } else {
-                throw new RuntimeException("Assignment problem");
+                node.setVarValue(var.getIdentifier(), v);
             }
         }
         stateStack.push(state);
@@ -118,9 +129,36 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
      */
     @Override
     public T visit(CasesStatement casesStatement) {
-        //neuerScope
-        casesStatement.getCases();
+        State beforeCases = (State) stateStack.pop();
+        //enterscope
+        List<GoalNode> allGoalsBeforeCases = beforeCases.getGoals();
+        for (GoalNode node : allGoalsBeforeCases) {
+            node.enterNewVarScope();
+        }
+        //copy the list of goal nodes for keeping track of goals
+        List<GoalNode> copiedList = new ArrayList<>();
+        for (GoalNode goalNode : allGoalsBeforeCases) {
+            copiedList.add(goalNode);
+        }
+
+        //handle cases TODO
+        List<CaseStatement> cases = casesStatement.getCases();
+        Iterator<CaseStatement> casesIter = cases.iterator();
+        while (casesIter.hasNext()) {
+            CaseStatement currentCase = casesIter.next();
+            currentCase.getGuard();
+        }
         casesStatement.getDefaultCase();
+
+
+        //exit scope
+        State aftercases = (State) stateStack.pop();
+        List<GoalNode> goalsAfterCases = aftercases.getGoals();
+        if (!goalsAfterCases.isEmpty()) {
+            for (GoalNode goalAfterCases : goalsAfterCases) {
+                goalAfterCases.exitNewVarScope();
+            }
+        }
         return null;
     }
 
@@ -140,15 +178,18 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
      * 1) saving the context onto the stack and creating a copy of the state and push it onto the stack
      * 2) adding new Variable Assignments to te selected goal
      * 3) adding the assigned parameters to the variable assignments
-     * 4) visting the body respec. letting the handler take over
+     * 4) visiting the body respec. letting the handler take over
      * 5) removing the top element form the stack
      * @param call
      * @return
      */
     @Override
     public T visit(CallStatement call) {
-        //neuer scope
-        State newState = stateStack.peek().copy();
+        //neuer VarScope
+        State newState = (State) stateStack.pop();
+        //enter new variable scope
+        newState.getSelectedGoalNode().enterNewVarScope();
+        stateStack.push(newState);
         Evaluator eval = new Evaluator(newState.getSelectedGoalNode());
 
         String commandName = call.getCommand();
@@ -172,9 +213,17 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
             newState.getSelectedGoalNode().enterNewVarScope();
             stateStack.push(newState);
             visit(commandScript.getBody());
-            stateStack.pop().getSelectedGoalNode().exitNewVarScope();
+            stateStack.peek().getSelectedGoalNode().exitNewVarScope();
         } else {
-            throw new RuntimeException("Command " + commandName + " is not known");
+            if (commands.containsKey(commandName)) {
+                AbstractCommand com = commands.get(commandName);
+                State current = (State) stateStack.pop();
+                State afterCom = com.execute(current);
+                afterCom.getSelectedGoalNode().exitNewVarScope();
+                stateStack.push(afterCom);
+            } else {
+                throw new RuntimeException("Command " + commandName + " is not known");
+            }
         }
 
         return null;
@@ -236,6 +285,8 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
 
     @Override
     public T visit(Parameters parameters) {
+
+        System.out.println("Params " + parameters.toString());
         return null;
     }
 

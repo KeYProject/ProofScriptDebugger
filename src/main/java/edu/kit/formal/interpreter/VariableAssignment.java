@@ -38,7 +38,15 @@ public class VariableAssignment {
         return types;
     }
 
-    public VariableAssignment copy() {
+    public Type lookupType(String name) {
+        if (parent == null) {
+            return types.getOrDefault(name, null);
+        } else {
+            return types.getOrDefault(name, parent.lookupType(name));
+        }
+    }
+
+/*    public VariableAssignment copy() {
         VariableAssignment copy;
         if (parent != null) {
             copy = new VariableAssignment(this.parent.copy());
@@ -51,7 +59,7 @@ public class VariableAssignment {
         //deepcopy types
         return copy;
     }
-
+*/
 
     /**
      * Lookup value of variable also in parent assignments
@@ -59,24 +67,25 @@ public class VariableAssignment {
      * @param name
      * @return
      */
-    //TODO throw exception
-    public Value getValue(String name) {
+
+    public Value lookupVarValue(String name) {
         if (parent == null) {
             return values.getOrDefault(name, null);
         } else {
-            return values.getOrDefault(name, parent.getValue(name));
+            return values.getOrDefault(name, parent.lookupVarValue(name));
         }
     }
 
-    public VariableAssignment addVariable(String name, Type type) {
-        this.types.put(name, type);
-        return this;
+    public VariableAssignment addVarDecl(String name, Type type) {
+        if (lookupType(name) == null) {
+            this.types.put(name, type);
+            return this;
+        } else {
+            throw new RuntimeException("Variable " + name + " is already declared with type " + type.toString());
+        }
     }
 
-    /*
-        public VariableAssignment peek(){
-            TODO?
-        }*/
+
     //enterscope
     public VariableAssignment push() {
         return new VariableAssignment(this);
@@ -87,8 +96,26 @@ public class VariableAssignment {
         return getParent();
     }
 
-    public VariableAssignment setVar(String name, Value v) {
-        this.getValues().put(name, v);
-        return this;
+    public VariableAssignment setVarValue(String name, Value v) {
+        VariableAssignment temp = this;
+        if (this.getTypes().containsKey(name)) {
+            this.values.put(name, v);
+        } else {
+            if (parent != null) {
+                parent.setVarValue(name, v);
+            } else {
+                throw new RuntimeException("Variable " + name + " needs to be declared first");
+            }
+        }
+        return temp;
+    }
+
+    @Override
+    public String toString() {
+        return "VariableAssignment{" +
+                "parent=" + parent +
+                ", values=" + values +
+                ", types=" + types +
+                '}';
     }
 }

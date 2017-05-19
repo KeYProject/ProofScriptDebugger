@@ -61,8 +61,6 @@ public class State extends AbstractState {
     public State copy() {
         List<GoalNode> copiedGoals = new ArrayList<>();
         GoalNode refToSelGoal = selectedGoalNode;
-
-
         return new State(copiedGoals, refToSelGoal);
     }
 

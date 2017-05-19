@@ -60,6 +60,7 @@ public class Variable extends Literal {
     }
 
     /**
+     * Expression getType
      * {@inheritDoc}
      */
     @Override

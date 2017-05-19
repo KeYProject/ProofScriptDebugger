@@ -33,7 +33,9 @@ public class GoalNode {
     }
 
     public String toString() {
-        return sequent;
+        String s = "Seq: " + sequent + "\n" +
+                assignments.toString();
+        return s;
     }
 
     /**
@@ -41,7 +43,7 @@ public class GoalNode {
      * @return value of variable if it exists
      */
     public Value lookupVarValue(String varname) {
-        Value v = assignments.getValue(varname);
+        Value v = assignments.lookupVarValue(varname);
         if (v != null) {
             return v;
         } else {
@@ -59,26 +61,28 @@ public class GoalNode {
      */
 
     public Type lookUpType(String id) {
-        Type t = this.getAssignments().getTypes().get(id);
+        Type t = this.getAssignments().lookupType(id);
         if (t == null) {
-            //TODO lookup parent and outer Scope
-            // this.getAssignments().
+            throw new RuntimeException("Variable " + id + " must be declared first");
         } else {
+
             return t;
         }
-        return null;
     }
 
 
     /**
-     * Add a variable declaration to the type map
-     * TODO default value in valuemap?
-     *
+     * Add a variable declaration to the type map (TODO Default value in map?)
      * @param name
      * @param t
      */
     public void addVarDecl(String name, Type t) {
-        getAssignments().addVariable(name, t);
+        VariableAssignment assignments = this.getAssignments().addVarDecl(name, t);
+        if (assignments == null) {
+            throw new RuntimeException("Could not add var decl " + name);
+        } else {
+            this.assignments = assignments;
+        }
     }
 
     /**
@@ -89,11 +93,8 @@ public class GoalNode {
      */
     public void setVarValue(String name, Value v) {
         VariableAssignment assignments = getAssignments();
-        if (assignments.getTypes().containsKey(name)) {
-            assignments.setVar(name, v);
-        } else {
-            throw new RuntimeException("Variable " + name + " has to be declared first");
-        }
+        assignments.setVarValue(name, v);
+
     }
 
     /**

@@ -5,10 +5,12 @@ grammar ScriptLanguage;
     : stmtList
     ;
 */
+
 start
-    :   (SCRIPT name=ID '(' signature=argList? ')' INDENT body=stmtList DEDENT)*
+    :   (script)*
     ;
 
+script: SCRIPT name=ID '(' signature=argList? ')' INDENT body=stmtList DEDENT;
 argList
     :   varDecl (',' varDecl)*
     ;
@@ -21,10 +23,10 @@ stmtList
     :   statement*
     ;
 
+
 statement
     :   //scriptDecl
-       varDecl
-    |   assignment
+         assignment
     |   repeatStmt
     |   casesStmt
     |   forEachStmt
@@ -39,7 +41,8 @@ statement
     ;
 */
 assignment
-    :   variable=ID (COLON type=ID)? ASSIGN expression SEMICOLON
+    :   variable=ID COLON type=ID SEMICOLON
+    |   variable=ID (COLON type=ID)? ASSIGN expression SEMICOLON
     ;
 
 expression

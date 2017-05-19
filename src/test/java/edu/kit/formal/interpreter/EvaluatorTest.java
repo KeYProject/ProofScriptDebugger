@@ -40,8 +40,8 @@ public class EvaluatorTest {
         parent.addVarDecl("a", Type.INT);
         parent.addVarDecl("b", Type.INT);
         VariableAssignment va = parent.getAssignments();
-        va.setVar("a", Value.from(1));
-        va.setVar("b", Value.from(1));
+        va.setVarValue("a", Value.from(1));
+        va.setVarValue("b", Value.from(1));
         GoalNode selected = new GoalNode(parent, "selg");
         eval = new Evaluator(selected);
         eval.setMatcher(new PseudoMatcher());

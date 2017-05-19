@@ -44,7 +44,7 @@ public class AssignmentStatement
         extends Statement<ScriptLanguageParser.AssignmentContext> {
     @NonNull
     private Variable lhs;
-    @NonNull
+
     private Expression rhs;
 
     private Type type;

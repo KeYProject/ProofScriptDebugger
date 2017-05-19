@@ -45,15 +45,21 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override
-    public ProofScript visitStart(ScriptLanguageParser.StartContext ctx) {
+    public ProofScript visitScript(ScriptLanguageParser.ScriptContext ctx) {
         ProofScript s = new ProofScript();
         s.setName(ctx.name.getText());
         s.setRuleContext(ctx);
         if (ctx.signature != null)
             s.setSignature((Signature) ctx.signature.accept(this));
         s.setBody((Statements) ctx.body.accept(this));
-        scripts.add(s);
         return s;
+    }
+
+    @Override
+    public List<ProofScript> visitStart(ScriptLanguageParser.StartContext ctx) {
+        ctx.script().forEach(s ->
+                scripts.add((ProofScript) s.accept(this)));
+        return scripts;
     }
 
     @Override
@@ -89,6 +95,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         return statements;
     }
 
+
     @Override
     public Object visitStatement(ScriptLanguageParser.StatementContext ctx) {
         return ctx.getChild(0).accept(this);
@@ -99,7 +106,12 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         AssignmentStatement assign = new AssignmentStatement();
         assign.setRuleContext(ctx);
         assign.setLhs(new Variable(ctx.variable));
-        assign.setRhs((Expression) ctx.expression().accept(this));
+        if (ctx.type != null) {
+            assign.setType(Type.findType(ctx.type.getText()));
+        }
+        if (ctx.expression() != null) {
+            assign.setRhs((Expression) ctx.expression().accept(this));
+        }
         return assign;
     }
 
