@@ -102,20 +102,20 @@
                 <artifactId>maven-install-plugin</artifactId>
                 <version>2.5</version>
                 <executions>
-                    <execution>
-                        <id>keyinstall</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>org.key-project</groupId>
-                            <artifactId>key.core</artifactId>
-                            <version>2.7</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/key.core.jar</file>
-                        </configuration>
-                    </execution>
+                    <!--   <execution>
+                           <id>keyinstall</id>
+                           <phase>initialize</phase>
+                           <goals>
+                               <goal>install-file</goal>
+                           </goals>
+                           <configuration>
+                               <groupId>org.key-project</groupId>
+                               <artifactId>key.core</artifactId>
+                               <version>2.7</version>
+                               <packaging>jar</packaging>
+                               <file>${basedir}/lib/key.core.jar</file>
+                           </configuration>
+                       </execution>-->
                     <execution>
                         <id>recoderinstall</id>
                         <phase>initialize</phase>
@@ -153,11 +153,13 @@
             <version>1.16.16</version>
             <scope>provided</scope>
         </dependency>
-        <!--    <dependency>
-                <groupId>org.key-project</groupId>
-                <artifactId>key.core</artifactId>
-                <version>2.7</version>
-            </dependency>-->
+        <dependency>
+            <groupId>org.key-project</groupId>
+            <artifactId>key.core</artifactId>
+            <version>2.7</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/key.core.jar</systemPath>
+        </dependency>
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr</artifactId>
