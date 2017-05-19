@@ -97,12 +97,12 @@
                     <visitor>true</visitor>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
                 <version>2.5</version>
                 <executions>
-                    <!--   <execution>
+                       <execution>
                            <id>keyinstall</id>
                            <phase>initialize</phase>
                            <goals>
@@ -115,7 +115,7 @@
                                <packaging>jar</packaging>
                                <file>${basedir}/lib/key.core.jar</file>
                            </configuration>
-                       </execution>-->
+                       </execution>
                     <execution>
                         <id>recoderinstall</id>
                         <phase>initialize</phase>
@@ -131,7 +131,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 
@@ -175,11 +175,13 @@
             <artifactId>javacc</artifactId>
             <version>4.0</version>
         </dependency>
-        <!--    <dependency>
-                <groupId>org.key-project</groupId>
-                <artifactId>recoderKey</artifactId>
-                <version>1.0.0</version>
-            </dependency>-->
+        <dependency>
+            <groupId>org.key-project</groupId>
+            <artifactId>recoderKey</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/recoderKey.jar</systemPath>
+        </dependency>
     </dependencies>
 
 
