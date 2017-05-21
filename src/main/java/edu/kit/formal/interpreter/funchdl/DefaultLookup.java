@@ -18,6 +18,10 @@ public class DefaultLookup implements CommandLookup {
     public DefaultLookup() {
     }
 
+    public DefaultLookup(CommandHandler... cmdh) {
+        builders.addAll(Arrays.asList(cmdh));
+    }
+
     public void callCommand(Interpreter interpreter,
                             CallStatement call,
                             VariableAssignment params) {

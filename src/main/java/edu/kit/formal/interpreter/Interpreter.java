@@ -1,5 +1,7 @@
 package edu.kit.formal.interpreter;
 
+import de.uka.ilkd.key.api.ScriptApi;
+import de.uka.ilkd.key.macros.scripts.EngineState;
 import edu.kit.formal.interpreter.funchdl.CommandCall;
 import edu.kit.formal.interpreter.funchdl.CommandLookup;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
@@ -38,6 +40,8 @@ public class Interpreter extends DefaultASTVisitor<Void>
     @Getter
     @Setter
     private boolean scrictSelectedGoalMode = false;
+    private EngineState engineState;
+    private ScriptApi scriptApi;
 
     public Interpreter(CommandLookup lookup) {
         functionLookup = lookup;
@@ -402,6 +406,14 @@ public class Interpreter extends DefaultASTVisitor<Void>
 
     public List<GoalNode> getCurrentGoals() {
         return getCurrentState().getGoals();
+    }
+
+    public EngineState getEngineState() {
+        return engineState;
+    }
+
+    public ScriptApi getScriptApi() {
+        return scriptApi;
     }
     //endregion
 }

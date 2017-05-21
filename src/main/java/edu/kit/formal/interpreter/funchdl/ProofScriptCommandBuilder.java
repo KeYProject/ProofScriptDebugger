@@ -8,6 +8,7 @@ import edu.kit.formal.interpreter.VariableAssignment;
 import edu.kit.formal.proofscriptparser.ast.CallStatement;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -17,6 +18,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ProofScriptCommandBuilder implements CommandHandler {
     private final Map<String, ProofScriptCommand> scripts;
+
+    public ProofScriptCommandBuilder() {
+        this(new HashMap<>());
+    }
 
     @Override
     public boolean handles(CallStatement call) {

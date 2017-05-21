@@ -28,6 +28,10 @@ public class ProofScriptHandler implements CommandHandler {
     @Getter
     private final List<File> searchPath = new ArrayList<>();
 
+    public ProofScriptHandler() {
+        scripts = new HashMap<>();
+    }
+
     public ProofScriptHandler(List<ProofScript> proofScripts) {
         scripts = new HashMap<>();
         proofScripts.forEach(s -> scripts.put(s.getName(), s));
@@ -85,5 +89,9 @@ public class ProofScriptHandler implements CommandHandler {
         ProofScript ps = scripts.get(call.getCommand());
         //TODO create new context/introduce signature
         ps.accept(interpreter);
+    }
+
+    public void addScripts(List<ProofScript> ast) {
+        ast.forEach(script -> scripts.put(script.getName(), script));
     }
 }
