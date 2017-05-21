@@ -2,7 +2,6 @@ package edu.kit.formal.interpreter.funchdl;
 
 import edu.kit.formal.interpreter.*;
 import edu.kit.formal.proofscriptparser.ast.CallStatement;
-import edu.kit.formal.proofscriptparser.ast.Parameters;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

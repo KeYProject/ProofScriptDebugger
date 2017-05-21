@@ -73,4 +73,8 @@ public class Value<T> {
     public String toString() {
         return data + ":" + type;
     }
+
+    public static Value<String> from(String s) {
+        return new Value<>(Type.STRING, s);
+    }
 }
