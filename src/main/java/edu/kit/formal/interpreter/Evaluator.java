@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,7 +17,6 @@ import java.util.List;
  * @author A. Weigl
  */
 public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservable {
-    private GoalNode currentState;
     private List<VariableAssignment> matchedVariables = new ArrayList<>();
     @Getter
     @Setter
@@ -27,13 +27,12 @@ public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservab
     private List<Visitor> entryListeners = new ArrayList<>(),
             exitListeners = new ArrayList<>();
 
-    public Evaluator(GoalNode s) {
-        this.currentState = s;
-    }
+    private final GoalNode goal;
+    private final VariableAssignment state;
 
-    public Evaluator(GoalNode g, MatcherApi matcherApi) {
-        this(g);
-        setMatcher(matcherApi);
+    public Evaluator(VariableAssignment assignment, GoalNode node) {
+        state = new VariableAssignment(assignment); // unmodifiable version of assignment
+        goal = node;
     }
 
     /**
@@ -66,9 +65,9 @@ public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservab
 
         List<VariableAssignment> va = null;
         if (pattern.getType() == Type.STRING) {
-            va = matcher.matchLabel(currentState, (String) pattern.getData());
+            va = matcher.matchLabel(goal, (String) pattern.getData());
         } else if (pattern.getType() == Type.TERM) {
-            va = matcher.matchSeq(currentState, (String) pattern.getData());
+            va = matcher.matchSeq(goal, (String) pattern.getData());
         }
 
         return va != null && va.size() > 0 ? Value.TRUE : Value.FALSE;
@@ -94,7 +93,7 @@ public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservab
     public Value visit(Variable variable) {
         //get variable value
         String id = variable.getIdentifier();
-        Value v = currentState.lookupVarValue(id);
+        Value v = state.lookupVarValue(id);
         if (v != null) {
             return v;
         } else {

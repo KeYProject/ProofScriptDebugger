@@ -113,7 +113,8 @@ public class Interpreter extends DefaultASTVisitor<Void>
 
     private Value evaluate(GoalNode g, Expression expr) {
         enterScope(expr);
-        Evaluator evaluator = new Evaluator(g, matcherApi);
+        Evaluator evaluator = new Evaluator(g.getAssignments(),g);
+        evaluator.setMatcher(matcherApi);
         evaluator.getEntryListeners().addAll(entryListeners);
         evaluator.getExitListeners().addAll(exitListeners);
         exitScope(expr);
@@ -272,7 +273,7 @@ public class Interpreter extends DefaultASTVisitor<Void>
     }
 
 
-    private VariableAssignment evaluateParameters(Parameters parameters) {
+    public VariableAssignment evaluateParameters(Parameters parameters) {
         VariableAssignment va = new VariableAssignment();
         parameters.entrySet().forEach(entry -> {
             Value val = evaluate(entry.getValue());
@@ -370,18 +371,18 @@ public class Interpreter extends DefaultASTVisitor<Void>
         return stateStack.peek();
     }
 
-    private AbstractState newState(List<GoalNode> goals, GoalNode selected) {
+    public AbstractState newState(List<GoalNode> goals, GoalNode selected) {
         if (selected != null && !goals.contains(selected)) {
             throw new IllegalStateException("selected goal not in list of goals");
         }
         return pushState(new State(goals, selected));
     }
 
-    private AbstractState newState(List<GoalNode> goals) {
+    public AbstractState newState(List<GoalNode> goals) {
         return newState(goals, null);
     }
 
-    private AbstractState newState(GoalNode selected) {
+    public AbstractState newState(GoalNode selected) {
         return newState(Collections.singletonList(selected), selected);
     }
 
@@ -393,7 +394,7 @@ public class Interpreter extends DefaultASTVisitor<Void>
         return state;
     }
 
-    private void popState(AbstractState expected) {
+    public void popState(AbstractState expected) {
         AbstractState actual = stateStack.pop();
         if (!expected.equals(actual)) {
             throw new IllegalStateException("Error on the stack!");
