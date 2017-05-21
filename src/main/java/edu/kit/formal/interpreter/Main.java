@@ -1,5 +1,8 @@
 package edu.kit.formal.interpreter;
 
+import edu.kit.formal.interpreter.funchdl.BuiltinCommands;
+import edu.kit.formal.interpreter.funchdl.CommandLookup;
+import edu.kit.formal.interpreter.funchdl.DefaultLookup;
 import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 
@@ -19,10 +22,15 @@ public class Main {
         //lese P ein
         //Erzeuge Interpreter
         //rufe interpret(AST) auf interpreter auf
-        Facade f = new Facade();
         try {
-            List<ProofScript> l = f.getAST(testFile);
-            Interpreter inter = new Interpreter();
+            List<ProofScript> l = Facade.getAST(testFile);
+            DefaultLookup lookup = new DefaultLookup();
+            lookup.getBuilders().add(
+                    new BuiltinCommands.PrintCommand());
+            lookup.getBuilders().add(
+                    new BuiltinCommands.SplitCommand());
+
+            Interpreter inter = new Interpreter(lookup);
             inter.interpret(l, "TestSeq");
         } catch (IOException e) {
             e.printStackTrace();

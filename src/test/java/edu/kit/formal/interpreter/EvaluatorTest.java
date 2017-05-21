@@ -55,7 +55,7 @@ public class EvaluatorTest {
         Assert.assertEquals(truthValue, result);
     }
 
-    class PseudoMatcher implements MatcherApi {
+    static class PseudoMatcher implements MatcherApi {
         @Override
         public List<VariableAssignment> matchLabel(GoalNode currentState, String label) {
             Pattern p = Pattern.compile(label,Pattern.CASE_INSENSITIVE);

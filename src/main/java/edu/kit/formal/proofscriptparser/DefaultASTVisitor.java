@@ -23,7 +23,6 @@ package edu.kit.formal.proofscriptparser;
  */
 
 
-
 import edu.kit.formal.proofscriptparser.ast.*;
 
 /**
@@ -31,80 +30,103 @@ import edu.kit.formal.proofscriptparser.ast.*;
  * @version 1 (28.04.17)
  */
 public class DefaultASTVisitor<T> implements Visitor<T> {
-    @Override public T visit(ProofScript proofScript) {
+    public T defaultVisit(ASTNode node) {
         return null;
     }
 
-    @Override public T visit(AssignmentStatement assignmentStatement) {
-        return null;
+    @Override
+    public T visit(ProofScript proofScript) {
+        return defaultVisit(proofScript);
     }
 
-    @Override public T visit(BinaryExpression binaryExpression) {
-        return null;
+    @Override
+    public T visit(AssignmentStatement assignment) {
+        return defaultVisit(assignment);
     }
 
-    @Override public T visit(MatchExpression matchExpression) {
-        return null;
+    @Override
+    public T visit(BinaryExpression binaryExpression) {
+        return defaultVisit(binaryExpression);
     }
 
-    @Override public T visit(TermLiteral termLiteral) {
-        return null;
+    @Override
+    public T visit(MatchExpression matchExpression) {
+        return defaultVisit(matchExpression);
     }
 
-    @Override public T visit(StringLiteral stringLiteral) {
-        return null;
+    @Override
+    public T visit(TermLiteral termLiteral) {
+        return defaultVisit(termLiteral);
     }
 
-    @Override public T visit(Variable variable) {
-        return null;
+    @Override
+    public T visit(StringLiteral stringLiteral) {
+        return defaultVisit(stringLiteral);
     }
 
-    @Override public T visit(BooleanLiteral booleanLiteral) {
-        return null;
+    @Override
+    public T visit(Variable variable) {
+        return defaultVisit(variable);
     }
 
-    @Override public T visit(Statements statements) {
-        return null;
+    @Override
+    public T visit(BooleanLiteral booleanLiteral) {
+        return defaultVisit(booleanLiteral);
     }
 
-    @Override public T visit(IntegerLiteral integer) {
-        return null;
+    @Override
+    public T visit(Statements statements) {
+        return defaultVisit(statements);
     }
 
-    @Override public T visit(CasesStatement casesStatement) {
-        return null;
+    @Override
+    public T visit(IntegerLiteral integer) {
+        return defaultVisit(integer);
     }
 
-    @Override public T visit(CaseStatement caseStatement) {
-        return null;
+    @Override
+    public T visit(CasesStatement casesStatement) {
+        return defaultVisit(casesStatement);
     }
 
-    @Override public T visit(CallStatement call) {
-        return null;
+    @Override
+    public T visit(CaseStatement caseStatement) {
+        return defaultVisit(caseStatement);
     }
 
-    @Override public T visit(TheOnlyStatement theOnly) {
-        return null;
+    @Override
+    public T visit(CallStatement call) {
+        return defaultVisit(call);
     }
 
-    @Override public T visit(ForeachStatement foreach) {
-        return null;
+    @Override
+    public T visit(TheOnlyStatement theOnly) {
+        return defaultVisit(theOnly);
     }
 
-    @Override public T visit(RepeatStatement repeatStatement) {
-        return null;
+    @Override
+    public T visit(ForeachStatement foreach) {
+        return defaultVisit(foreach);
     }
 
-    @Override public T visit(Signature signature) {
-        return null;
+    @Override
+    public T visit(RepeatStatement repeatStatement) {
+        return defaultVisit(repeatStatement);
     }
 
-    @Override public T visit(Parameters parameters) {
-        return null;
+    @Override
+    public T visit(Signature signature) {
+        return defaultVisit(signature);
     }
 
-    @Override public T visit(UnaryExpression unaryExpression) {
-        return null;
+    @Override
+    public T visit(Parameters parameters) {
+        return defaultVisit(parameters);
+    }
+
+    @Override
+    public T visit(UnaryExpression unaryExpression) {
+        return defaultVisit(unaryExpression);
     }
 }
 

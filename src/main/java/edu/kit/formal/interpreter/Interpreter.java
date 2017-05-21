@@ -1,63 +1,57 @@
 package edu.kit.formal.interpreter;
 
-import edu.kit.formal.TestCommands.AbstractCommand;
-import edu.kit.formal.TestCommands.PrintCommand;
-import edu.kit.formal.TestCommands.SplitCommand;
+import edu.kit.formal.interpreter.funchdl.CommandCall;
+import edu.kit.formal.interpreter.funchdl.CommandLookup;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
+import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.antlr.v4.runtime.ParserRuleContext;
 
+import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Main Class for interpreter
  *
  * @author S.Grebing
  */
-public class Interpreter<T> extends DefaultASTVisitor<T> {
+public class Interpreter extends DefaultASTVisitor<Void>
+        implements ScopeObservable {
     //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
-    public Stack<AbstractState> stateStack;
+    private Stack<AbstractState> stateStack = new Stack<>();
+    private static Logger logger = Logger.getLogger("interpreter");
 
-    public HashMap<String, ProofScript> localCommands;
-    public HashMap<String, AbstractCommand> commands = new HashMap<>();
+    @Getter
+    private List<Visitor> entryListeners = new ArrayList<>(),
+            exitListeners = new ArrayList<>();
 
-    public Interpreter() {
-        localCommands = new LinkedHashMap<>();
-        commands.put("printState", new PrintCommand());
-        commands.put("splitState", new SplitCommand());
+    @Getter
+    @Setter
+    private MatcherApi matcherApi;
+
+    @Getter
+    private CommandLookup functionLookup;
+
+    @Getter
+    @Setter
+    private boolean scrictSelectedGoalMode = false;
+
+    public Interpreter(CommandLookup lookup) {
+        functionLookup = lookup;
     }
 
     //starting point is a statement list
     public void interpret(List<ProofScript> scripts, String sequent) {
-        stateStack = new Stack<>();
-        GoalNode startNode = new GoalNode(null, sequent);
-        List<GoalNode> startNodes = new LinkedList<>();
-        startNodes.add(startNode);
-        //copy all local available proof script to hashmap for better lookup
-        scripts.forEach(p -> localCommands.put(p.getName(), p));
+        newState(new GoalNode(null, sequent));
         //execute first script (RULE: The first script in the file is main script)
         ProofScript m = scripts.get(0);
-        //create new state
-        State s = new State(startNodes, startNode);
-        stateStack.push(s);
         //later through interface with getMainScript();
-        visit(m);
-
-
+        m.accept(this);
     }
 
-    /**
-     * If new Block is entered, a new state has to be created (copy of current state) and pushed to the stack
-     */
-    private void enterScope() {
-
-    }
-
-    /**
-     * If block is extied the top state on the stack has to be removed
-     */
-    private void exitScope() {
-
-    }
 
     /**
      * Visit a proof script (context is handled by the call of the script noch by visiting the script itself)
@@ -68,69 +62,85 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
      * @return
      */
     @Override
-    public T visit(ProofScript proofScript) {
-
-        System.out.println("Visiting " + proofScript.getName());
+    public Void visit(ProofScript proofScript) {
+        enterScope(proofScript);
         //add vars
         visit(proofScript.getSignature());
-        System.out.println("Visited Signature");
-        Statements body = proofScript.getBody();
-        visit(body);
+        proofScript.getBody().accept(this);
+        exitScope(proofScript);
         return null;
     }
 
     /**
      * Visiting an assignment results in changing the variables of the current selected goalnode
+     *
      * @param assignmentStatement
      * @return
      */
     @Override
-    public T visit(AssignmentStatement assignmentStatement) {
-        //  System.out.println("Visiting Assignment " + assignmentStatement.toString());
-        AbstractState state = stateStack.pop();
-        GoalNode node = state.getSelectedGoalNode();
+    public Void visit(AssignmentStatement assignmentStatement) {
+        enterScope(assignmentStatement);
+
+        GoalNode node = getSelectedNode();
         Type t = assignmentStatement.getType();
         Variable var = assignmentStatement.getLhs();
         Expression expr = assignmentStatement.getRhs();
         if (t != null) {
             node.addVarDecl(var.getIdentifier(), t);
         }
+
         if (expr != null) {
             Type type = node.lookUpType(var.getIdentifier());
             if (type == null) {
                 throw new RuntimeException("Type of Variable " + var.getIdentifier() + " is not declared yet");
             } else {
-                Evaluator eval = new Evaluator(state.getSelectedGoalNode());
-                Value v = (Value) expr.accept(eval);
+                Value v = evaluate(expr);
                 node.setVarValue(var.getIdentifier(), v);
             }
         }
-        stateStack.push(state);
+        exitScope(assignmentStatement);
+
         return null;
     }
 
+    private Value evaluate(Expression expr) {
+        return evaluate(getSelectedNode(), expr);
+    }
+
+    private Value evaluate(GoalNode g, Expression expr) {
+        enterScope(expr);
+        Evaluator evaluator = new Evaluator(g, matcherApi);
+        evaluator.getEntryListeners().addAll(entryListeners);
+        evaluator.getExitListeners().addAll(exitListeners);
+        exitScope(expr);
+        return evaluator.eval(expr);
+    }
+
+
     /**
      * Visiting a statement list results in visiting each statement
+     *
      * @param statements
      * @return
      */
     @Override
-    public T visit(Statements statements) {
+    public Void visit(Statements statements) {
+        enterScope(statements);
         for (Statement s : statements) {
             s.accept(this);
         }
+        exitScope(statements);
         return null;
     }
 
     /**
-     *
      * @param casesStatement
      * @return
      */
     @Override
-    public T visit(CasesStatement casesStatement) {
+    public Void visit(CasesStatement casesStatement) {
+        enterScope(casesStatement);
         State beforeCases = (State) stateStack.pop();
-        //enterscope
         List<GoalNode> allGoalsBeforeCases = beforeCases.getGoals();
         for (GoalNode node : allGoalsBeforeCases) {
             node.enterNewVarScope();
@@ -158,8 +168,7 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
             //assumption, matchpattern handles varAssignments
             while (goalIter.hasNext()) {
                 GoalNode g = goalIter.next();
-                Evaluator goalEval = new Evaluator(g);
-                Value eval = goalEval.eval(guard);
+                Value eval = evaluate(g, guard);
                 System.out.println();
                 if (eval.getData().equals(true)) {
                     forCase.add(g);
@@ -216,16 +225,19 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
             stateStack.push(newStateAfterCases);
         }
 
+        exitScope(casesStatement);
         return null;
     }
 
+
     /**
-     *
      * @param caseStatement
      * @return
      */
     @Override
-    public T visit(CaseStatement caseStatement) {
+    public Void visit(CaseStatement caseStatement) {
+        enterScope(caseStatement);
+        exitScope(caseStatement);
         return null;
     }
 
@@ -237,59 +249,47 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
      * 3) adding the assigned parameters to the variable assignments
      * 4) visiting the body respec. letting the handler take over
      * 5) removing the top element form the stack
+     *
      * @param call
      * @return
      */
     @Override
-    public T visit(CallStatement call) {
+    public Void visit(CallStatement call) {
+        enterScope(call);
         //neuer VarScope
-        State newState = (State) stateStack.pop();
         //enter new variable scope
-        newState.getSelectedGoalNode().enterNewVarScope();
-        stateStack.push(newState);
-        Evaluator eval = new Evaluator(newState.getSelectedGoalNode());
-
-        String commandName = call.getCommand();
-        Parameters parameters = call.getParameters();
-        ProofScript commandScript;
-
-        //TODO refactor into own interface/facade for proof commands
-        if (localCommands.containsKey(commandName)) {
-            commandScript = localCommands.get(commandName);
-            Signature sig = commandScript.getSignature();
-            Iterator<Map.Entry<Variable, Expression>> paramIterator = parameters.entrySet().iterator();
-            //Iterator<Map.Entry<Variable, Type>> sigIter = sig.entrySet().iterator();
-            while (paramIterator.hasNext()) {
-                Map.Entry<Variable, Expression> nextP = paramIterator.next();
-                Expression expr = nextP.getValue();
-                Variable var = nextP.getKey();
-                Value val = (Value) expr.accept(eval);
-                newState.getSelectedGoalNode().setVarValue(var.getIdentifier(), val);
-
-            }
-            newState.getSelectedGoalNode().enterNewVarScope();
-            stateStack.push(newState);
-            visit(commandScript.getBody());
-            stateStack.peek().getSelectedGoalNode().exitNewVarScope();
-        } else {
-            if (commands.containsKey(commandName)) {
-                AbstractCommand com = commands.get(commandName);
-                State current = (State) stateStack.pop();
-                State afterCom = com.execute(current);
-                afterCom.getSelectedGoalNode().exitNewVarScope();
-                stateStack.push(afterCom);
-            } else {
-                throw new RuntimeException("Command " + commandName + " is not known");
-            }
-        }
-
+        VariableAssignment params = evaluateParameters(call.getParameters());
+        GoalNode g = getSelectedNode();
+        g.enterNewVarScope();
+        functionLookup.callCommand(this, call, params);
+        g.exitNewVarScope();
+        exitScope(call);
         return null;
+    }
 
+
+    private VariableAssignment evaluateParameters(Parameters parameters) {
+        VariableAssignment va = new VariableAssignment();
+        parameters.entrySet().forEach(entry -> {
+            Value val = evaluate(entry.getValue());
+            va.addVarDecl(entry.getKey().getIdentifier(), val.getType());
+            va.setVarValue(entry.getKey().getIdentifier(), val);
+        });
+        return va;
     }
 
     @Override
-    public T visit(TheOnlyStatement theOnly) {
-        //neuer scope?
+    public Void visit(TheOnlyStatement theOnly) {
+        List<GoalNode> goals = getCurrentState().getGoals();
+        if (goals.size() > 1) {
+            throw new IllegalArgumentException(
+                    String.format("TheOnly at line %d: There are %d goals!",
+                            theOnly.getStartPosition().getLineNumber(),
+                            goals.size()));
+        }
+        enterScope(theOnly);
+        theOnly.getBody().accept(this);
+        exitScope(theOnly);
         return null;
     }
 
@@ -298,53 +298,110 @@ public class Interpreter<T> extends DefaultASTVisitor<T> {
      * 1) foreach goal in state create a new state with exact this goal
      * 2) foreach of these goals visit body of foreach
      * 3) collect all results after foreach
+     *
      * @param foreach
      * @return
      */
     @Override
-    public T visit(ForeachStatement foreach) {
-        State currentState = (State) stateStack.pop();
-        List<GoalNode> allGoals = currentState.getGoals();
+    public Void visit(ForeachStatement foreach) {
+        enterScope(foreach);
+        List<GoalNode> allGoals = getCurrentGoals();
         List<GoalNode> goalsAfterForeach = new ArrayList<>();
         Statements body = foreach.getBody();
         for (GoalNode goal : allGoals) {
-            List<GoalNode> goals = new ArrayList<>();
-            goals.add(goal);
-            State single = new State(goals, goal);
-            stateStack.push(single);
+            newState(goal);
             visit(body);
-            State afterForeach = (State) stateStack.pop();
-            goalsAfterForeach.addAll(afterForeach.getGoals());
+            AbstractState s = popState();
+            goalsAfterForeach.addAll(s.getGoals());
         }
         State afterForeach = new State(goalsAfterForeach, null);
         stateStack.push(afterForeach);
+        exitScope(foreach);
         return null;
     }
 
     @Override
-    public T visit(RepeatStatement repeatStatement) {
+    public Void visit(RepeatStatement repeatStatement) {
+        enterScope(repeatStatement);
+        boolean b = false;
+        do {
+            AbstractState prev = getCurrentState();
+            repeatStatement.getBody().accept(this);
+            AbstractState end = getCurrentState();
+
+            Set<GoalNode> prevNodes = new HashSet<>(prev.getGoals());
+            Set<GoalNode> endNodes = new HashSet<>(end.getGoals());
+            b = prevNodes.equals(endNodes);
+        } while (b);
+        exitScope(repeatStatement);
         return null;
     }
 
     @Override
-    public T visit(Signature signature) {
-        AbstractState state = stateStack.pop();
-        GoalNode node = state.getSelectedGoalNode();
+    public Void visit(Signature signature) {
+        exitScope(signature);
+        GoalNode node = getSelectedNode();
         node.enterNewVarScope();
         signature.forEach((v, t) -> {
             node.addVarDecl(v.getIdentifier(), t);
         });
-        //state.toString();
+        enterScope(signature);
+        return null;
+    }
+
+    //region State Handling
+    public GoalNode getSelectedNode() {
+        try {
+            return stateStack.peek().getSelectedGoalNode();
+        } catch (IllegalStateException e) {
+            if (scrictSelectedGoalMode)
+                throw e;
+
+            logger.warning("No goal selected. Returning first goal!");
+            return getCurrentGoals().get(0);
+        }
+    }
+
+    public AbstractState getCurrentState() {
+        return stateStack.peek();
+    }
+
+    private AbstractState newState(List<GoalNode> goals, GoalNode selected) {
+        if (selected != null && !goals.contains(selected)) {
+            throw new IllegalStateException("selected goal not in list of goals");
+        }
+        return pushState(new State(goals, selected));
+    }
+
+    private AbstractState newState(List<GoalNode> goals) {
+        return newState(goals, null);
+    }
+
+    private AbstractState newState(GoalNode selected) {
+        return newState(Collections.singletonList(selected), selected);
+    }
+
+    public AbstractState pushState(AbstractState state) {
+        if (stateStack.contains(state)) {
+            throw new IllegalStateException("State is already on the stack!");
+        }
         stateStack.push(state);
-
-        return null;
+        return state;
     }
 
-    @Override
-    public T visit(Parameters parameters) {
-
-        System.out.println("Params " + parameters.toString());
-        return null;
+    private void popState(AbstractState expected) {
+        AbstractState actual = stateStack.pop();
+        if (!expected.equals(actual)) {
+            throw new IllegalStateException("Error on the stack!");
+        }
     }
 
+    private AbstractState popState() {
+        return stateStack.pop();
+    }
+
+    public List<GoalNode> getCurrentGoals() {
+        return getCurrentState().getGoals();
+    }
+    //endregion
 }

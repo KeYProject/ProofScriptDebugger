@@ -71,9 +71,6 @@ public class Value<T> {
 
     @Override
     public String toString() {
-        return "Value{" +
-                "type=" + type +
-                ", data=" + data +
-                '}';
+        return data + ":" + type;
     }
 }

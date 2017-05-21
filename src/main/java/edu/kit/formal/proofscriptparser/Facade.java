@@ -40,7 +40,7 @@ import java.util.List;
  * @author Alexander Weigl
  * @version 1 (27.04.17)
  */
-public final class Facade {
+public abstract class Facade {
     /**
      * Parses the given {@link CharStream} and returns the {@link ParserRuleContext}.
      *

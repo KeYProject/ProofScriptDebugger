@@ -39,7 +39,7 @@ public class GoalNode {
 
     public String toString() {
         String s = "Seq: " + sequent + "\n" +
-                assignments.toString();
+                assignments.asMap();
         return s;
     }
 
@@ -53,7 +53,6 @@ public class GoalNode {
             return v;
         } else {
             throw new RuntimeException("Value of variable " + varname + " is not defined in goal node " + this.toString());
-
         }
 
     }
@@ -78,6 +77,7 @@ public class GoalNode {
 
     /**
      * Add a variable declaration to the type map (TODO Default value in map?)
+     *
      * @param name
      * @param t
      */

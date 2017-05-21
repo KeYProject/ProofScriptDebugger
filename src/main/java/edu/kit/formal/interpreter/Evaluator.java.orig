@@ -1,39 +1,32 @@
 package edu.kit.formal.interpreter;
 
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
-import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class handling evaluation of expressions (visitor for expressions)
  *
  * @author S.Grebing
- * @author A. Weigl
  */
-public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservable {
+public class Evaluator extends DefaultASTVisitor<Value> {
+<<<<<<< Updated upstream
+    private State currentState;
+    private Stack<List<GoalNode>> matchedGoals = new Stack<>();
+    private EvaluatorABI abi;
+=======
     private GoalNode currentState;
     private List<VariableAssignment> matchedVariables = new ArrayList<>();
     @Getter
     @Setter
     private MatcherApi matcher;
+>>>>>>> Stashed changes
 
-
-    @Getter
-    private List<Visitor> entryListeners = new ArrayList<>(),
-            exitListeners = new ArrayList<>();
-
-    public Evaluator(GoalNode s) {
+    public Evaluator(State s) {
         this.currentState = s;
-    }
-
-    public Evaluator(GoalNode g, MatcherApi matcherApi) {
-        this(g);
-        setMatcher(matcherApi);
     }
 
     /**
@@ -62,7 +55,11 @@ public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservab
      */
     @Override
     public Value visit(MatchExpression match) {
+<<<<<<< Updated upstream
+
+=======
         Value pattern = (Value) match.getPattern().accept(this);
+>>>>>>> Stashed changes
 
         List<VariableAssignment> va = null;
         if (pattern.getType() == Type.STRING) {

@@ -130,4 +130,16 @@ public class VariableAssignment {
         copy.types = typeMapCopy;
         return copy;
     }
+
+    private Map<String, Value> asMap(Map<String, Value> map) {
+        if (parent != null) {
+            parent.asMap(map);
+        }
+        map.putAll(this.values);
+        return map;
+    }
+
+    public Map<String, Value> asMap() {
+        return asMap(new HashMap<>());
+    }
 }

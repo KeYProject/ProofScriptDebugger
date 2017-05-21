@@ -1,0 +1,33 @@
+script Simple1(i:int, j:int) {
+    i := 1;
+    j := 2;
+
+    theonly {
+        i := 4;
+        j := i+i;
+    }
+
+    assertEq i 4;
+    assert (i=4) & j=8;
+    split;
+    foreach {
+        assert (i=4) & j=8;
+        split 5;
+    }
+
+    print_state;
+
+    cases {
+        case match '.*a' {
+            print_state;
+        }
+
+        case match '.*b' {
+            print_state;
+        }
+
+        default {
+            print_state;
+        }
+    }
+}

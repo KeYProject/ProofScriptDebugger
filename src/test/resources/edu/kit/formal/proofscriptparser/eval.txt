@@ -16,3 +16,11 @@ not true >>> false
 not false >>> true
 a + b >>> 2
 (a+a+a+a+a+a+a)*(b+b+b+b+a+a+a) >>> 49
+(1=2)&(3=3) >>> false
+(1=2)|(3=3) >>> true
+(1=2) >>> false
+(b=a)&(3=3)|a=b >>> true
+1=2 & 3=3 >>> false
+1=2 | 3=3 >>> true
+1=2 >>> false
+b=a&3=3|a=b >>> true

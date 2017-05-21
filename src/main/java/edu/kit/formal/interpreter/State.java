@@ -25,8 +25,6 @@ public class State extends AbstractState {
     public State(List<GoalNode> goals, GoalNode selected) {
         this.goals = goals;
         this.selectedGoalNode = selected;
-
-
     }
 
     @Override
@@ -42,7 +40,7 @@ public class State extends AbstractState {
     @Override
     public GoalNode getSelectedGoalNode() {
         if (selectedGoalNode == null) {
-            return null;
+            throw new IllegalStateException("no selected node");
         } else {
             return selectedGoalNode;
         }
