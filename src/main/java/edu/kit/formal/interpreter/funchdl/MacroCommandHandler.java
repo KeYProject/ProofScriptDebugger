@@ -9,6 +9,7 @@ import edu.kit.formal.proofscriptparser.ast.CallStatement;
 import edu.kit.formal.proofscriptparser.ast.Parameters;
 import edu.kit.formal.proofscriptparser.ast.StringLiteral;
 import edu.kit.formal.proofscriptparser.ast.Variable;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Parameter;
@@ -21,7 +22,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public class MacroCommandHandler implements CommandHandler {
-    private final Map<String, ProofMacro> macros;
+    @Getter private final Map<String, ProofMacro> macros;
 
     public MacroCommandHandler() {
         macros = new HashMap<>();

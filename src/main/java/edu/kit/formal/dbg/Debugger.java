@@ -2,6 +2,7 @@ package edu.kit.formal.dbg;
 
 import edu.kit.formal.interpreter.*;
 import edu.kit.formal.interpreter.funchdl.BuiltinCommands;
+import edu.kit.formal.interpreter.funchdl.CommandHandler;
 import edu.kit.formal.interpreter.funchdl.DefaultLookup;
 import edu.kit.formal.proofscriptparser.*;
 import edu.kit.formal.proofscriptparser.ast.*;
@@ -10,6 +11,7 @@ import org.antlr.v4.runtime.CharStreams;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 /**
  * @author Alexander Weigl
@@ -36,14 +38,28 @@ public class Debugger {
         interpreter.getEntryListeners().add(new CommandLogger());
         //TODO install debugger functions
 
-        debuggerFunctions.getBuilders().add(new Step());
-        debuggerFunctions.getBuilders().add(new Printer());
-        debuggerFunctions.getBuilders().add(new ChgSel());
-        debuggerFunctions.getBuilders().add(new Start());
-        debuggerFunctions.getBuilders().add(new Pause());
-        debuggerFunctions.getBuilders().add(new BrkPnt());
-        debuggerFunctions.getBuilders().add(new Status());
+        registerDebuggerFunction("step", this::step);
+        registerDebuggerFunction("b", this::setBreakpoint);
+        registerDebuggerFunction("start", this::start);
+        registerDebuggerFunction("pause", this::pause);
+        registerDebuggerFunction("chgsel", this::changeSelected);
+        registerDebuggerFunction("psel", this::psel);
+        registerDebuggerFunction("status", this::status);
+    }
 
+    private void registerDebuggerFunction(final String step,
+                                          BiConsumer<CallStatement, VariableAssignment> func) {
+        debuggerFunctions.getBuilders().add(new CommandHandler() {
+            @Override
+            public boolean handles(CallStatement call) throws IllegalArgumentException {
+                return step.equals(call.getCommand());
+            }
+
+            @Override
+            public void evaluate(Interpreter i, CallStatement call, VariableAssignment params) {
+                func.accept(call, params);
+            }
+        });
     }
 
     public static void main(String[] args) throws IOException {
@@ -64,11 +80,11 @@ public class Debugger {
         while (true) {
             System.out.printf("dbg (%03d)> ", ++counter);
             String input = br.readLine();
-            execuate(input);
+            execute(input);
         }
     }
 
-    private void execuate(String input) {
+    private void execute(String input) {
         input = input.trim();
         if (input.isEmpty()) {
             return;
@@ -90,139 +106,82 @@ public class Debugger {
     }
 
 
-    private class Step implements edu.kit.formal.interpreter.funchdl.CommandHandler {
-        @Override
-        public boolean handles(CallStatement call) throws IllegalArgumentException {
-            return call.getCommand().equals("step");
+    public void step(CallStatement call, VariableAssignment params) {
+        IntegerLiteral il = (IntegerLiteral) call.getParameters().get(new Variable("#1"));
+        int steps = 1;
+        if (il != null)
+            steps = il.getValue().intValue();
+        blocker.stepUntilBlock.set(steps * 2); //FIXME times two is strange, something wrong on sync
+        //LockSupport.unpark(interpreterThread);
+        blocker.unlock();
+    }
+
+    public void psel(CallStatement call, VariableAssignment params) {
+        AbstractState state = interpreter.getCurrentState();
+        int i = 0;
+        GoalNode sel;
+        try {
+            sel = state.getSelectedGoalNode();
+        } catch (IllegalStateException e) {
+            sel = null;
         }
 
-        @Override
-        public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
-            IntegerLiteral il = (IntegerLiteral) call.getParameters().get(new Variable("#1"));
-            int steps = 1;
-            if (il != null)
-                steps = il.getValue().intValue();
-            blocker.stepUntilBlock.set(steps * 2); //FIXME times two is strange, something wrong on sync
-            //LockSupport.unpark(interpreterThread);
-            blocker.unlock();
+        for (GoalNode g : state.getGoals()) {
+            System.out.printf("%2d %s %s\n     %s\n",
+                    i++,
+                    g == sel ? "*" : " ",
+                    g.getSequent(),
+                    g.getAssignments().asMap());
         }
     }
 
-    private class Printer implements edu.kit.formal.interpreter.funchdl.CommandHandler {
-        @Override
-        public boolean handles(CallStatement call) throws IllegalArgumentException {
-            return call.getCommand().equals("psel");
-        }
-
-        @Override
-        public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
-            AbstractState state = interpreter.getCurrentState();
-            int i = 0;
-            GoalNode sel;
-            try {
-                sel = state.getSelectedGoalNode();
-            } catch (IllegalStateException e) {
-                sel = null;
-            }
-
-            for (GoalNode g : state.getGoals()) {
-                System.out.printf("%2d %s %s\n     %s\n",
-                        i++,
-                        g == sel ? "*" : " ",
-                        g.getSequent(),
-                        g.getAssignments().asMap());
-            }
-        }
+    public void start(CallStatement call, VariableAssignment params) {
+        interpreterThread.start();
     }
 
 
-    private class Start implements edu.kit.formal.interpreter.funchdl.CommandHandler {
-        @Override
-        public boolean handles(CallStatement call) throws IllegalArgumentException {
-            return call.getCommand().equals("start");
-        }
+    public void pause(CallStatement call, VariableAssignment params) {
+        blocker.stepUntilBlock.set(1); // block at next statement
+    }
 
-        @Override
-        public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
-            interpreterThread.start();
+    public void setBreakpoint(CallStatement call, VariableAssignment params) {
+        IntegerLiteral il = (IntegerLiteral) call.getParameters().get(new Variable("#1"));
+        blocker.addBreakpoint(il.getValue().intValue());
+
+        System.out.println("brkpnts: " + blocker.brkpnts);
+
+    }
+
+    public void status(CallStatement call, VariableAssignment params) {
+        System.out.format("name: %s, p: %s, state: %s, alive:%s, daemon:%s, interrupted:%s %n",
+                interpreterThread.getName(),
+                interpreterThread.getPriority(),
+                interpreterThread.getState(),
+                interpreterThread.isAlive(),
+                interpreterThread.isDaemon(),
+                interpreterThread.isInterrupted());
+
+        List<ASTNode> nodes = history.getQueueNode();
+        List<AbstractState> states = history.getQueueState();
+        CommandLogger cmd = new CommandLogger();
+        for (int i = 0; i < nodes.size(); i++) {
+            ASTNode node = nodes.get(i);
+            node.accept(cmd);
+            // System.out.format("\t\t\t>>> %d states: [%s]%n", states.get(i).getGoals().size(),
+            //         states.get(i).getSelectedGoalNode().getAssignments().asMap());
         }
     }
 
+    public void changeSelected(CallStatement call, VariableAssignment params) {
+        AbstractState state = interpreter.getCurrentState();
+        params = interpreter.evaluateParameters(call.getParameters());
+        Value<BigInteger> v = params.getValues().get("#1");
 
-    private class Pause implements edu.kit.formal.interpreter.funchdl.CommandHandler {
-        @Override
-        public boolean handles(CallStatement call) throws IllegalArgumentException {
-            return call.getCommand().equals("pause");
-        }
+        interpreter.newState(state.getGoals(),
+                state.getGoals().get(v.getData().intValue()));
 
-        @Override
-        public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
-            blocker.stepUntilBlock.set(1); // block at next statement
-        }
     }
 
-    private class BrkPnt implements edu.kit.formal.interpreter.funchdl.CommandHandler {
-        @Override
-        public boolean handles(CallStatement call) throws IllegalArgumentException {
-            return call.getCommand().equals("b");
-        }
-
-        @Override
-        public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
-            IntegerLiteral il = (IntegerLiteral) call.getParameters().get(new Variable("#1"));
-            blocker.addBreakpoint(il.getValue().intValue());
-
-            System.out.println("brkpnts: " + blocker.brkpnts);
-
-        }
-    }
-
-
-    private class Status implements edu.kit.formal.interpreter.funchdl.CommandHandler {
-        @Override
-        public boolean handles(CallStatement call) throws IllegalArgumentException {
-            return call.getCommand().equals("status");
-        }
-
-        @Override
-        public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
-            System.out.format("name: %s, p: %s, state: %s, alive:%s, daemon:%s, interrupted:%s %n",
-                    interpreterThread.getName(),
-                    interpreterThread.getPriority(),
-                    interpreterThread.getState(),
-                    interpreterThread.isAlive(),
-                    interpreterThread.isDaemon(),
-                    interpreterThread.isInterrupted());
-
-            List<ASTNode> nodes = history.getQueueNode();
-            List<AbstractState> states = history.getQueueState();
-            CommandLogger cmd = new CommandLogger();
-            for (int i = 0; i < nodes.size(); i++) {
-                ASTNode node = nodes.get(i);
-                node.accept(cmd);
-                // System.out.format("\t\t\t>>> %d states: [%s]%n", states.get(i).getGoals().size(),
-                //         states.get(i).getSelectedGoalNode().getAssignments().asMap());
-            }
-        }
-    }
-
-    private class ChgSel implements edu.kit.formal.interpreter.funchdl.CommandHandler {
-        @Override
-        public boolean handles(CallStatement call) throws IllegalArgumentException {
-            return call.getCommand().equals("chgsel");
-        }
-
-        @Override
-        public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
-            AbstractState state = interpreter.getCurrentState();
-            params = interpreter.evaluateParameters(call.getParameters());
-            Value<BigInteger> v = params.getValues().get("#1");
-
-            interpreter.newState(state.getGoals(),
-                    state.getGoals().get(v.getData().intValue()));
-
-        }
-    }
 
     private class CommandLogger extends DefaultASTVisitor<Void> {
         public void suffix(ASTNode node) {
