@@ -16,6 +16,7 @@ import java.util.List;
 public class HistoryListener extends DefaultASTVisitor<Void> {
     @Getter
     private final List<ASTNode> queueNode = new LinkedList<>();
+    @Getter
     private final List<AbstractState> queueState = new LinkedList<>();
 
     private final Interpreter interpreter;

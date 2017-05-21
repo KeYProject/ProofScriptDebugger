@@ -43,7 +43,7 @@ public class EvaluatorTest {
         va.setVarValue("a", Value.from(1));
         va.setVarValue("b", Value.from(1));
         GoalNode selected = new GoalNode(parent, "selg");
-        eval = new Evaluator(selected);
+        eval = new Evaluator(selected.getAssignments(), selected);
         eval.setMatcher(new PseudoMatcher());
     }
 
@@ -58,7 +58,7 @@ public class EvaluatorTest {
     static class PseudoMatcher implements MatcherApi {
         @Override
         public List<VariableAssignment> matchLabel(GoalNode currentState, String label) {
-            Pattern p = Pattern.compile(label,Pattern.CASE_INSENSITIVE);
+            Pattern p = Pattern.compile(label, Pattern.CASE_INSENSITIVE);
             Matcher m = p.matcher(currentState.getSequent());
             return m.matches()
                     ? Collections.singletonList(new VariableAssignment())

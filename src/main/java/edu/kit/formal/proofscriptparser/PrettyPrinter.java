@@ -23,7 +23,6 @@ package edu.kit.formal.proofscriptparser;
  */
 
 
-
 import edu.kit.formal.proofscriptparser.ast.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -83,9 +82,9 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
 
     @Override
     public Void visit(AssignmentStatement assign) {
-        assign.getRhs().accept(this);
-        s.append(" := ");
         assign.getLhs().accept(this);
+        s.append(" := ");
+        assign.getRhs().accept(this);
         s.append(";");
         return null;
     }
@@ -299,8 +298,11 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         int posnewline = s.length() - 1;
         while (s.charAt(posnewline) != '\n') {
             posnewline--;
+            if (posnewline < 0) {
+                break;
+            }
         }
-        return posnewline;
+        return Math.max(posnewline, 0);
     }
 
     private String getWhitespacePrefix() {
