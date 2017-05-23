@@ -142,4 +142,11 @@ public class VariableAssignment {
     public Map<String, Value> asMap() {
         return asMap(new HashMap<>());
     }
+
+    public VariableAssignment push(VariableAssignment va) {
+        VariableAssignment p = push();
+        p.values.putAll(va.values);
+        p.types.putAll(va.types);
+        return p;
+    }
 }

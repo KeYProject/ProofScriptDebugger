@@ -37,7 +37,7 @@ import java.util.List;
  * @version 1 (28.04.17)
  */
 @Data
-public class CasesStatement extends Statement<ScriptLanguageParser.CasesListContext> {
+public class CasesStatement extends Statement<ScriptLanguageParser.CasesStmtContext> {
     @NonNull private final List<CaseStatement> cases = new ArrayList<>();
     @NonNull private Statements defaultCase = new Statements();
 

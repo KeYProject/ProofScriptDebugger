@@ -277,7 +277,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
                     ctx.defList.accept(this)
             );
         }
-
+        cases.setRuleContext(ctx);
         return cases;
     }
 

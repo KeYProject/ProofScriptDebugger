@@ -36,7 +36,7 @@ import lombok.Data;
  */
 @Data
 public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatternContext> {
-    private Signature signature;
+    private Signature signature = new Signature();
     private Expression pattern;
 
     /**

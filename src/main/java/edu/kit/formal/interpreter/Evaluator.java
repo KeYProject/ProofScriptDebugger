@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,7 +16,8 @@ import java.util.List;
  * @author A. Weigl
  */
 public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservable {
-    private List<VariableAssignment> matchedVariables = new ArrayList<>();
+    @Getter
+    private final List<VariableAssignment> matchedVariables = new ArrayList<>();
     @Getter
     @Setter
     private MatcherApi matcher;

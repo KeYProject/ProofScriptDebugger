@@ -119,4 +119,9 @@ public class GoalNode {
         //TODO method does nothing helpful atm
         return new GoalNode(this.getParent(), sequent);
     }
+
+    public VariableAssignment enterNewVarScope(VariableAssignment va) {
+        assignments = assignments.push(va);
+        return assignments;
+    }
 }

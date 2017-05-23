@@ -4,14 +4,23 @@ import edu.kit.formal.interpreter.*;
 import edu.kit.formal.interpreter.funchdl.BuiltinCommands;
 import edu.kit.formal.interpreter.funchdl.CommandHandler;
 import edu.kit.formal.interpreter.funchdl.DefaultLookup;
-import edu.kit.formal.proofscriptparser.*;
+import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
+import edu.kit.formal.proofscriptparser.Facade;
+import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
+import edu.kit.formal.proofscriptparser.TransformAst;
 import edu.kit.formal.proofscriptparser.ast.*;
 import org.antlr.v4.runtime.CharStreams;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Alexander Weigl
@@ -30,7 +39,7 @@ public class Debugger {
         DefaultLookup lookup = new DefaultLookup();
         lookup.getBuilders().add(new BuiltinCommands.SplitCommand());
         interpreter = new Interpreter(lookup);
-
+        interpreter.setMatcherApi(new PseudoMatcher());
         history = new HistoryListener(interpreter);
         scripts = Facade.getAST(new File(file));
         interpreter.getEntryListeners().add(history);
@@ -111,7 +120,7 @@ public class Debugger {
         int steps = 1;
         if (il != null)
             steps = il.getValue().intValue();
-        blocker.stepUntilBlock.set(steps * 2); //FIXME times two is strange, something wrong on sync
+        blocker.stepUntilBlock.set(steps); //FIXME times two is strange, something wrong on sync
         //LockSupport.unpark(interpreterThread);
         blocker.unlock();
     }
@@ -245,6 +254,23 @@ public class Debugger {
             suffix(repeatStatement);
             System.out.println("repeat {");
             return super.visit(repeatStatement);
+        }
+    }
+
+
+    public static class PseudoMatcher implements MatcherApi {
+        @Override
+        public List<VariableAssignment> matchLabel(GoalNode currentState, String label) {
+            Pattern p = Pattern.compile(label, Pattern.CASE_INSENSITIVE);
+            Matcher m = p.matcher(currentState.getSequent());
+            return m.matches()
+                    ? Collections.singletonList(new VariableAssignment())
+                    : Collections.emptyList();
+        }
+
+        @Override
+        public List<VariableAssignment> matchSeq(GoalNode currentState, String data) {
+            return Collections.emptyList();
         }
     }
 }

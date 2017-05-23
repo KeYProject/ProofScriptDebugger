@@ -1,6 +1,7 @@
 package edu.kit.formal.interpreter;
 
 import edu.kit.formal.ScopeLogger;
+import edu.kit.formal.dbg.Debugger;
 import edu.kit.formal.interpreter.funchdl.BuiltinCommands;
 import edu.kit.formal.interpreter.funchdl.CommandLookup;
 import edu.kit.formal.interpreter.funchdl.DefaultLookup;
@@ -27,7 +28,7 @@ public class InterpreterTest {
     public Interpreter execute(InputStream is) throws IOException {
         List<ProofScript> scripts = Facade.getAST(CharStreams.fromStream(is));
         Interpreter i = new Interpreter(createTestLookup(scripts));
-        i.setMatcherApi(new EvaluatorTest.PseudoMatcher());
+        i.setMatcherApi(new Debugger.PseudoMatcher());
         //i.getEntryListeners().add(new ScopeLogger("scope:"));
         i.interpret(scripts, "abc");
         return i;

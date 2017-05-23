@@ -1,5 +1,6 @@
 package edu.kit.formal.interpreter;
 
+import edu.kit.formal.dbg.Debugger;
 import edu.kit.formal.proofscriptparser.TestHelper;
 import edu.kit.formal.proofscriptparser.ast.Expression;
 import edu.kit.formal.proofscriptparser.ast.Type;
@@ -44,7 +45,7 @@ public class EvaluatorTest {
         va.setVarValue("b", Value.from(1));
         GoalNode selected = new GoalNode(parent, "selg");
         eval = new Evaluator(selected.getAssignments(), selected);
-        eval.setMatcher(new PseudoMatcher());
+        eval.setMatcher(new Debugger.PseudoMatcher());
     }
 
     @Test
@@ -53,21 +54,5 @@ public class EvaluatorTest {
         Value truthValue = eval.eval(truth);
         System.out.println(expr);
         Assert.assertEquals(truthValue, result);
-    }
-
-    static class PseudoMatcher implements MatcherApi {
-        @Override
-        public List<VariableAssignment> matchLabel(GoalNode currentState, String label) {
-            Pattern p = Pattern.compile(label, Pattern.CASE_INSENSITIVE);
-            Matcher m = p.matcher(currentState.getSequent());
-            return m.matches()
-                    ? Collections.singletonList(new VariableAssignment())
-                    : Collections.emptyList();
-        }
-
-        @Override
-        public List<VariableAssignment> matchSeq(GoalNode currentState, String data) {
-            return Collections.emptyList();
-        }
     }
 }
