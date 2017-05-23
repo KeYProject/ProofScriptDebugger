@@ -38,8 +38,7 @@ public class LintProblem {
 
     public static LintProblem create(Issue issue, Token... markTokens) {
         LintProblem lp = new LintProblem(issue);
-        lp.getMarkTokens().addAll(Arrays.asList(markTokens));
-        return lp;
+        return lp.tokens(markTokens);
     }
 
     public String getMessage() {
@@ -57,6 +56,11 @@ public class LintProblem {
             if (ctx != null)
                 markTokens.add(ctx.getStart());
         }
+        return this;
+    }
+
+    public LintProblem tokens(Token... toks) {
+        getMarkTokens().addAll(Arrays.asList(toks));
         return this;
     }
 }

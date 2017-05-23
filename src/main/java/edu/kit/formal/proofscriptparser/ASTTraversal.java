@@ -36,6 +36,7 @@ import java.util.Map;
 public interface ASTTraversal<T> extends Visitor<T> {
     @Override
     default T visit(ProofScript proofScript) {
+        proofScript.getSignature().accept(this);
         proofScript.getBody().accept(this);
         return null;
     }
