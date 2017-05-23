@@ -2,16 +2,13 @@ package edu.kit.formal.interpreter;
 
 import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.macros.scripts.EngineState;
-import edu.kit.formal.interpreter.funchdl.CommandCall;
 import edu.kit.formal.interpreter.funchdl.CommandLookup;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.antlr.v4.runtime.ParserRuleContext;
 
-import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -22,10 +19,10 @@ import java.util.logging.Logger;
  */
 public class Interpreter extends DefaultASTVisitor<Void>
         implements ScopeObservable {
+    private static final int MAX_ITERATIONS = 5;
+    private static Logger logger = Logger.getLogger("interpreter");
     //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
     private Stack<AbstractState> stateStack = new Stack<>();
-    private static Logger logger = Logger.getLogger("interpreter");
-
     @Getter
     private List<Visitor> entryListeners = new ArrayList<>(),
             exitListeners = new ArrayList<>();
@@ -52,10 +49,23 @@ public class Interpreter extends DefaultASTVisitor<Void>
         newState(new GoalNode(null, sequent));
         //execute first script (RULE: The first script in the file is main script)
         ProofScript m = scripts.get(0);
-        //later through interface with getMainScript();
+        //create new state
         m.accept(this);
     }
 
+    /**
+     * If new Block is entered, a new state has to be created (copy of current state) and pushed to the stack
+     */
+    private void enterScope() {
+
+    }
+
+    /**
+     * If block is extied the top state on the stack has to be removed
+     */
+    private void exitScope() {
+
+    }
 
     /**
      * Visit a proof script (context is handled by the call of the script noch by visiting the script itself)
@@ -92,7 +102,6 @@ public class Interpreter extends DefaultASTVisitor<Void>
         if (t != null) {
             node.addVarDecl(var.getIdentifier(), t);
         }
-
         if (expr != null) {
             Type type = node.lookUpType(var.getIdentifier());
             if (type == null) {
@@ -139,28 +148,39 @@ public class Interpreter extends DefaultASTVisitor<Void>
     }
 
     /**
+     *
      * @param casesStatement
      * @return
      */
     @Override
     public Void visit(CasesStatement casesStatement) {
         enterScope(casesStatement);
-        State beforeCases = (State) stateStack.pop();
+        AbstractState beforeCases = stateStack.pop();
+
+
         List<GoalNode> allGoalsBeforeCases = beforeCases.getGoals();
-        for (GoalNode node : allGoalsBeforeCases) {
-            node.enterNewVarScope();
-        }
+
+        //global List after all Case Statements
         List<GoalNode> goalsAfterCases = new ArrayList<>();
         //copy the list of goal nodes for keeping track of goals
-        Set<GoalNode> copiedList = new HashSet<>();
-        for (GoalNode goalNode : allGoalsBeforeCases) {
-            copiedList.add(goalNode);
-        }
+        Set<GoalNode> copiedList = new HashSet<>(allGoalsBeforeCases);
 
         //handle cases
+
         List<CaseStatement> cases = casesStatement.getCases();
-        Iterator<CaseStatement> casesIter = cases.iterator();
+        for (CaseStatement aCase : cases) {
+            Map<GoalNode, VariableAssignment> matchedGoals = matchGoal(copiedList, aCase);
+            if (matchedGoals != null) {
+                copiedList.removeAll(matchedGoals.entrySet());
+                goalsAfterCases.addAll(executeCase(aCase.getBody(), matchedGoals.keySet()));
+            }
+
+
+        }
+
+/*        Iterator<CaseStatement> casesIter = cases.iterator();
         while (casesIter.hasNext()) {
+
             //get information for case
             CaseStatement currentCase = casesIter.next();
             Expression guard = currentCase.getGuard();
@@ -174,44 +194,20 @@ public class Interpreter extends DefaultASTVisitor<Void>
             while (goalIter.hasNext()) {
                 GoalNode g = goalIter.next();
                 Value eval = evaluate(g, guard);
-                System.out.println();
                 if (eval.getData().equals(true)) {
                     forCase.add(g);
                 }
             }
             copiedList.removeAll(forCase);
 
-            //for each selected goal put a state onto tze stack and visit the body of the case
-            Iterator<GoalNode> caseGoals = forCase.iterator();
-            while (caseGoals.hasNext()) {
-                GoalNode current = caseGoals.next();
-                List<GoalNode> goalList = new ArrayList<>();
-                goalList.add(current);
-                State s = new State(goalList, current);
-                stateStack.push(s);
-                visit(body);
-                //after executing the body collect the newly created goals form the stack and remove the state
-                State aftercase = (State) stateStack.pop();
-                goalsAfterCases.addAll(aftercase.getGoals());
-            }
+            goalsAfterCases.addAll(executeCase(body, forCase));
 
         }
+        */
         //for all remaining goals execute default
         if (!copiedList.isEmpty()) {
             Statements defaultCase = casesStatement.getDefaultCase();
-            Iterator<GoalNode> remainingGoalsIter = copiedList.iterator();
-            while (remainingGoalsIter.hasNext()) {
-                GoalNode next = remainingGoalsIter.next();
-                List<GoalNode> goalList = new ArrayList<>();
-                goalList.add(next);
-                State s = new State(goalList, next);
-                stateStack.push(s);
-                visit(defaultCase);
-                State aftercase = (State) stateStack.pop();
-                goalsAfterCases.addAll(aftercase.getGoals());
-
-            }
-
+            goalsAfterCases.addAll(executeCase(defaultCase, copiedList));
 
         }
 
@@ -219,9 +215,8 @@ public class Interpreter extends DefaultASTVisitor<Void>
 
         State newStateAfterCases;
         if (!goalsAfterCases.isEmpty()) {
-            for (GoalNode goalAfterCases : goalsAfterCases) {
-                goalAfterCases.exitNewVarScope();
-            }
+            goalsAfterCases.forEach(node -> node.exitNewVarScope());
+
             if (goalsAfterCases.size() == 1) {
                 newStateAfterCases = new State(goalsAfterCases, goalsAfterCases.get(0));
             } else {
@@ -234,6 +229,78 @@ public class Interpreter extends DefaultASTVisitor<Void>
         return null;
     }
 
+    /**
+     * Match a set of goal nodes against a matchpattern of a case and return the metched goals together with instantiated variables
+     *
+     * @param allGoalsBeforeCases
+     * @param aCase
+     * @return
+     */
+    private Map<GoalNode, VariableAssignment> matchGoal(Set<GoalNode> allGoalsBeforeCases, CaseStatement aCase) {
+
+        HashMap<GoalNode, VariableAssignment> matchedGoals = new HashMap<>();
+        Expression matchExpression = aCase.getGuard();
+
+        for (GoalNode goal : allGoalsBeforeCases) {
+            VariableAssignment va = evaluateMatchInGoal(matchExpression, goal);
+            if (va != null) {
+                matchedGoals.put(goal, va);
+            }
+
+        }
+        return matchedGoals;
+    }
+
+    /**
+     * Evaluate a match in a specific goal
+     *
+     * @param matchExpression
+     * @param goal
+     * @return
+     */
+    private VariableAssignment evaluateMatchInGoal(Expression matchExpression, GoalNode goal) {
+        enterScope(matchExpression);
+        Evaluator eval = new Evaluator(goal.getAssignments(), goal);
+        eval.setMatcher(matcherApi);
+        eval.getEntryListeners().addAll(entryListeners);
+        eval.getExitListeners().addAll(exitListeners);
+        exitScope(matchExpression);
+        Value v = eval.eval(matchExpression);
+        if (v.getData().equals(Value.TRUE)) {
+            if (eval.getMatchedVariables().size() == 0) {
+                return new VariableAssignment();
+            } else {
+                return eval.getMatchedVariables().get(0);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * For each selected goal put a state onto the stack and visit the body of the case
+     *
+     * @param
+     * @param caseStmts
+     * @param goalsToApply @return
+     */
+    private List<GoalNode> executeCase(Statements caseStmts, Set<GoalNode> goalsToApply) {
+        enterScope(caseStmts);
+        List<GoalNode> goalsAfterCases = new ArrayList<>();
+
+        for (GoalNode next : goalsToApply) {
+            List<GoalNode> goalList = new ArrayList<>();
+            goalList.add(next);
+            State s = new State(goalList, next);
+            stateStack.push(s);
+            caseStmts.accept(this);
+            State aftercase = (State) stateStack.pop();
+            goalsAfterCases.addAll(aftercase.getGoals());
+        }
+        exitScope(caseStmts);
+        return goalsAfterCases;
+
+
+    }
 
     /**
      * @param caseStatement
@@ -271,7 +338,6 @@ public class Interpreter extends DefaultASTVisitor<Void>
         exitScope(call);
         return null;
     }
-
 
     public VariableAssignment evaluateParameters(Parameters parameters) {
         VariableAssignment va = new VariableAssignment();
@@ -328,8 +394,10 @@ public class Interpreter extends DefaultASTVisitor<Void>
     @Override
     public Void visit(RepeatStatement repeatStatement) {
         enterScope(repeatStatement);
+        int counter = 0;
         boolean b = false;
         do {
+            counter++;
             AbstractState prev = getCurrentState();
             repeatStatement.getBody().accept(this);
             AbstractState end = getCurrentState();
@@ -337,6 +405,7 @@ public class Interpreter extends DefaultASTVisitor<Void>
             Set<GoalNode> prevNodes = new HashSet<>(prev.getGoals());
             Set<GoalNode> endNodes = new HashSet<>(end.getGoals());
             b = prevNodes.equals(endNodes);
+            b = b && counter <= MAX_ITERATIONS;
         } while (b);
         exitScope(repeatStatement);
         return null;
@@ -366,6 +435,12 @@ public class Interpreter extends DefaultASTVisitor<Void>
             return getCurrentGoals().get(0);
         }
     }
+  /*  @Override
+    public T visit(Parameters parameters) {
+        parameters.entrySet();
+        System.out.println("Params " + parameters.toString());
+        return null;
+    }*/
 
     public AbstractState getCurrentState() {
         return stateStack.peek();

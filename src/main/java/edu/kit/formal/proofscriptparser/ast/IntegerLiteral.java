@@ -59,6 +59,11 @@ public class IntegerLiteral extends Literal {
         return visitor.visit(this);
     }
 
+    @Override
+    public boolean hasMatchExpression() {
+        return false;
+    }
+
     /**
      * {@inheritDoc}
      */

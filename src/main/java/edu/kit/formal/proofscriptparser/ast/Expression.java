@@ -35,6 +35,24 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public abstract class Expression<T extends ParserRuleContext> extends ASTNode<T> {
     /**
+     * @param type
+     * @param e
+     * @param signature
+     * @throws NotWelldefinedException
+     */
+    public static final void checkType(Type type, Expression e, Signature signature) throws NotWelldefinedException {
+        Type got = e.getType(signature);
+        if (!type.equals(got)) {
+            throw new NotWelldefinedException("Typemismatch in expected " + type + ", got" + got, e);
+        }
+    }
+
+    /**
+     * @return returns true if a child expression contains a match expression
+     */
+    public abstract boolean hasMatchExpression();
+
+    /**
      * Returns the precedence of the operator expression.
      * <p>
      * For {@link BinaryExpression} and {@link UnaryExpression}
@@ -54,17 +72,4 @@ public abstract class Expression<T extends ParserRuleContext> extends ASTNode<T>
      */
     public abstract Type getType(Signature signature)
             throws NotWelldefinedException;
-
-    /**
-     * @param type
-     * @param e
-     * @param signature
-     * @throws NotWelldefinedException
-     */
-    public static final void checkType(Type type, Expression e, Signature signature) throws NotWelldefinedException {
-        Type got = e.getType(signature);
-        if (!type.equals(got)) {
-            throw new NotWelldefinedException("Typemismatch in expected " + type + ", got" + got, e);
-        }
-    }
 }

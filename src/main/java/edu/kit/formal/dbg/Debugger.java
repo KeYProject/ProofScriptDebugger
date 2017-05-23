@@ -4,11 +4,17 @@ import edu.kit.formal.interpreter.*;
 import edu.kit.formal.interpreter.funchdl.BuiltinCommands;
 import edu.kit.formal.interpreter.funchdl.CommandHandler;
 import edu.kit.formal.interpreter.funchdl.DefaultLookup;
-import edu.kit.formal.proofscriptparser.*;
+import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
+import edu.kit.formal.proofscriptparser.Facade;
+import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
+import edu.kit.formal.proofscriptparser.TransformAst;
 import edu.kit.formal.proofscriptparser.ast.*;
 import org.antlr.v4.runtime.CharStreams;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -36,7 +42,6 @@ public class Debugger {
         interpreter.getEntryListeners().add(history);
         interpreter.getEntryListeners().add(blocker);
         interpreter.getEntryListeners().add(new CommandLogger());
-        //TODO install debugger functions
 
         registerDebuggerFunction("step", this::step);
         registerDebuggerFunction("b", this::setBreakpoint);
@@ -45,6 +50,11 @@ public class Debugger {
         registerDebuggerFunction("chgsel", this::changeSelected);
         registerDebuggerFunction("psel", this::psel);
         registerDebuggerFunction("status", this::status);
+    }
+
+    public static void main(String[] args) throws IOException {
+        Debugger d = new Debugger("src/test/resources/edu/kit/formal/interpreter/dbg.kps");
+        d.run();
     }
 
     private void registerDebuggerFunction(final String step,
@@ -60,11 +70,6 @@ public class Debugger {
                 func.accept(call, params);
             }
         });
-    }
-
-    public static void main(String[] args) throws IOException {
-        Debugger d = new Debugger("src/test/resources/edu/kit/formal/interpreter/dbg.kps");
-        d.run();
     }
 
     private void run() throws IOException {

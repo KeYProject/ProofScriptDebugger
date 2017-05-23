@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,18 +16,15 @@ import java.util.List;
  * @author A. Weigl
  */
 public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservable {
+    private final GoalNode goal;
+    private final VariableAssignment state;
     private List<VariableAssignment> matchedVariables = new ArrayList<>();
     @Getter
     @Setter
     private MatcherApi matcher;
-
-
     @Getter
     private List<Visitor> entryListeners = new ArrayList<>(),
             exitListeners = new ArrayList<>();
-
-    private final GoalNode goal;
-    private final VariableAssignment state;
 
     public Evaluator(VariableAssignment assignment, GoalNode node) {
         state = new VariableAssignment(assignment); // unmodifiable version of assignment
@@ -122,4 +118,7 @@ public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservab
     }
 
 
+    public List<VariableAssignment> getMatchedVariables() {
+        return null;
+    }
 }

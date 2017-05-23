@@ -65,6 +65,11 @@ public class BooleanLiteral extends Literal {
         return visitor.visit(this);
     }
 
+    @Override
+    public boolean hasMatchExpression() {
+        return false;
+    }
+
     /**
      * {@inheritDoc}
      */

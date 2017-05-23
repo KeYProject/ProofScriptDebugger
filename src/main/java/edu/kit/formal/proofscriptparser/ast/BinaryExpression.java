@@ -75,6 +75,11 @@ public class BinaryExpression extends Expression<ParserRuleContext> {
         return operator.returnType();
     }
 
+    @Override
+    public boolean hasMatchExpression() {
+        return left.hasMatchExpression() || right.hasMatchExpression();
+    }
+
     /**
      * {@inheritDoc}
      */
