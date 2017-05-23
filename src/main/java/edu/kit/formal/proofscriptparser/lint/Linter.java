@@ -18,7 +18,11 @@ public class Linter {
         LinterStrategy ls = LinterStrategy.getDefaultLinter();
         List<LintProblem> problems = ls.check(scripts);
         for (LintProblem lp : problems) {
-            System.out.printf("%s-%04d: %s", lp.getLevel(), lp.getNumber(), lp.getMessage());
+            System.out.printf("@%s > (%s-%04d) : %s",
+                    lp.getLineNumber(),
+                    lp.getIssue().getSeverity(),
+                    lp.getIssue().getId(),
+                    lp.getMessage());
         }
     }
 

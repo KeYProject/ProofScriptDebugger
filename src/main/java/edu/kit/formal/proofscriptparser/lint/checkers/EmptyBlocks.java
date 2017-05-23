@@ -1,28 +1,56 @@
 package edu.kit.formal.proofscriptparser.lint.checkers;
 
-import edu.kit.formal.proofscriptparser.ast.Statements;
-import edu.kit.formal.proofscriptparser.lint.LintProblem;
+import edu.kit.formal.proofscriptparser.ast.*;
+import edu.kit.formal.proofscriptparser.lint.Issue;
+import edu.kit.formal.proofscriptparser.lint.IssuesRepository;
 
 /**
  * @author Alexander Weigl
  * @version 1 (23.05.17)
  */
 public class EmptyBlocks extends AbstractLintRule {
+    private static Issue EMPTY_BLOCK = IssuesRepository.getIssue(IssuesId.EMPTY_BLOCKS);
+
     public EmptyBlocks() {
         super(EmptyBlockSearcher::new);
     }
 
     private static class EmptyBlockSearcher extends Searcher {
-        @Override
-        public Void visit(Statements statements) {
+
+        public void check(ASTNode node, Statements statements) {
             if (statements.size() == 0) {
-                problems.add(LintProblem.create("")
-                        .level('I')
-                        .message("Empty Block ")
-                        .nodes(statements)
-                );
+                problem(EMPTY_BLOCK, node);
             }
-            return super.visit(statements);
+        }
+
+        @Override
+        public Void visit(ProofScript proofScript) {
+            check(proofScript, proofScript.getBody());
+            return super.visit(proofScript);
+        }
+
+        @Override
+        public Void visit(CaseStatement caseStatement) {
+            check(caseStatement, caseStatement.getBody());
+            return super.visit(caseStatement);
+        }
+
+        @Override
+        public Void visit(TheOnlyStatement theOnly) {
+            check(theOnly, theOnly.getBody());
+            return super.visit(theOnly);
+        }
+
+        @Override
+        public Void visit(ForeachStatement foreach) {
+            check(foreach, foreach.getBody());
+            return super.visit(foreach);
+        }
+
+        @Override
+        public Void visit(RepeatStatement repeatStatement) {
+            check(repeatStatement, repeatStatement.getBody());
+            return super.visit(repeatStatement);
         }
     }
 }

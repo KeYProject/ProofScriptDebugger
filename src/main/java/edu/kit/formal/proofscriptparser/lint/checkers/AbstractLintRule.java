@@ -1,9 +1,7 @@
 package edu.kit.formal.proofscriptparser.lint.checkers;
 
 import edu.kit.formal.proofscriptparser.ast.ASTNode;
-import edu.kit.formal.proofscriptparser.ast.ProofScript;
-import edu.kit.formal.proofscriptparser.lint.LintProblem;
-import edu.kit.formal.proofscriptparser.lint.LintRule;
+import edu.kit.formal.proofscriptparser.lint.*;
 
 import java.util.List;
 
@@ -31,4 +29,5 @@ public abstract class AbstractLintRule implements LintRule {
     public String getName() {
         return getClass().getSimpleName();
     }
+
 }

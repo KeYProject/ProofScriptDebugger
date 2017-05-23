@@ -108,28 +108,11 @@ public class Interpreter extends DefaultASTVisitor<Void>
     }
 
 
-    public VariableAssignment evaluateWithAssignments(GoalNode g, Expression expr) {
-        enterScope(expr);
-        Evaluator evaluator = new Evaluator(g.getAssignments(), g);
-        evaluator.setMatcher(matcherApi);
-        evaluator.getEntryListeners().addAll(entryListeners);
-        evaluator.getExitListeners().addAll(exitListeners);
-        exitScope(expr);
-        Value value = evaluator.eval(expr);
-        if (value.equals(Value.TRUE)) {
-            if (evaluator.getMatchedVariables().size() == 0)
-                return new VariableAssignment();
-            else
-                return evaluator.getMatchedVariables().get(0);
-        }
-        return null;
-    }
-
-    public Value evaluate(Expression expr) {
+    private Value evaluate(Expression expr) {
         return evaluate(getSelectedNode(), expr);
     }
 
-    public Value evaluate(GoalNode g, Expression expr) {
+    private Value evaluate(GoalNode g, Expression expr) {
         enterScope(expr);
         Evaluator evaluator = new Evaluator(g.getAssignments(), g);
         evaluator.setMatcher(matcherApi);
@@ -157,6 +140,7 @@ public class Interpreter extends DefaultASTVisitor<Void>
     }
 
     /**
+     *
      * @param casesStatement
      * @return
      */
@@ -237,6 +221,78 @@ public class Interpreter extends DefaultASTVisitor<Void>
         return null;
     }
 
+    /**
+     * Match a set of goal nodes against a matchpattern of a case and return the metched goals together with instantiated variables
+     *
+     * @param allGoalsBeforeCases
+     * @param aCase
+     * @return
+     */
+    private Map<GoalNode, VariableAssignment> matchGoal(Set<GoalNode> allGoalsBeforeCases, CaseStatement aCase) {
+
+        HashMap<GoalNode, VariableAssignment> matchedGoals = new HashMap<>();
+        Expression matchExpression = aCase.getGuard();
+
+        for (GoalNode goal : allGoalsBeforeCases) {
+            VariableAssignment va = evaluateMatchInGoal(matchExpression, goal);
+            if (va != null) {
+                matchedGoals.put(goal, va);
+            }
+
+        }
+        return matchedGoals;
+    }
+
+    /**
+     * Evaluate a match in a specific goal
+     *
+     * @param matchExpression
+     * @param goal
+     * @return
+     */
+    private VariableAssignment evaluateMatchInGoal(Expression matchExpression, GoalNode goal) {
+        enterScope(matchExpression);
+        Evaluator eval = new Evaluator(goal.getAssignments(), goal);
+        eval.setMatcher(matcherApi);
+        eval.getEntryListeners().addAll(entryListeners);
+        eval.getExitListeners().addAll(exitListeners);
+        exitScope(matchExpression);
+        Value v = eval.eval(matchExpression);
+        if (v.getData().equals(Value.TRUE)) {
+            if (eval.getMatchedVariables().size() == 0) {
+                return new VariableAssignment();
+            } else {
+                return eval.getMatchedVariables().get(0);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * For each selected goal put a state onto the stack and visit the body of the case
+     *
+     * @param
+     * @param caseStmts
+     * @param goalsToApply @return
+     */
+    private List<GoalNode> executeCase(Statements caseStmts, Set<GoalNode> goalsToApply) {
+        enterScope(caseStmts);
+        List<GoalNode> goalsAfterCases = new ArrayList<>();
+
+        for (GoalNode next : goalsToApply) {
+            List<GoalNode> goalList = new ArrayList<>();
+            goalList.add(next);
+            State s = new State(goalList, next);
+            stateStack.push(s);
+            caseStmts.accept(this);
+            State aftercase = (State) stateStack.pop();
+            goalsAfterCases.addAll(aftercase.getGoals());
+        }
+        exitScope(caseStmts);
+        return goalsAfterCases;
+
+
+    }
 
     /**
      * @param caseStatement

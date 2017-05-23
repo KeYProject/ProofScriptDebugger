@@ -4,7 +4,8 @@ import edu.kit.formal.proofscriptparser.ast.ForeachStatement;
 import edu.kit.formal.proofscriptparser.ast.GoalSelector;
 import edu.kit.formal.proofscriptparser.ast.RepeatStatement;
 import edu.kit.formal.proofscriptparser.ast.TheOnlyStatement;
-import edu.kit.formal.proofscriptparser.lint.LintProblem;
+import edu.kit.formal.proofscriptparser.lint.Issue;
+import edu.kit.formal.proofscriptparser.lint.IssuesRepository;
 
 import java.util.Objects;
 
@@ -13,26 +14,28 @@ import java.util.Objects;
  * @version 1 (23.05.17)
  */
 public class SuccessiveGoalSelector extends AbstractLintRule {
+    private static Issue SUCC_SAME_BLOCK =
+            IssuesRepository.getIssue(IssuesId.SUCC_SAME_BLOCK);
+    private static final Issue FOREACH_AFTER_THEONLY =
+            IssuesRepository.getIssue(IssuesId.FOREACH_AFTER_THEONLY);
+    private static final Issue THEONLY_AFTER_FOREACH =
+            IssuesRepository.getIssue(IssuesId.THEONLY_AFTER_FOREACH);
 
     public SuccessiveGoalSelector() {
         super(SGSearcher::new);
     }
 
     static class SGSearcher extends Searcher {
+
         @Override
         public Void visit(TheOnlyStatement theOnly) {
             if (check(theOnly, theOnly.getNodeName())) {
-                problems.add(LintProblem.create("")
-                        .level('W')
-                        .message("succ. same goal selector")
-                        .nodes(theOnly, theOnly.getBody().get(0)));
+                problem(SUCC_SAME_BLOCK,
+                        theOnly, theOnly.getBody().get(0));
             }
 
             if (check(theOnly, "ForeachStatement")) {
-                problems.add(LintProblem.create("")
-                        .level('W')
-                        .message("foreach following theonly has no effect")
-                        .nodes(theOnly, theOnly.getBody().get(0)));
+                problem(FOREACH_AFTER_THEONLY, theOnly, theOnly.getBody().get(0));
             }
 
             return super.visit(theOnly);
@@ -45,30 +48,24 @@ public class SuccessiveGoalSelector extends AbstractLintRule {
         @Override
         public Void visit(ForeachStatement foreach) {
             if (check(foreach, foreach.getNodeName())) {
-                problems.add(LintProblem.create("")
-                        .level('W')
-                        .message("succ. same goal selector")
-                        .nodes(foreach, foreach.getBody().get(0)));
+                problem(SUCC_SAME_BLOCK,
+                        foreach, foreach.getBody().get(0));
             }
 
             if (check(foreach, "TheOnlyStatement")) {
-                problems.add(LintProblem.create("")
-                        .level('W')
-                        .message("theonly following foreach has no effect")
-                        .nodes(foreach, foreach.getBody().get(0)));
+                problem(THEONLY_AFTER_FOREACH,
+                        foreach, foreach.getBody().get(0));
             }
             return super.visit(foreach);
         }
 
         @Override
-        public Void visit(RepeatStatement repeatStatement) {
-            if (check(repeatStatement, repeatStatement.getNodeName())) {
-                problems.add(LintProblem.create("")
-                        .level('W')
-                        .message("succ. same goal selector")
-                        .nodes(repeatStatement, repeatStatement.getBody().get(0)));
+        public Void visit(RepeatStatement repeat) {
+            if (check(repeat, repeat.getNodeName())) {
+                problem(SUCC_SAME_BLOCK,
+                        repeat, repeat.getBody().get(0));
             }
-            return super.visit(repeatStatement);
+            return super.visit(repeat);
         }
     }
 }

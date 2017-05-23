@@ -3,6 +3,11 @@ package edu.kit.formal.proofscriptparser.lint;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import lombok.Getter;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;

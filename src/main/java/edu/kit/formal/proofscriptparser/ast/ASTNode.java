@@ -23,7 +23,6 @@ package edu.kit.formal.proofscriptparser.ast;
  */
 
 
-
 import edu.kit.formal.proofscriptparser.Visitable;
 import edu.kit.formal.proofscriptparser.Visitor;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -46,7 +45,13 @@ public abstract class ASTNode<T extends ParserRuleContext>
         ruleContext = c;
     }
 
+    public T getRuleCtx() {
+        return ruleContext;
+    }
+
     public Optional<T> getRuleContext() {
+        if (ruleContext == null)
+            return Optional.empty();
         return Optional.of(ruleContext);
     }
 

@@ -1,0 +1,4 @@
+edu.kit.formal.proofscriptparser.lint.checkers.EmptyBlocks
+edu.kit.formal.proofscriptparser.lint.checkers.SuccessiveGoalSelector
+edu.kit.formal.proofscriptparser.lint.checkers.NegatedMatchWithUsing
+edu.kit.formal.proofscriptparser.lint.checkers.EqualScriptNames

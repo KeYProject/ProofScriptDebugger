@@ -185,4 +185,11 @@ public class VariableAssignment {
 
         return this.joinWithoutCheck(assignment);
     }
+
+    public VariableAssignment push(VariableAssignment va) {
+        VariableAssignment nva = push();
+        nva.types.putAll(va.types);
+        nva.values.putAll(va.values);
+        return nva;
+    }
 }

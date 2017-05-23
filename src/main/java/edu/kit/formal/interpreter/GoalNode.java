@@ -1,5 +1,6 @@
 package edu.kit.formal.interpreter;
 
+import de.uka.ilkd.key.api.ProjectedNode;
 import edu.kit.formal.proofscriptparser.ast.Type;
 import lombok.Getter;
 

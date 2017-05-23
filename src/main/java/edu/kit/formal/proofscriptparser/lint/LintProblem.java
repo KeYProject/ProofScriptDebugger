@@ -1,9 +1,11 @@
 package edu.kit.formal.proofscriptparser.lint;
 
 import edu.kit.formal.proofscriptparser.ast.ASTNode;
-import edu.kit.formal.proofscriptparser.ast.GoalSelector;
-import edu.kit.formal.proofscriptparser.ast.Statement;
-import lombok.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,46 +16,47 @@ import java.util.List;
  * @version 1 (23.05.17)
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class LintProblem {
     @Getter
-    @Setter(AccessLevel.MODULE)
-    private String message;
+    private final Issue issue;
 
     @Getter
-    @Setter(AccessLevel.MODULE)
-    private char level;
+    private List<Token> markTokens = new ArrayList<>();
 
-    @Getter
-    @Setter(AccessLevel.MODULE)
-    private int number;
+    public Token getFirstToken() {
+        if (markTokens.size() == 0)
+            return null;
+        return markTokens.get(0);
+    }
 
-    @Getter
-    @Setter(AccessLevel.MODULE)
-    private String lintRule;
+    public int getLineNumber() {
+        if (getFirstToken() == null)
+            return -1;
+        return getFirstToken().getLine();
+    }
 
-    @Getter
-    private List<ASTNode> affectedNodes = new ArrayList<>();
-
-    public static LintProblem create(String ruleName) {
-        LintProblem lp = new LintProblem();
-        lp.setLintRule(ruleName);
+    public static LintProblem create(Issue issue, Token... markTokens) {
+        LintProblem lp = new LintProblem(issue);
+        lp.getMarkTokens().addAll(Arrays.asList(markTokens));
         return lp;
     }
 
-    public LintProblem level(char w) {
-        setLevel(w);
-        return this;
+    public String getMessage() {
+        return String.format(getIssue().getValue(), markTokens.toArray());
     }
 
-    public LintProblem message(String s) {
-        setMessage(s);
-        return this;
+    public static <T extends ParserRuleContext>
+    LintProblem create(Issue issue, ASTNode<T>... nodes) {
+        return new LintProblem(issue).nodes(nodes);
     }
 
-    public LintProblem nodes(ASTNode... nodes) {
-        getAffectedNodes().addAll(Arrays.asList(nodes));
+    public <T extends ParserRuleContext> LintProblem nodes(ASTNode<T>... nodes) {
+        for (ASTNode n : nodes) {
+            ParserRuleContext ctx = n.getRuleCtx();
+            if (ctx != null)
+                markTokens.add(ctx.getStart());
+        }
         return this;
     }
 }
