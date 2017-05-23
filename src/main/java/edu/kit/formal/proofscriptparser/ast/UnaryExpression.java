@@ -74,6 +74,11 @@ public class UnaryExpression extends Expression<ParserRuleContext> {
         return operator.returnType();
     }
 
+    @Override
+    public boolean hasMatchExpression() {
+        return expression.hasMatchExpression();
+    }
+
     /**
      * {@inheritDoc
      */

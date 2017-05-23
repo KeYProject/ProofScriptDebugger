@@ -45,7 +45,6 @@ public class Debugger {
         interpreter.getEntryListeners().add(history);
         interpreter.getEntryListeners().add(blocker);
         interpreter.getEntryListeners().add(new CommandLogger());
-        //TODO install debugger functions
 
         registerDebuggerFunction("step", this::step);
         registerDebuggerFunction("b", this::setBreakpoint);
@@ -54,6 +53,11 @@ public class Debugger {
         registerDebuggerFunction("chgsel", this::changeSelected);
         registerDebuggerFunction("psel", this::psel);
         registerDebuggerFunction("status", this::status);
+    }
+
+    public static void main(String[] args) throws IOException {
+        Debugger d = new Debugger("src/test/resources/edu/kit/formal/interpreter/dbg.kps");
+        d.run();
     }
 
     private void registerDebuggerFunction(final String step,
@@ -69,11 +73,6 @@ public class Debugger {
                 func.accept(call, params);
             }
         });
-    }
-
-    public static void main(String[] args) throws IOException {
-        Debugger d = new Debugger("src/test/resources/edu/kit/formal/interpreter/dbg.kps");
-        d.run();
     }
 
     private void run() throws IOException {

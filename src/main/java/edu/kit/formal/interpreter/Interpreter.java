@@ -2,12 +2,14 @@ package edu.kit.formal.interpreter;
 
 import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.macros.scripts.EngineState;
+import edu.kit.formal.interpreter.funchdl.CommandCall;
 import edu.kit.formal.interpreter.funchdl.CommandLookup;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -19,6 +21,7 @@ import java.util.logging.Logger;
  */
 public class Interpreter extends DefaultASTVisitor<Void>
         implements ScopeObservable {
+    private static final int MAX_ITERATIONS = 5;
     //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
     private Stack<AbstractState> stateStack = new Stack<>();
     private static Logger logger = Logger.getLogger("interpreter");
@@ -160,75 +163,78 @@ public class Interpreter extends DefaultASTVisitor<Void>
     @Override
     public Void visit(CasesStatement casesStatement) {
         enterScope(casesStatement);
+        AbstractState beforeCases = stateStack.pop();
+
+
+        List<GoalNode> allGoalsBeforeCases = beforeCases.getGoals();
+
+        //global List after all Case Statements
         List<GoalNode> goalsAfterCases = new ArrayList<>();
         //copy the list of goal nodes for keeping track of goals
-        Set<GoalNode> currentGoals = new HashSet<>(getCurrentGoals());
-        //List<Map<GoalNode, VariableAssignment>> matchedGoals = new ArrayList<>();
+        Set<GoalNode> copiedList = new HashSet<>(allGoalsBeforeCases);
 
+        //handle cases
 
-        for (CaseStatement currentCase : casesStatement.getCases()) {
-            //calculate the goal nodes activations
-            Map<GoalNode, VariableAssignment> mg = getMatchedGoal(currentGoals, currentCase);
-            //matchedGoals.add(mg);
-            currentGoals.removeAll(mg.keySet());
-
-            // execute
-            for (Map.Entry<GoalNode, VariableAssignment> s : mg.entrySet()) {
-                enterScope(currentCase);
-                executeStatements(currentCase.getBody(), s.getKey(), s.getValue());
-                exitScope(currentCase);
+        List<CaseStatement> cases = casesStatement.getCases();
+        for (CaseStatement aCase : cases) {
+            Map<GoalNode, VariableAssignment> matchedGoals = matchGoal(copiedList, aCase);
+            if (matchedGoals != null) {
+                copiedList.removeAll(matchedGoals.entrySet());
+                goalsAfterCases.addAll(executeCase(aCase.getBody(), matchedGoals.keySet()));
             }
+
+
         }
 
-        // execute
-        for (GoalNode s : currentGoals) {
-            executeStatements(casesStatement.getDefaultCase(), s, new VariableAssignment());
+/*        Iterator<CaseStatement> casesIter = cases.iterator();
+        while (casesIter.hasNext()) {
+
+            //get information for case
+            CaseStatement currentCase = casesIter.next();
+            Expression guard = currentCase.getGuard();
+            Statements body = currentCase.getBody();
+
+
+            Iterator<GoalNode> goalIter = copiedList.iterator();
+            Set<GoalNode> forCase = new HashSet<>();
+            //iterate over all available goals and select those that evaluate to true with the guard
+            //assumption, matchpattern handles varAssignments
+            while (goalIter.hasNext()) {
+                GoalNode g = goalIter.next();
+                Value eval = evaluate(g, guard);
+                if (eval.getData().equals(true)) {
+                    forCase.add(g);
+                }
+            }
+            copiedList.removeAll(forCase);
+
+            goalsAfterCases.addAll(executeCase(body, forCase));
+
+        }
+        */
+        //for all remaining goals execute default
+        if (!copiedList.isEmpty()) {
+            Statements defaultCase = casesStatement.getDefaultCase();
+            goalsAfterCases.addAll(executeCase(defaultCase, copiedList));
+
         }
 
-        /*/exit scope and create a new state using the union of all newly created goals
+        //exit scope and create a new state using the union of all newly created goals
+
         State newStateAfterCases;
         if (!goalsAfterCases.isEmpty()) {
-            for (GoalNode goalAfterCases : goalsAfterCases) {
-                goalAfterCases.exitNewVarScope();
-            }
+            goalsAfterCases.forEach(node -> node.exitNewVarScope());
+
             if (goalsAfterCases.size() == 1) {
                 newStateAfterCases = new State(goalsAfterCases, goalsAfterCases.get(0));
             } else {
                 newStateAfterCases = new State(goalsAfterCases, null);
             }
             stateStack.push(newStateAfterCases);
-        }*/
+        }
 
         exitScope(casesStatement);
         return null;
-    }
-
-    public void executeStatements(Statements currentCase, GoalNode gn, VariableAssignment va) {
-        enterScope(currentCase);
-        AbstractState ns = newState(gn);
-        ns.getSelectedGoalNode().enterNewVarScope(va);
-        currentCase.accept(this);
-        mergeGoalsAndPop(ns, gn);
-        exitScope(currentCase);
-    }
-
-    private void mergeGoalsAndPop(AbstractState ns, GoalNode toRemoved) {
-        AbstractState popped = popState();
-        assert popped == ns;
-        getCurrentState().getGoals().remove(toRemoved);
-        getCurrentState().getGoals().addAll(popped.getGoals());
-    }
-
-
-    private Map<GoalNode, VariableAssignment> getMatchedGoal(Collection<GoalNode> currentGoals,
-                                                             CaseStatement currentCase) {
-        Map<GoalNode, VariableAssignment> map = new HashMap<>();
-        for (GoalNode gn : currentGoals) {
-            VariableAssignment va = evaluateWithAssignments(gn, currentCase.getGuard());
-            if (va != null)
-                map.put(gn, va);
-        }
-        return map;
     }
 
 
@@ -325,8 +331,10 @@ public class Interpreter extends DefaultASTVisitor<Void>
     @Override
     public Void visit(RepeatStatement repeatStatement) {
         enterScope(repeatStatement);
+        int counter = 0;
         boolean b = false;
         do {
+            counter++;
             AbstractState prev = getCurrentState();
             repeatStatement.getBody().accept(this);
             AbstractState end = getCurrentState();
@@ -334,6 +342,7 @@ public class Interpreter extends DefaultASTVisitor<Void>
             Set<GoalNode> prevNodes = new HashSet<>(prev.getGoals());
             Set<GoalNode> endNodes = new HashSet<>(end.getGoals());
             b = prevNodes.equals(endNodes);
+            b = b && counter <= MAX_ITERATIONS;
         } while (b);
         exitScope(repeatStatement);
         return null;
@@ -363,6 +372,12 @@ public class Interpreter extends DefaultASTVisitor<Void>
             return getCurrentGoals().get(0);
         }
     }
+  /*  @Override
+    public T visit(Parameters parameters) {
+        parameters.entrySet();
+        System.out.println("Params " + parameters.toString());
+        return null;
+    }*/
 
     public AbstractState getCurrentState() {
         return stateStack.peek();

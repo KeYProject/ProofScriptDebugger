@@ -10,21 +10,36 @@ import lombok.Getter;
  * @author S.Grebing
  */
 public class GoalNode {
-    //TODO this is only for testing, later Sequent object or similar
+
     @Getter
-    private String sequent;
+    private String sequent; //TODO this is only for testing, when connected with key using projectednode
 
     private VariableAssignment assignments;
 
     private GoalNode parent;
+    @Getter
+    private ProjectedNode actualKeYGoalNode;
 
+    /**
+     * This conctructur will be replaced with concrete one that uses projectedNode
+     *
+     * @param parent
+     * @param seq
+     */
     public GoalNode(GoalNode parent, String seq) {
         //BUG: Hier muesste deepcopy der assignments passieren
         this.assignments = new VariableAssignment(parent == null ? null : parent.deepCopyAssignments());
         this.parent = parent;
         this.sequent = seq;
+        actualKeYGoalNode = null;
     }
 
+    public GoalNode(GoalNode parent, String seq, ProjectedNode pNode) {
+        this.actualKeYGoalNode = pNode;
+        this.assignments = new VariableAssignment(parent == null ? null : parent.deepCopyAssignments());
+        this.parent = parent;
+        this.sequent = seq;
+    }
     private VariableAssignment deepCopyAssignments() {
         return assignments.deepCopy();
     }

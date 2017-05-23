@@ -53,6 +53,11 @@ public class Variable extends Literal {
     }
 
     @Override
+    public boolean hasMatchExpression() {
+        return false;
+    }
+
+    @Override
     public Variable copy() {
         Variable v = new Variable(identifier);
         v.token = token;

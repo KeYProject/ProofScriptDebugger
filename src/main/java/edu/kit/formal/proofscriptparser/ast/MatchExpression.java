@@ -76,6 +76,11 @@ public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatter
         return Type.BOOL;
     }
 
+    @Override
+    public boolean hasMatchExpression() {
+        return true;
+    }
+
     /**
      * {@inheritDoc}
      */

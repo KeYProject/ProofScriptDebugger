@@ -3,7 +3,10 @@ package edu.kit.formal.interpreter;
 import edu.kit.formal.proofscriptparser.ast.Type;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Variable Assignments for each goal node
@@ -143,10 +146,43 @@ public class VariableAssignment {
         return asMap(new HashMap<>());
     }
 
-    public VariableAssignment push(VariableAssignment va) {
-        VariableAssignment p = push();
-        p.values.putAll(va.values);
-        p.types.putAll(va.types);
-        return p;
+    /**
+     * Method joins two variable assignments without checking their compatibility
+     *
+     * @param assignment
+     * @return
+     */
+    public VariableAssignment joinWithoutCheck(VariableAssignment assignment) {
+        this.getValues().putAll(assignment.getValues());
+        this.getTypes().putAll(assignment.getTypes());
+        return this;
+    }
+
+    /**
+     * @param assignment
+     * @return empty variable assignment if not possible to join conflictfree (i.e., if a variable name is present in both assignments with different types or dfferent values)
+     * @throws RuntimeException
+     */
+    public VariableAssignment joinWithCheck(VariableAssignment assignment) throws RuntimeException {
+
+        Set<String> namesV2 = assignment.getValues().keySet();
+        Set<String> nonConflicting = new HashSet<>();
+        Set<String> conflictingCand = new HashSet<>();
+
+        //subtract V2 from V1 and add the nonconflicting varNames into the nonconflicting set
+        nonConflicting = this.getValues().keySet().stream().filter(item -> !namesV2.contains(item)).collect(Collectors.toSet());
+        //subtract V1 from V2 and add the nonconflicting varNames into the nonconflicting set
+        nonConflicting.addAll(namesV2.stream().filter(item -> !this.getValues().keySet().contains(item)).collect(Collectors.toSet()));
+        //create intersection
+        conflictingCand = this.getValues().keySet().stream().filter(item -> namesV2.contains(item)).collect(Collectors.toSet());
+        if (!conflictingCand.isEmpty()) {
+            for (String s : conflictingCand) {
+                if (!this.lookupVarValue(s).equals(assignment.lookupVarValue(s))) {
+                    return new VariableAssignment(null);
+                }
+            }
+        }
+
+        return this.joinWithoutCheck(assignment);
     }
 }
