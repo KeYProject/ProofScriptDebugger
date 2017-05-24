@@ -1,15 +1,14 @@
 package edu.kit.formal.interpreter;
 
+
 import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.macros.scripts.EngineState;
-import edu.kit.formal.interpreter.funchdl.CommandCall;
 import edu.kit.formal.interpreter.funchdl.CommandLookup;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -22,10 +21,9 @@ import java.util.logging.Logger;
 public class Interpreter extends DefaultASTVisitor<Void>
         implements ScopeObservable {
     private static final int MAX_ITERATIONS = 5;
+    private static Logger logger = Logger.getLogger("interpreter");
     //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
     private Stack<AbstractState> stateStack = new Stack<>();
-    private static Logger logger = Logger.getLogger("interpreter");
-
     @Getter
     private List<Visitor> entryListeners = new ArrayList<>(),
             exitListeners = new ArrayList<>();
@@ -248,15 +246,28 @@ public class Interpreter extends DefaultASTVisitor<Void>
      *
      * @param matchExpression
      * @param goal
-     * @return
+     * @return null, if match was false, return teh first Assignment when match was true
      */
     private VariableAssignment evaluateMatchInGoal(Expression matchExpression, GoalNode goal) {
         enterScope(matchExpression);
-        Evaluator eval = new Evaluator(goal.getAssignments(), goal);
+        MatchEvaluator mEval = new MatchEvaluator(goal.getAssignments(), goal, matcherApi);
+        mEval.getEntryListeners().addAll(entryListeners);
+        mEval.getExitListeners().addAll(exitListeners);
+        exitScope(matchExpression);
+
+        List<VariableAssignment> matchResult = mEval.eval(matchExpression);
+        if (matchResult.isEmpty()) {
+            return null;
+        } else {
+            return matchResult.get(0);
+        }
+
+        /*Evaluator eval = new Evaluator(goal.getAssignments(), goal);
         eval.setMatcher(matcherApi);
         eval.getEntryListeners().addAll(entryListeners);
         eval.getExitListeners().addAll(exitListeners);
         exitScope(matchExpression);
+
         Value v = eval.eval(matchExpression);
         if (v.getData().equals(Value.TRUE)) {
             if (eval.getMatchedVariables().size() == 0) {
@@ -265,7 +276,7 @@ public class Interpreter extends DefaultASTVisitor<Void>
                 return eval.getMatchedVariables().get(0);
             }
         }
-        return null;
+        return null;*/
     }
 
     /**
@@ -298,12 +309,12 @@ public class Interpreter extends DefaultASTVisitor<Void>
      * @param caseStatement
      * @return
      */
-    @Override
+  /*  @Override
     public Void visit(CaseStatement caseStatement) {
         enterScope(caseStatement);
         exitScope(caseStatement);
         return null;
-    }
+    }*/
 
     /**
      * Visiting a call statement results in:
@@ -428,12 +439,7 @@ public class Interpreter extends DefaultASTVisitor<Void>
             return getCurrentGoals().get(0);
         }
     }
-  /*  @Override
-    public T visit(Parameters parameters) {
-        parameters.entrySet();
-        System.out.println("Params " + parameters.toString());
-        return null;
-    }*/
+
 
     public AbstractState getCurrentState() {
         return stateStack.peek();
@@ -484,5 +490,7 @@ public class Interpreter extends DefaultASTVisitor<Void>
     public ScriptApi getScriptApi() {
         return scriptApi;
     }
+
+
     //endregion
 }
