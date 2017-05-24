@@ -24,6 +24,8 @@ package edu.kit.formal.proofscriptparser.ast;
 
 
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
@@ -34,16 +36,9 @@ import java.util.Optional;
  * @version 1 (28.04.17)
  */
 public abstract class Literal extends Expression<ParserRuleContext> {
+    @Getter
+    @Setter
     protected Token token;
-
-    public Optional<Token> getToken() {
-        return Optional.of(token);
-    }
-
-    public Literal setToken(Token token) {
-        this.token = token;
-        return this;
-    }
 
     /**
      * {@inheritDoc}

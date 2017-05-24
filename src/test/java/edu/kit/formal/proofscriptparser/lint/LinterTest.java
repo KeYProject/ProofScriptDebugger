@@ -17,17 +17,27 @@ import static org.junit.Assert.assertEquals;
 public class LinterTest {
     @Test
     public void testRegisteredLinter() {
-        assertEquals(4, LinterStrategy.getDefaultLinter().getCheckers().size());
+        assertEquals(5, LinterStrategy.getDefaultLinter().getCheckers().size());
     }
 
     @Test
     public void testLint1() throws IOException {
+        runLint("lint1.kps");
+    }
+
+
+    @Test
+    public void testLint2() throws IOException {
+        runLint("lint2.kps");
+    }
+
+    public void runLint(String filename) throws IOException {
         LinterStrategy ls = LinterStrategy.getDefaultLinter();
-        List<ProofScript> nodes = Facade.getAST(CharStreams.fromStream(getClass().getResourceAsStream("lint1.kps")));
+        List<ProofScript> nodes = Facade.getAST(CharStreams.fromStream(getClass().getResourceAsStream(filename)));
         List<LintProblem> problems = ls.check(nodes);
 
         for (LintProblem lp : problems) {
-            System.out.printf("@%s > (%s-%04d|%s) : %s%n",
+            System.out.printf("@%03d > (%s-%04d|%s) : %s%n",
                     lp.getLineNumber(),
                     lp.getIssue().getSeverity(),
                     lp.getIssue().getId(),
