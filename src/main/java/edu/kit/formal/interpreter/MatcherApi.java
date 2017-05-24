@@ -1,5 +1,7 @@
 package edu.kit.formal.interpreter;
 
+import edu.kit.formal.proofscriptparser.ast.Signature;
+
 import java.util.List;
 
 /**
@@ -8,5 +10,6 @@ import java.util.List;
  */
 public interface MatcherApi {
     List<VariableAssignment> matchLabel(GoalNode currentState, String label);
-    List<VariableAssignment> matchSeq(GoalNode currentState, String data);
+
+    List<VariableAssignment> matchSeq(GoalNode currentState, String data, Signature sig);
 }

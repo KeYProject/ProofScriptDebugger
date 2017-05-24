@@ -126,6 +126,7 @@ public class GoalNode {
         return assignments;
     }
 
+
     public VariableAssignment exitNewVarScope() {
         this.assignments = this.assignments.pop();
         return assignments;

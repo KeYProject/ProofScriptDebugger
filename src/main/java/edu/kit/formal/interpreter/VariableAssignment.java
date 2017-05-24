@@ -184,6 +184,7 @@ public class VariableAssignment {
         VariableAssignment nva = push();
         nva.types.putAll(va.types);
         nva.values.putAll(va.values);
+
         return nva;
     }
 }

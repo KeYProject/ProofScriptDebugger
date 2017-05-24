@@ -1,9 +1,6 @@
 package edu.kit.formal.interpreter;
 
-import edu.kit.formal.proofscriptparser.ast.BooleanLiteral;
-import edu.kit.formal.proofscriptparser.ast.IntegerLiteral;
-import edu.kit.formal.proofscriptparser.ast.StringLiteral;
-import edu.kit.formal.proofscriptparser.ast.Type;
+import edu.kit.formal.proofscriptparser.ast.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -51,6 +48,14 @@ public class Value<T> {
         return new Value<>(Type.INT, apply);
     }
 
+    public static Value<String> from(String s) {
+        return new Value<>(Type.STRING, s);
+    }
+
+    public static Value<String> from(TermLiteral term) {
+        return new Value<>(Type.TERM, term.getText());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -72,9 +77,5 @@ public class Value<T> {
     @Override
     public String toString() {
         return data + ":" + type;
-    }
-
-    public static Value<String> from(String s) {
-        return new Value<>(Type.STRING, s);
     }
 }

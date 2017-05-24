@@ -29,7 +29,9 @@ public class InterpreterTest {
         Interpreter i = new Interpreter(createTestLookup(scripts));
         i.setMatcherApi(new Debugger.PseudoMatcher());
         //i.getEntryListeners().add(new ScopeLogger("scope:"));
+
         i.interpret(scripts, "abc");
+
         return i;
     }
 
@@ -118,4 +120,6 @@ public class InterpreterTest {
             return null;
         }
     }
+
+
 }

@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -190,6 +191,35 @@ public class Debugger {
 
     }
 
+    public static class PseudoMatcher implements MatcherApi {
+        @Override
+        public List<VariableAssignment> matchLabel(GoalNode currentState, String label) {
+            Pattern p = Pattern.compile(label, Pattern.CASE_INSENSITIVE);
+            Matcher m = p.matcher(currentState.getSequent());
+            return m.matches()
+                    ? Collections.singletonList(new VariableAssignment())
+                    : Collections.emptyList();
+        }
+
+        @Override
+        public List<VariableAssignment> matchSeq(GoalNode currentState, String data, Signature sig) {
+            Pattern p = Pattern.compile(data, Pattern.CASE_INSENSITIVE);
+            Matcher m = p.matcher(currentState.getSequent());
+            p.pattern();
+            if (!m.matches())
+                return Collections.emptyList();
+
+            VariableAssignment va = new VariableAssignment();
+
+            for (Map.Entry<Variable, Type> s : sig.entrySet()) {
+                va.addVarDecl(s.getKey().getIdentifier(), s.getValue());
+                va.setVarValue(
+                        s.getKey().getIdentifier(),
+                        Value.from(m.group(s.getKey().getIdentifier())));
+            }
+            return Collections.singletonList(va);
+        }
+    }
 
     private class CommandLogger extends DefaultASTVisitor<Void> {
         public void suffix(ASTNode node) {
@@ -253,23 +283,6 @@ public class Debugger {
             suffix(repeatStatement);
             System.out.println("repeat {");
             return super.visit(repeatStatement);
-        }
-    }
-
-
-    public static class PseudoMatcher implements MatcherApi {
-        @Override
-        public List<VariableAssignment> matchLabel(GoalNode currentState, String label) {
-            Pattern p = Pattern.compile(label, Pattern.CASE_INSENSITIVE);
-            Matcher m = p.matcher(currentState.getSequent());
-            return m.matches()
-                    ? Collections.singletonList(new VariableAssignment())
-                    : Collections.emptyList();
-        }
-
-        @Override
-        public List<VariableAssignment> matchSeq(GoalNode currentState, String data) {
-            return Collections.emptyList();
         }
     }
 }

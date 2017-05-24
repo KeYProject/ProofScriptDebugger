@@ -7,6 +7,7 @@ import edu.kit.formal.proofscriptparser.ast.*;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -68,14 +69,41 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
         return evaluatedExpression;
     }
 
+    /**
+     * TODO rethink
+     *
+     * @param op
+     * @param v1
+     * @param v2
+     * @return
+     */
     private List<VariableAssignment> evaluateExpression(Operator op, List<VariableAssignment> v1, List<VariableAssignment> v2) {
         switch (op) {
             case AND:
                 return joinLists(v1, v2);
+            case OR:
+                return orList(v1, v2);
+            case EQ:
+                return joinLists(v1, v2);
+            case NEQ:
+                return null;
             default:
-                System.out.println("Need to be installed");
+                System.out.println("Need to be implemented");
         }
         return null;
+    }
+
+    /**
+     * TODO rethink decision: atm. if the first list is true/not empty (but may contain amepty assignment) this is returned
+     * This decision also results that if a binary expression without a match is printed first, it is the winning assignment
+     * Importance of match is decreased with this decision
+     *
+     * @param v1
+     * @param v2
+     * @return
+     */
+    private List<VariableAssignment> orList(List<VariableAssignment> v1, List<VariableAssignment> v2) {
+        return (v1.isEmpty()) ? v2 : v1;
     }
 
     /**
@@ -121,30 +149,18 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
     public List<VariableAssignment> visit(MatchExpression match) {
         List<VariableAssignments> resultOfMatch;
         //TODO transform assignments
-        Value pattern = (Value) match.getPattern().accept(this);
+        Value pattern = (Value) eval.eval(match.getPattern());
+        // Value pattern = (Value) match.getPattern().accept(this);
 
         List<VariableAssignment> va = null;
         if (pattern.getType() == Type.STRING) {
             va = getMatcher().matchLabel(goal, (String) pattern.getData());
         } else if (pattern.getType() == Type.TERM) {
-            va = getMatcher().matchSeq(goal, (String) pattern.getData());
+            va = getMatcher().matchSeq(goal, (String) pattern.getData(), match.getSignature());
         }
-        return va != null ? va : new ArrayList<>();
+        return va != null ? va : Collections.emptyList();
     }
 
-    /**
-     * @param
-     * @return
-     */
-  /*  @Override
-    public List<VariableAssignment> visit(TermLiteral term) {
-        return null;
-    }*/
-
-  /*  @Override
-    public List<VariableAssignment> visit(StringLiteral string) {
-        return Value.from(string);
-    }*/
     @Override
     public List<VariableAssignment> visit(Variable variable) {
         //get variable value
@@ -159,17 +175,7 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
 
     }
 
-    /*   @Override
-       public List<VariableAssignment> visit(BooleanLiteral bool) {
-           return bool.isValue() ? Value.TRUE : Value.FALSE;
-       }
 
-
-       @Override
-       public List<VariableAssignment> visit(IntegerLiteral integer) {
-           return Value.from(integer);
-       }
-   */
     @Override
     public List<VariableAssignment> visit(UnaryExpression e) {
         Operator op = e.getOperator();

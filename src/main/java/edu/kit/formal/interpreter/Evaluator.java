@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,17 +18,14 @@ import java.util.List;
 public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservable {
     @Getter
     private final List<VariableAssignment> matchedVariables = new ArrayList<>();
+    private final GoalNode goal;
+    private final VariableAssignment state;
     @Getter
     @Setter
     private MatcherApi matcher;
-
-
     @Getter
     private List<Visitor> entryListeners = new ArrayList<>(),
             exitListeners = new ArrayList<>();
-
-    private final GoalNode goal;
-    private final VariableAssignment state;
 
     public Evaluator(VariableAssignment assignment, GoalNode node) {
         state = new VariableAssignment(assignment); // unmodifiable version of assignment
@@ -68,7 +64,7 @@ public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservab
         if (pattern.getType() == Type.STRING) {
             va = matcher.matchLabel(goal, (String) pattern.getData());
         } else if (pattern.getType() == Type.TERM) {
-            va = matcher.matchSeq(goal, (String) pattern.getData());
+            va = matcher.matchSeq(goal, (String) pattern.getData(), match.getSignature());
         }
 
         return va != null && va.size() > 0 ? Value.TRUE : Value.FALSE;
@@ -76,13 +72,13 @@ public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservab
 
     /**
      * TODO Connect with KeY
-     *
+     * TODO remove return
      * @param term
      * @return
      */
     @Override
     public Value visit(TermLiteral term) {
-        return null;
+        return Value.from(term);
     }
 
     @Override
