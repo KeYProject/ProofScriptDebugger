@@ -49,20 +49,6 @@ public class VariableAssignment {
         }
     }
 
-/*    public VariableAssignment copy() {
-        VariableAssignment copy;
-        if (parent != null) {
-            copy = new VariableAssignment(this.parent.copy());
-
-        } else {
-            copy = new VariableAssignment(null);
-        }
-        //TODO
-        //copy.setValues(deepcopy of values);
-        //deepcopy types
-        return copy;
-    }
-*/
 
     /**
      * Lookup value of variable also in parent assignments
@@ -160,7 +146,8 @@ public class VariableAssignment {
 
     /**
      * @param assignment
-     * @return empty variable assignment if not possible to join conflictfree (i.e., if a variable name is present in both assignments with different types or dfferent values)
+     * @return empty variable assignment if not possible to join conflictfree (i.e., if a variable name is present
+     * in both assignments with different types or dfferent values) the join otherwise
      * @throws RuntimeException
      */
     public VariableAssignment joinWithCheck(VariableAssignment assignment) throws RuntimeException {
@@ -180,6 +167,11 @@ public class VariableAssignment {
         return this.joinWithoutCheck(assignment);
     }
 
+    /**
+     * checks whether an assignment is empty i.e. does not contain type declarations and values
+     *
+     * @return
+     */
     public boolean isEmpty() {
         if (this.getValues().isEmpty() && this.parent != null) {
             return this.getParent().isEmpty();

@@ -1,6 +1,5 @@
 package edu.kit.formal.interpreter;
 
-import edu.kit.formal.ScopeLogger;
 import edu.kit.formal.dbg.Debugger;
 import edu.kit.formal.interpreter.funchdl.BuiltinCommands;
 import edu.kit.formal.interpreter.funchdl.CommandLookup;
@@ -53,6 +52,11 @@ public class InterpreterTest {
         Assert.assertEquals(10, i.getCurrentState().getGoals().size());
     }
 
+    @Test
+    public void testSimple2() throws IOException {
+        Interpreter inter = execute(getClass().getResourceAsStream("testSimple2.txt"));
+        // Assert.assertSame(0, ((BigInteger) inter.getCurrentState().getGoals().get(0).getAssignments().lookupVarValue("j").getData()).intValue());
+    }
 
     @Test
     public void testInclude() throws IOException {
