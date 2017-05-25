@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import edu.kit.formal.proofscriptparser.gui.ScriptArea?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.112"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.kit.formal.proofscriptparser.gui.DbgFrame">
+    <center>
+        <SplitPane dividerPositions="0.29797979797979796" layoutX="189.0" layoutY="92.0" prefHeight="160.0"
+                   prefWidth="200.0">
+            <VBox>
+                <ToolBar>
+                    <Button id="btnRun" text="Run"/>
+                </ToolBar>
+                <ScriptArea fx:id="scriptArea" editable="false" VBox.vgrow="ALWAYS"/>
+            </VBox>
+            <VBox>
+                <FlowPane>
+                    <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </VBox.margin>
+                    <children>
+                        <Label text="Goals:"/>
+                        <ComboBox fx:id="listGoals"/>
+                    </children>
+                </FlowPane>
+                <TextArea fx:id="sequenceView" prefHeight="208.0" prefWidth="416.0" wrapText="true"
+                          VBox.vgrow="ALWAYS"/>
+            </VBox>
+        </SplitPane>
+    </center>
+</BorderPane>

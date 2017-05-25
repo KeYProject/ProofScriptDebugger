@@ -3,6 +3,7 @@ package edu.kit.formal.interpreter;
 import de.uka.ilkd.key.api.ProjectedNode;
 import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.api.VariableAssignments;
+import edu.kit.formal.proofscriptparser.ast.Signature;
 import edu.kit.formal.proofscriptparser.ast.Type;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class KeYMatcher implements MatcherApi {
     }
 
     @Override
-    public List<VariableAssignment> matchSeq(GoalNode currentState, String data) {
+    public List<VariableAssignment> matchSeq(GoalNode currentState, String data, Signature sig) {
         VariableAssignment assignments = currentState.getAssignments();
         ProjectedNode pNode = currentState.getActualKeYGoalNode();
         //Gemeinsame VariableAssignments

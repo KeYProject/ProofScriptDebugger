@@ -1,0 +1,8 @@
+.FOREACH, .CASES, .CASE, .THEONLY, .SCRIPT, .MATCH, .USING {
+    -fx-fill: darkgreen;
+    -fx-font-weight: bold;
+}
+
+.INDENT, .DEDENT, .COLON, .ASSIGN {
+    -fx-fill: darkred;
+}
