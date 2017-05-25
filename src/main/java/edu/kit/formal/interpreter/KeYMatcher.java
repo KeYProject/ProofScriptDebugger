@@ -3,7 +3,7 @@ package edu.kit.formal.interpreter;
 import de.uka.ilkd.key.api.ProjectedNode;
 import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.api.VariableAssignments;
-import edu.kit.formal.proofscriptparser.ast.Type;
+import edu.kit.formal.proofscriptparser.ast.Signature;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +16,11 @@ import java.util.Map;
 public class KeYMatcher implements MatcherApi {
 
     ScriptApi scrapi;
+    Interpreter interpreter;
 
-    public KeYMatcher(ScriptApi scrapi) {
+    public KeYMatcher(ScriptApi scrapi, Interpreter interpreter) {
         this.scrapi = scrapi;
+        this.interpreter = interpreter;
     }
 
     @Override
@@ -28,7 +30,7 @@ public class KeYMatcher implements MatcherApi {
     }
 
     @Override
-    public List<VariableAssignment> matchSeq(GoalNode currentState, String data) {
+    public List<VariableAssignment> matchSeq(GoalNode currentState, String data, Signature signature) {
         VariableAssignment assignments = currentState.getAssignments();
         ProjectedNode pNode = currentState.getActualKeYGoalNode();
         //Gemeinsame VariableAssignments
@@ -48,9 +50,9 @@ public class KeYMatcher implements MatcherApi {
 
         Map<String, VariableAssignments.VarType> keyTypeMap = keyAssignments.getTypeMap();
         //find type needs to be rewritten
-        keyTypeMap.forEach((k, v) -> interpreterAssignments.addVarDecl(k, Type.findType(v.getKeYDeclarationPrefix())));
+        keyTypeMap.forEach((k, v) -> interpreterAssignments.addVarDecl(k, interpreter.transKeYFormType(v.getKeYDeclarationPrefix())));
 
-        interpreterAssignments.getTypes().forEach((k, v) -> {
+        /*interpreterAssignments.getTypes().forEach((k, v) -> {
             try {
                 //TODO cast is not valid
                 interpreterAssignments.setVarValue(k, (Value) keyAssignments.getVarValue(k));
@@ -58,7 +60,7 @@ public class KeYMatcher implements MatcherApi {
                 e.printStackTrace();
             }
         });
-
+        */
         return interpreterAssignments;
     }
 }

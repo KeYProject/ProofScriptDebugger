@@ -472,6 +472,11 @@ public class Interpreter extends DefaultASTVisitor<Void>
         return scriptApi;
     }
 
+    public Type transKeYFormType(String keYDeclarationPrefix) {
+        //lookupType Map in interpreter for this create map in interpreter
+        return null;
+    }
+
 
     //endregion
 }
