@@ -13,6 +13,9 @@ import java.net.URL;
  * @version 1 (25.05.17)
  */
 public class App extends Application {
+    public static void main(String[] args) {
+        Application.launch(App.class, args);
+    }
     @Override
     public void start(Stage primaryStage) throws Exception {
         URL url = getClass().getResource("mainframe.fxml");
@@ -20,7 +23,7 @@ public class App extends Application {
         BorderPane bp = loader.load();
         Scene scene = new Scene(bp);
         DbgFrame mf = loader.getController();
-        mf.scriptArea.insertText(0, "script Simple1(i:int, j:int) {\n" +
+        mf.setCode("script Simple1(i:int, j:int) {\n" +
                 "    i := 1;\n" +
                 "    j := 2;\n" +
                 "\n" +
@@ -47,7 +50,6 @@ public class App extends Application {
                 "    }\n" +
                 "}");
 
-        mf.scriptArea.setEditable(true);
         primaryStage.setScene(scene);
         primaryStage.setTitle("DbgKps");
         primaryStage.show();

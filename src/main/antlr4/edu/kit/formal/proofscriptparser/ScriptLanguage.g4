@@ -125,11 +125,11 @@ callStmt
 */
 
 //LEXER Rules
-WS : [ \t\n\r]+ -> skip ;
+WS : [ \t\n\r]+ -> channel(HIDDEN) ;
 
 //comments, allowing nesting.
-SINGLE_LINE_COMMENT : '//' ~[\r\n]* -> skip;
-MULTI_LINE_COMMENT  : '/*' (MULTI_LINE_COMMENT|.)*? '*/' -> skip;
+SINGLE_LINE_COMMENT : '//' ~[\r\n]* -> channel(HIDDEN);
+MULTI_LINE_COMMENT  : '/*' (MULTI_LINE_COMMENT|.)*? '*/' -> channel(HIDDEN);
 
 CASES: 'cases';
 CASE: 'case';

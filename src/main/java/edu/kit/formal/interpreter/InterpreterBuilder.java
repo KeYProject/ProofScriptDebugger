@@ -1,8 +1,6 @@
 package edu.kit.formal.interpreter;
 
 import de.uka.ilkd.key.api.KeYApi;
-import de.uka.ilkd.key.api.ProofApi;
-import de.uka.ilkd.key.api.ProofManagementApi;
 import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
@@ -125,5 +123,15 @@ public class InterpreterBuilder {
         if (logger == null)
             logger = new ScopeLogger("interpreter");
         return onEntry(logger);
+    }
+
+    public InterpreterBuilder addCommand(CommandHandler command) {
+        lookup.getBuilders().add(command);
+        return this;
+    }
+
+    public InterpreterBuilder matcher(MatcherApi matcher) {
+        interpreter.setMatcherApi(matcher);
+        return this;
     }
 }

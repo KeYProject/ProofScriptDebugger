@@ -1,8 +1,48 @@
-.FOREACH, .CASES, .CASE, .THEONLY, .SCRIPT, .MATCH, .USING {
+.FOREACH, .CASES, .CASE, .THEONLY, .SCRIPT, .USING,
+.REPEAT {
     -fx-fill: darkgreen;
     -fx-font-weight: bold;
 }
 
-.INDENT, .DEDENT, .COLON, .ASSIGN {
+.MATCH, .PLUS, .MINUS {
+    -fx-font-weight: bold;
     -fx-fill: darkred;
+}
+
+.INDENT, .DEDENT, .COLON, .ASSIGN {
+    -fx-font-weight: bold;
+    -fx-fill: red;
+}
+
+.script-area {
+    -fx-font-size: 14pt;
+    -fx-font-family: "Fira Code Medium";
+}
+
+.INTEGER_LITERAL {
+    -fx-fill: blue;
+}
+
+.TERM_LITERAL {
+    -fx-fill: green;
+    -fx-font-smoothing-type: lcd;
+}
+
+.STRING_LITERAL {
+    -fx-fill: olivedrab;
+}
+
+.SINGLE_LINE_COMMENT, .MULTI_LINE_COMMENT {
+    -fx-fill: dimgrey;
+    -fx-font-family: "Fira Code Light";
+}
+
+.IDENTIFIER {
+    -fx-fill: darkslateblue;
+    -fx-font-weight: bold;
+}
+
+.problem {
+    -fx-font-size: 18pt;
+    -fx-fill: fuchsia !important;
 }

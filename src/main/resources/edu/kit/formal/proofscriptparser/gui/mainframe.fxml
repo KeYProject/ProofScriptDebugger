@@ -4,6 +4,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import edu.kit.formal.proofscriptparser.gui.SequentViewer?>
 <BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.112"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.kit.formal.proofscriptparser.gui.DbgFrame">
     <center>
@@ -11,7 +12,12 @@
                    prefWidth="200.0">
             <VBox>
                 <ToolBar>
-                    <Button id="btnRun" text="Run"/>
+                    <Button id="btnRun" text="Run" onAction="#execute"/>
+                    <Button id="btnStep" text=">"/>
+                    <Button id="btnBreak" text="TglBrk"/>
+                    <Button id="a" text="a"/>
+                    <Button id="b" text="b"/>
+                    <Button id="c" text="c"/>
                 </ToolBar>
                 <ScriptArea fx:id="scriptArea" editable="false" VBox.vgrow="ALWAYS"/>
             </VBox>
@@ -25,8 +31,8 @@
                         <ComboBox fx:id="listGoals"/>
                     </children>
                 </FlowPane>
-                <TextArea fx:id="sequenceView" prefHeight="208.0" prefWidth="416.0" wrapText="true"
-                          VBox.vgrow="ALWAYS"/>
+                <SequentViewer fx:id="sequentView"
+                               VBox.vgrow="ALWAYS"/>
             </VBox>
         </SplitPane>
     </center>

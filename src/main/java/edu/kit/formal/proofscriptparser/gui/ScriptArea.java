@@ -1,17 +1,20 @@
 package edu.kit.formal.proofscriptparser.gui;
 
+import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ScriptLanguageLexer;
+import edu.kit.formal.proofscriptparser.lint.LintProblem;
+import edu.kit.formal.proofscriptparser.lint.LinterStrategy;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import javafx.concurrent.Task;
 import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.RichTextChange;
 import org.fxmisc.richtext.StyleSpans;
 import org.fxmisc.richtext.StyleSpansBuilder;
 
-import java.time.Duration;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -21,12 +24,15 @@ import java.util.concurrent.Executors;
  */
 public class ScriptArea extends CodeArea {
     private Executor executor = Executors.newSingleThreadExecutor();
+    private ObservableMap<Token, LintProblem> problems = FXCollections.emptyObservableMap();
 
     public ScriptArea() {
         getStylesheets().add(getClass().getResource("script-keywords.css").toExternalForm());
-        System.out.println(getStylesheets());
-        richChanges()//.filter(ch -> !ch.getInserted().equals(ch.getRemoved()))
-                .successionEnds(Duration.ofMillis(100))
+        getStyleClass().add("script-area");
+        textProperty().addListener((prop, oldValue, newValue)->{
+            computeHighlighting();
+        });
+               /* .successionEnds(Duration.ofMillis(100))
                 .hook(collectionRichTextChange -> this.getUndoManager().mark())
                 .supplyTask(this::computeHighlightingAsync).awaitLatest(richChanges())
                 .filterMap(t -> {
@@ -36,7 +42,29 @@ public class ScriptArea extends CodeArea {
                         t.getFailure().printStackTrace();
                         return Optional.empty();
                     }
-                }).subscribe(s -> setStyleSpans(0, s));
+                }).subscribe(s -> setStyleSpans(0, s));*/
+    }
+
+    private void computeHighlighting() {
+        setStyleSpans(0, computeHighlighting(getText()));
+        LinterStrategy ls = LinterStrategy.getDefaultLinter();
+        List<LintProblem> pl = ls.check(Facade.getAST(CharStreams.fromString(getText())));
+
+        List<Integer> newlines = new ArrayList<>();
+        newlines.add(0);
+        char[] chars = getText().toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '\n') {
+                newlines.add(i);
+            }
+        }
+
+        for (LintProblem p : pl) {
+            for (Token tok : p.getMarkTokens()) {
+                int pos = newlines.get(tok.getLine()) + tok.getCharPositionInLine();
+                setStyle(pos, pos + tok.getText().length(), Collections.singleton("problem"));
+            }
+        }
     }
 
     private Task<StyleSpans<Collection<String>>> computeHighlightingAsync() {
@@ -54,14 +82,33 @@ public class ScriptArea extends CodeArea {
         ScriptLanguageLexer lexer = new ScriptLanguageLexer(CharStreams.fromString(sourcecode));
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         List<? extends org.antlr.v4.runtime.Token> tokens = lexer.getAllTokens();
+        if (tokens.size() == 0)
+            spansBuilder.add(Collections.emptyList(), 0);
+
         tokens.forEach(token -> {
             String clazz = lexer.getVocabulary().getSymbolicName(token.getType());
-            System.out.println(clazz);
+            Set<String> clazzes = Collections.singleton(clazz);
+            //System.out.format("%25s %s%n", clazz, token.getText());
             spansBuilder.add(
-                    Collections.singleton(clazz),
-                    token.getText().replaceAll("\\r", "").length());
+                    clazzes,
+                    token.getText().length());
         });
+
+
         return spansBuilder.create();
     }
 
+
+    public ObservableMap<Token, LintProblem> getProblems() {
+        return problems;
+    }
+
+    public ScriptArea setProblems(ObservableMap<Token, LintProblem> problems) {
+        this.problems = problems;
+        return this;
+    }
+
+    public void setText(String text) {
+        insertText(0, text);
+    }
 }

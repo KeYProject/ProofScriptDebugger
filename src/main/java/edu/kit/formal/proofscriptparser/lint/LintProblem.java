@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Data
 @RequiredArgsConstructor
-public class LintProblem {
+public class LintProblem implements Comparable<LintProblem> {
     @Getter
     private final Issue issue;
 
@@ -62,5 +62,19 @@ public class LintProblem {
     public LintProblem tokens(Token... toks) {
         getMarkTokens().addAll(Arrays.asList(toks));
         return this;
+    }
+
+    @Override
+    public int compareTo(LintProblem o) {
+        int lineCmp = Integer.compare(getFirstToken().getLine(), o.getFirstToken().getLine());
+        int charCmp = Integer.compare(getFirstToken().getCharPositionInLine(),
+                o.getFirstToken().getCharPositionInLine());
+
+        if (lineCmp == 0) {
+            return charCmp;
+        } else {
+            return lineCmp;
+        }
+
     }
 }
