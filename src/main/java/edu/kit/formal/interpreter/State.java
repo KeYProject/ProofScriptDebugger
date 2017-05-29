@@ -1,6 +1,12 @@
 package edu.kit.formal.interpreter;
 
+import edu.kit.formal.interpreter.data.GoalNode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -8,37 +14,48 @@ import java.util.List;
  *
  * @author S.Grebing
  */
-public class State extends AbstractState {
-
-
+@ToString
+public class State<T> {
     /**
      * All goalnodes in this state
      */
-    private List<GoalNode> goals;
+    @Getter
+    private List<GoalNode<T>> goals;
 
 
     /**
      * Currently selected GoalNode
      */
-    private GoalNode selectedGoalNode;
+    @Getter
+    @Setter
+    private GoalNode<T> selectedGoalNode;
 
-    public State(List<GoalNode> goals, GoalNode selected) {
-        this.goals = goals;
+    @Getter
+    private boolean errorState;
+
+    public State(Collection<GoalNode<T>> goals, GoalNode selected) {
+        this.goals = new ArrayList<>(goals);
         this.selectedGoalNode = selected;
+        assert selected == null || goals.contains(selected);
     }
 
-    @Override
-    public boolean isErrorState() {
-        return false;
+    public State(List<GoalNode<T>> goals, int n) {
+        this(goals, goals.get(n));
     }
 
-    @Override
-    public List<GoalNode> getGoals() {
+    public State(GoalNode<T> goal) {
+        assert goal != null;
+        goals = new ArrayList<>();
+        goals.add(goal);
+        setSelectedGoalNode(goal);
+    }
+
+
+    public List<GoalNode<T>> getGoals() {
         return goals;
     }
 
-    @Override
-    public GoalNode getSelectedGoalNode() {
+    public GoalNode<T> getSelectedGoalNode() {
         if (selectedGoalNode == null) {
             throw new IllegalStateException("no selected node");
         } else {
@@ -46,8 +63,8 @@ public class State extends AbstractState {
         }
     }
 
-    public void setSelectedGoalNode(GoalNode selectedGoalNode) {
-        this.selectedGoalNode = selectedGoalNode;
+    public void setSelectedGoalNode(GoalNode<T> gn) {
+        this.selectedGoalNode = gn;
     }
 
     /**
@@ -55,11 +72,10 @@ public class State extends AbstractState {
      *
      * @return
      */
-    @Override
-    public State copy() {
-        List<GoalNode> copiedGoals = new ArrayList<>();
-        GoalNode refToSelGoal = selectedGoalNode;
-        return new State(copiedGoals, refToSelGoal);
+    public State<T> copy() {
+        List<GoalNode<T>> copiedGoals = new ArrayList<>();
+        GoalNode<T> refToSelGoal = selectedGoalNode;
+        return new State<T>(copiedGoals, refToSelGoal);
     }
 
 }

@@ -1,6 +1,8 @@
 package edu.kit.formal.interpreter;
 
 import de.uka.ilkd.key.api.ProofManagementApi;
+import edu.kit.formal.interpreter.data.GoalNode;
+import edu.kit.formal.interpreter.data.StringScriptSequent;
 import edu.kit.formal.interpreter.funchdl.BuiltinCommands;
 import edu.kit.formal.interpreter.funchdl.DefaultLookup;
 import edu.kit.formal.proofscriptparser.Facade;
@@ -28,7 +30,7 @@ public class Main {
             ScriptApi scrapi = papi.getScriptApi();
 */
 
-            /*System.out.println(papi.getFirstOpenGoal().getSequent().toString());
+            /*System.out.println(papi.getFirstOpenGoal().getData().toString());
             ProjectedNode openGoal = papi.getFirstOpenGoal();
             RuleCommand rc = (RuleCommand) KeYApi.getScriptCommandApi().getScriptCommands("rule");
             Map cArgs = new HashMap();
@@ -40,14 +42,14 @@ public class Main {
             va2.addType("X", VariableAssignments.VarType.FORMULA);
             va2.addType("Y", VariableAssignments.VarType.FORMULA);
 
-            List<VariableAssignments> matches = scrapi.matchPattern("==> X -> Y", openGoal.getSequent(), va2);
+            List<VariableAssignments> matches = scrapi.matchPattern("==> X -> Y", openGoal.getData(), va2);
             for (VariableAssignments match : matches) {
                 System.out.println(match);
             }
             if (matches.isEmpty()) {
                 System.out.println("No match found");
             } else {
-                List<VariableAssignments> matches2 = scrapi.matchPattern("==> X -> Y", openGoal.getSequent(), va2);
+                List<VariableAssignments> matches2 = scrapi.matchPattern("==> X -> Y", openGoal.getData(), va2);
 
             }*/
        /* } catch (ProblemLoaderException e) {
@@ -69,7 +71,7 @@ public class Main {
                     new BuiltinCommands.SplitCommand());
 
             Interpreter inter = new Interpreter(lookup);
-            inter.interpret(l, "TestSeq");
+            inter.interpret(l, new GoalNode<String>(null, "abc"));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,10 +1,8 @@
 package edu.kit.formal.interpreter.funchdl;
 
 import de.uka.ilkd.key.macros.ProofMacro;
-import de.uka.ilkd.key.macros.scripts.MacroCommand;
 import edu.kit.formal.interpreter.Interpreter;
-import edu.kit.formal.interpreter.Value;
-import edu.kit.formal.interpreter.VariableAssignment;
+import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.ast.CallStatement;
 import edu.kit.formal.proofscriptparser.ast.Parameters;
 import edu.kit.formal.proofscriptparser.ast.StringLiteral;
@@ -12,7 +10,6 @@ import edu.kit.formal.proofscriptparser.ast.Variable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -39,7 +39,7 @@ import org.antlr.v4.runtime.Token;
 @Data
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class Variable extends Literal {
+public class Variable extends Literal implements Comparable<Variable> {
     @NonNull private String identifier;
 
     public Variable(Token variable) {
@@ -73,5 +73,10 @@ public class Variable extends Literal {
         if (signature.containsKey(this))
             return signature.get(this);
         throw new NotWelldefinedException(toString() + "not defined in signature.", this);
+    }
+
+    @Override
+    public int compareTo(Variable o) {
+        return identifier.compareTo(o.getIdentifier());
     }
 }

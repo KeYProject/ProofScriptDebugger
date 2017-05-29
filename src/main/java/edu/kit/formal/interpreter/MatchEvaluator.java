@@ -1,6 +1,9 @@
 package edu.kit.formal.interpreter;
 
 import de.uka.ilkd.key.api.VariableAssignments;
+import edu.kit.formal.interpreter.data.GoalNode;
+import edu.kit.formal.interpreter.data.Value;
+import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
@@ -149,7 +152,7 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
     public List<VariableAssignment> visit(MatchExpression match) {
         List<VariableAssignments> resultOfMatch;
         //TODO transform assignments
-        Value pattern = (Value) eval.eval(match.getPattern());
+        Value pattern = eval.eval(match.getPattern());
         // Value pattern = (Value) match.getPattern().accept(this);
 
         List<VariableAssignment> va = null;
@@ -164,8 +167,7 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
     @Override
     public List<VariableAssignment> visit(Variable variable) {
         //get variable value
-        String id = variable.getIdentifier();
-        Value v = state.lookupVarValue(id);
+        Value v = state.getValue(variable);
         if (v != null) {
             // return v;
             return null;

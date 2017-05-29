@@ -2,12 +2,13 @@ package edu.kit.formal.interpreter;
 
 import de.uka.ilkd.key.api.KeYApi;
 import de.uka.ilkd.key.api.ProofApi;
-import de.uka.ilkd.key.api.ProofManagementApi;
+import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.formal.ScopeLogger;
+import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.funchdl.*;
 import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.Visitor;
@@ -46,8 +47,7 @@ public class InterpreterBuilder {
     private ScopeLogger logger;
     @Getter
     private DefaultLookup lookup = new DefaultLookup(psh, pmh, pmr, pmc);
-
-    private Interpreter interpreter = new Interpreter(lookup);
+    private Interpreter<KeyData> interpreter = new Interpreter<>(lookup);
 
     public InterpreterBuilder addProofScripts(File file) throws IOException {
         return addProofScripts(Facade.getAST(file));
@@ -63,7 +63,7 @@ public class InterpreterBuilder {
         return this;
     }
 
-    public Interpreter build() {
+    public Interpreter<KeyData> build() {
         return interpreter;
     }
 
@@ -72,10 +72,9 @@ public class InterpreterBuilder {
         return this;
     }
 
-    //TODO
     public InterpreterBuilder proof(KeYEnvironment env, Proof proof) {
-        this.proof = proof;
-        this.keyEnvironment = env;
+        //TODO relax constructor of proofapi
+        //return proof(new ProofApi(proof, env));
         return this;
     }
 
@@ -94,6 +93,12 @@ public class InterpreterBuilder {
 
     public InterpreterBuilder macros(Collection<ProofMacro> macros) {
         macros.forEach(m -> pmh.getMacros().put(m.getName(), m));
+        return this;
+    }
+
+    public InterpreterBuilder addKeyMatcher(ProofApi api) {
+        ScriptApi scriptApi = api.getScriptApi();
+        interpreter.setMatcherApi(new KeYMatcher(scriptApi, interpreter));
         return this;
     }
 
@@ -125,5 +130,11 @@ public class InterpreterBuilder {
         if (logger == null)
             logger = new ScopeLogger("interpreter");
         return onEntry(logger);
+    }
+
+    public InterpreterBuilder proof(ProofApi pa) {
+        addKeyMatcher(pa);
+        pa.getRules().forEach(s -> pmr.getRules().put(s, null));
+        return this;
     }
 }

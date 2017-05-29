@@ -1,5 +1,8 @@
 package edu.kit.formal.interpreter;
 
+import edu.kit.formal.interpreter.data.GoalNode;
+import edu.kit.formal.interpreter.data.Value;
+import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
@@ -15,19 +18,19 @@ import java.util.List;
  * @author S.Grebing
  * @author A. Weigl
  */
-public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservable {
+public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObservable {
     @Getter
-    private final List<VariableAssignment> matchedVariables = new ArrayList<>();
-    private final GoalNode goal;
     private final VariableAssignment state;
     @Getter
+    private final GoalNode<T> goal;
+    @Getter
     @Setter
-    private MatcherApi matcher;
+    private MatcherApi<T> matcher;
     @Getter
     private List<Visitor> entryListeners = new ArrayList<>(),
             exitListeners = new ArrayList<>();
 
-    public Evaluator(VariableAssignment assignment, GoalNode node) {
+    public Evaluator(VariableAssignment assignment, GoalNode<T> node) {
         state = new VariableAssignment(assignment); // unmodifiable version of assignment
         goal = node;
     }
@@ -58,6 +61,10 @@ public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservab
      */
     @Override
     public Value visit(MatchExpression match) {
+        if (match.getSignature() != null && !match.getSignature().isEmpty()) {
+            throw new IllegalStateException("not supported");
+        }
+
         Value pattern = (Value) match.getPattern().accept(this);
 
         List<VariableAssignment> va = null;
@@ -73,6 +80,7 @@ public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservab
     /**
      * TODO Connect with KeY
      * TODO remove return
+     *
      * @param term
      * @return
      */
@@ -89,8 +97,7 @@ public class Evaluator extends DefaultASTVisitor<Value> implements ScopeObservab
     @Override
     public Value visit(Variable variable) {
         //get variable value
-        String id = variable.getIdentifier();
-        Value v = state.lookupVarValue(id);
+        Value v = state.getValue(variable);
         if (v != null) {
             return v;
         } else {

@@ -1,7 +1,12 @@
 package edu.kit.formal.interpreter;
 
-import edu.kit.formal.dbg.Debugger;
+import edu.kit.formal.interpreter.data.GoalNode;
+import edu.kit.formal.interpreter.data.Value;
+import edu.kit.formal.interpreter.data.VariableAssignment;
+import edu.kit.formal.interpreter.dbg.Debugger;
+import edu.kit.formal.interpreter.dbg.PseudoMatcher;
 import edu.kit.formal.proofscriptparser.ast.Type;
+import edu.kit.formal.proofscriptparser.ast.Variable;
 import org.junit.Before;
 
 /**
@@ -18,17 +23,14 @@ public class MatchEvaluatorTest {
 
     @Before
     public void setup() {
-
-
-        GoalNode parent = new GoalNode(null, "pa");
-        parent.addVarDecl("a", Type.INT);
-        parent.addVarDecl("b", Type.INT);
+        GoalNode<String> parent = new GoalNode<>(null, "pa");
+        parent.declareVariable(new Variable("a"), Type.INT);
+        parent.declareVariable(new Variable("b"), Type.INT);
         VariableAssignment va = parent.getAssignments();
-        va.setVarValue("a", Value.from(1));
-        va.setVarValue("b", Value.from(1));
+        va.assign(new Variable("a"), Value.from(1));
+        va.assign(new Variable("b"), Value.from(1));
         GoalNode selected = new GoalNode(parent, "selg");
-        mEval = new MatchEvaluator(va, selected, new Debugger.PseudoMatcher());
-
+        mEval = new MatchEvaluator(va, selected, new PseudoMatcher());
     }
 
 }

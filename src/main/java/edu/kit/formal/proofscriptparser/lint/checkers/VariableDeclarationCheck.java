@@ -1,6 +1,6 @@
 package edu.kit.formal.proofscriptparser.lint.checkers;
 
-import edu.kit.formal.interpreter.VariableAssignment;
+import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.ast.*;
 import edu.kit.formal.proofscriptparser.lint.Issue;
 import edu.kit.formal.proofscriptparser.lint.IssuesRepository;
@@ -60,14 +60,14 @@ public class VariableDeclarationCheck extends AbstractLintRule {
         }
 
         private void declare(Variable var, Type type) {
-            if (current.lookupType(var.getIdentifier()) != null) {
+            if (current.getType(var) != null) {
                 problem(REDECLARE_VARIABLE).tokens(var.getToken());
 
-                if (!current.lookupType(var.getIdentifier()).equals(type)) {
+                if (!current.getType(var).equals(type)) {
                     problem(REDECLARE_VARIABLE_TYPE_MISMATCH).tokens(var.getToken());
                 }
             } else {
-                current.addVarDecl(var.getIdentifier(), type);
+                current.declare(var, type);
             }
         }
 

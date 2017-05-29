@@ -1,7 +1,7 @@
 package edu.kit.formal.interpreter.funchdl;
 
 import edu.kit.formal.interpreter.Interpreter;
-import edu.kit.formal.interpreter.VariableAssignment;
+import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ast.CallStatement;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;

@@ -1,6 +1,8 @@
 package edu.kit.formal.interpreter;
 
-import edu.kit.formal.dbg.Debugger;
+import edu.kit.formal.interpreter.data.GoalNode;
+import edu.kit.formal.interpreter.data.Value;
+import edu.kit.formal.interpreter.dbg.PseudoMatcher;
 import edu.kit.formal.proofscriptparser.TestHelper;
 import edu.kit.formal.proofscriptparser.ast.Expression;
 import edu.kit.formal.proofscriptparser.ast.Type;
@@ -11,10 +13,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Alexander Weigl
@@ -37,15 +35,15 @@ public class EvaluatorTest {
 
     @Before
     public void setup() {
-        GoalNode parent = new GoalNode(null, "pa");
-        parent.addVarDecl("a", Type.INT);
-        parent.addVarDecl("b", Type.INT);
-        VariableAssignment va = parent.getAssignments();
-        va.setVarValue("a", Value.from(1));
-        va.setVarValue("b", Value.from(1));
-        GoalNode selected = new GoalNode(parent, "selg");
+        GoalNode<String> parent = new GoalNode<>(null, "pa");
+        parent.getAssignments()
+                .declare("a", Type.INT)
+                .declare("b", Type.INT)
+                .assign("a", Value.from(1))
+                .assign("b", Value.from(1));
+        GoalNode<String> selected = new GoalNode<>(parent, "selg");
         eval = new Evaluator(selected.getAssignments(), selected);
-        eval.setMatcher(new Debugger.PseudoMatcher());
+        eval.setMatcher(new PseudoMatcher());
     }
 
     @Test

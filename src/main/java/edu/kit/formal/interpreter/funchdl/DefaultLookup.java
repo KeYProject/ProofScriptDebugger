@@ -1,11 +1,14 @@
 package edu.kit.formal.interpreter.funchdl;
 
 import edu.kit.formal.interpreter.Interpreter;
-import edu.kit.formal.interpreter.VariableAssignment;
+import edu.kit.formal.interpreter.data.VariableAssignment;
+import edu.kit.formal.interpreter.exceptions.NoCallHandlerException;
 import edu.kit.formal.proofscriptparser.ast.CallStatement;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Alexander Weigl
@@ -44,7 +47,7 @@ public class DefaultLookup implements CommandLookup {
         }
 
         if (found != null) return found;
-        throw new IllegalStateException();
+        throw new NoCallHandlerException(callStatement);
     }
 
 }

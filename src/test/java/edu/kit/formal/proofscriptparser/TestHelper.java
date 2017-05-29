@@ -39,6 +39,13 @@ import java.util.stream.Collectors;
  * @version 1 (27.04.17)
  */
 public class TestHelper {
+    public static String getFile(String path) {
+        return getFile(TestHelper.class, path);
+    }
+
+    public static String getFile(Class<?> aClass, String path) {
+        return aClass.getResource(path).toExternalForm().substring(5);
+    }
 
     public static Iterable<Object[]> getResourcesAsParameters(String folder) {
         File[] files = getResources(folder);

@@ -1,6 +1,9 @@
 package edu.kit.formal.interpreter;
 
-import edu.kit.formal.dbg.Debugger;
+import edu.kit.formal.interpreter.data.GoalNode;
+import edu.kit.formal.interpreter.data.Value;
+import edu.kit.formal.interpreter.data.VariableAssignment;
+import edu.kit.formal.interpreter.dbg.PseudoMatcher;
 import edu.kit.formal.interpreter.funchdl.BuiltinCommands;
 import edu.kit.formal.interpreter.funchdl.CommandLookup;
 import edu.kit.formal.interpreter.funchdl.DefaultLookup;
@@ -8,6 +11,7 @@ import edu.kit.formal.interpreter.funchdl.ProofScriptHandler;
 import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ast.CallStatement;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
+import edu.kit.formal.proofscriptparser.ast.Variable;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,14 +28,12 @@ import java.util.Map;
  */
 public class InterpreterTest {
 
-    public Interpreter execute(InputStream is) throws IOException {
+    public Interpreter<String> execute(InputStream is) throws IOException {
         List<ProofScript> scripts = Facade.getAST(CharStreams.fromStream(is));
-        Interpreter i = new Interpreter(createTestLookup(scripts));
-        i.setMatcherApi(new Debugger.PseudoMatcher());
+        Interpreter<String> i = new Interpreter<>(createTestLookup(scripts));
+        i.setMatcherApi(new PseudoMatcher());
         //i.getEntryListeners().add(new ScopeLogger("scope:"));
-
-        i.interpret(scripts, "abc");
-
+        i.interpret(scripts, new GoalNode<>(null, "abc"));
         return i;
     }
 
@@ -50,7 +52,7 @@ public class InterpreterTest {
 
     @Test
     public void testSimple() throws IOException {
-        Interpreter i = execute(getClass().getResourceAsStream("simple1.txt"));
+        Interpreter<String> i = execute(getClass().getResourceAsStream("simple1.txt"));
         Assert.assertEquals(10, i.getCurrentState().getGoals().size());
     }
 
@@ -73,7 +75,7 @@ public class InterpreterTest {
 
         @Override
         public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
-            Map<String, Value> m = params.asMap();
+            Map<Variable, Value> m = params.asMap();
             Value exp = get(m, "exp", "expected", "#1");
             Value act = get(m, "act", "actual", "#2");
             Value msg = get(m, "msg", "#4");
@@ -81,15 +83,6 @@ public class InterpreterTest {
                 Assert.assertEquals(exp, act);
             else
                 Assert.assertEquals((String) msg.getData(), exp, act);
-        }
-
-        private Value get(Map<String, Value> m, String... keys) {
-            for (String k : keys) {
-                if (m.containsKey(k)) {
-                    return m.get(k);
-                }
-            }
-            return null;
         }
     }
 
@@ -102,7 +95,7 @@ public class InterpreterTest {
 
         @Override
         public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
-            Map<String, Value> m = params.asMap();
+            Map<Variable, Value> m = params.asMap();
             Value<Boolean> exp = get(m, "val", "#1");
             Value<String> msg = get(m, "msg", "#2");
             if (msg == null)
@@ -110,16 +103,14 @@ public class InterpreterTest {
             else
                 Assert.assertTrue(msg.getData(), exp.getData());
         }
-
-        private Value get(Map<String, Value> m, String... keys) {
-            for (String k : keys) {
-                if (m.containsKey(k)) {
-                    return m.get(k);
-                }
-            }
-            return null;
-        }
     }
 
-
+    private static <T> T get(Map<Variable, T> m, String... keys) {
+        for (String k : keys) {
+            if (m.containsKey(new Variable(k))) {
+                return m.get(new Variable(k));
+            }
+        }
+        return null;
+    }
 }

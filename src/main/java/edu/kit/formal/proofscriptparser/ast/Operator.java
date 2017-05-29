@@ -23,7 +23,7 @@ package edu.kit.formal.proofscriptparser.ast;
  */
 
 
-import edu.kit.formal.interpreter.Value;
+import edu.kit.formal.interpreter.data.Value;
 
 import java.math.BigInteger;
 import java.util.function.BiFunction;
