@@ -22,9 +22,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Created by sarah on 5/26/17.
+ * Controller for the Debugger MainWindow
+ * @author S.Grebing
  */
-public class RootController implements Initializable {
+public class DebuggerMainWindowController implements Initializable {
 
     @FXML
     Pane rootPane;

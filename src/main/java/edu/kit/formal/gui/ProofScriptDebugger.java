@@ -2,7 +2,7 @@ package edu.kit.formal.gui;/**
  * Created by sarah on 5/26/17.
  */
 
-import edu.kit.formal.gui.controller.RootController;
+import edu.kit.formal.gui.controller.DebuggerMainWindowController;
 import edu.kit.formal.gui.model.RootModel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -26,7 +26,7 @@ public class ProofScriptDebugger extends Application {
         Parent root = null;
         try {
             root = (Parent) fxmlLoader.load();
-            RootController controller = fxmlLoader.<RootController>getController();
+            DebuggerMainWindowController controller = fxmlLoader.<DebuggerMainWindowController>getController();
             controller.setStage(primaryStage);
             controller.setModel(rm);
             controller.init();

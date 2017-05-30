@@ -205,7 +205,8 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
             }
             stateStack.push(newStateAfterCases);
         }
-        stateStack.peek().getGoals().removeAll(beforeCases.getGoals());
+
+        //stateStack.peek().getGoals().removeAll(beforeCases.getGoals());
         exitScope(casesStatement);
         return null;
     }
