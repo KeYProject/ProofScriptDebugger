@@ -3,10 +3,9 @@ package edu.kit.formal.gui.controller;
 import edu.kit.formal.gui.FileUtils;
 import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.Interpreter;
-import edu.kit.formal.interpreter.KeYInterpreterFacade;
+import edu.kit.formal.interpreter.KeYProofFacade;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
-import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.interpreter.dbg.Debugger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,6 +19,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Controller for the Debugger MainWindow
@@ -62,6 +63,8 @@ public class DebuggerMainWindowController implements Initializable {
      * **********************************************************************************************************/
     @FXML
     ListGoalView goalView;
+    ExecutorService executorService = null;
+    KeYProofFacade facade;
     private RootModel model;
     @Setter
     private Interpreter<KeyData> interpreter;
@@ -72,16 +75,9 @@ public class DebuggerMainWindowController implements Initializable {
     @FXML
     public void executeScript() {
         buttonStartInterpreter.setText("Interpreting...");
-
         startDebugMode.setDisable(true);
-
-        String currentScript = this.model.getCurrentScript();
-        KeYInterpreterFacade inter = new KeYInterpreterFacade();
-
-        State<KeyData> s = inter.executeScriptWithKeYProblemFile(this.model.getCurrentScript(), this.model.getKeYFile());
-        List<GoalNode<KeyData>> g = s.getGoals();
-
-
+        facade.executeScript(model.getCurrentScript());
+        List<GoalNode<KeyData>> g = model.getCurrentState().getGoals();
         this.model.getCurrentGoalNodes().addAll(g);
         buttonStartInterpreter.setText("execute Script");
     }
@@ -108,6 +104,7 @@ public class DebuggerMainWindowController implements Initializable {
     protected void loadKeYFile() {
         File keyFile = openFileChooserDialog("Select KeY File", "KeY Files", "key", "java", "script");
         this.model.setKeYFile(keyFile);
+        buildKeYProofFacade();
 
     }
 
@@ -137,6 +134,7 @@ public class DebuggerMainWindowController implements Initializable {
     }
 
     public void init() {
+        facade = new KeYProofFacade(this.model);
         scriptArea.setRootModel(this.model);
         scriptArea.init();
         goalView.setRootModel(this.model);
@@ -149,4 +147,16 @@ public class DebuggerMainWindowController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
     }
+
+    private void buildKeYProofFacade() {
+        executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(() -> {
+            facade = new KeYProofFacade(model);
+            facade.buildKeYInterpreter(model.getKeYFile());
+
+        });
+        executorService.shutdown();
+    }
+
+
 }

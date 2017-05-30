@@ -3,11 +3,13 @@ package edu.kit.formal.gui.model;
 
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
+import edu.kit.formal.interpreter.data.State;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import lombok.Getter;
 
 import java.io.File;
 
@@ -41,6 +43,9 @@ public class RootModel {
      * Current SelectedGoalNode
      */
     private SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoalNode;
+
+    @Getter
+    private State<KeyData> currentState;
 
 
     public RootModel() {
@@ -113,4 +118,7 @@ public class RootModel {
     }
 
 
+    public void setCurrentState(State<KeyData> currentState) {
+        this.currentState = currentState;
+    }
 }
