@@ -3,6 +3,9 @@ package edu.kit.formal.gui.controller;
 import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
@@ -16,9 +19,9 @@ import java.io.IOException;
  * Created by sarah on 5/27/17.
  */
 public class ListGoalView extends VBox {
+    protected SimpleListProperty<GoalNode<KeyData>> localGoalListProperty = new SimpleListProperty<>();
     @FXML
-    private ListView<GoalNode<KeyData>> listOfGoals;
-
+    private ListView<GoalNode<KeyData>> listOfGoalsView;
     @FXML
     private TextArea goalNodeView;
 
@@ -37,7 +40,7 @@ public class ListGoalView extends VBox {
             throw new RuntimeException(exception);
         }
 
-        listOfGoals.setCellFactory(list -> new GoalNodeCell());
+        listOfGoalsView.setCellFactory(list -> new GoalNodeCell());
 
     }
 
@@ -46,11 +49,21 @@ public class ListGoalView extends VBox {
         this.rootModel = rootModel;
     }
 
+    /**
+     * Set Bindings and listener
+     */
     public void init() {
-        this.listOfGoals.itemsProperty().bind(this.rootModel.currentGoalNodesProperty());
-        // this.listOfGoals.itemsProperty().bind(this.rootModel.currentGoalNodesProperty());
-        goalNodeView.textProperty().bind(listOfGoals.getSelectionModel().selectedItemProperty().asString());
+        listOfGoalsView.itemsProperty().bind(this.rootModel.currentGoalNodesProperty());
+
+        listOfGoalsView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<GoalNode<KeyData>>() {
+            @Override
+            public void changed(ObservableValue<? extends GoalNode<KeyData>> observable, GoalNode<KeyData> oldValue, GoalNode<KeyData> newValue) {
+                goalNodeView.setText(newValue.toCellTextForKeYData());
+            }
+        });
+
     }
+
 
     private static class GoalNodeCell extends ListCell<GoalNode<KeyData>> {
 

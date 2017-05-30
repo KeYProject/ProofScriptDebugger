@@ -10,32 +10,32 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.File;
 
 /**
  * Model for the root window
- * Created by sarah on 5/26/17.
+ * @author S. Grebing
  */
 public class RootModel {
-
     /**
-     * Current laoded ScriptFile
+     * Property: current loaded ScriptFile
      */
     private final SimpleObjectProperty<File> scriptFile;
 
     /**
-     * Current loaded KeY File
+     * Property: current loaded KeY File
      */
     private final SimpleObjectProperty<File> keYFile;
 
     /**
-     * Current loaded script string
+     * Property: current loaded script string
      */
     private final SimpleObjectProperty<String> currentScript;
 
     /**
-     * The list of goal nodes in the current state (depending on interpreter state)
+     * ListProperty: list of goal nodes in the current state (depending on interpreter state)
      */
     private ListProperty<GoalNode<KeyData>> currentGoalNodes;
 
@@ -45,6 +45,7 @@ public class RootModel {
     private SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoalNode;
 
     @Getter
+    @Setter
     private State<KeyData> currentState;
 
 
@@ -57,18 +58,10 @@ public class RootModel {
 
     }
 
-    public GoalNode<KeyData> getCurrentSelectedGoalNode() {
-        return currentSelectedGoalNode.get();
-    }
 
-    public void setCurrentSelectedGoalNode(GoalNode currentSelectedGoalNode) {
-        this.currentSelectedGoalNode.set(currentSelectedGoalNode);
-    }
-
-    public SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoalNodeProperty() {
-        return currentSelectedGoalNode;
-    }
-
+    /*****************************************************************************************************************
+     *                                          Property Getter and Setter
+     ***************************************************************************************************************/
     public File getScriptFile() {
         return scriptFile.get();
     }
@@ -117,8 +110,19 @@ public class RootModel {
         return currentGoalNodes;
     }
 
-
-    public void setCurrentState(State<KeyData> currentState) {
-        this.currentState = currentState;
+    public GoalNode<KeyData> getCurrentSelectedGoalNode() {
+        return currentSelectedGoalNode.get();
     }
+
+    public void setCurrentSelectedGoalNode(GoalNode<KeyData> currentSelectedGoalNode) {
+        this.currentSelectedGoalNode.set(currentSelectedGoalNode);
+    }
+
+    public SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoalNodeProperty() {
+        return currentSelectedGoalNode;
+    }
+
+
+
+
 }

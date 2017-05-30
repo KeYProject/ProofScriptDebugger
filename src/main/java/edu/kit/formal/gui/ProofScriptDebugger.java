@@ -1,5 +1,8 @@
-package edu.kit.formal.gui;/**
- * Created by sarah on 5/26/17.
+package edu.kit.formal.gui;
+
+/**
+ * Main Entry for Debugger GUI
+ * @author S. Grebing
  */
 
 import edu.kit.formal.gui.controller.DebuggerMainWindowController;

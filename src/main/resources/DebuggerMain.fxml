@@ -46,7 +46,7 @@
                                       AnchorPane.topAnchor="0.0"
                                       SplitPane.resizableWithParent="true">
                             <!--<children>
-                                <ListView fx:id="listOfGoals" prefHeight="200.0" prefWidth="200.0"/>
+                                <ListView fx:id="listOfGoalsView" prefHeight="200.0" prefWidth="200.0"/>
                                 <TextArea fx:id="goalNodeView" prefHeight="200.0" prefWidth="200.0"/>
                             </children>-->
                         </ListGoalView>
