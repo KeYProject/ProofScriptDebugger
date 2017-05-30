@@ -1,7 +1,6 @@
 package edu.kit.formal.interpreter;
 
 import edu.kit.formal.interpreter.data.GoalNode;
-import edu.kit.formal.interpreter.data.ScriptSequent;
 import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.ast.Signature;
 
