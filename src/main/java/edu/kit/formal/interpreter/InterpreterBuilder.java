@@ -7,7 +7,6 @@ import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
 import de.uka.ilkd.key.proof.Proof;
-import edu.kit.formal.ScopeLogger;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.funchdl.*;
 import edu.kit.formal.proofscriptparser.Facade;

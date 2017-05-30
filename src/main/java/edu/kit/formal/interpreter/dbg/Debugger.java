@@ -2,8 +2,8 @@ package edu.kit.formal.interpreter.dbg;
 
 import edu.kit.formal.interpreter.HistoryListener;
 import edu.kit.formal.interpreter.Interpreter;
-import edu.kit.formal.interpreter.State;
 import edu.kit.formal.interpreter.data.GoalNode;
+import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.interpreter.data.Value;
 import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.interpreter.funchdl.BuiltinCommands;

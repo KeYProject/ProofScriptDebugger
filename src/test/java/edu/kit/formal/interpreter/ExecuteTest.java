@@ -13,6 +13,12 @@ import static edu.kit.formal.proofscriptparser.TestHelper.getFile;
  * @version 1 (28.05.17)
  */
 public class ExecuteTest {
+    private static Execute create(String... cmd) throws IOException, ParseException {
+        Execute e = new Execute();
+        e.init(cmd);
+        return e;
+    }
+
     @Test
     public void testContrapositionAuto() throws IOException, ParseException {
         Execute execute = create(
@@ -32,17 +38,12 @@ public class ExecuteTest {
 
     @Test
     public void testContrapositionManualWBranching() throws IOException, ParseException {
-        /*TODO
         Execute execute = create(
                 getFile(getClass(), "contraposition/contraposition.key"),
                 "-s", getFile(getClass(), "contraposition/w_branching.kps"));
-        execute.run();*/
-    }
+        Interpreter<KeyData> i = execute.run();
+        System.out.println(i.getCurrentState());
 
-    private static Execute create(String... cmd) throws IOException, ParseException {
-        Execute e = new Execute();
-        e.init(cmd);
-        return e;
     }
 
 

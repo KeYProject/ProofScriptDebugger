@@ -1,6 +1,5 @@
 package edu.kit.formal.interpreter;
 
-import de.uka.ilkd.key.api.VariableAssignments;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.Value;
 import edu.kit.formal.interpreter.data.VariableAssignment;
@@ -97,7 +96,7 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
     }
 
     /**
-     * TODO rethink decision: atm. if the first list is true/not empty (but may contain amepty assignment) this is returned
+     * TODO rethink decision: atm. if the first list is true/not empty (but may contain empty assignment) this is returned
      * This decision also results that if a binary expression without a match is printed first, it is the winning assignment
      * Importance of match is decreased with this decision
      *
@@ -150,8 +149,8 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
      */
     @Override
     public List<VariableAssignment> visit(MatchExpression match) {
-        List<VariableAssignments> resultOfMatch;
-        //TODO transform assignments
+
+        Signature sig = match.getSignature();
         Value pattern = eval.eval(match.getPattern());
         // Value pattern = (Value) match.getPattern().accept(this);
 
@@ -159,7 +158,7 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
         if (pattern.getType() == Type.STRING) {
             va = getMatcher().matchLabel(goal, (String) pattern.getData());
         } else if (pattern.getType() == Type.TERM) {
-            va = getMatcher().matchSeq(goal, (String) pattern.getData(), match.getSignature());
+            va = getMatcher().matchSeq(goal, (String) pattern.getData(), sig);
         }
         return va != null ? va : Collections.emptyList();
     }

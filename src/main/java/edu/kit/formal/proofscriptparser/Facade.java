@@ -86,6 +86,10 @@ public abstract class Facade {
         return getAST(CharStreams.fromPath(inputfile.toPath()));
     }
 
+    public static List<ProofScript> getAST(String input) throws IOException {
+        return getAST(CharStreams.fromString(input));
+    }
+
     /**
      * Returns a prettified output of the given AST.
      *

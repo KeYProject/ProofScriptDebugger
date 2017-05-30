@@ -1,9 +1,7 @@
-package edu.kit.formal.interpreter;
+package edu.kit.formal.interpreter.data;
 
-import edu.kit.formal.interpreter.data.GoalNode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +12,7 @@ import java.util.List;
  *
  * @author S.Grebing
  */
-@ToString
+
 public class State<T> {
     /**
      * All goalnodes in this state
@@ -59,6 +57,9 @@ public class State<T> {
         if (selectedGoalNode == null) {
             throw new IllegalStateException("no selected node");
         } else {
+            if (getGoals().size() == 1) {
+                selectedGoalNode = getGoals().get(0);
+            }
             return selectedGoalNode;
         }
     }
@@ -76,6 +77,15 @@ public class State<T> {
         List<GoalNode<T>> copiedGoals = new ArrayList<>();
         GoalNode<T> refToSelGoal = selectedGoalNode;
         return new State<T>(copiedGoals, refToSelGoal);
+    }
+
+    public String toString() {
+        if (selectedGoalNode == null) {
+            return "No Goal selected";
+        } else {
+            return selectedGoalNode.toString();
+        }
+
     }
 
 }

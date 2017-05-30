@@ -1,4 +1,4 @@
-package edu.kit.formal;
+package edu.kit.formal.interpreter;
 
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.ast.ASTNode;

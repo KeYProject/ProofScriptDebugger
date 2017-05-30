@@ -1,5 +1,6 @@
 package edu.kit.formal.interpreter;
 
+import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.ast.ASTNode;
 import lombok.Getter;

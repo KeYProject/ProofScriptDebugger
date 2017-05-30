@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import edu.kit.formal.gui.controller.ListGoalView?>
+<?import edu.kit.formal.gui.controller.ScriptArea?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity"
+      minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
+      xmlns="http://javafx.com/javafx/8.0.102-ea" fx:controller="edu.kit.formal.gui.controller.RootController">
+    <children>
+        <SplitPane fx:id="splitPane" dividerPositions="0.5" layoutY="29.0" prefHeight="371.0" prefWidth="600.0">
+            <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="366.0" prefWidth="175.0">
+                    <VBox prefHeight="369.0" prefWidth="295.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <children>
+                            <ToolBar fx:id="toolbar" prefHeight="40.0" prefWidth="200.0">
+                                <items>
+                                    <Button fx:id="buttonStartInterpreter" onAction="#executeScript"
+                                            mnemonicParsing="false" text="Execute Script"/>
+                                    <Button fx:id="startDebugMode" onAction="#changeToDebugMode" mnemonicParsing="false"
+                                            text="Change to Debug Mode"/>
+                                </items>
+                            </ToolBar>
+                            <ScrollPane fx:id="scrollPaneCode" prefHeight="369.0" prefWidth="295.0"
+                                        AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                        AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <content>
+                                    <ScriptArea fx:id="scriptArea" prefHeight="369.0" prefWidth="295.0"
+                                                AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
+                                                SplitPane.resizableWithParent="true"/>
+                                </content>
+                            </ScrollPane>
+                        </children>
+                    </VBox>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                    <StackPane AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                               AnchorPane.rightAnchor="0.0">
+                        <ListGoalView fx:id="goalView" prefHeight="369.0" prefWidth="295.0"
+                                      AnchorPane.bottomAnchor="0.0"
+                                      AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                      AnchorPane.topAnchor="0.0"
+                                      SplitPane.resizableWithParent="true">
+                            <!--<children>
+                                <ListView fx:id="listOfGoals" prefHeight="200.0" prefWidth="200.0"/>
+                                <TextArea fx:id="goalNodeView" prefHeight="200.0" prefWidth="200.0"/>
+                            </children>-->
+                        </ListGoalView>
+                    </StackPane>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+        <MenuBar fx:id="menuBar" prefHeight="29.0" prefWidth="600.0">
+            <menus>
+                <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem fx:id="openScriptFileMenuItem" mnemonicParsing="false" onAction="#openScript"
+                                  text="Open Script"/>
+                        <MenuItem fx:id="loadKeYFileMenuItem" mnemonicParsing="false" onAction="#loadKeYFile"
+                                  text="Load KeY File"/>
+                        <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" onAction="#closeProgram" text="Close"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </children>
+</Pane>

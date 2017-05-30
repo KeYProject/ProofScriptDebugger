@@ -10,11 +10,11 @@ import java.util.Set;
  * @author Alexander Weigl
  * @version 1 (28.05.17)
  */
-public class KeyScriptSequent implements ScriptSequent {
+public class KeyScriptSequent {
     @Getter
     private ProjectedNode projectedNode;
 
-    @Override
+
     public Set<List<String>> getLabels() {
         //TODO
         return null;

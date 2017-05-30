@@ -87,6 +87,8 @@ public class ProofScriptHandler implements CommandHandler {
     @Override
     public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
         ProofScript ps = scripts.get(call.getCommand());
+        //new State
+        //
         //TODO create new context/introduce signature
         ps.accept(interpreter);
     }

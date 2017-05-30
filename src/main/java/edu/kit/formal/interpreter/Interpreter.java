@@ -1,9 +1,12 @@
 package edu.kit.formal.interpreter;
 
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 import de.uka.ilkd.key.api.ScriptApi;
-import de.uka.ilkd.key.macros.scripts.EngineState;
+import de.uka.ilkd.key.api.VariableAssignments;
 import edu.kit.formal.interpreter.data.GoalNode;
+import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.interpreter.data.Value;
 import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.interpreter.funchdl.CommandLookup;
@@ -24,26 +27,29 @@ import java.util.logging.Logger;
 public class Interpreter<T> extends DefaultASTVisitor<Void>
         implements ScopeObservable {
     private static final int MAX_ITERATIONS = 5;
+    @Getter
+    private static final BiMap<Type, VariableAssignments.VarType> typeConversionBiMap =
+            new ImmutableBiMap.Builder<Type, VariableAssignments.VarType>()
+                    .put(Type.ANY, VariableAssignments.VarType.ANY)
+                    .put(Type.BOOL, VariableAssignments.VarType.BOOL)
+                    .put(Type.TERM, VariableAssignments.VarType.FORMULA) //TODO: parametrisierte Terms
+                    .put(Type.INT, VariableAssignments.VarType.INT)
+                    .put(Type.STRING, VariableAssignments.VarType.OBJECT)
+                    .build();
     private static Logger logger = Logger.getLogger("interpreter");
     //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
     private Stack<State<T>> stateStack = new Stack<>();
     @Getter
     private List<Visitor> entryListeners = new ArrayList<>(),
             exitListeners = new ArrayList<>();
-
     @Getter
     @Setter
     private MatcherApi<T> matcherApi;
-
     @Getter
     private CommandLookup functionLookup;
-
     @Getter
     @Setter
     private boolean scrictSelectedGoalMode = false;
-
-
-
     @Getter
     private ScriptApi scriptApi;
 
@@ -152,7 +158,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
     @Override
     public Void visit(CasesStatement casesStatement) {
         enterScope(casesStatement);
-        State<T> beforeCases = stateStack.pop();
+        State<T> beforeCases = stateStack.peek();
 
 
         List<GoalNode<T>> allGoalsBeforeCases = beforeCases.getGoals();
@@ -199,13 +205,13 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
             }
             stateStack.push(newStateAfterCases);
         }
-
+        stateStack.peek().getGoals().removeAll(beforeCases.getGoals());
         exitScope(casesStatement);
         return null;
     }
 
     /**
-     * Match a set of goal nodes against a matchpattern of a case and return the metched goals together with instantiated variables
+     * Match a set of goal nodes against a matchpattern of a case and return the matched goals together with instantiated variables
      *
      * @param allGoalsBeforeCases
      * @param aCase
@@ -472,9 +478,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
         return getCurrentState().getGoals();
     }
 
-    public Type transKeYFormType(String keYDeclarationPrefix) {
-        //getType Map in interpreter for this create map in interpreter
-        return null;
-    }
+
     //endregion
 }

@@ -112,4 +112,17 @@ public class GoalNode<T> {
         assignments = assignments.push(va);
         return assignments;
     }
+
+    public String toCellTextForKeYData() {
+        KeyData kd = (KeyData) this.data;
+        return kd.getNode().sequent().toString();
+
+
+    }
+
+    public String toListLabelForKeYData() {
+        KeyData kd = (KeyData) this.data;
+        return Integer.toString(kd.getNode().serialNr());
+
+    }
 }

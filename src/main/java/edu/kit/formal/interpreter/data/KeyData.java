@@ -25,6 +25,7 @@ public class KeyData {
         env = data.env;
         //proofApi = data.proofApi;
         //scriptApi = data.scriptApi;
+        this.proof = data.proof;
         this.node = node;
     }
 
