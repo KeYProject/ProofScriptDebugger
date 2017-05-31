@@ -62,6 +62,9 @@
                                   text="Open Script"/>
                         <MenuItem fx:id="loadKeYFileMenuItem" mnemonicParsing="false" onAction="#loadKeYFile"
                                   text="Load KeY File"/>
+                        <MenuItem fx:id="loadJavaFileMenuItem" mnemonicParsing="false" onAction="#loadJavaFile"
+                                  text="Load Java File"/>
+
                         <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" onAction="#closeProgram" text="Close"/>
                     </items>
                 </Menu>

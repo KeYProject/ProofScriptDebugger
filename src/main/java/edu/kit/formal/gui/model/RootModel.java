@@ -1,6 +1,7 @@
 package edu.kit.formal.gui.model;
 
 
+import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
@@ -25,6 +26,11 @@ public class RootModel {
     private final SimpleObjectProperty<File> scriptFile;
 
     /**
+     * Property: current loaded javaFile
+     */
+    private final SimpleObjectProperty<File> javaFile;
+
+    /**
      * Property: current loaded KeY File
      */
     private final SimpleObjectProperty<File> keYFile;
@@ -44,17 +50,25 @@ public class RootModel {
      */
     private SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoalNode;
 
+
+    private SimpleListProperty<Contract> loadedContracts;
+
+    private Contract chosenContract;
+
     @Getter
     @Setter
     private State<KeyData> currentState;
 
 
+
     public RootModel() {
+        javaFile = new SimpleObjectProperty<>();
         scriptFile = new SimpleObjectProperty<>();
         keYFile = new SimpleObjectProperty<>();
         currentScript = new SimpleObjectProperty<>("");
         currentSelectedGoalNode = new SimpleObjectProperty<>();
         currentGoalNodes = new SimpleListProperty<>(FXCollections.observableArrayList());
+        loadedContracts = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     }
 
@@ -120,6 +134,38 @@ public class RootModel {
 
     public SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoalNodeProperty() {
         return currentSelectedGoalNode;
+    }
+
+    public File getJavaFile() {
+        return javaFile.get();
+    }
+
+    public void setJavaFile(File javaFile) {
+        this.javaFile.set(javaFile);
+    }
+
+    public SimpleObjectProperty<File> javaFileProperty() {
+        return javaFile;
+    }
+
+    public ObservableList<Contract> getLoadedContracts() {
+        return loadedContracts.get();
+    }
+
+    public void setLoadedContracts(ObservableList<Contract> loadedContracts) {
+        this.loadedContracts.set(loadedContracts);
+    }
+
+    public SimpleListProperty<Contract> loadedContractsProperty() {
+        return loadedContracts;
+    }
+
+    public Contract getChosenContract() {
+        return chosenContract;
+    }
+
+    public void setChosenContract(Contract chosenContract) {
+        this.chosenContract = chosenContract;
     }
 
 

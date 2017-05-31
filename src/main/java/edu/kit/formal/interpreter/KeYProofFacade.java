@@ -4,7 +4,9 @@ import de.uka.ilkd.key.api.KeYApi;
 import de.uka.ilkd.key.api.ProjectedNode;
 import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.api.ProofManagementApi;
+import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
+import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
@@ -15,6 +17,7 @@ import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by sarah on 5/29/17.
@@ -39,7 +42,7 @@ public class KeYProofFacade {
     }
 
     public State<KeyData> executeScriptWithKeYProblemFile(String currentScriptText, File keyProblemFile) {
-        buildKeYInterpreter(keyProblemFile);
+        buildKeYInterpreter(keyProblemFile, false);
         currentRoot = pa.getFirstOpenGoal();
 
         KeyData keyData = new KeyData(currentRoot.getProofNode(), pa.getEnv(), pa.getProof());
@@ -53,24 +56,50 @@ public class KeYProofFacade {
 
     }
 
+    public void prepareEnvWithKeYFile(File keYFile) {
+        try {
+            pma = KeYApi.loadFromKeyFile(keYFile);
+            pa = pma.getLoadedProof();
+            buildKeYInterpreter(keYFile, false);
+        } catch (ProblemLoaderException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Contract> getContractsForJavaFile(File javaFile) {
+        try {
+            pma = KeYApi.loadFromKeyFile(javaFile);
+            return pma.getProofContracts();
+        } catch (ProblemLoaderException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void prepareEnvForContract(Contract c, File javaFile) {
+        try {
+            pa = pma.startProof(c);
+            buildKeYInterpreter(javaFile, true);
+        } catch (ProofInputException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
     /**
      * Build the KeYInterpreter that handles the execution of the loaded key problem file
      *
      * @param keYFile
      */
-    public void buildKeYInterpreter(File keYFile) {
+    private void buildKeYInterpreter(File keYFile, Boolean isJavaFile) {
         InterpreterBuilder interpreterBuilder = new InterpreterBuilder();
         this.interpreter = null;
-        try {
-            pma = KeYApi.loadFromKeyFile(keYFile);
-            pa = pma.getLoadedProof();
-            interpreterBuilder.proof(pa).macros().scriptCommands();
-            pa.getProof().getProofIndependentSettings().getGeneralSettings().setOneStepSimplification(false);
-            this.interpreter = interpreterBuilder.build();
+        interpreterBuilder.proof(pa).macros().scriptCommands();
+        pa.getProof().getProofIndependentSettings().getGeneralSettings().setOneStepSimplification(false);
+        this.interpreter = interpreterBuilder.build();
 
-        } catch (ProblemLoaderException e) {
-            e.printStackTrace();
-        }
 
     }
 

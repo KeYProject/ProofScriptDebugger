@@ -1,11 +1,14 @@
 package edu.kit.formal.gui.controller;
 
+import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.gui.FileUtils;
 import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.KeYProofFacade;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.dbg.Debugger;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -13,6 +16,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.Setter;
+import org.controlsfx.dialog.Wizard;
 
 import java.io.File;
 import java.net.URL;
@@ -23,9 +27,13 @@ import java.util.concurrent.Executors;
 
 /**
  * Controller for the Debugger MainWindow
+ *
  * @author S.Grebing
  */
 public class DebuggerMainWindowController implements Initializable {
+    private static String testFile1 = "/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/src/test/resources/edu/kit/formal/interpreter/";
+
+    private static String testFile = "/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/src/test/resources/edu/kit/formal/interpreter/contraposition/";
 
     @FXML
     Pane rootPane;
@@ -62,8 +70,16 @@ public class DebuggerMainWindowController implements Initializable {
      * **********************************************************************************************************/
     @FXML
     ListGoalView goalView;
-    ExecutorService executorService = null;
-    KeYProofFacade facade;
+    private ExecutorService executorService = null;
+
+
+    private KeYProofFacade facade;
+
+
+    private Wizard contractChooserDialog = new Wizard();
+
+    private ContractLoaderService cls;
+
 
     /**
      * Model for the DebuggerController containing the neccessary references to objects needed for controlling backend through UI
@@ -105,13 +121,44 @@ public class DebuggerMainWindowController implements Initializable {
 
     @FXML
     protected void loadKeYFile() {
-        File keyFile = openFileChooserDialog("Select KeY File", "KeY Files", "key", "java", "script");
+        File keyFile = openFileChooserDialog("Select KeY File", "KeY Files", "key", "script");
         this.model.setKeYFile(keyFile);
         if (keyFile != null) {
             buildKeYProofFacade();
         }
 
     }
+
+
+    @FXML
+    protected void loadJavaFile() {
+        File javaFile = openFileChooserDialog("Select Java File", "Java Files", "java", "script");
+        this.model.setJavaFile(javaFile);
+        if (javaFile != null) {
+            facade = new KeYProofFacade(model);
+
+            cls.setRefToRootModel(this.model);
+            cls.start();
+            cls.setOnSucceeded(event -> {
+                model.getLoadedContracts().addAll((List<Contract>) event.getSource().getValue());
+                contractChooserDialog.setFlow(new Wizard.LinearFlow(new ContractChooser(this.model.loadedContractsProperty(), this.model.getChosenContract())));
+
+                contractChooserDialog.showAndWait().ifPresent(result -> {
+
+                    if (result == ButtonType.FINISH) {
+
+                        System.out.println("Wizard finished, loaded contracts: " + model.getChosenContract());
+                    }
+                });
+            });
+/*
+            if (chosen != null) {
+                this.model.setChosenContract(chosen);
+                buildJavaProofFacade();
+            }*/
+        }
+    }
+
 
 
     public void setStage(Stage stage) {
@@ -121,6 +168,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     /**
      * Needs to be set from calling method
+     *
      * @param model
      */
     public void setModel(RootModel model) {
@@ -136,6 +184,8 @@ public class DebuggerMainWindowController implements Initializable {
         scriptArea.init();
         goalView.setRootModel(this.model);
         goalView.init();
+        // create and assign the flow
+        cls = new ContractLoaderService();
 
     }
 
@@ -152,8 +202,21 @@ public class DebuggerMainWindowController implements Initializable {
         executorService = Executors.newFixedThreadPool(2);
         executorService.execute(() -> {
             facade = new KeYProofFacade(model);
-            facade.buildKeYInterpreter(model.getKeYFile());
+            facade.prepareEnvWithKeYFile(model.getKeYFile());
 
+        });
+        executorService.shutdown();
+    }
+
+    /**
+     * Spawns a thread that builds the proof environment as facade with interpreter
+     */
+    private void buildJavaProofFacade() {
+        executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(() -> {
+            if (facade != null) {
+                facade.prepareEnvForContract(model.getChosenContract(), model.getKeYFile());
+            }
         });
         executorService.shutdown();
     }
@@ -171,11 +234,35 @@ public class DebuggerMainWindowController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
         fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(description, fileEndings));
-        fileChooser.setInitialDirectory(new File("/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/src/test/resources/edu/kit/formal/interpreter/contraposition/"));
+        fileChooser.setInitialDirectory(new File(testFile1));
         File file = fileChooser.showOpenDialog(this.stage);
         return file;
 
     }
+
+    public class ContractLoaderService extends Service<List<Contract>> {
+        @Setter
+        RootModel refToRootModel;
+
+        @Override
+        protected Task<List<Contract>> createTask() {
+            Task<List<Contract>> task1 = new Task<List<Contract>>() {
+                @Override
+                protected List<Contract> call() throws Exception {
+                    if (refToRootModel != null) {
+                        List<Contract> contracts = facade.getContractsForJavaFile(refToRootModel.getJavaFile());
+                        System.out.println("Loaded Contracts " + contracts.toString());
+                        return contracts;
+                    } else {
+                        throw new RuntimeException("No Reference to Rootmodel");
+                    }
+                }
+            };
+            System.out.println("Task1 created");
+            return task1;
+        }
+    }
+
 
 
 }
