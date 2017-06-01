@@ -7,6 +7,7 @@ import edu.kit.formal.interpreter.KeYProofFacade;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.dbg.Debugger;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -33,8 +34,10 @@ import java.util.concurrent.Executors;
  */
 public class DebuggerMainWindowController implements Initializable {
     private static String testFile1 = "/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/src/test/resources/edu/kit/formal/interpreter/";
-
     private static String testFile = "/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/src/test/resources/edu/kit/formal/interpreter/contraposition/";
+
+    private SimpleBooleanProperty debugMode = new SimpleBooleanProperty(false);
+
 
     @FXML
     Pane rootPane;
@@ -104,6 +107,8 @@ public class DebuggerMainWindowController implements Initializable {
 
     @FXML
     public void changeToDebugMode() {
+        setDebugMode(true);
+        executeScript();
     }
 
     @FXML
@@ -170,7 +175,6 @@ public class DebuggerMainWindowController implements Initializable {
     }
 
 
-
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -202,7 +206,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        setDebugMode(false);
     }
 
     /**
@@ -274,5 +278,15 @@ public class DebuggerMainWindowController implements Initializable {
     }
 
 
+    public boolean isDebugMode() {
+        return debugMode.get();
+    }
 
+    public SimpleBooleanProperty debugModeProperty() {
+        return debugMode;
+    }
+
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode.set(debugMode);
+    }
 }

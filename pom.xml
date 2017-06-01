@@ -127,7 +127,31 @@
 
     </build>
 
+    <!-- for icons -->
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-jerady-maven</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/jerady/maven</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-materialdesignfont</artifactId>
+            <version>1.7.22-4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-commons</artifactId>
+            <version>8.15</version>
+        </dependency>
+
         <dependency>
             <groupId>org.fxmisc.richtext</groupId>
             <artifactId>richtextfx</artifactId>

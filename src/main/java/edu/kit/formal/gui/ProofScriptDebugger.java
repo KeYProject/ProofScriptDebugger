@@ -5,6 +5,7 @@ package edu.kit.formal.gui;
  * @author S. Grebing
  */
 
+import de.jensd.fx.glyphs.materialdesignicons.demo.MaterialDesignIconsDemoApp;
 import edu.kit.formal.gui.controller.DebuggerMainWindowController;
 import edu.kit.formal.gui.model.RootModel;
 import javafx.application.Application;
@@ -25,6 +26,7 @@ public class ProofScriptDebugger extends Application {
     public void start(Stage primaryStage) {
         RootModel rm = new RootModel();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/DebuggerMain.fxml"));
+
 
         Parent root = null;
         try {

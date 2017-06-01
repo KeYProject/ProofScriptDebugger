@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
+<?import de.jensd.fx.glyphs.materialdesignicons.*?>
 <?import edu.kit.formal.gui.controller.ListGoalView?>
 <?import edu.kit.formal.gui.controller.ScriptArea?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import java.lang.Boolean?>
+
 <Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity"
       minHeight="-Infinity"
       minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
       xmlns="http://javafx.com/javafx/8.0.102-ea"
       fx:controller="edu.kit.formal.gui.controller.DebuggerMainWindowController">
+
+    <!--
+    <fx:define>
+        <Boolean fx:id="disableDebuggingButtons" fx:value="true" />
+    </fx:define>-->
+
     <children>
         <SplitPane fx:id="splitPane" dividerPositions="0.5" layoutY="29.0" prefHeight="371.0" prefWidth="600.0">
             <items>
@@ -18,10 +28,48 @@
                         <children>
                             <ToolBar fx:id="toolbar" prefHeight="40.0" prefWidth="200.0">
                                 <items>
-                                    <Button fx:id="buttonStartInterpreter" onAction="#executeScript"
-                                            mnemonicParsing="false" text="Execute Script"/>
-                                    <Button fx:id="startDebugMode" onAction="#changeToDebugMode" mnemonicParsing="false"
-                                            text="Change to Debug Mode"/>
+                                    <Button fx:id="buttonStartInterpreter" onAction="#executeScript">
+                                        <graphic>
+                                            <MaterialDesignIconView glyphName="PLAY" size="24.0"/>
+                                        </graphic>
+                                        <tooltip>
+                                            <Tooltip text="Execute Script"/>
+                                        </tooltip>
+                                    </Button>
+                                    <Button fx:id="startDebugMode" onAction="#changeToDebugMode">
+                                        <graphic>
+                                            <MaterialDesignIconView glyphName="PLAY_PAUSE" size="24.0"/>
+                                        </graphic>
+                                        <tooltip>
+                                            <Tooltip text="Change to Debug Mode"/>
+                                        </tooltip>
+                                    </Button>
+
+                                    <Separator/>
+
+                                    <Button disable="${! controller.debugMode}">
+                                        <graphic>
+                                            <MaterialDesignIconView glyphName="DEBUG_STEP_INTO" size="24.0"/>
+                                        </graphic>
+                                    </Button>
+
+                                    <Button disable="${! controller.debugMode}">
+                                        <graphic>
+                                            <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0"/>
+                                        </graphic>
+                                    </Button>
+
+                                    <Button disable="${! controller.debugMode}">
+                                        <graphic>
+                                            <MaterialDesignIconView glyphName="DEBUG_STEP_OUT" size="24.0"/>
+                                        </graphic>
+                                    </Button>
+
+                                    <Button disable="${! controller.debugMode}">
+                                        <graphic>
+                                            <MaterialDesignIconView glyphName="STOP" size="24.0"/>
+                                        </graphic>
+                                    </Button>
                                 </items>
                             </ToolBar>
                             <ScrollPane fx:id="scrollPaneCode" prefHeight="369.0" prefWidth="295.0"
