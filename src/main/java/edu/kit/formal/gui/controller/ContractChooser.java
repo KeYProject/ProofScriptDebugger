@@ -4,6 +4,7 @@ import de.uka.ilkd.key.speclang.Contract;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ListView;
+import lombok.Getter;
 import org.controlsfx.dialog.WizardPane;
 
 /**
@@ -12,6 +13,7 @@ import org.controlsfx.dialog.WizardPane;
 public class ContractChooser extends WizardPane {
 
     ListView listOfContractsView;
+    @Getter
     SimpleObjectProperty<Contract> chosen;
 
     public ContractChooser(SimpleListProperty<Contract> contracts, Contract chosenContract) {
@@ -28,6 +30,7 @@ public class ContractChooser extends WizardPane {
         this.listOfContractsView.setVisible(true);
         this.setContent(listOfContractsView);
         this.setVisible(true);
+        this.chosen = new SimpleObjectProperty<Contract>();
 
     }
 }

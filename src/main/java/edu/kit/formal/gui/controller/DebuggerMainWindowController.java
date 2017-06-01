@@ -7,6 +7,7 @@ import edu.kit.formal.interpreter.KeYProofFacade;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.dbg.Debugger;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -134,29 +135,38 @@ public class DebuggerMainWindowController implements Initializable {
     protected void loadJavaFile() {
         File javaFile = openFileChooserDialog("Select Java File", "Java Files", "java", "script");
         this.model.setJavaFile(javaFile);
+
         if (javaFile != null) {
+
             facade = new KeYProofFacade(model);
 
             cls.setRefToRootModel(this.model);
             cls.start();
             cls.setOnSucceeded(event -> {
                 model.getLoadedContracts().addAll((List<Contract>) event.getSource().getValue());
-                contractChooserDialog.setFlow(new Wizard.LinearFlow(new ContractChooser(this.model.loadedContractsProperty(), this.model.getChosenContract())));
+                ContractChooser page = new ContractChooser(this.model.loadedContractsProperty(), this.model.getChosenContract());
+                // contractChooserDialog.setFlow(new Wizard.LinearFlow(new ContractChooser(this.model.loadedContractsProperty(), this.model.getChosenContract())));
+
+                contractChooserDialog.setFlow(new Wizard.LinearFlow(page));
 
                 contractChooserDialog.showAndWait().ifPresent(result -> {
-
                     if (result == ButtonType.FINISH) {
-
-                        System.out.println("Wizard finished, loaded contracts: " + model.getChosenContract());
+                        // System.out.println(contractChooserDialog.getSettings());
+                        SimpleObjectProperty<Contract> chosenContractProp = page.getChosen();
+                        model.setChosenContract(chosenContractProp.getValue());
+                        if (this.model.getChosenContract() != null) {
+                            buildJavaProofFacade();
+                            System.out.println("Proof Facade is built");
+                        } else {
+                            System.out.println("Something went wrong");
+                        }
                     }
+
                 });
             });
-/*
-            if (chosen != null) {
-                this.model.setChosenContract(chosen);
-                buildJavaProofFacade();
-            }*/
         }
+
+
     }
 
 
