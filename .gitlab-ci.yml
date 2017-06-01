@@ -26,3 +26,4 @@ deploy:
     paths:
       - target/*jar
       - target/site/*
+  allow_failure: true
