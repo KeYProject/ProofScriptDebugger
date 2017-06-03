@@ -1,7 +1,6 @@
 package edu.kit.formal.gui.controller;
 
 import de.uka.ilkd.key.speclang.Contract;
-import edu.kit.formal.gui.FileUtils;
 import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.KeYProofFacade;
 import edu.kit.formal.interpreter.data.GoalNode;
@@ -14,14 +13,21 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.Setter;
+import org.apache.commons.io.FileUtils;
 import org.controlsfx.dialog.Wizard;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -120,9 +126,45 @@ public class DebuggerMainWindowController implements Initializable {
     protected void openScript() {
         File scriptFile = openFileChooserDialog("Select Script File", "Proof Script File", "kps");
         if (scriptFile != null) {
-            model.setScriptFile(scriptFile);
-            this.model.currentScriptProperty().set(FileUtils.readFile(scriptFile).toString());
+            try {
+                String code = FileUtils.readFileToString(scriptFile, Charset.defaultCharset());
+                model.currentScriptProperty().set(code);
+                model.setScriptFile(scriptFile);
+            } catch (IOException e) {
+                showExceptionDialog("Exception occured", "",
+                        "Could not load file " + scriptFile, e);
+            }
         }
+    }
+
+    public void showExceptionDialog(String title, String headerText, String contentText, Exception ex) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String exceptionText = sw.toString();
+
+        Label label = new Label("The exception stacktrace was:");
+        TextArea textArea = new TextArea(exceptionText);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+        GridPane expContent = new GridPane();
+        expContent.setMaxWidth(Double.MAX_VALUE);
+        expContent.add(label, 0, 0);
+        expContent.add(textArea, 0, 1);
+
+        alert.getDialogPane().setExpandableContent(expContent);
+
+        alert.showAndWait();
     }
 
     @FXML
@@ -248,7 +290,8 @@ public class DebuggerMainWindowController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(title);
         fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(description, fileEndings));
-        fileChooser.setInitialDirectory(new File(testFile1));
+        File value = new File(testFile1);
+        fileChooser.setInitialDirectory(value.exists() ? value : new File("."));
         File file = fileChooser.showOpenDialog(this.stage);
         return file;
 
