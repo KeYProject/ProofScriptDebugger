@@ -1,117 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import de.jensd.fx.glyphs.materialdesignicons.*?>
-<?import edu.kit.formal.gui.controller.ListGoalView?>
-<?import edu.kit.formal.gui.controller.ScriptArea?>
+<?import edu.kit.formal.gui.controls.ScriptArea?>
+<?import edu.kit.formal.gui.controls.JavaArea?>
+<?import edu.kit.formal.gui.controls.SequentView?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import java.lang.Boolean?>
 
-<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity"
-      minHeight="-Infinity"
-      minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
-      xmlns="http://javafx.com/javafx/8.0.102-ea"
-      fx:controller="edu.kit.formal.gui.controller.DebuggerMainWindowController">
 
-    <!--
-    <fx:define>
-        <Boolean fx:id="disableDebuggingButtons" fx:value="true" />
-    </fx:define>-->
-
-    <children>
+<BorderPane fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="edu.kit.formal.gui.controller.DebuggerMainWindowController">
+    <center>
         <SplitPane fx:id="splitPane" dividerPositions="0.5" layoutY="29.0" prefHeight="371.0" prefWidth="600.0">
             <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="366.0" prefWidth="175.0">
-                    <VBox prefHeight="369.0" prefWidth="295.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                        <children>
-                            <ToolBar fx:id="toolbar" prefHeight="40.0" prefWidth="200.0">
-                                <items>
-                                    <Button fx:id="buttonStartInterpreter" onAction="#executeScript">
-                                        <graphic>
-                                            <MaterialDesignIconView glyphName="PLAY" size="24.0"/>
-                                        </graphic>
-                                        <tooltip>
-                                            <Tooltip text="Execute Script"/>
-                                        </tooltip>
-                                    </Button>
-                                    <Button fx:id="startDebugMode" onAction="#changeToDebugMode">
-                                        <graphic>
-                                            <MaterialDesignIconView glyphName="PLAY_PAUSE" size="24.0"/>
-                                        </graphic>
-                                        <tooltip>
-                                            <Tooltip text="Change to Debug Mode"/>
-                                        </tooltip>
-                                    </Button>
+                <VBox>
+                    <children>
+                        <ToolBar fx:id="toolbar">
+                            <items>
+                                <Button fx:id="buttonStartInterpreter" onAction="#executeScript">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="PLAY" size="24.0"/>
+                                    </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Execute Script"/>
+                                    </tooltip>
+                                </Button>
+                                <Button fx:id="startDebugMode" onAction="#changeToDebugMode">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="PLAY_PAUSE" size="24.0"/>
+                                    </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Change to Debug Mode"/>
+                                    </tooltip>
+                                </Button>
 
-                                    <Separator/>
+                                <Separator/>
 
-                                    <Button disable="${! controller.debugMode}">
-                                        <graphic>
-                                            <MaterialDesignIconView glyphName="DEBUG_STEP_INTO" size="24.0"/>
-                                        </graphic>
-                                    </Button>
+                                <Button disable="${! controller.debugMode}">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="DEBUG_STEP_INTO" size="24.0"/>
+                                    </graphic>
+                                </Button>
 
-                                    <Button disable="${! controller.debugMode}">
-                                        <graphic>
-                                            <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0"/>
-                                        </graphic>
-                                    </Button>
+                                <Button disable="${! controller.debugMode}">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0"/>
+                                    </graphic>
+                                </Button>
 
-                                    <Button disable="${! controller.debugMode}">
-                                        <graphic>
-                                            <MaterialDesignIconView glyphName="DEBUG_STEP_OUT" size="24.0"/>
-                                        </graphic>
-                                    </Button>
+                                <Button disable="${! controller.debugMode}">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="DEBUG_STEP_OUT" size="24.0"/>
+                                    </graphic>
+                                </Button>
 
-                                    <Button disable="${! controller.debugMode}">
-                                        <graphic>
-                                            <MaterialDesignIconView glyphName="STOP" size="24.0"/>
-                                        </graphic>
-                                    </Button>
-                                </items>
-                            </ToolBar>
-                            <ScrollPane fx:id="scrollPaneCode" prefHeight="369.0" prefWidth="295.0"
-                                        AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                        AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                <content>
-                                    <ScriptArea fx:id="scriptArea" prefHeight="369.0" prefWidth="295.0"
-                                                AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
-                                                SplitPane.resizableWithParent="true"/>
-                                </content>
-                            </ScrollPane>
-                        </children>
-                    </VBox>
-                </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                    <StackPane AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                               AnchorPane.rightAnchor="0.0">
-                        <ListGoalView fx:id="goalView" prefHeight="369.0" prefWidth="295.0"
-                                      AnchorPane.bottomAnchor="0.0"
-                                      AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                                      AnchorPane.topAnchor="0.0"
-                                      SplitPane.resizableWithParent="true">
-                            <!--<children>
-                                <ListView fx:id="listOfGoalsView" prefHeight="200.0" prefWidth="200.0"/>
-                                <TextArea fx:id="goalNodeView" prefHeight="200.0" prefWidth="200.0"/>
-                            </children>-->
-                        </ListGoalView>
-                    </StackPane>
-                </AnchorPane>
+                                <Button disable="${! controller.debugMode}">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="STOP" size="24.0"/>
+                                    </graphic>
+                                </Button>
+                            </items>
+                        </ToolBar>
+                        <ScriptArea fx:id="scriptArea" VBox.vgrow="ALWAYS"/>
+                    </children>
+                </VBox>
+                <BorderPane SplitPane.resizableWithParent="true">
+                    <center>
+                        <Accordion>
+                            <padding>
+                                <Insets top="5" left="5" right="5" bottom="5"/>
+                            </padding>
+                            <panes>
+                                <TitledPane text="Current Goals:" VBox.vgrow="ALWAYS">
+                                    <ListView fx:id="goalView" VBox.vgrow="ALWAYS"/>
+                                </TitledPane>
+                                <TitledPane text="Sequent">
+                                    <SequentView fx:id="sequentView" VBox.vgrow="ALWAYS"/>
+                                </TitledPane>
+                                <TitledPane text="Source Code">
+                                    <JavaArea fx:id="javaSourceCode"/>
+                                </TitledPane>
+                            </panes>
+                        </Accordion>
+                    </center>
+                </BorderPane>
             </items>
         </SplitPane>
-        <MenuBar fx:id="menuBar" prefHeight="29.0" prefWidth="600.0">
+    </center>
+    <top>
+        <MenuBar fx:id="menuBar">
             <menus>
                 <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="openScriptFileMenuItem" mnemonicParsing="false" onAction="#openScript"
-                                  text="Open Script"/>
-                        <MenuItem fx:id="loadKeYFileMenuItem" mnemonicParsing="false" onAction="#loadKeYFile"
-                                  text="Load KeY File"/>
-                        <MenuItem fx:id="loadJavaFileMenuItem" mnemonicParsing="false" onAction="#loadJavaFile"
-                                  text="Load Java File"/>
+                        <MenuItem fx:id="openScriptFileMenuItem" onAction="#openScript" text="Open Script"/>
+                        <MenuItem fx:id="loadKeYFileMenuItem" onAction="#loadKeYFile" text="Load KeY File"/>
+                        <MenuItem fx:id="loadJavaFileMenuItem" onAction="#loadJavaFile" text="Load Java File"/>
 
                         <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" onAction="#closeProgram" text="Close"/>
                     </items>
@@ -128,5 +112,5 @@
                 </Menu>
             </menus>
         </MenuBar>
-    </children>
-</Pane>
+    </top>
+</BorderPane>

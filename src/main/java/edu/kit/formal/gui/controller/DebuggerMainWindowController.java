@@ -1,6 +1,7 @@
 package edu.kit.formal.gui.controller;
 
 import de.uka.ilkd.key.speclang.Contract;
+import edu.kit.formal.gui.controls.ScriptArea;
 import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.KeYProofFacade;
 import edu.kit.formal.interpreter.data.GoalNode;
@@ -79,7 +80,7 @@ public class DebuggerMainWindowController implements Initializable {
      *      GoalView
      * **********************************************************************************************************/
     @FXML
-    ListGoalView goalView;
+    ListView goalView;
     private ExecutorService executorService = null;
 
 
@@ -236,13 +237,7 @@ public class DebuggerMainWindowController implements Initializable {
      */
     public void init() {
         facade = new KeYProofFacade(this.model);
-        scriptArea.setRootModel(this.model);
-        scriptArea.init();
-        goalView.setRootModel(this.model);
-        goalView.init();
-        // create and assign the flow
         cls = new ContractLoaderService();
-
     }
 
 
