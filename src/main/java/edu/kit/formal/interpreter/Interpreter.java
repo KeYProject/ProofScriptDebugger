@@ -437,7 +437,12 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
 
 
     public State<T> getCurrentState() {
-        return stateStack.peek();
+        try {
+            return stateStack.peek();
+        }catch (EmptyStackException e) {
+            return new State<T>(null);
+            //FIXME
+        }
     }
 
     public State<T> newState(List<GoalNode<T>> goals, GoalNode<T> selected) {

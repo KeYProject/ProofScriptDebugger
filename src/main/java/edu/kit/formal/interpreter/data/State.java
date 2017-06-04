@@ -74,7 +74,7 @@ public class State<T> {
      * @return
      */
     public State<T> copy() {
-        List<GoalNode<T>> copiedGoals = new ArrayList<>();
+        List<GoalNode<T>> copiedGoals = new ArrayList<>(goals);
         GoalNode<T> refToSelGoal = selectedGoalNode;
         return new State<T>(copiedGoals, refToSelGoal);
     }

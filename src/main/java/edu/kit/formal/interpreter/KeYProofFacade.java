@@ -14,6 +14,7 @@ import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.interpreter.exceptions.InterpreterRuntimeException;
 import edu.kit.formal.proofscriptparser.Facade;
+import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import lombok.Getter;
 
 import java.io.File;
@@ -47,14 +48,8 @@ public class KeYProofFacade {
         currentRoot = pa.getFirstOpenGoal();
 
         KeyData keyData = new KeyData(currentRoot.getProofNode(), pa.getEnv(), pa.getProof());
-        try {
-            interpreter.interpret(Facade.getAST(currentScriptText), new GoalNode<>(null, keyData));
-            return interpreter.getCurrentState();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-
+        interpreter.interpret(Facade.getAST(currentScriptText), new GoalNode<>(null, keyData));
+        return interpreter.getCurrentState();
     }
 
     public void prepareEnvWithKeYFile(File keYFile) {
@@ -110,22 +105,20 @@ public class KeYProofFacade {
      *
      * @param
      */
-    public void executeScript(String scriptText) throws InterpreterRuntimeException {
+    public Thread executeScript(String scriptText) throws InterpreterRuntimeException {
         if (interpreter == null) {
             throw new InterpreterRuntimeException("No interpreter created");
         }
 
         ProjectedNode root = pa.getFirstOpenGoal();
-
         KeyData keyData = new KeyData(root.getProofNode(), pa.getEnv(), pa.getProof());
-        try {
-
-            interpreter.interpret(Facade.getAST(scriptText), new GoalNode<>(null, keyData));
-            this.model.setCurrentState(interpreter.getCurrentState());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        List<ProofScript> ast = Facade.getAST(scriptText);
+        Thread t = new Thread(() -> {
+            interpreter.interpret(ast, new GoalNode<>(null, keyData));
+        });
+        this.model.setCurrentState(interpreter.getCurrentState());
+        t.start();
+        return t;
     }
 
     public Services getService() {

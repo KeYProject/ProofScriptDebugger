@@ -70,6 +70,14 @@ public class ScriptArea extends CodeArea {
                 }).subscribe(s -> setStyleSpans(0, s));*/
     }
 
+    public ObservableSet<Integer> getMarkedLines() {
+        return markedLines;
+    }
+
+    public void setMarkedLines(ObservableSet<Integer> markedLines) {
+        this.markedLines = markedLines;
+    }
+
     private void highlightProblems() {
         LinterStrategy ls = LinterStrategy.getDefaultLinter();
         List<LintProblem> pl = ls.check(Facade.getAST(CharStreams.fromString(getText())));

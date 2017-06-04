@@ -43,7 +43,8 @@
                                     </graphic>
                                 </Button>
 
-                                <Button disable="${! controller.debugMode}">
+                                <Button onAction="#stepOver"
+                                        disable="${! controller.debugMode}">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0"/>
                                     </graphic>

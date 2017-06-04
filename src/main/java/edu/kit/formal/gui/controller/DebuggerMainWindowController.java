@@ -5,12 +5,14 @@ import de.uka.ilkd.key.pp.ProgramPrinter;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.gui.controls.JavaArea;
 import edu.kit.formal.gui.controls.ScriptArea;
+import edu.kit.formal.gui.controls.SequentView;
 import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.KeYProofFacade;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
-import edu.kit.formal.interpreter.dbg.Debugger;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.SetChangeListener;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -21,7 +23,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
-import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.dialog.Wizard;
 
@@ -79,7 +80,7 @@ public class DebuggerMainWindowController implements Initializable {
      *      GoalView
      * **********************************************************************************************************/
     @FXML
-    private ListView goalView;
+    private ListView<GoalNode<KeyData>> goalView;
     private ExecutorService executorService = null;
     private KeYProofFacade facade;
     private Wizard contractChooserDialog = new Wizard();
@@ -98,13 +99,15 @@ public class DebuggerMainWindowController implements Initializable {
     @FXML
     private Label lblFilename;
 
-    @Setter
-    private Debugger debugger;
+    private final PuppetMaster blocker = new PuppetMaster();
 
     private File initialDirectory;
 
     @FXML
     private JavaArea javaSourceCode;
+
+    @FXML
+    private SequentView sequentView;
 
 
     /**
@@ -136,30 +139,64 @@ public class DebuggerMainWindowController implements Initializable {
                 e.printStackTrace();
             }
             javaSourceCode.insertText(0, writer.toString());
-
-            //debug
-            javaSourceCode.getMarkedLines().add(2);
-            javaSourceCode.getMarkedLines().add(3);
-
-
         });
+
+        scriptArea.getMarkedLines().addListener(new SetChangeListener<Integer>() {
+            @Override
+            public void onChanged(Change<? extends Integer> change) {
+                blocker.getBreakpoints().clear();
+                blocker.getBreakpoints().addAll(change.getSet());
+            }
+        });
+
+        blocker.currentGoalsProperty().addListener((o, old, fresh) -> {
+            model.currentGoalNodesProperty().setAll(fresh);
+        });
+        model.currentSelectedGoalNodeProperty().bind(blocker.currentSelectedGoalProperty());
+        goalView.itemsProperty().bind(model.currentGoalNodesProperty());
+
+        model.currentSelectedGoalNodeProperty().addListener((p, old, fresh) -> {
+            goalView.getSelectionModel().select(fresh);
+
+            /* TODO get lines of active statements marked lines
+            javaSourceCode.getMarkedLines().clear();
+            javaSourceCode.getMarkedLines().addAll(
+
+            );*/
+        });
+
+
+        goalView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            sequentView.setNode(newValue.getData().getNode());
+        });
+
+        goalView.setCellFactory(GoalNodeListCell::new);
     }
 
     //region Actions: Execution
     @FXML
     public void executeScript() {
-        buttonStartInterpreter.setText("Interpreting...");
-        startDebugMode.setDisable(true);
-        facade.executeScript(scriptArea.getText());
-        List<GoalNode<KeyData>> g = model.getCurrentState().getGoals();
-        this.model.getCurrentGoalNodes().addAll(g);
-        buttonStartInterpreter.setText("execute Script");
+        executeScript(false);
     }
 
     @FXML
     public void executeInDebugMode() {
-        setDebugMode(true);
-        executeScript();
+        executeScript(true);
+    }
+
+    private void executeScript(boolean debugMode) {
+        this.debugMode.set(debugMode);
+        lblStatusMessage.setText("Interpreting...");
+
+        blocker.deinstall(facade.getInterpreter());
+        if (debugMode) {
+            blocker.getStepUntilBlock().set(1);
+            blocker.install(facade.getInterpreter());
+        }
+        facade.executeScript(scriptArea.getText());
+        List<GoalNode<KeyData>> g = model.getCurrentState().getGoals();
+        this.model.getCurrentGoalNodes().addAll(g);
+        lblStatusMessage.setText("Script executed");
     }
     //endregion
 
@@ -317,13 +354,18 @@ public class DebuggerMainWindowController implements Initializable {
         fileChooser.setTitle(title);
         fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(description, fileEndings));
         if (initialDirectory == null)
-            initialDirectory = new File("src/test/resources/edu/kit/formal/");
+            initialDirectory = new File("src/test/resources/edu/kit/formal/interpreter/contraposition/");
 
         if (!initialDirectory.exists())
             initialDirectory = new File(".");
 
         fileChooser.setInitialDirectory(initialDirectory);
         return fileChooser;
+    }
+
+    public void stepOver(ActionEvent actionEvent) {
+        blocker.getStepUntilBlock().addAndGet(1);
+        blocker.unlock();
     }
 
     public class ContractLoaderService extends Service<List<Contract>> {
@@ -385,6 +427,22 @@ public class DebuggerMainWindowController implements Initializable {
 
     public void setDebugMode(boolean debugMode) {
         this.debugMode.set(debugMode);
+    }
+
+    private class GoalNodeListCell extends ListCell<GoalNode<KeyData>> {
+
+        public GoalNodeListCell(ListView<GoalNode<KeyData>> goalNodeListView) {
+            itemProperty().addListener(this::update);
+        }
+
+        private void update(Observable observable) {
+            if (getItem() == null) {
+                setText("");
+                return;
+            }
+            KeyData item = getItem().getData();
+            setText(item.getNode().name());
+        }
     }
     //endregion
 }

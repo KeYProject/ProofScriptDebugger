@@ -59,7 +59,7 @@ public class InterpreterTest {
     @Test
     public void testSimple2() throws IOException {
         // Interpreter inter = execute(getClass().getResourceAsStream("testSimple2.txt"));
-        // Assert.assertSame(0, ((BigInteger) inter.getCurrentState().getGoals().get(0).getAssignments().lookupVarValue("j").getData()).intValue());
+        // Assert.assertSame(0, ((BigInteger) inter.getCurrentGoals().getGoals().get(0).getAssignments().lookupVarValue("j").getData()).intValue());
     }
 
     @Test
