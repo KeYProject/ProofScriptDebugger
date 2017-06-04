@@ -1,0 +1,27 @@
+.problem-popup {
+    -fx-background-color: black;
+    -fx-text-fill: white;
+    -fx-padding: 4px;
+    -fx-border-radius: 10 10 10 10;
+    -fx-background-radius: 10 10 10 10;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+    -fx-spacing: 5;
+    -fx-fill-width: true;
+}
+
+.problem-popup-label {
+    -fx-wrap-text: true;
+}
+
+.problem-popup-label-error {
+    -fx-text-fill: firebrick;
+}
+
+.problem-popup-label-warn, .problem-popup-label-warning {
+    -fx-text-fill: darkorange;
+}
+
+.problem-popup-label-info {
+    -fx-text-fill: cornflowerblue;
+}

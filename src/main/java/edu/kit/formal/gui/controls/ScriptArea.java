@@ -6,17 +6,21 @@ import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ScriptLanguageLexer;
 import edu.kit.formal.proofscriptparser.lint.LintProblem;
 import edu.kit.formal.proofscriptparser.lint.LinterStrategy;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -24,12 +28,12 @@ import javafx.scene.text.FontPosture;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.MouseOverTextEvent;
 import org.reactfx.collection.LiveList;
 import org.reactfx.value.Val;
 
-import java.util.ArrayList;
+import java.time.Duration;
 import java.util.Collections;
-import java.util.List;
 import java.util.function.IntFunction;
 
 /**
@@ -39,6 +43,8 @@ public class ScriptArea extends CodeArea {
     private ObservableSet<Integer> markedLines = FXCollections.observableSet();
     private GutterFactory gutter;
     private ANTLR4LexerHighlighter highlighter;
+    private ListProperty<LintProblem> problems = new SimpleListProperty<>(FXCollections.observableArrayList());
+
 
     public ScriptArea() {
         init();
@@ -68,6 +74,42 @@ public class ScriptArea extends CodeArea {
                         return Optional.empty();
                     }
                 }).subscribe(s -> setStyleSpans(0, s));*/
+
+        installPopup();
+    }
+
+    private void installPopup() {
+        javafx.stage.Popup popup = new javafx.stage.Popup();
+
+        setMouseOverTextDelay(Duration.ofSeconds(1));
+        addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
+            int chIdx = e.getCharacterIndex();
+            popup.getContent().setAll(
+                    createPopupInformation(chIdx)
+            );
+
+            Point2D pos = e.getScreenPosition();
+            popup.show(this, pos.getX(), pos.getY() + 10);
+        });
+
+        addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
+            popup.hide();
+        });
+    }
+
+    private Node createPopupInformation(int chIdx) {
+        VBox box = new VBox();
+        box.getStyleClass().add("problem-popup");
+        for (LintProblem p : problems) {
+            if (p.includeTextPosition(chIdx)) {
+                Label lbl = new Label(p.getMessage());
+                lbl.getStyleClass().addAll("problem-popup-label",
+                        "problem-popup-label-" + p.getIssue().getRulename(),
+                        "problem-popup-label-" + p.getIssue().getSeverity());
+                box.getChildren().add(lbl);
+            }
+        }
+        return box;
     }
 
     public ObservableSet<Integer> getMarkedLines() {
@@ -80,13 +122,16 @@ public class ScriptArea extends CodeArea {
 
     private void highlightProblems() {
         LinterStrategy ls = LinterStrategy.getDefaultLinter();
-        List<LintProblem> pl = ls.check(Facade.getAST(CharStreams.fromString(getText())));
-
-        for (LintProblem p : pl) {
-            for (Token tok : p.getMarkTokens()) {
-                setStyle(tok.getStartIndex(),
-                        tok.getStopIndex()+1, Collections.singleton("problem"));
+        try {
+            problems.setAll(ls.check(Facade.getAST(CharStreams.fromString(getText()))));
+            for (LintProblem p : problems) {
+                for (Token tok : p.getMarkTokens()) {
+                    setStyle(tok.getStartIndex(),
+                            tok.getStopIndex() + 1, Collections.singleton("problem"));
+                }
             }
+        } catch (Exception e) {
+            //catch parsing exceptions
         }
     }
 
@@ -105,7 +150,6 @@ public class ScriptArea extends CodeArea {
             );
         }
     }
-
 
     public class GutterFactory implements IntFunction<Node> {
         private Insets defaultInsets = new Insets(0.0, 5.0, 0.0, 5.0);

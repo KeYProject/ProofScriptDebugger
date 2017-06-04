@@ -12,6 +12,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SceneBuilder;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -41,6 +42,9 @@ public class ProofScriptDebugger extends Application {
             Parent root = fxmlLoader.load();
             //DebuggerMainWindowController controller = fxmlLoader.<DebuggerMainWindowController>getController();
             Scene scene = new Scene(root);
+            scene.getStylesheets().addAll(
+                    "/proofscriptdebugger.css"
+            );
             primaryStage.setTitle(NAME + " (" + VERSION + ") with KeY:" + KEY_VERSION);
             primaryStage.setScene(scene);
             primaryStage.show();

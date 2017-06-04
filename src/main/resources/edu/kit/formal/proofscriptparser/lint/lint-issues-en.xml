@@ -2,10 +2,12 @@
     <issue id="0" severity="info" rulename="empty_blocks">
         Empty blocks are useless!
     </issue>
+
     <issue id="1" severity="error" rulename="equal_script_names">
         The identifier of scripts need to be unique.
-        %0$s clashes with %1$s.
+        {{markTokens.0.text}} clashes with {{markTokens.0.text}}.
     </issue>
+
     <issue id="2" severity="error" rulename="negated_match_with_using">
 
     </issue>
@@ -13,7 +15,9 @@
     <issue id="3" severity="warn" rulename="succ_same_block">
         Successive blocks have no effect!
     </issue>
-    <issue id="4" severity="warn" rulename="FOREACH_AFTER_THEONLY"/>
+    <issue id="4" severity="warn" rulename="FOREACH_AFTER_THEONLY">
+        {{firstToken.text}}
+    </issue>
     <issue id="5" severity="warn" rulename="THEONLY_AFTER_FOREACH"/>
 
     <issue id="7" severity="warn" rulename="REDECLARE_VARIABLE">
