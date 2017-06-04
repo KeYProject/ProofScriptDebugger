@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <?import de.jensd.fx.glyphs.materialdesignicons.*?>
-<?import edu.kit.formal.gui.controls.ScriptArea?>
 <?import edu.kit.formal.gui.controls.JavaArea?>
+<?import edu.kit.formal.gui.controls.ScriptArea?>
 <?import edu.kit.formal.gui.controls.SequentView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-
 <BorderPane fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="edu.kit.formal.gui.controller.DebuggerMainWindowController">
+            fx:controller="edu.kit.formal.gui.controller.DebuggerMainWindowController"
+            prefWidth="1024" prefHeight="640">
     <center>
         <SplitPane fx:id="splitPane" dividerPositions="0.5" layoutY="29.0" prefHeight="371.0" prefWidth="600.0">
             <items>
@@ -26,7 +26,7 @@
                                         <Tooltip text="Execute Script"/>
                                     </tooltip>
                                 </Button>
-                                <Button fx:id="startDebugMode" onAction="#changeToDebugMode">
+                                <Button fx:id="startDebugMode" onAction="#executeInDebugMode">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="PLAY_PAUSE" size="24.0"/>
                                     </graphic>
@@ -91,26 +91,39 @@
     <top>
         <MenuBar fx:id="menuBar">
             <menus>
-                <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
+                <Menu fx:id="fileMenu" text="File">
                     <items>
                         <MenuItem fx:id="openScriptFileMenuItem" onAction="#openScript" text="Open Script"/>
+                        <SeparatorMenuItem/>
                         <MenuItem fx:id="loadKeYFileMenuItem" onAction="#loadKeYFile" text="Load KeY File"/>
                         <MenuItem fx:id="loadJavaFileMenuItem" onAction="#loadJavaFile" text="Load Java File"/>
-
-                        <MenuItem fx:id="closeMenuItem" mnemonicParsing="false" onAction="#closeProgram" text="Close"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem onAction="#saveScript" text="Save Script"/>
+                        <MenuItem onAction="#saveAsScript" text="Save Script As ..."/>
+                        <MenuItem onAction="#saveProof"/>
+                        <MenuItem fx:id="closeMenuItem" onAction="#closeProgram" text="Close"/>
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
+                <Menu text="Edit">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Delete"/>
+                        <MenuItem text="Delete"/>
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Help">
+                <Menu text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="About"/>
+                        <MenuItem text="About"/>
                     </items>
                 </Menu>
             </menus>
         </MenuBar>
     </top>
+    <bottom>
+        <HBox>
+            <Label fx:id="lblStatusMessage" HBox.hgrow="ALWAYS"/>
+            <Separator/>
+            <Label fx:id="lblCurrentNodes"/>
+            <Separator/>
+            <Label fx:id="lblFilename"/>
+        </HBox>
+    </bottom>
 </BorderPane>

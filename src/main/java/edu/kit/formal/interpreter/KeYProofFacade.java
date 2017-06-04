@@ -4,6 +4,7 @@ import de.uka.ilkd.key.api.KeYApi;
 import de.uka.ilkd.key.api.ProjectedNode;
 import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.api.ProofManagementApi;
+import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
@@ -69,6 +70,7 @@ public class KeYProofFacade {
     public List<Contract> getContractsForJavaFile(File javaFile) {
         try {
             pma = KeYApi.loadFromKeyFile(javaFile);
+
             return pma.getProofContracts();
         } catch (ProblemLoaderException e) {
             e.printStackTrace();
@@ -85,7 +87,6 @@ public class KeYProofFacade {
         }
 
     }
-
 
 
     /**
@@ -119,7 +120,7 @@ public class KeYProofFacade {
         KeyData keyData = new KeyData(root.getProofNode(), pa.getEnv(), pa.getProof());
         try {
 
-            interpreter.interpret(Facade.getAST(scriptText), new GoalNode<KeyData>(null, keyData));
+            interpreter.interpret(Facade.getAST(scriptText), new GoalNode<>(null, keyData));
             this.model.setCurrentState(interpreter.getCurrentState());
         } catch (IOException e) {
             e.printStackTrace();
@@ -127,4 +128,7 @@ public class KeYProofFacade {
 
     }
 
+    public Services getService() {
+        return pma.getServices();
+    }
 }

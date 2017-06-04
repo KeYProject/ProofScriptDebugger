@@ -74,15 +74,6 @@ public class ScriptArea extends CodeArea {
         LinterStrategy ls = LinterStrategy.getDefaultLinter();
         List<LintProblem> pl = ls.check(Facade.getAST(CharStreams.fromString(getText())));
 
-        List<Integer> newlines = new ArrayList<>();
-        newlines.add(0);
-        char[] chars = getText().toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            if (chars[i] == '\n') {
-                newlines.add(i);
-            }
-        }
-
         for (LintProblem p : pl) {
             for (Token tok : p.getMarkTokens()) {
                 setStyle(tok.getStartIndex(),

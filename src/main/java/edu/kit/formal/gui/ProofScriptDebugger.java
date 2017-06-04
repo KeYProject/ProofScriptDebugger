@@ -2,12 +2,12 @@ package edu.kit.formal.gui;
 
 /**
  * Main Entry for Debugger GUI
+ *
  * @author S. Grebing
  */
 
-import de.jensd.fx.glyphs.materialdesignicons.demo.MaterialDesignIconsDemoApp;
+import de.uka.ilkd.key.util.KeYConstants;
 import edu.kit.formal.gui.controller.DebuggerMainWindowController;
-import edu.kit.formal.gui.model.RootModel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,8 +15,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class ProofScriptDebugger extends Application {
+    public static final String NAME = "Proof Script Debugger";
+    public static final String VERSION = "0.1";
+    public static final String KEY_VERSION = KeYConstants.VERSION;
+
+    private Logger logger = Logger.getLogger("psdbg");
 
     public static void main(String[] args) {
         launch(args);
@@ -24,20 +30,18 @@ public class ProofScriptDebugger extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        RootModel rm = new RootModel();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/DebuggerMain.fxml"));
+        logger.info("Start: " + NAME);
+        logger.info("Version: " + VERSION);
+        logger.info("KeY: " + KeYConstants.COPYRIGHT);
+        logger.info("KeY Version: " + KeYConstants.VERSION);
+        logger.info("KeY Internal: " + KeYConstants.INTERNAL_VERSION);
 
-
-        Parent root = null;
         try {
-            root = (Parent) fxmlLoader.load();
-            DebuggerMainWindowController controller = fxmlLoader.<DebuggerMainWindowController>getController();
-            controller.setStage(primaryStage);
-            controller.setModel(rm);
-            controller.init();
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/DebuggerMain.fxml"));
+            Parent root = fxmlLoader.load();
+            //DebuggerMainWindowController controller = fxmlLoader.<DebuggerMainWindowController>getController();
             Scene scene = new Scene(root);
-            primaryStage.setTitle("Proof Script Debugger");
-
+            primaryStage.setTitle(NAME + " (" + VERSION + ") with KeY:" + KEY_VERSION);
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (IOException e) {

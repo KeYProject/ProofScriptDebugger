@@ -1,6 +1,9 @@
 package edu.kit.formal.gui.controller;
 
+import de.uka.ilkd.key.logic.op.IProgramMethod;
+import de.uka.ilkd.key.pp.ProgramPrinter;
 import de.uka.ilkd.key.speclang.Contract;
+import edu.kit.formal.gui.controls.JavaArea;
 import edu.kit.formal.gui.controls.ScriptArea;
 import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.KeYProofFacade;
@@ -8,9 +11,9 @@ import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.dbg.Debugger;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -18,7 +21,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.dialog.Wizard;
@@ -40,105 +42,308 @@ import java.util.concurrent.Executors;
  * @author S.Grebing
  */
 public class DebuggerMainWindowController implements Initializable {
-    private static String testFile1 = "/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/src/test/resources/edu/kit/formal/interpreter/";
-    private static String testFile = "/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/src/test/resources/edu/kit/formal/interpreter/contraposition/";
-
     private SimpleBooleanProperty debugMode = new SimpleBooleanProperty(false);
 
 
     @FXML
-    Pane rootPane;
+    private Pane rootPane;
     @FXML
-    SplitPane splitPane;
+    private SplitPane splitPane;
 
     /***********************************************************************************************************
      *      Code Area
      * **********************************************************************************************************/
     @FXML
-    ScrollPane scrollPaneCode;
+    private ScrollPane scrollPaneCode;
     @FXML
-    ScriptArea scriptArea;
+    private ScriptArea scriptArea;
     /***********************************************************************************************************
      *      MenuBar
      * **********************************************************************************************************/
     @FXML
-    MenuBar menubar;
+    private MenuBar menubar;
     @FXML
-    Menu fileMenu;
+    private Menu fileMenu;
     @FXML
-    MenuItem closeMenuItem;
+    private MenuItem closeMenuItem;
     /***********************************************************************************************************
      *      ToolBar
      * **********************************************************************************************************/
     @FXML
-    ToolBar toolbar;
+    private ToolBar toolbar;
     @FXML
-    Button buttonStartInterpreter;
+    private Button buttonStartInterpreter;
     @FXML
-    Button startDebugMode;
+    private Button startDebugMode;
     /***********************************************************************************************************
      *      GoalView
      * **********************************************************************************************************/
     @FXML
-    ListView goalView;
+    private ListView goalView;
     private ExecutorService executorService = null;
-
-
     private KeYProofFacade facade;
-
-
     private Wizard contractChooserDialog = new Wizard();
-
     private ContractLoaderService cls;
 
-
     /**
-     * Model for the DebuggerController containing the neccessary references to objects needed for controlling backend through UI
+     * Model for the DebuggerController containing the neccessary
+     * references to objects needed for controlling backend through UI
      */
     private RootModel model;
+
+    @FXML
+    private Label lblStatusMessage;
+    @FXML
+    private Label lblCurrentNodes;
+    @FXML
+    private Label lblFilename;
 
     @Setter
     private Debugger debugger;
 
-    private Stage stage;
+    private File initialDirectory;
 
+    @FXML
+    private JavaArea javaSourceCode;
+
+
+    /**
+     * @param location
+     * @param resources
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        model = new RootModel();
+        setDebugMode(false);
+        facade = new KeYProofFacade(this.model);
+        cls = new ContractLoaderService();
+
+        model.scriptFileProperty().addListener((observable, oldValue, newValue) -> {
+            lblFilename.setText("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
+        });
+
+        model.chosenContractProperty().addListener(o -> {
+            IProgramMethod method = (IProgramMethod) model.getChosenContract().getTarget();
+            javaSourceCode.clear();
+            javaSourceCode.getMarkedLines().clear();
+            StringWriter writer = new StringWriter();
+            ProgramPrinter pp = new ProgramPrinter(writer);
+            try {
+                pp.printFullMethodSignature(method);
+                pp.printStatementBlock(method.getBody());
+                writer.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            javaSourceCode.insertText(0, writer.toString());
+
+            //debug
+            javaSourceCode.getMarkedLines().add(2);
+            javaSourceCode.getMarkedLines().add(3);
+
+
+        });
+    }
+
+    //region Actions: Execution
     @FXML
     public void executeScript() {
         buttonStartInterpreter.setText("Interpreting...");
         startDebugMode.setDisable(true);
-        facade.executeScript(model.getCurrentScript());
+        facade.executeScript(scriptArea.getText());
         List<GoalNode<KeyData>> g = model.getCurrentState().getGoals();
         this.model.getCurrentGoalNodes().addAll(g);
         buttonStartInterpreter.setText("execute Script");
     }
 
     @FXML
-    public void changeToDebugMode() {
+    public void executeInDebugMode() {
         setDebugMode(true);
         executeScript();
     }
+    //endregion
 
+    //region Actions: Menu
     @FXML
-    protected void closeProgram() {
+    public void closeProgram() {
         System.exit(0);
     }
 
     @FXML
     protected void openScript() {
-        File scriptFile = openFileChooserDialog("Select Script File", "Proof Script File", "kps");
+        File scriptFile = openFileChooserOpenDialog("Select Script File",
+                "Proof Script File", "kps");
         if (scriptFile != null) {
-            try {
-                String code = FileUtils.readFileToString(scriptFile, Charset.defaultCharset());
-                model.currentScriptProperty().set(code);
-                model.setScriptFile(scriptFile);
-            } catch (IOException e) {
-                showExceptionDialog("Exception occured", "",
-                        "Could not load file " + scriptFile, e);
-            }
+            openScript(scriptFile);
         }
     }
 
-    public void showExceptionDialog(String title, String headerText, String contentText, Exception ex) {
+    @FXML
+    public void saveScript() {
+        if (model.getScriptFile() != null) {
+            saveScript(model.getScriptFile());
+        } else {
+            saveAsScript();
+        }
+    }
+
+    private void saveScript(File scriptFile) {
+        try {
+            FileUtils.write(scriptFile, scriptArea.getText(), Charset.defaultCharset());
+        } catch (IOException e) {
+            showExceptionDialog("Could not save file", "blubb", "...fsfsfsf fsa", e);
+        }
+    }
+
+    @FXML
+    public void saveAsScript() {
+        File f = openFileChooserSaveDialog("Save script", "", "kps");
+        if (f != null) {
+            saveScript(f);
+        }
+    }
+
+    public void openScript(File scriptFile) {
+        assert scriptFile != null;
+        try {
+            String code = FileUtils.readFileToString(scriptFile, Charset.defaultCharset());
+            openScript(code);
+            model.setScriptFile(scriptFile);
+        } catch (IOException e) {
+            showExceptionDialog("Exception occured", "",
+                    "Could not load file " + scriptFile, e);
+        }
+    }
+
+    private void openScript(String code) {
+        model.setScriptFile(null);
+        scriptArea.clear();
+        scriptArea.setText(code);
+    }
+
+    @FXML
+    protected void loadKeYFile() {
+        File keyFile = openFileChooserOpenDialog("Select KeY File", "KeY Files", "key", "script");
+        this.model.setKeYFile(keyFile);
+        if (keyFile != null) {
+            buildKeYProofFacade();
+        }
+
+    }
+
+    public void saveProof(ActionEvent actionEvent) {
+
+    }
+
+
+    @FXML
+    protected void loadJavaFile() {
+        File javaFile = openFileChooserOpenDialog("Select Java File", "Java Files", "java");
+        if (javaFile != null) {
+            model.setJavaFile(javaFile);
+            facade = new KeYProofFacade(model);
+            cls.start();
+            cls.setOnSucceeded(event -> {
+                model.getLoadedContracts().addAll(cls.getValue());
+                ContractChooser cc = new ContractChooser(facade.getService(),
+                        model.loadedContractsProperty());
+
+                cc.showAndWait().ifPresent(result -> {
+                    model.setChosenContract(result);
+                    if (this.model.getChosenContract() != null) {
+                        buildJavaProofFacade();
+                        System.out.println("Proof Facade is built");
+                    } else {
+                        System.out.println("Something went wrong");
+                    }
+                });
+            });
+        }
+    }
+
+    /**
+     * Spawns a thread that builds the proof environment as facade with interpreter
+     */
+    private void buildKeYProofFacade() {
+        executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(() -> {
+            facade = new KeYProofFacade(model);
+            facade.prepareEnvWithKeYFile(model.getKeYFile());
+
+        });
+        executorService.shutdown();
+    }
+
+    /**
+     * Spawns a thread that builds the proof environment as facade with interpreter
+     */
+    private void buildJavaProofFacade() {
+        executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(() -> {
+            if (facade != null) {
+                facade.prepareEnvForContract(model.getChosenContract(), model.getKeYFile());
+            }
+        });
+        executorService.shutdown();
+    }
+    //endregion
+
+    //region Santa's Little Helper
+
+    /**
+     * Creates a filechooser dialog
+     *
+     * @param title       of the dialog
+     * @param description of the files
+     * @param fileEndings file that should be shown
+     * @return
+     */
+    private File openFileChooserSaveDialog(String title, String description, String... fileEndings) {
+        FileChooser fileChooser = getFileChooser(title, description, fileEndings);
+        File file = fileChooser.showSaveDialog(goalView.getScene().getWindow());
+        if (file != null) initialDirectory = file.getParentFile();
+        return file;
+    }
+
+    private File openFileChooserOpenDialog(String title, String description, String... fileEndings) {
+        FileChooser fileChooser = getFileChooser(title, description, fileEndings);
+        File file = fileChooser.showOpenDialog(goalView.getScene().getWindow());
+        if (file != null) initialDirectory = file.getParentFile();
+        return file;
+    }
+
+    private FileChooser getFileChooser(String title, String description, String[] fileEndings) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(title);
+        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(description, fileEndings));
+        if (initialDirectory == null)
+            initialDirectory = new File("src/test/resources/edu/kit/formal/");
+
+        if (!initialDirectory.exists())
+            initialDirectory = new File(".");
+
+        fileChooser.setInitialDirectory(initialDirectory);
+        return fileChooser;
+    }
+
+    public class ContractLoaderService extends Service<List<Contract>> {
+        @Override
+        protected Task<List<Contract>> createTask() {
+            Task<List<Contract>> task1 = new Task<List<Contract>>() {
+                @Override
+                protected List<Contract> call() throws Exception {
+                    List<Contract> contracts = facade.getContractsForJavaFile(model.getJavaFile());
+                    System.out.println("Loaded Contracts " + contracts.toString());
+                    return contracts;
+                }
+            };
+
+            return task1;
+        }
+
+    }
+
+    public static void showExceptionDialog(String title, String headerText, String contentText, Exception ex) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
@@ -167,155 +372,9 @@ public class DebuggerMainWindowController implements Initializable {
 
         alert.showAndWait();
     }
+    //endregion
 
-    @FXML
-    protected void loadKeYFile() {
-        File keyFile = openFileChooserDialog("Select KeY File", "KeY Files", "key", "script");
-        this.model.setKeYFile(keyFile);
-        if (keyFile != null) {
-            buildKeYProofFacade();
-        }
-
-    }
-
-
-    @FXML
-    protected void loadJavaFile() {
-        File javaFile = openFileChooserDialog("Select Java File", "Java Files", "java", "script");
-        this.model.setJavaFile(javaFile);
-
-        if (javaFile != null) {
-
-            facade = new KeYProofFacade(model);
-
-            cls.setRefToRootModel(this.model);
-            cls.start();
-            cls.setOnSucceeded(event -> {
-                model.getLoadedContracts().addAll((List<Contract>) event.getSource().getValue());
-                ContractChooser page = new ContractChooser(this.model.loadedContractsProperty(), this.model.getChosenContract());
-                // contractChooserDialog.setFlow(new Wizard.LinearFlow(new ContractChooser(this.model.loadedContractsProperty(), this.model.getChosenContract())));
-
-                contractChooserDialog.setFlow(new Wizard.LinearFlow(page));
-
-                contractChooserDialog.showAndWait().ifPresent(result -> {
-                    if (result == ButtonType.FINISH) {
-                        // System.out.println(contractChooserDialog.getSettings());
-                        SimpleObjectProperty<Contract> chosenContractProp = page.getChosen();
-                        model.setChosenContract(chosenContractProp.getValue());
-                        if (this.model.getChosenContract() != null) {
-                            buildJavaProofFacade();
-                            System.out.println("Proof Facade is built");
-                        } else {
-                            System.out.println("Something went wrong");
-                        }
-                    }
-
-                });
-            });
-        }
-
-
-    }
-
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-
-    /**
-     * Needs to be set from calling method
-     *
-     * @param model
-     */
-    public void setModel(RootModel model) {
-        this.model = model;
-    }
-
-    /**
-     *
-     */
-    public void init() {
-        facade = new KeYProofFacade(this.model);
-        cls = new ContractLoaderService();
-    }
-
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        setDebugMode(false);
-    }
-
-    /**
-     * Spawns a thread that builds the proof environment as facade with interpreter
-     */
-    private void buildKeYProofFacade() {
-        executorService = Executors.newFixedThreadPool(2);
-        executorService.execute(() -> {
-            facade = new KeYProofFacade(model);
-            facade.prepareEnvWithKeYFile(model.getKeYFile());
-
-        });
-        executorService.shutdown();
-    }
-
-    /**
-     * Spawns a thread that builds the proof environment as facade with interpreter
-     */
-    private void buildJavaProofFacade() {
-        executorService = Executors.newFixedThreadPool(2);
-        executorService.execute(() -> {
-            if (facade != null) {
-                facade.prepareEnvForContract(model.getChosenContract(), model.getKeYFile());
-            }
-        });
-        executorService.shutdown();
-    }
-
-
-    /**
-     * Creates a filechooser dialog
-     *
-     * @param title       of the dialog
-     * @param description of the files
-     * @param fileEndings file that should be shown
-     * @return
-     */
-    private File openFileChooserDialog(String title, String description, String... fileEndings) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(title);
-        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(description, fileEndings));
-        File value = new File(testFile1);
-        fileChooser.setInitialDirectory(value.exists() ? value : new File("."));
-        File file = fileChooser.showOpenDialog(this.stage);
-        return file;
-
-    }
-
-    public class ContractLoaderService extends Service<List<Contract>> {
-        @Setter
-        RootModel refToRootModel;
-
-        @Override
-        protected Task<List<Contract>> createTask() {
-            Task<List<Contract>> task1 = new Task<List<Contract>>() {
-                @Override
-                protected List<Contract> call() throws Exception {
-                    if (refToRootModel != null) {
-                        List<Contract> contracts = facade.getContractsForJavaFile(refToRootModel.getJavaFile());
-                        System.out.println("Loaded Contracts " + contracts.toString());
-                        return contracts;
-                    } else {
-                        throw new RuntimeException("No Reference to Rootmodel");
-                    }
-                }
-            };
-            System.out.println("Task1 created");
-            return task1;
-        }
-    }
-
-
+    //region Property
     public boolean isDebugMode() {
         return debugMode.get();
     }
@@ -327,4 +386,5 @@ public class DebuggerMainWindowController implements Initializable {
     public void setDebugMode(boolean debugMode) {
         this.debugMode.set(debugMode);
     }
+    //endregion
 }

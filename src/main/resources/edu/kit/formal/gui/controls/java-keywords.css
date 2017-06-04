@@ -1,0 +1,54 @@
+.ABSTRACT, .ASSERT, .BOOLEAN, .BREAK, .BYTE, .CASE, .CATCH, .CHAR, .CLASS, .CONST,
+.CONTINUE, .DEFAULT, .DO, .DOUBLE, .ELSE, .ENUM, .EXTENDS, .FINAL, .FINALLY,
+.FLOAT, .FOR, .IF, .GOTO, .IMPLEMENTS, .IMPORT, .INSTANCEOF, .INT,
+.INTERFACE, .LONG, .NATIVE, .NEW, .PACKAGE, .PRIVATE, .PROTECTED, .PUBLIC, .RETURN,
+.SHORT, .STATIC, .STRICTFP, .SUPER, .SWITCH, .SYNCHRONIZED, .THIS, .THROW, .THROWS,
+.TRANSIENT, .TRY, .VOID, .VOLATILE, .WHILE {
+    -fx-fill: darkgreen;
+    -fx-font-weight: bold;
+}
+
+.hl-line {
+    -fx-background-color: khaki !important;
+    -fx-underline: true;
+    -fx-font-weight: bold   ;
+}
+
+.NullLiteral {
+    -fx-font-weight: bold;
+    -fx-fill: darkred;
+}
+
+.LPAREN, .RPAREN, .LBRACE, .RBRACE, .LBRACK, .RBRACK, .SEMI, .COMMA, .DOT {
+    -fx-font-weight: bold;
+    -fx-fill: blueviolet;
+}
+
+.script-area {
+    -fx-font-size: 14pt;
+    -fx-font-family: "Fira Code Medium";
+}
+
+.INTEGER_LITERAL {
+    -fx-fill: blue;
+}
+
+.StringLiteral, .CharacterLiteral {
+    -fx-fill: green;
+    -fx-font-smoothing-type: lcd;
+}
+
+.LINE_COMMENT, .COMMENT {
+    -fx-fill: dimgrey;
+    -fx-font-family: "Fira Code Light";
+}
+
+.Identifier {
+    -fx-fill: darkslateblue;
+    -fx-font-weight: bold;
+}
+
+.problem {
+    -fx-fill: firebrick !important;
+    -fx-underline: true;
+}

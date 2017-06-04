@@ -8,6 +8,7 @@ import edu.kit.formal.interpreter.data.State;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -17,6 +18,7 @@ import java.io.File;
 
 /**
  * Model for the root window
+ *
  * @author S. Grebing
  */
 public class RootModel {
@@ -38,7 +40,7 @@ public class RootModel {
     /**
      * Property: current loaded script string
      */
-    private final SimpleObjectProperty<String> currentScript;
+    private ObservableValue<String> currentScript;
 
     /**
      * ListProperty: list of goal nodes in the current state (depending on interpreter state)
@@ -50,26 +52,23 @@ public class RootModel {
      */
     private SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoalNode;
 
-
     private SimpleListProperty<Contract> loadedContracts;
 
-    private Contract chosenContract;
+    private SimpleObjectProperty<Contract> chosenContract = new SimpleObjectProperty<>();
+
 
     @Getter
     @Setter
     private State<KeyData> currentState;
 
 
-
     public RootModel() {
         javaFile = new SimpleObjectProperty<>();
         scriptFile = new SimpleObjectProperty<>();
         keYFile = new SimpleObjectProperty<>();
-        currentScript = new SimpleObjectProperty<>("");
         currentSelectedGoalNode = new SimpleObjectProperty<>();
         currentGoalNodes = new SimpleListProperty<>(FXCollections.observableArrayList());
         loadedContracts = new SimpleListProperty<>(FXCollections.observableArrayList());
-
     }
 
 
@@ -98,18 +97,6 @@ public class RootModel {
 
     public SimpleObjectProperty<File> keYFileProperty() {
         return keYFile;
-    }
-
-    public String getCurrentScript() {
-        return currentScript.get();
-    }
-
-    public void setCurrentScript(String currentScript) {
-        this.currentScript.set(currentScript);
-    }
-
-    public SimpleObjectProperty<String> currentScriptProperty() {
-        return currentScript;
     }
 
     public ObservableList<GoalNode<KeyData>> getCurrentGoalNodes() {
@@ -161,14 +148,23 @@ public class RootModel {
     }
 
     public Contract getChosenContract() {
+        return chosenContract.get();
+    }
+
+    public SimpleObjectProperty<Contract> chosenContractProperty() {
         return chosenContract;
     }
 
     public void setChosenContract(Contract chosenContract) {
-        this.chosenContract = chosenContract;
+        this.chosenContract.set(chosenContract);
     }
 
+    public State<KeyData> getCurrentState() {
+        return currentState;
+    }
 
-
-
+    public RootModel setCurrentState(State<KeyData> currentState) {
+        this.currentState = currentState;
+        return this;
+    }
 }
