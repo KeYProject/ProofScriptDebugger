@@ -2,16 +2,24 @@ package edu.kit.formal.gui.controller;
 
 import de.uka.ilkd.key.logic.op.IProgramMethod;
 import de.uka.ilkd.key.pp.ProgramPrinter;
+import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.gui.controls.JavaArea;
 import edu.kit.formal.gui.controls.ScriptArea;
 import edu.kit.formal.gui.controls.SequentView;
 import edu.kit.formal.gui.model.RootModel;
+import edu.kit.formal.interpreter.Interpreter;
+import edu.kit.formal.interpreter.InterpreterBuilder;
 import edu.kit.formal.interpreter.KeYProofFacade;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
+import edu.kit.formal.interpreter.data.State;
+import edu.kit.formal.proofscriptparser.Facade;
+import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.SetChangeListener;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -23,8 +31,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
+import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.io.FileUtils;
-import org.controlsfx.dialog.Wizard;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,16 +89,15 @@ public class DebuggerMainWindowController implements Initializable {
      * **********************************************************************************************************/
     @FXML
     private ListView<GoalNode<KeyData>> goalView;
-    private ExecutorService executorService = null;
-    private KeYProofFacade facade;
-    private Wizard contractChooserDialog = new Wizard();
-    private ContractLoaderService cls;
+    private ExecutorService executorService = Executors.newFixedThreadPool(2);
+    private KeYProofFacade facade = new KeYProofFacade();
+    private ContractLoaderService contractLoaderService = new ContractLoaderService();
 
     /**
      * Model for the DebuggerController containing the neccessary
      * references to objects needed for controlling backend through UI
      */
-    private RootModel model;
+    private RootModel model = new RootModel();
 
     @FXML
     private Label lblStatusMessage;
@@ -109,6 +116,10 @@ public class DebuggerMainWindowController implements Initializable {
     @FXML
     private SequentView sequentView;
 
+    private InterpretingService interpreterService = new InterpretingService();
+
+    private ObservableBooleanValue executeNotPossible = interpreterService.runningProperty().or(facade.readyToExecuteProperty().not());
+
 
     /**
      * @param location
@@ -116,14 +127,13 @@ public class DebuggerMainWindowController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        model = new RootModel();
+
         setDebugMode(false);
-        facade = new KeYProofFacade(this.model);
-        cls = new ContractLoaderService();
 
         model.scriptFileProperty().addListener((observable, oldValue, newValue) -> {
             lblFilename.setText("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
         });
+
 
         model.chosenContractProperty().addListener(o -> {
             IProgramMethod method = (IProgramMethod) model.getChosenContract().getTarget();
@@ -165,7 +175,6 @@ public class DebuggerMainWindowController implements Initializable {
             );*/
         });
 
-
         goalView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             sequentView.setNode(newValue.getData().getNode());
         });
@@ -173,30 +182,53 @@ public class DebuggerMainWindowController implements Initializable {
         goalView.setCellFactory(GoalNodeListCell::new);
     }
 
+
     //region Actions: Execution
     @FXML
     public void executeScript() {
-        executeScript(false);
+        executeScript(facade.buildInterpreter(), false);
+    }
+
+    @FXML
+    public void executeScriptFromCursor() {
+        InterpreterBuilder ib = facade.buildInterpreter();
+        ib.inheritState(interpreterService.interpreter.get());
+/*
+        LineMapping lm = new LineMapping(scriptArea.getText());
+        int line = lm.getLine(scriptArea.getCaretPosition());
+        int inLine = lm.getCharInLine(scriptArea.getCaretPosition());
+*/
+        ib.ignoreLinesUntil(scriptArea.getCaretPosition());
+
+
+        executeScript(ib, true);
     }
 
     @FXML
     public void executeInDebugMode() {
-        executeScript(true);
+        executeScript(facade.buildInterpreter(), true);
     }
 
-    private void executeScript(boolean debugMode) {
+    private void executeScript(InterpreterBuilder ib, boolean debugMode) {
         this.debugMode.set(debugMode);
-        lblStatusMessage.setText("Interpreting...");
+        blocker.deinstall();
+        lblStatusMessage.setText("Parse ...");
+        try {
+            List<ProofScript> scripts = Facade.getAST(scriptArea.getText());
+            lblStatusMessage.setText("Creating new Interpreter instance ...");
+            ib.inheritState(interpreterService.interpreter.get())
+                    .setScripts(scripts);
+            Interpreter<KeyData> currentInterpreter = ib.build();
 
-        blocker.deinstall(facade.getInterpreter());
-        if (debugMode) {
-            blocker.getStepUntilBlock().set(1);
-            blocker.install(facade.getInterpreter());
+            if (debugMode) {
+                blocker.getStepUntilBlock().set(1);
+                blocker.install(currentInterpreter);
+            }
+            interpreterService.interpreter.set(currentInterpreter);
+            interpreterService.start();
+        } catch (RecognitionException e) {
+            showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
-        facade.executeScript(scriptArea.getText());
-        List<GoalNode<KeyData>> g = model.getCurrentState().getGoals();
-        this.model.getCurrentGoalNodes().addAll(g);
-        lblStatusMessage.setText("Script executed");
     }
     //endregion
 
@@ -263,9 +295,23 @@ public class DebuggerMainWindowController implements Initializable {
         File keyFile = openFileChooserOpenDialog("Select KeY File", "KeY Files", "key", "script");
         this.model.setKeYFile(keyFile);
         if (keyFile != null) {
-            buildKeYProofFacade();
-        }
+            Task<Void> task = facade.loadKeyFileTask(keyFile);
+            task.setOnSucceeded(event -> {
+                lblStatusMessage.setText("Loaded key file: " + keyFile);
+                model.getCurrentGoalNodes().setAll(facade.getPseudoGoals());
+            });
 
+            task.setOnFailed(event -> {
+                event.getSource().exceptionProperty().get();
+                showExceptionDialog("Could not load file", "Key file loading error", "",
+                        (Throwable) event.getSource().exceptionProperty().get()
+                );
+            });
+
+            ProgressBar bar = new ProgressBar();
+            bar.progressProperty().bind(task.progressProperty());
+            executorService.execute(task);
+        }
     }
 
     public void saveProof(ActionEvent actionEvent) {
@@ -278,50 +324,8 @@ public class DebuggerMainWindowController implements Initializable {
         File javaFile = openFileChooserOpenDialog("Select Java File", "Java Files", "java");
         if (javaFile != null) {
             model.setJavaFile(javaFile);
-            facade = new KeYProofFacade(model);
-            cls.start();
-            cls.setOnSucceeded(event -> {
-                model.getLoadedContracts().addAll(cls.getValue());
-                ContractChooser cc = new ContractChooser(facade.getService(),
-                        model.loadedContractsProperty());
-
-                cc.showAndWait().ifPresent(result -> {
-                    model.setChosenContract(result);
-                    if (this.model.getChosenContract() != null) {
-                        buildJavaProofFacade();
-                        System.out.println("Proof Facade is built");
-                    } else {
-                        System.out.println("Something went wrong");
-                    }
-                });
-            });
+            contractLoaderService.start();
         }
-    }
-
-    /**
-     * Spawns a thread that builds the proof environment as facade with interpreter
-     */
-    private void buildKeYProofFacade() {
-        executorService = Executors.newFixedThreadPool(2);
-        executorService.execute(() -> {
-            facade = new KeYProofFacade(model);
-            facade.prepareEnvWithKeYFile(model.getKeYFile());
-
-        });
-        executorService.shutdown();
-    }
-
-    /**
-     * Spawns a thread that builds the proof environment as facade with interpreter
-     */
-    private void buildJavaProofFacade() {
-        executorService = Executors.newFixedThreadPool(2);
-        executorService.execute(() -> {
-            if (facade != null) {
-                facade.prepareEnvForContract(model.getChosenContract(), model.getKeYFile());
-            }
-        });
-        executorService.shutdown();
     }
     //endregion
 
@@ -371,21 +375,38 @@ public class DebuggerMainWindowController implements Initializable {
     public class ContractLoaderService extends Service<List<Contract>> {
         @Override
         protected Task<List<Contract>> createTask() {
-            Task<List<Contract>> task1 = new Task<List<Contract>>() {
-                @Override
-                protected List<Contract> call() throws Exception {
-                    List<Contract> contracts = facade.getContractsForJavaFile(model.getJavaFile());
-                    System.out.println("Loaded Contracts " + contracts.toString());
-                    return contracts;
-                }
-            };
-
-            return task1;
+            return facade.getContractsForJavaFileTask(model.getJavaFile());
         }
 
+        @Override
+        protected void failed() {
+            showExceptionDialog("", "", "", exceptionProperty().get());
+        }
+
+        @Override
+        protected void succeeded() {
+            lblStatusMessage.setText("Contract loaded");
+            model.getLoadedContracts().setAll(getValue());
+            //FIXME
+            ContractChooser cc = new ContractChooser(facade.getService(), model.loadedContractsProperty());
+
+            cc.showAndWait().ifPresent(result -> {
+                model.setChosenContract(result);
+                try {
+                    facade.activateContract(result);
+                    model.getCurrentGoalNodes().setAll(facade.getPseudoGoals());
+                } catch (ProofInputException e) {
+                    showExceptionDialog("", "", "", e);
+                }
+            });
+        }
     }
 
-    public static void showExceptionDialog(String title, String headerText, String contentText, Exception ex) {
+    public KeYProofFacade getFacade() {
+        return facade;
+    }
+
+    public static void showExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
@@ -444,5 +465,32 @@ public class DebuggerMainWindowController implements Initializable {
             setText(item.getNode().name());
         }
     }
-    //endregion
+
+    public Boolean getExecuteNotPossible() {
+        return executeNotPossible.get();
+    }
+
+    public ObservableBooleanValue executeNotPossibleProperty() {
+        return executeNotPossible;
+    }
+
+    private class InterpretingService extends Service<State<KeyData>> {
+        private final SimpleObjectProperty<Interpreter<KeyData>> interpreter = new SimpleObjectProperty<>();
+        private final SimpleObjectProperty<ProofScript> mainScript = new SimpleObjectProperty<>();
+
+        @Override
+        protected Task<edu.kit.formal.interpreter.data.State<KeyData>> createTask() {
+            return new Task<edu.kit.formal.interpreter.data.State<KeyData>>() {
+                final Interpreter<KeyData> i = interpreter.get();
+                final ProofScript ast = mainScript.get();
+
+                @Override
+                protected edu.kit.formal.interpreter.data.State<KeyData> call() throws Exception {
+                    i.interpret(ast);
+                    return i.peekState();
+                }
+            };
+        }
+    }
+//endregion
 }

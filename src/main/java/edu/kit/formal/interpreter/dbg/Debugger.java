@@ -80,7 +80,7 @@ public class Debugger {
     private void run() throws IOException {
         blocker.stepUntilBlock.set(2);
         interpreterThread = new Thread(() -> {
-            interpreter.interpret(scripts, null);
+            interpreter.interpret(scripts.get(0));
         });
         interpreterThread.setName("interpreter");
 

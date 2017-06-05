@@ -61,7 +61,7 @@ public class ContractChooser extends Dialog<Contract> {
     }
 
     private class ContractListCell extends ListCell<Contract> {
-        public ContractListCell(ListView<Contract> contractListView) {
+        ContractListCell(ListView<Contract> contractListView) {
             itemProperty().addListener((observable, oldValue, newValue) -> render());
             selectedProperty().addListener((observable, oldValue, newValue) -> render());
         }

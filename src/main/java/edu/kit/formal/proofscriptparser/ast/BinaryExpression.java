@@ -23,7 +23,6 @@ package edu.kit.formal.proofscriptparser.ast;
  */
 
 
-
 import edu.kit.formal.proofscriptparser.NotWelldefinedException;
 import edu.kit.formal.proofscriptparser.Visitor;
 import lombok.Data;
@@ -69,8 +68,8 @@ public class BinaryExpression extends Expression<ParserRuleContext> {
         if (operator.arity() != 2)
             throw new NotWelldefinedException("Arity mismatch", this);
 
-        checkType(operator.type()[0],left,signature);
-        checkType(operator.type()[1],right,signature);
+        checkType(operator.type()[0], left, signature);
+        checkType(operator.type()[1], right, signature);
 
         return operator.returnType();
     }

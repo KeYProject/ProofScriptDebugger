@@ -18,7 +18,8 @@
                     <children>
                         <ToolBar fx:id="toolbar">
                             <items>
-                                <Button fx:id="buttonStartInterpreter" onAction="#executeScript">
+                                <Button fx:id="buttonStartInterpreter" onAction="#executeScript"
+                                        disable="${controller.executeNotPossible}">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="PLAY" size="24.0"/>
                                     </graphic>
@@ -26,7 +27,19 @@
                                         <Tooltip text="Execute Script"/>
                                     </tooltip>
                                 </Button>
-                                <Button fx:id="startDebugMode" onAction="#executeInDebugMode">
+
+                                <Button fx:id="btnExecuteFromCursor" onAction="#executeScriptFromCursor"
+                                        disable="${controller.executeNotPossible}">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="CURSOR_TEXT" size="24.0"/>
+                                    </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Execute from Cursor"/>
+                                    </tooltip>
+                                </Button>
+
+                                <Button fx:id="startDebugMode" onAction="#executeInDebugMode"
+                                        disable="${controller.executeNotPossible}">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="PLAY_PAUSE" size="24.0"/>
                                     </graphic>
@@ -66,26 +79,42 @@
                         <ScriptArea fx:id="scriptArea" VBox.vgrow="ALWAYS"/>
                     </children>
                 </VBox>
-                <BorderPane SplitPane.resizableWithParent="true">
-                    <center>
-                        <Accordion>
+                <SplitPane orientation="VERTICAL" dividerPositions="0.25,0.75">
+                    <items>
+                        <BorderPane>
+                            <top>
+                                <Label text="Current Goals:" styleClass="header"/>
+                            </top>
+                            <center>
+                                <ListView fx:id="goalView"/>
+                            </center>
+                        </BorderPane>
+
+                        <SplitPane>
                             <padding>
                                 <Insets top="5" left="5" right="5" bottom="5"/>
                             </padding>
-                            <panes>
-                                <TitledPane text="Current Goals:" VBox.vgrow="ALWAYS">
-                                    <ListView fx:id="goalView" VBox.vgrow="ALWAYS"/>
-                                </TitledPane>
-                                <TitledPane text="Sequent">
-                                    <SequentView fx:id="sequentView" VBox.vgrow="ALWAYS"/>
-                                </TitledPane>
-                                <TitledPane text="Source Code">
-                                    <JavaArea fx:id="javaSourceCode"/>
-                                </TitledPane>
-                            </panes>
-                        </Accordion>
-                    </center>
-                </BorderPane>
+                            <items>
+                                <BorderPane SplitPane.resizableWithParent="true">
+                                    <top>
+                                        <Label styleClass="header" text="Sequent"/>
+                                    </top>
+                                    <center>
+                                        <SequentView fx:id="sequentView"/>
+                                    </center>
+                                </BorderPane>
+                                <BorderPane>
+                                    <top>
+                                        <Label text="Source Code" styleClass="header"/>
+                                    </top>
+                                    <center>
+                                        <JavaArea fx:id="javaSourceCode"/>
+                                    </center>
+                                </BorderPane>
+                            </items>
+                        </SplitPane>
+                    </items>
+                </SplitPane>
             </items>
         </SplitPane>
     </center>

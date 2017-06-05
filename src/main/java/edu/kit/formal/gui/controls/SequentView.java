@@ -3,15 +3,13 @@ package edu.kit.formal.gui.controls;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.NamespaceSet;
 import de.uka.ilkd.key.logic.Sequent;
-import de.uka.ilkd.key.pp.IdentitySequentPrintFilter;
-import de.uka.ilkd.key.pp.LogicPrinter;
-import de.uka.ilkd.key.pp.NotationInfo;
-import de.uka.ilkd.key.pp.ProgramPrinter;
+import de.uka.ilkd.key.pp.*;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.MouseEvent;
+import org.fxmisc.richtext.CharacterHit;
 import org.fxmisc.richtext.CodeArea;
 
 import java.io.StringWriter;
@@ -21,6 +19,7 @@ import java.io.StringWriter;
  * @version 1 (03.06.17)
  */
 public class SequentView extends CodeArea {
+    private Services services;
 
     private LogicPrinter lp;
     private IdentitySequentPrintFilter filter;
@@ -35,24 +34,50 @@ public class SequentView extends CodeArea {
     }
 
     private void hightlight(MouseEvent mouseEvent) {
-        double x = mouseEvent.getX();
-        double y = mouseEvent.getY();
+        if (backend == null) return;
 
-        /*
-        TextAreaSkin skin = (TextAreaSkin) getSkin();
-        int insertionPoint = skin.getInsertionPoint(x, y);
-
+        CharacterHit hit = hit(mouseEvent.getX(), mouseEvent.getY());
+        int insertionPoint = hit.getInsertionIndex();
         PosInSequent pis = backend.getInitialPositionTable().getPosInSequent(insertionPoint, filter);
         if (pis != null) {
-            System.out.println(pis);
             Range r = backend.getPositionTable().rangeForIndex(insertionPoint, getLength());
-
-            selectRange(r.start(), r.end());
+            hightlightRange(r.start(), r.end());
         } else {
-            selectRange(0, 0);
+            hightlightRange(0, 0);
         }
         mouseEvent.consume();
-        */
+    }
+
+    public void mouseClick(MouseEvent e) {
+        if (backend == null) {
+            return;
+        }
+        CharacterHit hit = hit(e.getX(), e.getY());
+        int insertionPoint = hit.getInsertionIndex();
+        PosInSequent pis = backend.getInitialPositionTable().getPosInSequent(insertionPoint, filter);
+
+/*
+        Goal g = new Goal(node, null);
+        ImmutableList<NoPosTacletApp> rules = g.ruleAppIndex().getFindTaclet(new TacletFilter() {
+            @Override
+            protected boolean filter(Taclet taclet) {
+                return true;
+            }
+        }, pis.getPosInOccurrence(), services);
+
+
+        RuleAppIndex index = g.ruleAppIndex();
+*/
+
+    }
+
+    private void hightlightRange(int start, int end) {
+        clearHighlight();
+        setStyleClass(start, end, "sequent-highlight");
+    }
+
+    private void clearHighlight() {
+        clearStyle(0, getLength());
     }
 
     public void update(Observable o) {

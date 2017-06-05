@@ -4,124 +4,160 @@ import de.uka.ilkd.key.api.KeYApi;
 import de.uka.ilkd.key.api.ProjectedNode;
 import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.api.ProofManagementApi;
+import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.java.Services;
+import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
-import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
-import edu.kit.formal.interpreter.data.State;
-import edu.kit.formal.interpreter.exceptions.InterpreterRuntimeException;
-import edu.kit.formal.proofscriptparser.Facade;
-import edu.kit.formal.proofscriptparser.ast.ProofScript;
-import lombok.Getter;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.concurrent.Task;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by sarah on 5/29/17.
  */
 public class KeYProofFacade {
+    private SimpleObjectProperty<Proof> proof = new SimpleObjectProperty<>();
+    private SimpleObjectProperty<KeYEnvironment> environment = new SimpleObjectProperty<>();
 
-    @Getter
+    private SimpleObjectProperty<Contract> contract = new SimpleObjectProperty<>();
+
+    private BooleanBinding readyToExecute = proof.isNotNull();
+
+    //region loading
+    public Task<Void> loadKeyFileTask(File keYFile) {
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                loadKeyFile(keYFile);
+                return null;
+            }
+        };
+        return task;
+    }
+
+    public void loadKeyFile(File keYFile) throws ProblemLoaderException {
+        ProofManagementApi pma = KeYApi.loadFromKeyFile(keYFile);
+        ProofApi pa = pma.getLoadedProof();
+        environment.set(pa.getEnv());
+        proof.set(pa.getProof());
+        contract.set(null);
+    }
+
+    public Task<List<Contract>> getContractsForJavaFileTask(File javaFile) {
+        return new Task<List<Contract>>() {
+            @Override
+            protected List<Contract> call() throws Exception {
+                return getContractsForJavaFile(javaFile);
+            }
+        };
+    }
+
+    //Workaround until api is relaxed
     private ProofManagementApi pma;
-    @Getter
-    private ProofApi pa;
-    @Getter
-    private ProjectedNode currentRoot;
 
-    private RootModel model;
-
-    @Getter
-    private Interpreter<KeyData> interpreter;
-
-
-    public KeYProofFacade(RootModel model) {
-        this.model = model;
+    public List<Contract> getContractsForJavaFile(File javaFile)
+            throws ProblemLoaderException {
+        pma = KeYApi.loadFromKeyFile(javaFile);
+        //TODO relax key api setEnvironment(pma.getEnvironment());
+        return pma.getProofContracts();
     }
 
-    public State<KeyData> executeScriptWithKeYProblemFile(String currentScriptText, File keyProblemFile) {
-        buildKeYInterpreter(keyProblemFile, false);
-        currentRoot = pa.getFirstOpenGoal();
-
-        KeyData keyData = new KeyData(currentRoot.getProofNode(), pa.getEnv(), pa.getProof());
-        interpreter.interpret(Facade.getAST(currentScriptText), new GoalNode<>(null, keyData));
-        return interpreter.getCurrentState();
+    public void activateContract(Contract c) throws ProofInputException {
+        ProofApi pa = pma.startProof(c);
+        environment.set(pa.getEnv());
+        proof.set(pa.getProof());
+        contract.set(null);
     }
-
-    public void prepareEnvWithKeYFile(File keYFile) {
-        try {
-            pma = KeYApi.loadFromKeyFile(keYFile);
-            pa = pma.getLoadedProof();
-            buildKeYInterpreter(keYFile, false);
-        } catch (ProblemLoaderException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public List<Contract> getContractsForJavaFile(File javaFile) {
-        try {
-            pma = KeYApi.loadFromKeyFile(javaFile);
-
-            return pma.getProofContracts();
-        } catch (ProblemLoaderException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public void prepareEnvForContract(Contract c, File javaFile) {
-        try {
-            pa = pma.startProof(c);
-            buildKeYInterpreter(javaFile, true);
-        } catch (ProofInputException e) {
-            e.printStackTrace();
-        }
-
-    }
-
+    //endregion
 
     /**
      * Build the KeYInterpreter that handles the execution of the loaded key problem file
      *
      * @param keYFile
+     * @param scriptText
      */
-    private void buildKeYInterpreter(File keYFile, Boolean isJavaFile) {
+    public InterpreterBuilder buildInterpreter() {
+        assert readyToExecute.getValue();
+
         InterpreterBuilder interpreterBuilder = new InterpreterBuilder();
-        this.interpreter = null;
-        interpreterBuilder.proof(pa).macros().scriptCommands();
-        pa.getProof().getProofIndependentSettings().getGeneralSettings().setOneStepSimplification(false);
-        this.interpreter = interpreterBuilder.build();
+        interpreterBuilder.proof(environment.get(), proof.get())
+                .macros()
+                .scriptCommands()
+                .scriptSearchPath(new File("."));
+        getProof().getProofIndependentSettings().getGeneralSettings().setOneStepSimplification(false);
 
-
+        // Set first state
+        final ProofApi pa = new ProofApi(getProof(), getEnvironment());
+        final ProjectedNode root = pa.getFirstOpenGoal();
+        final KeyData keyData = new KeyData(root.getProofNode(), pa.getEnv(), pa.getProof());
+        final GoalNode<KeyData> startGoal = new GoalNode<>(null, keyData);
+        return interpreterBuilder;
     }
 
 
-    /**
-     * Execute ScriptFile in the created interpreter
-     *
-     * @param
-     */
-    public Thread executeScript(String scriptText) throws InterpreterRuntimeException {
-        if (interpreter == null) {
-            throw new InterpreterRuntimeException("No interpreter created");
-        }
-
-        ProjectedNode root = pa.getFirstOpenGoal();
-        KeyData keyData = new KeyData(root.getProofNode(), pa.getEnv(), pa.getProof());
-        List<ProofScript> ast = Facade.getAST(scriptText);
-        Thread t = new Thread(() -> {
-            interpreter.interpret(ast, new GoalNode<>(null, keyData));
-        });
-        this.model.setCurrentState(interpreter.getCurrentState());
-        t.start();
-        return t;
-    }
-
+    //region Getter and Setters
     public Services getService() {
-        return pma.getServices();
+        //FIXME if key api relaxed
+        return pma != null ? pma.getServices() : getEnvironment().getServices();
     }
+
+    public Proof getProof() {
+        return proof.get();
+    }
+
+    public SimpleObjectProperty<Proof> proofProperty() {
+        return proof;
+    }
+
+    public void setProof(Proof proof) {
+        this.proof.set(proof);
+    }
+
+    public KeYEnvironment getEnvironment() {
+        return environment.get();
+    }
+
+    public SimpleObjectProperty<KeYEnvironment> environmentProperty() {
+        return environment;
+    }
+
+    public void setEnvironment(KeYEnvironment environment) {
+        this.environment.set(environment);
+    }
+
+    public Contract getContract() {
+        return contract.get();
+    }
+
+    public SimpleObjectProperty<Contract> contractProperty() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract.set(contract);
+    }
+
+    public Boolean getReadyToExecute() {
+        return readyToExecute.getValue();
+    }
+
+    public BooleanBinding readyToExecuteProperty() {
+        return readyToExecute;
+    }
+
+    public Collection<GoalNode<KeyData>> getPseudoGoals() {
+        KeyData data = new KeyData(proof.get().root(), getEnvironment(), getProof());
+        return Collections.singleton(new GoalNode<>(null, data));
+    }
+    //endregion
 }
+

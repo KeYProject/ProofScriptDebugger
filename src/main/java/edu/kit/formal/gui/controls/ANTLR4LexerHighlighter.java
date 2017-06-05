@@ -2,8 +2,8 @@ package edu.kit.formal.gui.controls;
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Token;
-import org.fxmisc.richtext.StyleSpans;
-import org.fxmisc.richtext.StyleSpansBuilder;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -23,7 +23,7 @@ public class ANTLR4LexerHighlighter {
     }
 
 
-    public StyleSpans<Collection<String>> highlight(String sourcecode) {
+    public StyleSpans<? extends Collection<String>> highlight(String sourcecode) {
         Lexer lexer = factory.apply(sourcecode);
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         try {

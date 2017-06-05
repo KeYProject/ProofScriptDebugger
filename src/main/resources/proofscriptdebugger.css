@@ -25,3 +25,15 @@
 .problem-popup-label-info {
     -fx-text-fill: cornflowerblue;
 }
+
+.header {
+    -fx-font-size: 120%;
+    -fx-font-weight: bold;
+    -fx-padding: 5px;
+}
+
+.sequent-highlight {
+    -fx-font-weight: bold;
+    -fx-background-color: lightskyblue !important;
+
+}

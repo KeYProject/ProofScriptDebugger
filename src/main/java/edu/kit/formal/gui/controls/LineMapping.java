@@ -7,7 +7,7 @@ import java.util.List;
  * @author Alexander Weigl
  * @version 1 (04.06.17)
  */
-class LineMapping {
+public class LineMapping {
     private List<Integer> marks = new ArrayList<>();
 
     public LineMapping(String value) {
@@ -37,4 +37,16 @@ class LineMapping {
         return getLineStart(line + 1) - 1;
     }
 
+    public int getCharInLine(int caretPosition) {
+        return caretPosition - getLineStart(getLine(caretPosition));
+    }
+
+    public int getLine(int caretPosition) {
+        for (int i = 0; i < marks.size(); i++) {
+            if (caretPosition >= marks.get(i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }

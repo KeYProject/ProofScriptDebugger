@@ -8,9 +8,11 @@ import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.formal.interpreter.data.KeyData;
+import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.interpreter.funchdl.*;
 import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.Visitor;
+import edu.kit.formal.proofscriptparser.ast.CallStatement;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import lombok.Getter;
 
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Alexander Weigl
@@ -134,6 +137,48 @@ public class InterpreterBuilder {
     public InterpreterBuilder proof(ProofApi pa) {
         addKeyMatcher(pa);
         pa.getRules().forEach(s -> pmr.getRules().put(s, null));
+        return this;
+    }
+
+    public InterpreterBuilder setScripts(List<ProofScript> scripts) {
+        psh.getScripts().clear();
+        return addProofScripts(scripts);
+    }
+
+    public InterpreterBuilder inheritState(Interpreter<KeyData> interpreter) {
+        this.interpreter.pushState(interpreter.peekState());
+        return this;
+    }
+
+    public InterpreterBuilder ignoreLines(Set<Integer> lines) {
+        CommandHandler<KeyData> ignoreHandler = new CommandHandler<KeyData>() {
+            @Override
+            public boolean handles(CallStatement call) throws IllegalArgumentException {
+                return lines.contains(call.getStartPosition().getLineNumber());
+            }
+
+            @Override
+            public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params) {
+                System.out.println("InterpreterBuilder.evaluate");
+            }
+        };
+        lookup.getBuilders().add(0, ignoreHandler);
+        return this;
+    }
+
+    public InterpreterBuilder ignoreLinesUntil(final int caretPosition) {
+        CommandHandler<KeyData> ignoreHandler = new CommandHandler<KeyData>() {
+            @Override
+            public boolean handles(CallStatement call) throws IllegalArgumentException {
+                return call.getRuleCtx().getStart().getStartIndex() < caretPosition;
+            }
+
+            @Override
+            public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params) {
+                System.out.println("InterpreterBuilder.evaluate");
+            }
+        };
+        lookup.getBuilders().add(0, ignoreHandler);
         return this;
     }
 }

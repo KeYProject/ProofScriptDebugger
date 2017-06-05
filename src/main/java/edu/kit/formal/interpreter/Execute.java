@@ -8,6 +8,7 @@ import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.proofscriptparser.Facade;
+import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
@@ -37,15 +38,21 @@ public class Execute {
             ProofManagementApi pma = KeYApi.loadFromKeyFile(new File(keyFiles.get(0)));
             ProofApi pa = pma.getLoadedProof();
             ProjectedNode root = pa.getFirstOpenGoal();
-            interpreterBuilder.proof(pa).macros().scriptCommands();
+
+            List<ProofScript> ast = Facade.getAST(scriptFile);
+            interpreterBuilder.proof(pa).macros()
+                    .scriptCommands()
+                    .addProofScripts(ast)
+                    .scriptSearchPath(new File("."));
+
             pa.getProof().getProofIndependentSettings().getGeneralSettings().setOneStepSimplification(false);
+
             Interpreter<KeyData> inter = interpreterBuilder.build();
             KeyData keyData = new KeyData(root.getProofNode(), pa.getEnv(), pa.getProof());
-            inter.interpret(Facade.getAST(scriptFile), new GoalNode<>(null, keyData));
+            inter.newState(new GoalNode<>(null, keyData));
+            inter.interpret(ast.get(0));
             return inter;
-        } catch (ProblemLoaderException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (ProblemLoaderException | IOException e) {
             e.printStackTrace();
         }
         return null;

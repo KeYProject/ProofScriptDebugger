@@ -141,6 +141,10 @@ public class PuppetMaster {
         return stepUntilBlock;
     }
 
+    public void deinstall() {
+        deinstall(puppet);
+    }
+
     private class EntryListener extends DefaultASTVisitor<Void> {
 
         @Override

@@ -33,7 +33,8 @@ public class InterpreterTest {
         Interpreter<String> i = new Interpreter<>(createTestLookup(scripts));
         i.setMatcherApi(new PseudoMatcher());
         //i.getEntryListeners().add(new ScopeLogger("scope:"));
-        i.interpret(scripts, new GoalNode<>(null, "abc"));
+        i.newState(new GoalNode<>(null, "abc"));
+        i.interpret(scripts.get(0));
         return i;
     }
 

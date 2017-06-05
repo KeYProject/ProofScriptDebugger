@@ -8,11 +8,8 @@ import edu.kit.formal.interpreter.data.State;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.File;
 
@@ -25,50 +22,38 @@ public class RootModel {
     /**
      * Property: current loaded ScriptFile
      */
-    private final SimpleObjectProperty<File> scriptFile;
+    private final SimpleObjectProperty<File> scriptFile = new SimpleObjectProperty<>();
 
     /**
      * Property: current loaded javaFile
      */
-    private final SimpleObjectProperty<File> javaFile;
+    private final SimpleObjectProperty<File> javaFile = new SimpleObjectProperty<>();
 
     /**
      * Property: current loaded KeY File
      */
-    private final SimpleObjectProperty<File> keYFile;
+    private final SimpleObjectProperty<File> keYFile = new SimpleObjectProperty<>();
 
     /**
      * Property: current loaded script string
      */
-    private ObservableValue<String> currentScript;
+    //private ObservableValue<String> currentScript;
 
     /**
      * ListProperty: list of goal nodes in the current state (depending on interpreter state)
      */
-    private ListProperty<GoalNode<KeyData>> currentGoalNodes;
+    private final ListProperty<GoalNode<KeyData>> currentGoalNodes = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     /**
      * Current SelectedGoalNode
      */
-    private SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoalNode;
+    private final SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoalNode = new SimpleObjectProperty<>();
 
-    private SimpleListProperty<Contract> loadedContracts;
+    private final SimpleListProperty<Contract> loadedContracts = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    private SimpleObjectProperty<Contract> chosenContract = new SimpleObjectProperty<>();
-
-
-    @Getter
-    @Setter
-    private State<KeyData> currentState;
-
+    private final SimpleObjectProperty<Contract> chosenContract = new SimpleObjectProperty<>();
 
     public RootModel() {
-        javaFile = new SimpleObjectProperty<>();
-        scriptFile = new SimpleObjectProperty<>();
-        keYFile = new SimpleObjectProperty<>();
-        currentSelectedGoalNode = new SimpleObjectProperty<>();
-        currentGoalNodes = new SimpleListProperty<>(FXCollections.observableArrayList());
-        loadedContracts = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
 
@@ -159,12 +144,4 @@ public class RootModel {
         this.chosenContract.set(chosenContract);
     }
 
-    public State<KeyData> getCurrentState() {
-        return currentState;
-    }
-
-    public RootModel setCurrentState(State<KeyData> currentState) {
-        this.currentState = currentState;
-        return this;
-    }
 }

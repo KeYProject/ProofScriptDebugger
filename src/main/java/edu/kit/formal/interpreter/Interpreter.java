@@ -9,6 +9,7 @@ import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.interpreter.data.Value;
 import edu.kit.formal.interpreter.data.VariableAssignment;
+import edu.kit.formal.interpreter.exceptions.InterpreterRuntimeException;
 import edu.kit.formal.interpreter.funchdl.CommandLookup;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.Visitor;
@@ -60,12 +61,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
     /**
      * starting point is a statement list
      */
-    public void interpret(List<ProofScript> scripts, GoalNode<T> startGoal) {
-        newState(startGoal);
-        //execute first script (RULE: The first script in the file is main script)
-        ProofScript m = scripts.get(0);
-        //later through interface with getMainScript();
-        m.accept(this);
+    public void interpret(ProofScript script) {
+        if (stateStack.empty()) {
+            throw new InterpreterRuntimeException("no state on stack. call newState before interpret");
+        }
+        script.accept(this);
     }
 
 
@@ -158,7 +158,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
     @Override
     public Void visit(CasesStatement casesStatement) {
         enterScope(casesStatement);
-        State<T> beforeCases = stateStack.peek();
+        State<T> beforeCases = peekState();
 
 
         List<GoalNode<T>> allGoalsBeforeCases = beforeCases.getGoals();
@@ -279,7 +279,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
      * @param goalsToApply @return
      */
     private List<GoalNode<T>> executeCase(Statements caseStmts,
-                                       Map<GoalNode<T>, VariableAssignment> goalsToApply) {
+                                          Map<GoalNode<T>, VariableAssignment> goalsToApply) {
         enterScope(caseStmts);
         List<GoalNode<T>> goalsAfterCases = new ArrayList<>();
 
@@ -439,7 +439,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
     public State<T> getCurrentState() {
         try {
             return stateStack.peek();
-        }catch (EmptyStackException e) {
+        } catch (EmptyStackException e) {
             return new State<T>(null);
             //FIXME
         }
@@ -478,6 +478,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
 
     private State<T> popState() {
         return stateStack.pop();
+    }
+
+
+    public State<T> peekState() {
+        return stateStack.peek();
     }
 
     public List<GoalNode<T>> getCurrentGoals() {
