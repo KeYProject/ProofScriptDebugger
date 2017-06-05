@@ -2,9 +2,7 @@
 
 
 <?import de.jensd.fx.glyphs.materialdesignicons.*?>
-<?import edu.kit.formal.gui.controls.JavaArea?>
-<?import edu.kit.formal.gui.controls.ScriptArea?>
-<?import edu.kit.formal.gui.controls.SequentView?>
+<?import edu.kit.formal.gui.controls.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -81,36 +79,41 @@
                 </VBox>
                 <SplitPane orientation="VERTICAL" dividerPositions="0.25,0.75">
                     <items>
-                        <BorderPane>
-                            <top>
-                                <Label text="Current Goals:" styleClass="header"/>
-                            </top>
+                        <SectionPane title="Current Goals">
+                            <headerRight>
+                                <Button onMouseClicked="#showGoalOptions">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="WRENCH"/>
+                                    </graphic>
+                                </Button>
+                            </headerRight>
                             <center>
                                 <ListView fx:id="goalView"/>
                             </center>
-                        </BorderPane>
+                        </SectionPane>
 
                         <SplitPane>
                             <padding>
                                 <Insets top="5" left="5" right="5" bottom="5"/>
                             </padding>
                             <items>
-                                <BorderPane SplitPane.resizableWithParent="true">
-                                    <top>
-                                        <Label styleClass="header" text="Sequent"/>
-                                    </top>
+                                <SectionPane title="Sequent">
+                                    <headerRight>
+                                        <Button>
+                                            <graphic>
+                                                <MaterialDesignIconView glyphName="WRENCH"/>
+                                            </graphic>
+                                        </Button>
+                                    </headerRight>
                                     <center>
                                         <SequentView fx:id="sequentView"/>
                                     </center>
-                                </BorderPane>
-                                <BorderPane>
-                                    <top>
-                                        <Label text="Source Code" styleClass="header"/>
-                                    </top>
+                                </SectionPane>
+                                <SectionPane title="Source Code">
                                     <center>
                                         <JavaArea fx:id="javaSourceCode"/>
                                     </center>
-                                </BorderPane>
+                                </SectionPane>
                             </items>
                         </SplitPane>
                     </items>

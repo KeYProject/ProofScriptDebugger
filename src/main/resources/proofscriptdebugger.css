@@ -32,8 +32,30 @@
     -fx-padding: 5px;
 }
 
-.sequent-highlight {
-    -fx-font-weight: bold;
-    -fx-background-color: lightskyblue !important;
+.styled-text-area .text.sequent-highlight {
+    -fx-background-color: yellowgreen !important;
+}
 
+.styled-text-area .sequent-highlight {
+    -fx-font-weight: bold;
+    -fx-background-insets: 1px;
+    -fx-background-position: center;
+    -fx-fill: firebrick;
+    -fx-border-color: black;
+    -fx-background-color: lightskyblue !important;
+}
+
+.section-pane .title {
+    -fx-font-weight: bold;
+    -fx-font-size: 14pt;
+}
+
+.section-pane .header-box {
+    -fx-padding: 5px;
+}
+
+.section-pane .header-buttons .button {
+}
+
+.section-pane .header-buttons .button {
 }

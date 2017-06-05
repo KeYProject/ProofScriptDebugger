@@ -1,12 +1,14 @@
 package edu.kit.formal.interpreter;
 
 import de.uka.ilkd.key.api.KeYApi;
+import de.uka.ilkd.key.api.ProjectedNode;
 import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
 import de.uka.ilkd.key.proof.Proof;
+import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.interpreter.funchdl.*;
@@ -75,9 +77,9 @@ public class InterpreterBuilder {
     }
 
     public InterpreterBuilder proof(KeYEnvironment env, Proof proof) {
-        //TODO relax constructor of proofapi
-        //return proof(new ProofApi(proof, env));
-        return this;
+        this.keyEnvironment = env;
+        this.proof = proof;
+        return proof(new ProofApi(proof, env));
     }
 
     public InterpreterBuilder scriptCommands() {
@@ -179,6 +181,22 @@ public class InterpreterBuilder {
             }
         };
         lookup.getBuilders().add(0, ignoreHandler);
+        return this;
+    }
+
+    public InterpreterBuilder startState() {
+        if (proof == null || keyEnvironment == null)
+            throw new IllegalStateException("Call proof(..) before startState");
+
+        final ProofApi pa = new ProofApi(proof, keyEnvironment);
+        final ProjectedNode root = pa.getFirstOpenGoal();
+        final KeyData keyData = new KeyData(root.getProofNode(), pa.getEnv(), pa.getProof());
+        final GoalNode<KeyData> startGoal = new GoalNode<>(null, keyData);
+        return startState(startGoal);
+    }
+
+    private InterpreterBuilder startState(GoalNode<KeyData> startGoal) {
+        interpreter.newState(startGoal);
         return this;
     }
 }

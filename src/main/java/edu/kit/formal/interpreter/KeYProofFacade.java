@@ -89,17 +89,14 @@ public class KeYProofFacade {
         assert readyToExecute.getValue();
 
         InterpreterBuilder interpreterBuilder = new InterpreterBuilder();
-        interpreterBuilder.proof(environment.get(), proof.get())
+        interpreterBuilder
+                .proof(environment.get(), proof.get())
+                .startState()
                 .macros()
                 .scriptCommands()
                 .scriptSearchPath(new File("."));
         getProof().getProofIndependentSettings().getGeneralSettings().setOneStepSimplification(false);
 
-        // Set first state
-        final ProofApi pa = new ProofApi(getProof(), getEnvironment());
-        final ProjectedNode root = pa.getFirstOpenGoal();
-        final KeyData keyData = new KeyData(root.getProofNode(), pa.getEnv(), pa.getProof());
-        final GoalNode<KeyData> startGoal = new GoalNode<>(null, keyData);
         return interpreterBuilder;
     }
 

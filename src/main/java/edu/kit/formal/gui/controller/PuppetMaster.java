@@ -51,8 +51,10 @@ public class PuppetMaster {
     }
 
     public void deinstall(Interpreter<KeyData> interpreter) {
-        interpreter.getEntryListeners().remove(entryListener);
-        interpreter.getEntryListeners().remove(exitListener);
+        if (interpreter != null) {
+            interpreter.getEntryListeners().remove(entryListener);
+            interpreter.getEntryListeners().remove(exitListener);
+        }
     }
 
     public Void checkForHalt(ASTNode node) {
@@ -72,7 +74,7 @@ public class PuppetMaster {
         return null;
     }
 
-    private void publishState() {
+    public void publishState() {
         System.out.println("PuppetMaster.publishState");
         final State<KeyData> state = puppet.getCurrentState().copy();
         Platform.runLater(() -> {

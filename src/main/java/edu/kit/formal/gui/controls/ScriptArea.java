@@ -220,6 +220,9 @@ public class ScriptArea extends CodeArea {
             lineNo.setTextFill(defaultTextFill);
             hbox.setPadding(defaultInsets);
             hbox.getStyleClass().add("lineno");
+
+            hbox.setStyle("-fx-cursor: hand");
+
             return hbox;
         }
 

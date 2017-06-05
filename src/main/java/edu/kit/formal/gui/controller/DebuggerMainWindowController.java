@@ -4,6 +4,7 @@ import de.uka.ilkd.key.logic.op.IProgramMethod;
 import de.uka.ilkd.key.pp.ProgramPrinter;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.speclang.Contract;
+import edu.kit.formal.gui.controls.GoalOptionsMenu;
 import edu.kit.formal.gui.controls.JavaArea;
 import edu.kit.formal.gui.controls.ScriptArea;
 import edu.kit.formal.gui.controls.SequentView;
@@ -26,7 +27,9 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -49,9 +52,12 @@ import java.util.concurrent.Executors;
  * Controller for the Debugger MainWindow
  *
  * @author S.Grebing
+ * @author Alexander Weigl
  */
 public class DebuggerMainWindowController implements Initializable {
     private SimpleBooleanProperty debugMode = new SimpleBooleanProperty(false);
+
+    private GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
 
 
     @FXML
@@ -171,7 +177,6 @@ public class DebuggerMainWindowController implements Initializable {
             /* TODO get lines of active statements marked lines
             javaSourceCode.getMarkedLines().clear();
             javaSourceCode.getMarkedLines().addAll(
-
             );*/
         });
 
@@ -216,8 +221,7 @@ public class DebuggerMainWindowController implements Initializable {
         try {
             List<ProofScript> scripts = Facade.getAST(scriptArea.getText());
             lblStatusMessage.setText("Creating new Interpreter instance ...");
-            ib.inheritState(interpreterService.interpreter.get())
-                    .setScripts(scripts);
+            ib.setScripts(scripts);
             Interpreter<KeyData> currentInterpreter = ib.build();
 
             if (debugMode) {
@@ -225,6 +229,7 @@ public class DebuggerMainWindowController implements Initializable {
                 blocker.install(currentInterpreter);
             }
             interpreterService.interpreter.set(currentInterpreter);
+            interpreterService.mainScript.set(scripts.get(0));
             interpreterService.start();
         } catch (RecognitionException e) {
             showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
@@ -372,6 +377,11 @@ public class DebuggerMainWindowController implements Initializable {
         blocker.unlock();
     }
 
+    public void showGoalOptions(MouseEvent actionEvent) {
+        Node n = (Node) actionEvent.getTarget();
+        goalOptionsMenu.show(n, actionEvent.getScreenX(), actionEvent.getScreenY());
+    }
+
     public class ContractLoaderService extends Service<List<Contract>> {
         @Override
         protected Task<List<Contract>> createTask() {
@@ -454,6 +464,7 @@ public class DebuggerMainWindowController implements Initializable {
 
         public GoalNodeListCell(ListView<GoalNode<KeyData>> goalNodeListView) {
             itemProperty().addListener(this::update);
+            goalOptionsMenu.selectedViewOptionProperty().addListener(this::update);
         }
 
         private void update(Observable observable) {
@@ -462,7 +473,11 @@ public class DebuggerMainWindowController implements Initializable {
                 return;
             }
             KeyData item = getItem().getData();
-            setText(item.getNode().name());
+            String text = "n/a";
+            if (goalOptionsMenu.getSelectedViewOption() != null) {
+                text = goalOptionsMenu.getSelectedViewOption().getText(item);
+            }
+            setText(text);
         }
     }
 
@@ -477,6 +492,27 @@ public class DebuggerMainWindowController implements Initializable {
     private class InterpretingService extends Service<State<KeyData>> {
         private final SimpleObjectProperty<Interpreter<KeyData>> interpreter = new SimpleObjectProperty<>();
         private final SimpleObjectProperty<ProofScript> mainScript = new SimpleObjectProperty<>();
+
+        @Override
+        protected void succeeded() {
+            updateView();
+        }
+
+        @Override
+        protected void cancelled() {
+            updateView();
+        }
+
+        @Override
+        protected void failed() {
+            getException().printStackTrace();
+            showExceptionDialog("Execution failed", "", "", getException());
+            updateView();
+        }
+
+        private void updateView() {
+            blocker.publishState();
+        }
 
         @Override
         protected Task<edu.kit.formal.interpreter.data.State<KeyData>> createTask() {

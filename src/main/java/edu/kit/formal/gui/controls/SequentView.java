@@ -72,8 +72,11 @@ public class SequentView extends CodeArea {
     }
 
     private void hightlightRange(int start, int end) {
-        clearHighlight();
-        setStyleClass(start, end, "sequent-highlight");
+        try {
+            clearHighlight();
+            setStyleClass(start, end, "sequent-highlight");
+        } catch (IllegalStateException e) {
+        }
     }
 
     private void clearHighlight() {
