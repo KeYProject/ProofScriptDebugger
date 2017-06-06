@@ -55,7 +55,7 @@ public class ScriptArea extends CodeArea {
         highlighter = new ANTLR4LexerHighlighter(
                 (String val) -> new ScriptLanguageLexer(CharStreams.fromString(val)));
         this.setParagraphGraphicFactory(gutter);
-        getStylesheets().add(getClass().getResource("script-keywords.css").toExternalForm());
+        //getStylesheets().add(getClass().getResource("script-keywords.css").toExternalForm());
         getStyleClass().add("script-area");
         textProperty().addListener((prop, oldValue, newValue) -> {
             clearStyle(0, newValue.length());
@@ -73,7 +73,7 @@ public class ScriptArea extends CodeArea {
                         return Optional.empty();
                     }
                 }).subscribe(s -> setStyleSpans(0, s));*/
-
+        getStyleClass().add("script-area");
         installPopup();
     }
 

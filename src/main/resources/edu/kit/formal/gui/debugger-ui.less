@@ -1,0 +1,198 @@
+@base03: rgb(0, 43, 54);
+@base02: rgb(7, 54, 66);
+@base01: rgb(88, 110, 117);
+@base00: rgb(101, 123, 131);
+@base0: rgb(131, 148, 150);
+@base1: rgb(147, 161, 161);
+@base2: rgb(238, 232, 213);
+@base3: rgb(253, 246, 227);
+@yellow: rgb(181, 137, 0);
+@orange: rgb(203, 75, 22);
+@red: rgb(220, 50, 47);
+@magenta: rgb(211, 54, 130);
+@violet: rgb(108, 113, 196);
+@blue: rgb(38, 139, 210);
+@cyan: rgb(42, 161, 152);
+@green: rgb(133, 153, 0);
+
+.solarized-dark() {
+  background-color: @base03;
+  color: @base0;
+}
+
+.solarized-light() {
+  background-color: @base3;
+  color: @base00;
+}
+
+.script-area {
+  -fx-background-color: @base3;
+  -fx-font-family: "Fira Code Medium", monospace;
+  -fx-font-size: 12pt;
+  -fx-fill: @base00;
+
+  // Structures
+  .FOREACH, .CASES, .CASE, .DEFAULT
+  .THEONLY, .SCRIPT, .USING, .REPEAT {
+    -fx-fill: @blue;
+    -fx-font-weight: bold;
+  }
+
+  // Operators
+  .MATCH, .PLUS, .MINUS,
+  .MUL, .DIV, .EQ, .NEQ,
+  .GEQ, .LEQ, .GE,
+  .LE, .AND, .OR,
+  .IMP, .EQUIV, .NOT {
+    -fx-fill: @green;
+  }
+
+  //
+  .INDENT, .DEDENT, .COLON, .ASSIGN, .LPAREN, .RPAREN, .LBRACKET, .RBRACKET {
+    -fx-font-weight: bold;
+    -fx-fill: blueviolet;
+  }
+
+  .DIGITS, .TRUE, .FALSE {
+    -fx-fill: @orange;
+  }
+
+  .TERM_LITERAL {
+    -fx-fill: @green;
+  }
+
+  .STRING_LITERAL {
+    -fx-fill: @violet;
+  }
+
+  .SINGLE_LINE_COMMENT, .MULTI_LINE_COMMENT {
+    -fx-fill: @base01;
+    -fx-font-weight: 100;
+  }
+
+  .IDENTIFIER {
+    -fx-fill: @orange;
+    -fx-font-weight: bold;
+  }
+
+  .problem {
+    -rtfx-background-color: @magenta;
+    -fx-underline: true;
+  }
+}
+
+/**********************************************************************************************************************/
+
+.java-area {
+  -fx-background-color: @base3;
+  -fx-font-family: "Fira Code Medium", monospace;
+  -fx-font-size: 12pt;
+  -fx-fill: @base01;
+
+  .ABSTRACT, .ASSERT, .BOOLEAN, .BREAK, .BYTE, .CASE, .CATCH, .CHAR, .CLASS, .CONST,
+  .CONTINUE, .DEFAULT, .DO, .DOUBLE, .ELSE, .ENUM, .EXTENDS, .FINAL, .FINALLY,
+  .FLOAT, .FOR, .IF, .GOTO, .IMPLEMENTS, .IMPORT, .INSTANCEOF, .INT,
+  .INTERFACE, .LONG, .NATIVE, .NEW, .PACKAGE, .PRIVATE, .PROTECTED, .PUBLIC, .RETURN,
+  .SHORT, .STATIC, .STRICTFP, .SUPER, .SWITCH, .SYNCHRONIZED, .THIS, .THROW, .THROWS,
+  .TRANSIENT, .TRY, .VOID, .VOLATILE, .WHILE {
+    -fx-fill: darkgreen;
+    -fx-font-weight: bold;
+  }
+
+  .hl-line {
+    -rtfx-background-color: @base03 !important;
+    -fx-fill: @base2;
+    -fx-font-weight: bold;
+  }
+
+  .NullLiteral {
+    -fx-font-weight: bold;
+    -fx-fill: @blue;
+  }
+
+  .LPAREN, .RPAREN, .LBRACE, .RBRACE, .LBRACK, .RBRACK, .SEMI, .COMMA, .DOT {
+  }
+
+  .INTEGER_LITERAL {
+    -fx-fill: @blue;
+  }
+
+  .StringLiteral, .CharacterLiteral {
+    -fx-fill: @green;
+    -fx-font-smoothing-type: lcd;
+  }
+
+  .LINE_COMMENT, .COMMENT {
+    -fx-fill: @base01;
+    -fx-font-family: "Fira Code Light";
+  }
+
+  .Identifier {
+    -fx-fill: @orange;
+    -fx-font-weight: bold;
+  }
+
+  .problem {
+    -fx-fill: firebrick !important;
+    -fx-underline: true;
+  }
+}
+
+/**********************************************************************************************************************/
+
+.problem-popup {
+  -fx-background-color: @base03;
+  -fx-text-fill: @base3;
+  -fx-text-alignment: center;
+  -fx-wrap-text: true;
+  -fx-fill-width: true;
+}
+
+.problem-popup-label {
+  -fx-wrap-text: true;
+}
+
+.problem-popup-label-error {
+  -fx-text-fill: @red;
+}
+
+.problem-popup-label-warn, .problem-popup-label-warning {
+  -fx-text-fill: @orange;
+}
+
+.problem-popup-label-info {
+  -fx-text-fill: @blue;
+}
+
+.header {
+  -fx-font-size: 120%;
+  -fx-font-weight: bold;
+  -fx-padding: 5px;
+}
+
+.sequent-view {
+  -fx-font-size: 14pt;
+  -fx-background-color: @base01;
+
+  .sequent-highlight {
+    -rtfx-background-color: @base1;
+    -fx-fill: @violet
+  }
+}
+
+.section-pane {
+  .title {
+    -fx-font-weight: bold;
+    -fx-font-size: 14pt;
+  }
+
+  .header-box {
+    -fx-padding: 5px;
+  }
+
+  .header-buttons .button {
+  }
+
+  .header-buttons .button {
+  }
+}

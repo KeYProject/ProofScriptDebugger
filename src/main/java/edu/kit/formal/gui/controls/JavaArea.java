@@ -35,8 +35,9 @@ public class JavaArea extends CodeArea {
         setEditable(false);
         setParagraphGraphicFactory(LineNumberFactory.get(this));
         setWrapText(true);
+        getStyleClass().add("java-area");
 
-        getStylesheets().add(getClass().getResource("java-keywords.css").toExternalForm());
+        //getStylesheets().add(getClass().getResource("java-keywords.css").toExternalForm());
         getStyleClass().add("java-area");
         textProperty().addListener(
                 (a, b, c) -> updateView());

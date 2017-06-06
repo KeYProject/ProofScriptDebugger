@@ -43,8 +43,9 @@ public class ProofScriptDebugger extends Application {
             //DebuggerMainWindowController controller = fxmlLoader.<DebuggerMainWindowController>getController();
             Scene scene = new Scene(root);
             scene.getStylesheets().addAll(
-                    "/proofscriptdebugger.css"
+                    getClass().getResource("debugger-ui.css").toExternalForm()
             );
+
             primaryStage.setTitle(NAME + " (" + VERSION + ") with KeY:" + KEY_VERSION);
             primaryStage.setScene(scene);
             primaryStage.show();

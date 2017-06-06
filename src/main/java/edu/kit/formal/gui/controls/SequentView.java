@@ -28,6 +28,7 @@ public class SequentView extends CodeArea {
 
 
     public SequentView() {
+        getStyleClass().add("sequent-view");
         setEditable(false);
         node.addListener(this::update);
         setOnMouseMoved(this::hightlight);
