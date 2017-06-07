@@ -6,7 +6,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.112"
             fx:controller="edu.kit.formal.gui.controller.DebuggerMainWindowController"
             prefWidth="1024" prefHeight="640">
     <center>
@@ -74,7 +74,27 @@
                                 </Button>
                             </items>
                         </ToolBar>
-                        <ScriptArea fx:id="scriptArea" VBox.vgrow="ALWAYS"/>
+                        <TabPane fx:id="tabPane" side="left"
+                                 tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS">
+                            <tabs>
+                                <Tab text="Script">
+                                    <content>
+                                        <AnchorPane VBox.vgrow="ALWAYS">
+                                            <ScrollPane AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+                                                        AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"
+                                                        fitToWidth="true" fitToHeight="true" hbarPolicy="AS_NEEDED"
+                                                        vbarPolicy="AS_NEEDED">
+                                                <ScriptArea fx:id="scriptArea" VBox.vgrow="ALWAYS"/>
+                                            </ScrollPane>
+                                        </AnchorPane>
+
+
+                                    </content>
+                                </Tab>
+                            </tabs>
+                        </TabPane>
+
+
                     </children>
                 </VBox>
                 <SplitPane orientation="VERTICAL" dividerPositions="0.25,0.75">
