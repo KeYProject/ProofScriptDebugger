@@ -10,7 +10,9 @@ import javafx.scene.layout.VBox;
 import lombok.Getter;
 
 /**
- * WozardPane to dosplay all available contracts
+ * WizardPane to display all available contracts
+ * @author S. Grebing
+ * @author A. Weigl
  */
 public class ContractChooser extends Dialog<Contract> {
     @Getter
@@ -52,12 +54,12 @@ public class ContractChooser extends Dialog<Contract> {
         return items.get();
     }
 
-    public ObjectProperty<ObservableList<Contract>> itemsProperty() {
-        return items;
-    }
-
     public void setItems(ObservableList<Contract> items) {
         this.items.set(items);
+    }
+
+    public ObjectProperty<ObservableList<Contract>> itemsProperty() {
+        return items;
     }
 
     private class ContractListCell extends ListCell<Contract> {

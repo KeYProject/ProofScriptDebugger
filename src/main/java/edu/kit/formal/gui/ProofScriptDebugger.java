@@ -7,12 +7,10 @@ package edu.kit.formal.gui;
  */
 
 import de.uka.ilkd.key.util.KeYConstants;
-import edu.kit.formal.gui.controller.DebuggerMainWindowController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.SceneBuilder;
 import javafx.stage.Stage;
 
 import java.io.IOException;

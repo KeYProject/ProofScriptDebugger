@@ -52,6 +52,9 @@
                                     <graphic>
                                         <MaterialDesignIconView glyphName="DEBUG_STEP_INTO" size="24.0"/>
                                     </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Step Into"/>
+                                    </tooltip>
                                 </Button>
 
                                 <Button onAction="#stepOver"
@@ -59,36 +62,54 @@
                                     <graphic>
                                         <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0"/>
                                     </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Step Over"/>
+                                    </tooltip>
                                 </Button>
+
+                                <Button onAction="#stepOver"
+                                        disable="${! controller.debugMode}">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0" scaleX="-1"/>
+                                    </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Step Back"/>
+                                    </tooltip>
+                                </Button>
+
 
                                 <Button disable="${! controller.debugMode}">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="DEBUG_STEP_OUT" size="24.0"/>
                                     </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Step Out"/>
+                                    </tooltip>
                                 </Button>
 
                                 <Button disable="${! controller.debugMode}">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="STOP" size="24.0"/>
                                     </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Stop"/>
+                                    </tooltip>
                                 </Button>
                             </items>
                         </ToolBar>
                         <TabPane fx:id="tabPane" side="left"
                                  tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS">
                             <tabs>
-                                <Tab text="Script">
+                                <Tab fx:id="startTab" text="Untitled">
                                     <content>
                                         <AnchorPane VBox.vgrow="ALWAYS">
                                             <ScrollPane AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0"
                                                         AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"
                                                         fitToWidth="true" fitToHeight="true" hbarPolicy="AS_NEEDED"
-                                                        vbarPolicy="AS_NEEDED">
+                                                        vbarPolicy="ALWAYS">
                                                 <ScriptArea fx:id="scriptArea" VBox.vgrow="ALWAYS"/>
                                             </ScrollPane>
                                         </AnchorPane>
-
-
                                     </content>
                                 </Tab>
                             </tabs>

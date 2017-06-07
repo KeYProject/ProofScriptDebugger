@@ -18,6 +18,7 @@ import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import javafx.beans.Observable;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -55,23 +56,23 @@ import java.util.concurrent.Executors;
  * @author Alexander Weigl
  */
 public class DebuggerMainWindowController implements Initializable {
+    private final PuppetMaster blocker = new PuppetMaster();
     private SimpleBooleanProperty debugMode = new SimpleBooleanProperty(false);
-
     private GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
-
-
     @FXML
     private Pane rootPane;
     @FXML
     private SplitPane splitPane;
-
     /***********************************************************************************************************
      *      Code Area
      * **********************************************************************************************************/
-    @FXML
-    private ScrollPane scrollPaneCode;
+
     @FXML
     private ScriptArea scriptArea;
+    @FXML
+    private TabPane tabPane;
+    @FXML
+    private Tab startTab;
     /***********************************************************************************************************
      *      MenuBar
      * **********************************************************************************************************/
@@ -98,22 +99,17 @@ public class DebuggerMainWindowController implements Initializable {
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
     private KeYProofFacade facade = new KeYProofFacade();
     private ContractLoaderService contractLoaderService = new ContractLoaderService();
-
     /**
      * Model for the DebuggerController containing the neccessary
      * references to objects needed for controlling backend through UI
      */
     private RootModel model = new RootModel();
-
     @FXML
     private Label lblStatusMessage;
     @FXML
     private Label lblCurrentNodes;
     @FXML
     private Label lblFilename;
-
-    private final PuppetMaster blocker = new PuppetMaster();
-
     private File initialDirectory;
 
     @FXML
@@ -126,6 +122,35 @@ public class DebuggerMainWindowController implements Initializable {
 
     private ObservableBooleanValue executeNotPossible = interpreterService.runningProperty().or(facade.readyToExecuteProperty().not());
 
+    public static void showExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String exceptionText = sw.toString();
+
+        Label label = new Label("The exception stacktrace was:");
+        TextArea textArea = new TextArea(exceptionText);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+        GridPane expContent = new GridPane();
+        expContent.setMaxWidth(Double.MAX_VALUE);
+        expContent.add(label, 0, 0);
+        expContent.add(textArea, 0, 1);
+
+        alert.getDialogPane().setExpandableContent(expContent);
+
+        alert.showAndWait();
+    }
 
     /**
      * @param location
@@ -185,8 +210,25 @@ public class DebuggerMainWindowController implements Initializable {
         });
 
         goalView.setCellFactory(GoalNodeListCell::new);
-    }
 
+        startTab.textProperty().bind(new StringBinding() {
+            {
+                super.bind(model.scriptFileProperty());
+            }
+
+            @Override
+            protected String computeValue() {
+                if (model.scriptFileProperty().getValue() != null) {
+                    System.out.println(model.scriptFileProperty());
+                    return model.scriptFileProperty().get().getName();
+                } else {
+                    return "Untitled";
+                }
+            }
+
+        });
+
+    }
 
     //region Actions: Execution
     @FXML
@@ -213,6 +255,7 @@ public class DebuggerMainWindowController implements Initializable {
     public void executeInDebugMode() {
         executeScript(facade.buildInterpreter(), true);
     }
+    //endregion
 
     private void executeScript(InterpreterBuilder ib, boolean debugMode) {
         this.debugMode.set(debugMode);
@@ -235,7 +278,6 @@ public class DebuggerMainWindowController implements Initializable {
             showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
     }
-    //endregion
 
     //region Actions: Menu
     @FXML
@@ -322,7 +364,9 @@ public class DebuggerMainWindowController implements Initializable {
     public void saveProof(ActionEvent actionEvent) {
 
     }
+    //endregion
 
+    //region Santa's Little Helper
 
     @FXML
     protected void loadJavaFile() {
@@ -332,9 +376,6 @@ public class DebuggerMainWindowController implements Initializable {
             contractLoaderService.start();
         }
     }
-    //endregion
-
-    //region Santa's Little Helper
 
     /**
      * Creates a filechooser dialog
@@ -382,6 +423,32 @@ public class DebuggerMainWindowController implements Initializable {
         goalOptionsMenu.show(n, actionEvent.getScreenX(), actionEvent.getScreenY());
     }
 
+    public KeYProofFacade getFacade() {
+        return facade;
+    }
+
+    //region Property
+    public boolean isDebugMode() {
+        return debugMode.get();
+    }
+    //endregion
+
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode.set(debugMode);
+    }
+
+    public SimpleBooleanProperty debugModeProperty() {
+        return debugMode;
+    }
+
+    public Boolean getExecuteNotPossible() {
+        return executeNotPossible.get();
+    }
+
+    public ObservableBooleanValue executeNotPossibleProperty() {
+        return executeNotPossible;
+    }
+
     public class ContractLoaderService extends Service<List<Contract>> {
         @Override
         protected Task<List<Contract>> createTask() {
@@ -397,7 +464,7 @@ public class DebuggerMainWindowController implements Initializable {
         protected void succeeded() {
             lblStatusMessage.setText("Contract loaded");
             model.getLoadedContracts().setAll(getValue());
-            //FIXME
+            //FIXME model braucht contracts nicht
             ContractChooser cc = new ContractChooser(facade.getService(), model.loadedContractsProperty());
 
             cc.showAndWait().ifPresent(result -> {
@@ -410,54 +477,6 @@ public class DebuggerMainWindowController implements Initializable {
                 }
             });
         }
-    }
-
-    public KeYProofFacade getFacade() {
-        return facade;
-    }
-
-    public static void showExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(headerText);
-        alert.setContentText(contentText);
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        ex.printStackTrace(pw);
-        String exceptionText = sw.toString();
-
-        Label label = new Label("The exception stacktrace was:");
-        TextArea textArea = new TextArea(exceptionText);
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
-
-        textArea.setMaxWidth(Double.MAX_VALUE);
-        textArea.setMaxHeight(Double.MAX_VALUE);
-        GridPane.setVgrow(textArea, Priority.ALWAYS);
-        GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-        GridPane expContent = new GridPane();
-        expContent.setMaxWidth(Double.MAX_VALUE);
-        expContent.add(label, 0, 0);
-        expContent.add(textArea, 0, 1);
-
-        alert.getDialogPane().setExpandableContent(expContent);
-
-        alert.showAndWait();
-    }
-    //endregion
-
-    //region Property
-    public boolean isDebugMode() {
-        return debugMode.get();
-    }
-
-    public SimpleBooleanProperty debugModeProperty() {
-        return debugMode;
-    }
-
-    public void setDebugMode(boolean debugMode) {
-        this.debugMode.set(debugMode);
     }
 
     private class GoalNodeListCell extends ListCell<GoalNode<KeyData>> {
@@ -479,14 +498,6 @@ public class DebuggerMainWindowController implements Initializable {
             }
             setText(text);
         }
-    }
-
-    public Boolean getExecuteNotPossible() {
-        return executeNotPossible.get();
-    }
-
-    public ObservableBooleanValue executeNotPossibleProperty() {
-        return executeNotPossible;
     }
 
     private class InterpretingService extends Service<State<KeyData>> {
@@ -511,6 +522,10 @@ public class DebuggerMainWindowController implements Initializable {
         }
 
         private void updateView() {
+            //check proof
+            // check state for empty/error goal nodes leer
+            //currentGoals.set(state.getGoals());
+            //currentSelectedGoal.set(state.getSelectedGoalNode());
             blocker.publishState();
         }
 
