@@ -118,6 +118,7 @@ public class DebuggerMainWindowController implements Initializable {
     @FXML
     private SequentView sequentView;
 
+
     private InterpretingService interpreterService = new InterpretingService();
 
     private ObservableBooleanValue executeNotPossible = interpreterService.runningProperty().or(facade.readyToExecuteProperty().not());
@@ -265,6 +266,8 @@ public class DebuggerMainWindowController implements Initializable {
             List<ProofScript> scripts = Facade.getAST(scriptArea.getText());
             lblStatusMessage.setText("Creating new Interpreter instance ...");
             ib.setScripts(scripts);
+            ib.captureHistory();
+
             Interpreter<KeyData> currentInterpreter = ib.build();
 
             if (debugMode) {

@@ -102,14 +102,7 @@
                             <tabs>
                                 <Tab fx:id="startTab" text="Untitled">
                                     <content>
-                                        <AnchorPane VBox.vgrow="ALWAYS">
-                                            <ScrollPane AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0"
-                                                        AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"
-                                                        fitToWidth="true" fitToHeight="true" hbarPolicy="AS_NEEDED"
-                                                        vbarPolicy="ALWAYS">
-                                                <ScriptArea fx:id="scriptArea" VBox.vgrow="ALWAYS"/>
-                                            </ScrollPane>
-                                        </AnchorPane>
+                                        <ScriptArea fx:id="scriptArea" VBox.vgrow="ALWAYS"/>
                                     </content>
                                 </Tab>
                             </tabs>

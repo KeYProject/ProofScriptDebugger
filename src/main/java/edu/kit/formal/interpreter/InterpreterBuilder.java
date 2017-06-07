@@ -124,7 +124,7 @@ public class InterpreterBuilder {
 
 
     public InterpreterBuilder captureHistory() {
-        if (historyLogger != null)
+        if (historyLogger == null)
             historyLogger = new HistoryListener(interpreter);
         return onEntry(historyLogger);
     }
