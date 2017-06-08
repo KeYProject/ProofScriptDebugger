@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import edu.kit.formal.gui.controls.ScriptArea?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.*?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1" prefHeight="100" prefWidth="250" styleClass="tab-pane"
+         type="javafx.scene.layout.BorderPane" xmlns="http://javafx.com/javafx/8.0.112">
+    <VBox>
+        <TabPane fx:id="tabPane" side="left"
+                 tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS">
+            <tabs>
+                <Tab fx:id="startTab" text="Untitled">
+                    <content>
+                        <ScriptArea fx:id="scriptArea" VBox.vgrow="ALWAYS"/>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </VBox>
+
+</fx:root>

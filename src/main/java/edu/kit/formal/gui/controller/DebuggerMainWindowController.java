@@ -4,10 +4,7 @@ import de.uka.ilkd.key.logic.op.IProgramMethod;
 import de.uka.ilkd.key.pp.ProgramPrinter;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.speclang.Contract;
-import edu.kit.formal.gui.controls.GoalOptionsMenu;
-import edu.kit.formal.gui.controls.JavaArea;
-import edu.kit.formal.gui.controls.ScriptArea;
-import edu.kit.formal.gui.controls.SequentView;
+import edu.kit.formal.gui.controls.*;
 import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.Interpreter;
 import edu.kit.formal.interpreter.InterpreterBuilder;
@@ -211,7 +208,7 @@ public class DebuggerMainWindowController implements Initializable {
         });
 
         goalView.setCellFactory(GoalNodeListCell::new);
-
+        CustomTabPaneSkin skin = new CustomTabPaneSkin(tabPane);
         startTab.textProperty().bind(new StringBinding() {
             {
                 super.bind(model.scriptFileProperty());

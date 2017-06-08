@@ -97,7 +97,7 @@
                                 </Button>
                             </items>
                         </ToolBar>
-                        <TabPane fx:id="tabPane" side="left"
+                        <TabPane fx:id="tabPane" side="left" styleClass="tab-pane"
                                  tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS">
                             <tabs>
                                 <Tab fx:id="startTab" text="Untitled">
