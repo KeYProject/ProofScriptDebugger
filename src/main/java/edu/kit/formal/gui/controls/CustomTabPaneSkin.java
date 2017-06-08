@@ -1,6 +1,7 @@
 package edu.kit.formal.gui.controls;
 
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
@@ -19,16 +20,9 @@ public class CustomTabPaneSkin extends TabPaneSkin {
     public CustomTabPaneSkin(TabPane tabPane) {
         super(tabPane);
         placeHolder = new PlaceHolderTab();
-        //placeHolderText = new Label( "Empty" );
-        //placeHolderText.setFont( Font.font( null, FontWeight.BOLD, 20 ) );
-        //placeHolderText.setAlignment( Pos.CENTER );
-
-        //placeHolderText.minWidthProperty().bind( getSkinnable().widthProperty() );
-        //placeHolderText.minHeightProperty().bind( getSkinnable().heightProperty() );
-
-        //placeHolder = new VBox( placeHolderText );
-        placeHolder.minWidthProperty().bind(getSkinnable().widthProperty());
-        placeHolder.minHeightProperty().bind(getSkinnable().heightProperty());
+        placeHolder.getVbox().minWidthProperty().bind(getSkinnable().widthProperty());
+        placeHolder.getVbox().minHeightProperty().bind(getSkinnable().heightProperty());
+        placeHolder.getVbox().setAlignment(Pos.CENTER);
         for (Node node : getChildren()) {
             if (node.getStyleClass().contains("tab-header-area")) {
 
