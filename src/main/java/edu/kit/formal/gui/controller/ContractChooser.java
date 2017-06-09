@@ -5,12 +5,22 @@ import de.uka.ilkd.key.speclang.Contract;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import lombok.Getter;
 
+import java.awt.event.KeyEvent;
+
 /**
+ * A Contract Chooser is a modal dialog, which shows a list of contracts and lets the user select one.
+ * <p>
+ * <p>
+ * <p>
+ * <p>
  * WizardPane to display all available contracts
+ *
  * @author S. Grebing
  * @author A. Weigl
  */
@@ -18,26 +28,36 @@ public class ContractChooser extends Dialog<Contract> {
     @Getter
     private final MultipleSelectionModel<Contract> selectionModel;
     private final ObjectProperty<ObservableList<Contract>> items;
-    private final ListView<Contract> listOfContractsView;
+    private final ListView<Contract> listOfContractsView = new ListView<>();
     private final Services services;
 
     public ContractChooser(Services services) {
         super();
+        this.services = services;
+
         setTitle("Key Contract Chooser");
         setHeaderText("Please select a contract");
-        this.services = services;
-        listOfContractsView = new ListView<>();
+        setResizable(true);
+
+        initModality(Modality.APPLICATION_MODAL);
+
         selectionModel = listOfContractsView.getSelectionModel();
         items = listOfContractsView.itemsProperty();
+
         DialogPane dpane = new DialogPane();
         dpane.setContent(listOfContractsView);
-        setDialogPane(dpane);
-        listOfContractsView.setCellFactory(ContractListCell::new);
-        setResizable(true);
         dpane.setPrefSize(680, 320);
+        setDialogPane(dpane);
+
+        listOfContractsView.setCellFactory(ContractListCell::new);
 
         setResultConverter((value) -> value == ButtonType.OK ? listOfContractsView.getSelectionModel().getSelectedItem() : null);
         dpane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        final Button okButton = (Button) dpane.lookupButton(ButtonType.OK);
+        okButton.setDefaultButton(true);
+
+        listOfContractsView.setOnKeyPressed(event -> okButton.fire());
     }
 
     public ContractChooser(Services services,
@@ -228,10 +248,16 @@ public class ContractChooser extends Dialog<Contract> {
                 return;
             }
 
+            VBox box = new VBox();
             Label head = new Label(getItem().getDisplayName() + "\n");
-            head.setWrapText(true);
-            head.setStyle("-fx-font-weight: bold; -fx-font-size: 120%");
-            setGraphic(new VBox(head, new Label(getItem().getPlainText(services))));
+            head.getStyleClass().add("title");
+
+            Label contract = new Label(getItem().getPlainText(services));
+            contract.getStyleClass().add("contract");
+
+            setGraphic(
+                    new VBox(head, contract)
+            );
         }
     }
 }

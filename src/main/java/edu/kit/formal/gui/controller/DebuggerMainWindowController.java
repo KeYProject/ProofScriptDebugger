@@ -56,6 +56,7 @@ public class DebuggerMainWindowController implements Initializable {
     private final PuppetMaster blocker = new PuppetMaster();
     private SimpleBooleanProperty debugMode = new SimpleBooleanProperty(false);
     private GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
+
     @FXML
     private Pane rootPane;
     @FXML
@@ -101,12 +102,11 @@ public class DebuggerMainWindowController implements Initializable {
      * references to objects needed for controlling backend through UI
      */
     private RootModel model = new RootModel();
+
+
     @FXML
-    private Label lblStatusMessage;
-    @FXML
-    private Label lblCurrentNodes;
-    @FXML
-    private Label lblFilename;
+    private DebuggerStatusBar statusBar;
+
     private File initialDirectory;
 
     @FXML
@@ -156,11 +156,15 @@ public class DebuggerMainWindowController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         setDebugMode(false);
 
+        toolbar.getChildrenUnmodifiable().forEach(
+                n -> n.setOnMouseEntered(statusBar.getTooltipHandler()));
+
+        buttonStartInterpreter.setOnMouseEntered(statusBar.getTooltipHandler());
+
         model.scriptFileProperty().addListener((observable, oldValue, newValue) -> {
-            lblFilename.setText("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
+            statusBar.publishMessage("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
         });
 
 
@@ -258,10 +262,10 @@ public class DebuggerMainWindowController implements Initializable {
     private void executeScript(InterpreterBuilder ib, boolean debugMode) {
         this.debugMode.set(debugMode);
         blocker.deinstall();
-        lblStatusMessage.setText("Parse ...");
+        statusBar.publishMessage("Parse ...");
         try {
             List<ProofScript> scripts = Facade.getAST(scriptArea.getText());
-            lblStatusMessage.setText("Creating new Interpreter instance ...");
+            statusBar.publishMessage("Creating new Interpreter instance ...");
             ib.setScripts(scripts);
             ib.captureHistory();
 
@@ -344,7 +348,7 @@ public class DebuggerMainWindowController implements Initializable {
         if (keyFile != null) {
             Task<Void> task = facade.loadKeyFileTask(keyFile);
             task.setOnSucceeded(event -> {
-                lblStatusMessage.setText("Loaded key file: " + keyFile);
+                statusBar.publishMessage("Loaded key file: %s", keyFile);
                 model.getCurrentGoalNodes().setAll(facade.getPseudoGoals());
             });
 
@@ -462,7 +466,7 @@ public class DebuggerMainWindowController implements Initializable {
 
         @Override
         protected void succeeded() {
-            lblStatusMessage.setText("Contract loaded");
+            statusBar.publishMessage("Contract loaded");
             model.getLoadedContracts().setAll(getValue());
             //FIXME model braucht contracts nicht
             ContractChooser cc = new ContractChooser(facade.getService(), model.loadedContractsProperty());
