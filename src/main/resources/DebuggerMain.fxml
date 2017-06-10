@@ -168,7 +168,7 @@
                         <SeparatorMenuItem/>
                         <MenuItem onAction="#saveScript" text="Save Script"/>
                         <MenuItem onAction="#saveAsScript" text="Save Script As ..."/>
-                        <MenuItem onAction="#saveProof"/>
+                        <MenuItem onAction="#saveProof" text="Save Proof"/>
                         <MenuItem fx:id="closeMenuItem" onAction="#closeProgram" text="Close"/>
                     </items>
                 </Menu>

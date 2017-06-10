@@ -34,6 +34,8 @@ import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +55,8 @@ import java.util.concurrent.Executors;
  * @author Alexander Weigl
  */
 public class DebuggerMainWindowController implements Initializable {
+    private static final Logger LOGGER = LogManager.getLogger(DebuggerMainWindowController.class);
+
     private final PuppetMaster blocker = new PuppetMaster();
     private SimpleBooleanProperty debugMode = new SimpleBooleanProperty(false);
     private GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
@@ -171,7 +175,7 @@ public class DebuggerMainWindowController implements Initializable {
         model.chosenContractProperty().addListener(o -> {
             IProgramMethod method = (IProgramMethod) model.getChosenContract().getTarget();
             javaSourceCode.clear();
-            javaSourceCode.getMarkedLines().clear();
+            javaSourceCode.getLineToClass().clear();
             StringWriter writer = new StringWriter();
             ProgramPrinter pp = new ProgramPrinter(writer);
             try {

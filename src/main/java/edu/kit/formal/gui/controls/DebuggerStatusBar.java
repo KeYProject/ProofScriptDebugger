@@ -2,6 +2,7 @@ package edu.kit.formal.gui.controls;
 
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import edu.kit.formal.gui.controller.DebuggerMainWindowController;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -21,24 +22,38 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.util.Callback;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.controlsfx.control.StatusBar;
 
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.logging.*;
+import java.util.logging.LogRecord;
 
 /**
  * Created by weigl on 09.06.2017.
  */
 public class DebuggerStatusBar extends StatusBar {
+    private static final Logger LOGGER = LogManager.getLogger(DebuggerStatusBar.class);
+
     private Label lblCurrentNodes = new Label("#nodes: %s");
     private ProgressIndicator progressIndicator = new ProgressIndicator();
     private LogCatchHandlerFX logCatchHandler = new LogCatchHandlerFX();
     private EventHandler<MouseEvent> toolTipHandler = event -> {
         publishMessage(((Control) event.getTarget()).getTooltip().getText());
     };
+
 
     private final ContextMenu contextMenu = createContextMenu();
     private final Dialog<Void> loggerDialog = createDialog();
@@ -56,24 +71,21 @@ public class DebuggerStatusBar extends StatusBar {
                 contextMenu.show(this, event.getScreenX(), event.getScreenY());
             }
         });
+
+
     }
 
-    private final Handler loggerHandler = new Handler() {
-        @Override
-        public void publish(LogRecord record) {
-            publishMessage(record.getMessage());
-        }
+    private final Appender loggerHandler = createAppender();
 
-        @Override
-        public void flush() {
-
-        }
-
-        @Override
-        public void close() throws SecurityException {
-
-        }
-    };
+    private Appender createAppender() {
+        PatternLayout layout = PatternLayout.createDefaultLayout();
+        return new AbstractAppender("", null, layout) {
+            @Override
+            public void append(LogEvent event) {
+                publishMessage(event.getMessage().getFormattedMessage());
+            }
+        };
+    }
 
     public void publishMessage(String format, Object... args) {
         String msg = String.format(format, args);
@@ -91,14 +103,14 @@ public class DebuggerStatusBar extends StatusBar {
     }
 
     public void listenOnField(Logger logger) {
-        logger.addHandler(loggerHandler);
-        logger.addHandler(logCatchHandler);
-
+        org.apache.logging.log4j.core.Logger plogger = ((org.apache.logging.log4j.core.Logger) logger); // Bypassing the public API
+        plogger.addAppender(loggerHandler);
+        plogger.addAppender(logCatchHandler);
         logger.info("Listener added");
     }
 
     public void listenOnField(String loggerCategory) {
-        listenOnField(Logger.getLogger(loggerCategory));
+        listenOnField(LogManager.getLogger(loggerCategory));
     }
 
     public void indicateProgress() {
@@ -123,20 +135,20 @@ public class DebuggerStatusBar extends StatusBar {
     }
 
     public Dialog<Void> createDialog() {
-        final TableView<LogRecord> recordView = new TableView<>(logCatchHandler.recordsProperty());
+        final TableView<LogEvent> recordView = new TableView<>(logCatchHandler.recordsProperty());
         recordView.setEditable(false);
         recordView.setSortPolicy(param -> false);
 
-        TableColumn<LogRecord, Date> dateColumn = new TableColumn<>("Date");
-        TableColumn<LogRecord, Level> levelColumn = new TableColumn<>("Level");
+        TableColumn<LogEvent, Date> dateColumn = new TableColumn<>("Date");
+        TableColumn<LogEvent, Level> levelColumn = new TableColumn<>("Level");
         //TableColumn<LogRecord, String> classColumn = new TableColumn<>("Class");
-        TableColumn<LogRecord, String> messageColumn = new TableColumn<>("Message");
+        TableColumn<LogEvent, String> messageColumn = new TableColumn<>("Message");
 
         recordView.getColumns().setAll(dateColumn, levelColumn, messageColumn);
 
 
         dateColumn.setCellValueFactory(
-                param -> new SimpleObjectProperty<>(new Date(param.getValue().getMillis())
+                param -> new SimpleObjectProperty<>(new Date(param.getValue().getTimeMillis())
                 ));
 
         levelColumn.setCellValueFactory(
@@ -145,7 +157,8 @@ public class DebuggerStatusBar extends StatusBar {
 
         messageColumn.setCellValueFactory(
                 param -> {
-                    String s = formatter.formatMessage(param.getValue());
+                    return new SimpleStringProperty(param.getValue().getMessage().getFormattedMessage());
+                    /*String s = formatter.formatMessage(param.getValue());
                     if (param.getValue().getThrown() != null) {
                         StringWriter sw = new StringWriter();
                         PrintWriter pw = new PrintWriter(sw);
@@ -154,7 +167,7 @@ public class DebuggerStatusBar extends StatusBar {
                         pw.close();
                         s += "\n" + sw.toString();
                     }
-                    return new SimpleStringProperty(s);
+                    return new SimpleStringProperty(s);*/
                 }
         );
 
@@ -169,39 +182,34 @@ public class DebuggerStatusBar extends StatusBar {
         return dialog;
     }
 
-    public static class LogCatchHandlerFX extends Handler {
-        private ListProperty<LogRecord> records = new SimpleListProperty<>(FXCollections.observableList(
+    public static class LogCatchHandlerFX extends AbstractAppender {
+        private ListProperty<LogEvent> records = new SimpleListProperty<>(FXCollections.observableList(
                 new LinkedList<>() //remove of head
         ));
 
         private int maxRecords = 5000;
 
+        protected LogCatchHandlerFX() {
+            super("LogCatchHandlerFX", null, PatternLayout.createDefaultLayout());
+        }
+
         @Override
-        public void publish(LogRecord record) {
-            records.add(record);
+        public void append(LogEvent event) {
+            records.add(event);
             while (records.size() > maxRecords)
                 records.remove(0);
         }
 
-        @Override
-        public void flush() {
 
-        }
-
-        @Override
-        public void close() throws SecurityException {
-
-        }
-
-        public ObservableList<LogRecord> getRecords() {
+        public ObservableList<LogEvent> getRecords() {
             return records.get();
         }
 
-        public ListProperty<LogRecord> recordsProperty() {
+        public ListProperty<LogEvent> recordsProperty() {
             return records;
         }
 
-        public void setRecords(ObservableList<LogRecord> records) {
+        public void setRecords(ObservableList<LogEvent> records) {
             this.records.set(records);
         }
 
@@ -211,25 +219,6 @@ public class DebuggerStatusBar extends StatusBar {
 
         public void setMaxRecords(int maxRecords) {
             this.maxRecords = maxRecords;
-        }
-    }
-
-    static SimpleFormatter formatter = new SimpleFormatter();
-
-    private static class LogRecordCellFactory extends ListCell<LogRecord> {
-        public LogRecordCellFactory(ListView<LogRecord> view) {
-        }
-
-        @Override
-        protected void updateItem(LogRecord item, boolean empty) {
-            if (empty)
-                super.updateItem(item, empty);
-            else {
-                Label lbl = new Label(formatter.format(item));
-                lbl.setWrapText(true);
-                lbl.getStyleClass().add(item.getLevel().getName());
-                setGraphic(lbl);
-            }
         }
     }
 }
