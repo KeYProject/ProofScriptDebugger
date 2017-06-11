@@ -16,37 +16,37 @@
                     <children>
                         <ToolBar fx:id="toolbar">
                             <items>
-                                <Button fx:id="buttonStartInterpreter" onAction="#executeScript"
-                                        disable="${controller.executeNotPossible}">
+
+                                <SplitMenuButton onAction="#executeScript"
+                                                 disable="${controller.executeNotPossible}">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="PLAY" size="24.0"/>
                                     </graphic>
                                     <tooltip>
                                         <Tooltip text="Execute Script"/>
                                     </tooltip>
-                                </Button>
 
-                                <Button fx:id="btnExecuteFromCursor" onAction="#executeScriptFromCursor"
-                                        disable="${controller.executeNotPossible}">
-                                    <graphic>
-                                        <MaterialDesignIconView glyphName="CURSOR_TEXT" size="24.0"/>
-                                    </graphic>
-                                    <tooltip>
-                                        <Tooltip text="Execute from Cursor"/>
-                                    </tooltip>
-                                </Button>
+                                    <items>
+                                        <MenuItem text="Execute from Cursor"
+                                                  onAction="#executeScriptFromCursor"
+                                                  disable="${controller.executeNotPossible}">
+                                            <graphic>
+                                                <MaterialDesignIconView glyphName="CURSOR_TEXT" size="24.0"/>
+                                            </graphic>
+                                        </MenuItem>
 
-                                <Button fx:id="startDebugMode" onAction="#executeInDebugMode"
-                                        disable="${controller.executeNotPossible}">
-                                    <graphic>
-                                        <MaterialDesignIconView glyphName="PLAY_PAUSE" size="24.0"/>
-                                    </graphic>
-                                    <tooltip>
-                                        <Tooltip text="Change to Debug Mode"/>
-                                    </tooltip>
-                                </Button>
+                                        <MenuItem
+                                                text="Run in debug mode"
+                                                onAction="#executeInDebugMode"
+                                                disable="${controller.executeNotPossible}">
+                                            <graphic>
+                                                <MaterialDesignIconView glyphName="PLAY_PAUSE" size="24.0"/>
+                                            </graphic>
+                                        </MenuItem>
+                                    </items>
 
-                                <Separator/>
+                                </SplitMenuButton>
+
 
                                 <Button disable="${! controller.debugMode}">
                                     <graphic>
