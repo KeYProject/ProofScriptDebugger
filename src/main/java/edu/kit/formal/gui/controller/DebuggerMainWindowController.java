@@ -33,6 +33,8 @@ import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,9 +54,12 @@ import java.util.concurrent.Executors;
  * @author Alexander Weigl
  */
 public class DebuggerMainWindowController implements Initializable {
+    private static final Logger LOGGER = LogManager.getLogger(DebuggerMainWindowController.class);
+
     private final PuppetMaster blocker = new PuppetMaster();
     private SimpleBooleanProperty debugMode = new SimpleBooleanProperty(false);
     private GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
+
     @FXML
     private Pane rootPane;
     @FXML
@@ -100,12 +105,11 @@ public class DebuggerMainWindowController implements Initializable {
      * references to objects needed for controlling backend through UI
      */
     private RootModel model = new RootModel();
+
+
     @FXML
-    private Label lblStatusMessage;
-    @FXML
-    private Label lblCurrentNodes;
-    @FXML
-    private Label lblFilename;
+    private DebuggerStatusBar statusBar;
+
     private File initialDirectory;
 
     @FXML
@@ -155,18 +159,22 @@ public class DebuggerMainWindowController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         setDebugMode(false);
 
+        toolbar.getChildrenUnmodifiable().forEach(
+                n -> n.setOnMouseEntered(statusBar.getTooltipHandler()));
+
+        buttonStartInterpreter.setOnMouseEntered(statusBar.getTooltipHandler());
+
         model.scriptFileProperty().addListener((observable, oldValue, newValue) -> {
-            lblFilename.setText("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
+            statusBar.publishMessage("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
         });
 
 
         model.chosenContractProperty().addListener(o -> {
             IProgramMethod method = (IProgramMethod) model.getChosenContract().getTarget();
             javaSourceCode.clear();
-            javaSourceCode.getMarkedLines().clear();
+            javaSourceCode.getLineToClass().clear();
             StringWriter writer = new StringWriter();
             ProgramPrinter pp = new ProgramPrinter(writer);
             try {
@@ -261,10 +269,10 @@ public class DebuggerMainWindowController implements Initializable {
     private void executeScript(InterpreterBuilder ib, boolean debugMode) {
         this.debugMode.set(debugMode);
         blocker.deinstall();
-        lblStatusMessage.setText("Parse ...");
+        statusBar.publishMessage("Parse ...");
         try {
-            List<ProofScript> scripts = Facade.getAST(tabPane.getActiveScriptAreaTab().getScriptArea().getText());
-            lblStatusMessage.setText("Creating new Interpreter instance ...");
+            List<ProofScript> scripts = Facade.getAST(scriptArea.getText());
+            statusBar.publishMessage("Creating new Interpreter instance ...");
             ib.setScripts(scripts);
             ib.captureHistory();
 
@@ -352,7 +360,7 @@ public class DebuggerMainWindowController implements Initializable {
         if (keyFile != null) {
             Task<Void> task = facade.loadKeyFileTask(keyFile);
             task.setOnSucceeded(event -> {
-                lblStatusMessage.setText("Loaded key file: " + keyFile);
+                statusBar.publishMessage("Loaded key file: %s", keyFile);
                 model.getCurrentGoalNodes().setAll(facade.getPseudoGoals());
             });
 
@@ -470,7 +478,7 @@ public class DebuggerMainWindowController implements Initializable {
 
         @Override
         protected void succeeded() {
-            lblStatusMessage.setText("Contract loaded");
+            statusBar.publishMessage("Contract loaded");
             model.getLoadedContracts().setAll(getValue());
             //FIXME model braucht contracts nicht
             ContractChooser cc = new ContractChooser(facade.getService(), model.loadedContractsProperty());

@@ -6,6 +6,7 @@ import edu.kit.formal.proofscriptparser.ast.ASTNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,5 +30,40 @@ public class HistoryListener extends DefaultASTVisitor<Void> {
         return null;
     }
 
+    public State getLastStateFor(ASTNode node) {
+        int index = queueNode.lastIndexOf(node);
+        if (index == -1)
+            return null;
+        return queueState.get(index);
+    }
+
+    public List<State> getStates(ASTNode node) {
+        ArrayList<State> list = new ArrayList<>(queueState.size());
+        for (int i = 0; i < queueNode.size(); i++) {
+            if (node.equals(queueNode.get(i))) {
+                list.add(queueState.get(i));
+            }
+        }
+        return list;
+    }
+
+
+    public List<State> getStates(int caret) {
+        ArrayList<State> list = new ArrayList<>(queueState.size());
+        int nearestFoundCaret = -1;
+
+        for (int i = 0; i < queueNode.size(); i++) {
+            int currentPos = queueNode.get(i).getRuleCtx().start.getStartIndex();
+            if (currentPos > nearestFoundCaret && currentPos <= caret) {
+                list.clear();
+                nearestFoundCaret = currentPos;
+            }
+
+            if (currentPos == nearestFoundCaret) {
+                list.add(queueState.get(i));
+            }
+        }
+        return list;
+    }
 
 }
