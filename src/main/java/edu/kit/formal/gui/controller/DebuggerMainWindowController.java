@@ -271,7 +271,7 @@ public class DebuggerMainWindowController implements Initializable {
         blocker.deinstall();
         statusBar.publishMessage("Parse ...");
         try {
-            List<ProofScript> scripts = Facade.getAST(scriptArea.getText());
+            List<ProofScript> scripts = Facade.getAST(tabPane.getActiveScriptAreaTab().getScriptArea().getText());
             statusBar.publishMessage("Creating new Interpreter instance ...");
             ib.setScripts(scripts);
             ib.captureHistory();
