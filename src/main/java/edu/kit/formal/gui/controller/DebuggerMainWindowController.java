@@ -15,7 +15,6 @@ import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import javafx.beans.Observable;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -64,12 +63,12 @@ public class DebuggerMainWindowController implements Initializable {
      *      Code Area
      * **********************************************************************************************************/
 
+    //@FXML
+    //private ScriptArea scriptArea;
     @FXML
-    private ScriptArea scriptArea;
-    @FXML
-    private TabPane tabPane;
-    @FXML
-    private Tab startTab;
+    private ScriptTabsController tabPane;
+    //@FXML
+    //private Tab startTab;
     /***********************************************************************************************************
      *      MenuBar
      * **********************************************************************************************************/
@@ -180,7 +179,9 @@ public class DebuggerMainWindowController implements Initializable {
             javaSourceCode.insertText(0, writer.toString());
         });
 
-        scriptArea.getMarkedLines().addListener(new SetChangeListener<Integer>() {
+//        scriptArea.getMarkedLines().addListener(new SetChangeListener<Integer>() {
+        tabPane.getActiveScriptAreaTab().getScriptArea().getMarkedLines().addListener(new SetChangeListener<Integer>() {
+
             @Override
             public void onChanged(Change<? extends Integer> change) {
                 blocker.getBreakpoints().clear();
@@ -209,7 +210,8 @@ public class DebuggerMainWindowController implements Initializable {
 
         goalView.setCellFactory(GoalNodeListCell::new);
         CustomTabPaneSkin skin = new CustomTabPaneSkin(tabPane);
-        startTab.textProperty().bind(new StringBinding() {
+
+      /*  startTab.textProperty().bind(new StringBinding() {
             {
                 super.bind(model.scriptFileProperty());
             }
@@ -224,7 +226,8 @@ public class DebuggerMainWindowController implements Initializable {
                 }
             }
 
-        });
+        });*/
+
 
     }
 
@@ -243,7 +246,7 @@ public class DebuggerMainWindowController implements Initializable {
         int line = lm.getLine(scriptArea.getCaretPosition());
         int inLine = lm.getCharInLine(scriptArea.getCaretPosition());
 */
-        ib.ignoreLinesUntil(scriptArea.getCaretPosition());
+        ib.ignoreLinesUntil(tabPane.getActiveScriptAreaTab().getScriptArea().getCaretPosition());
 
 
         executeScript(ib, true);
@@ -260,7 +263,7 @@ public class DebuggerMainWindowController implements Initializable {
         blocker.deinstall();
         lblStatusMessage.setText("Parse ...");
         try {
-            List<ProofScript> scripts = Facade.getAST(scriptArea.getText());
+            List<ProofScript> scripts = Facade.getAST(tabPane.getActiveScriptAreaTab().getScriptArea().getText());
             lblStatusMessage.setText("Creating new Interpreter instance ...");
             ib.setScripts(scripts);
             ib.captureHistory();
@@ -305,7 +308,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     private void saveScript(File scriptFile) {
         try {
-            FileUtils.write(scriptFile, scriptArea.getText(), Charset.defaultCharset());
+            FileUtils.write(scriptFile, tabPane.getActiveScriptAreaTab().getScriptArea().getText(), Charset.defaultCharset());
         } catch (IOException e) {
             showExceptionDialog("Could not save file", "blubb", "...fsfsfsf fsa", e);
         }
@@ -323,7 +326,8 @@ public class DebuggerMainWindowController implements Initializable {
         assert scriptFile != null;
         try {
             String code = FileUtils.readFileToString(scriptFile, Charset.defaultCharset());
-            openScript(code);
+            tabPane.createNewTab(scriptFile.getAbsolutePath());
+            openScript(code, tabPane.getActiveScriptAreaTab().getScriptArea());
             model.setScriptFile(scriptFile);
         } catch (IOException e) {
             showExceptionDialog("Exception occured", "",
@@ -331,10 +335,14 @@ public class DebuggerMainWindowController implements Initializable {
         }
     }
 
-    private void openScript(String code) {
+    private void openScript(String code, ScriptArea area) {
         model.setScriptFile(null);
-        scriptArea.clear();
-        scriptArea.setText(code);
+        if (area.textProperty().getValue() != "") {
+            System.out.println(area.textProperty().getValue());
+            area.deleteText(0, area.textProperty().getValue().length());
+        }
+        area.setText(code);
+
     }
 
     @FXML
