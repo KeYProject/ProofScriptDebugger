@@ -4,7 +4,6 @@ package edu.kit.formal.gui.model;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
-import edu.kit.formal.interpreter.data.State;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -19,10 +18,12 @@ import java.io.File;
  * @author S. Grebing
  */
 public class RootModel {
+
     /**
      * Property: current loaded ScriptFile
      */
     private final SimpleObjectProperty<File> scriptFile = new SimpleObjectProperty<>();
+
 
     /**
      * Property: current loaded javaFile
@@ -54,6 +55,7 @@ public class RootModel {
     private final SimpleObjectProperty<Contract> chosenContract = new SimpleObjectProperty<>();
 
     public RootModel() {
+
     }
 
 
@@ -136,12 +138,13 @@ public class RootModel {
         return chosenContract.get();
     }
 
+    public void setChosenContract(Contract chosenContract) {
+        this.chosenContract.set(chosenContract);
+    }
+
     public SimpleObjectProperty<Contract> chosenContractProperty() {
         return chosenContract;
     }
 
-    public void setChosenContract(Contract chosenContract) {
-        this.chosenContract.set(chosenContract);
-    }
 
 }

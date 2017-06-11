@@ -6,7 +6,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1"
+<?import org.controlsfx.control.StatusBar?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.112"
             fx:controller="edu.kit.formal.gui.controller.DebuggerMainWindowController"
             prefWidth="1024" prefHeight="640">
     <center>
@@ -52,6 +53,9 @@
                                     <graphic>
                                         <MaterialDesignIconView glyphName="DEBUG_STEP_INTO" size="24.0"/>
                                     </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Step Into"/>
+                                    </tooltip>
                                 </Button>
 
                                 <Button onAction="#stepOver"
@@ -59,22 +63,55 @@
                                     <graphic>
                                         <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0"/>
                                     </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Step Over"/>
+                                    </tooltip>
                                 </Button>
+
+                                <Button onAction="#stepOver"
+                                        disable="${! controller.debugMode}">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0" scaleX="-1"/>
+                                    </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Step Back"/>
+                                    </tooltip>
+                                </Button>
+
 
                                 <Button disable="${! controller.debugMode}">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="DEBUG_STEP_OUT" size="24.0"/>
                                     </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Step Out"/>
+                                    </tooltip>
                                 </Button>
 
                                 <Button disable="${! controller.debugMode}">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="STOP" size="24.0"/>
                                     </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Stop"/>
+                                    </tooltip>
                                 </Button>
                             </items>
                         </ToolBar>
-                        <ScriptArea fx:id="scriptArea" VBox.vgrow="ALWAYS"/>
+                        <ScriptTabsController fx:id="tabPane" side="left" styleClass="tab-pane"
+                                              tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS"/>
+                        <!--    <TabPane fx:id="tabPane" side="left" styleClass="tab-pane"
+                                     tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS">
+                                <tabs>
+                                    <Tab fx:id="startTab" text="Untitled">
+                                        <content>
+                                            <ScriptArea fx:id="scriptArea" VBox.vgrow="ALWAYS"/>
+                                        </content>
+                                    </Tab>
+                                </tabs>
+                            </TabPane>-->
+
+
                     </children>
                 </VBox>
                 <SplitPane orientation="VERTICAL" dividerPositions="0.25,0.75">
@@ -133,7 +170,7 @@
                         <SeparatorMenuItem/>
                         <MenuItem onAction="#saveScript" text="Save Script"/>
                         <MenuItem onAction="#saveAsScript" text="Save Script As ..."/>
-                        <MenuItem onAction="#saveProof"/>
+                        <MenuItem onAction="#saveProof" text="Save Proof"/>
                         <MenuItem fx:id="closeMenuItem" onAction="#closeProgram" text="Close"/>
                     </items>
                 </Menu>
@@ -151,12 +188,6 @@
         </MenuBar>
     </top>
     <bottom>
-        <HBox>
-            <Label fx:id="lblStatusMessage" HBox.hgrow="ALWAYS"/>
-            <Separator/>
-            <Label fx:id="lblCurrentNodes"/>
-            <Separator/>
-            <Label fx:id="lblFilename"/>
-        </HBox>
+        <DebuggerStatusBar fx:id="statusBar"/>
     </bottom>
 </BorderPane>

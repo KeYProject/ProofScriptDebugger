@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.function.IntFunction;
 
 /**
- * Created by sarah on 5/27/17.
+ * ScriptArea is the textarea on the left side of the GUI. It displays the script code and allows highlighting of lines and setting of breakpoints
  */
 public class ScriptArea extends CodeArea {
     private ObservableSet<Integer> markedLines = FXCollections.observableSet();
@@ -55,11 +55,13 @@ public class ScriptArea extends CodeArea {
         highlighter = new ANTLR4LexerHighlighter(
                 (String val) -> new ScriptLanguageLexer(CharStreams.fromString(val)));
         this.setParagraphGraphicFactory(gutter);
-        getStylesheets().add(getClass().getResource("script-keywords.css").toExternalForm());
+        //getStylesheets().add(getClass().getResource("script-keywords.css").toExternalForm());
         getStyleClass().add("script-area");
         textProperty().addListener((prop, oldValue, newValue) -> {
-            clearStyle(0, newValue.length());
-            setStyleSpans(0, highlighter.highlight(newValue));
+            if (newValue.length() != 0) {
+                clearStyle(0, newValue.length());
+                setStyleSpans(0, highlighter.highlight(newValue));
+            }
             highlightProblems();
         });
                /* .successionEnds(Duration.ofMillis(100))
@@ -73,7 +75,7 @@ public class ScriptArea extends CodeArea {
                         return Optional.empty();
                     }
                 }).subscribe(s -> setStyleSpans(0, s));*/
-
+        getStyleClass().add("script-area");
         installPopup();
     }
 
@@ -151,14 +153,12 @@ public class ScriptArea extends CodeArea {
     }
 
     public class GutterFactory implements IntFunction<Node> {
+        private final Background defaultBackground =
+                new Background(new BackgroundFill(Color.web("#ddd"), null, null));
+        private final Val<Integer> nParagraphs;
         private Insets defaultInsets = new Insets(0.0, 5.0, 0.0, 5.0);
         private Paint defaultTextFill = Color.web("#666");
         private Font defaultFont = Font.font("monospace", FontPosture.ITALIC, 13);
-        private final Background defaultBackground =
-                new Background(new BackgroundFill(Color.web("#ddd"), null, null));
-
-        private final Val<Integer> nParagraphs;
-
         private ObservableList<SimpleObjectProperty<Node>> lineAnnotations = new SimpleListProperty<>(FXCollections.observableArrayList());
 
 

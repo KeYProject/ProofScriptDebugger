@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<?import edu.kit.formal.gui.controls.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<fx:root xmlns:fx="http://javafx.com/fxml"
+         xmlns="http://javafx.com/javafx"
+         type="javafx.scene.control.Tab">
+    <SectionPane title="Current Goals">
+        <headerRight>
+            <Button onMouseClicked="#showGoalOptions">
+                <graphic>
+                    <MaterialDesignIconView glyphName="WRENCH"/>
+                </graphic>
+            </Button>
+        </headerRight>
+        <center>
+            <ListView fx:id="goalView"/>
+        </center>
+    </SectionPane>
+
+    <SplitPane>
+        <padding>
+            <Insets top="5" left="5" right="5" bottom="5"/>
+        </padding>
+        <items>
+            <SectionPane title="Sequent">
+                <headerRight>
+                    <Button>
+                        <graphic>
+                            <MaterialDesignIconView glyphName="WRENCH"/>
+                        </graphic>
+                    </Button>
+                </headerRight>
+                <center>
+                    <SequentView fx:id="sequentView"/>
+                </center>
+            </SectionPane>
+            <SectionPane title="Source Code">
+                <center>
+                    <JavaArea fx:id="javaSourceCode"/>
+                </center>
+            </SectionPane>
+        </items>
+    </SplitPane>
+
+</fx:root>

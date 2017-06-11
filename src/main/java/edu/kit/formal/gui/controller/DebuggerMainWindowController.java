@@ -4,10 +4,7 @@ import de.uka.ilkd.key.logic.op.IProgramMethod;
 import de.uka.ilkd.key.pp.ProgramPrinter;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.speclang.Contract;
-import edu.kit.formal.gui.controls.GoalOptionsMenu;
-import edu.kit.formal.gui.controls.JavaArea;
-import edu.kit.formal.gui.controls.ScriptArea;
-import edu.kit.formal.gui.controls.SequentView;
+import edu.kit.formal.gui.controls.*;
 import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.Interpreter;
 import edu.kit.formal.interpreter.InterpreterBuilder;
@@ -36,6 +33,8 @@ import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,23 +54,26 @@ import java.util.concurrent.Executors;
  * @author Alexander Weigl
  */
 public class DebuggerMainWindowController implements Initializable {
+    private static final Logger LOGGER = LogManager.getLogger(DebuggerMainWindowController.class);
+
+    private final PuppetMaster blocker = new PuppetMaster();
     private SimpleBooleanProperty debugMode = new SimpleBooleanProperty(false);
-
     private GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
-
 
     @FXML
     private Pane rootPane;
     @FXML
     private SplitPane splitPane;
-
     /***********************************************************************************************************
      *      Code Area
      * **********************************************************************************************************/
+
+    //@FXML
+    //private ScriptArea scriptArea;
     @FXML
-    private ScrollPane scrollPaneCode;
-    @FXML
-    private ScriptArea scriptArea;
+    private ScriptTabsController tabPane;
+    //@FXML
+    //private Tab startTab;
     /***********************************************************************************************************
      *      MenuBar
      * **********************************************************************************************************/
@@ -98,21 +100,15 @@ public class DebuggerMainWindowController implements Initializable {
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
     private KeYProofFacade facade = new KeYProofFacade();
     private ContractLoaderService contractLoaderService = new ContractLoaderService();
-
     /**
      * Model for the DebuggerController containing the neccessary
      * references to objects needed for controlling backend through UI
      */
     private RootModel model = new RootModel();
 
-    @FXML
-    private Label lblStatusMessage;
-    @FXML
-    private Label lblCurrentNodes;
-    @FXML
-    private Label lblFilename;
 
-    private final PuppetMaster blocker = new PuppetMaster();
+    @FXML
+    private DebuggerStatusBar statusBar;
 
     private File initialDirectory;
 
@@ -122,10 +118,40 @@ public class DebuggerMainWindowController implements Initializable {
     @FXML
     private SequentView sequentView;
 
+
     private InterpretingService interpreterService = new InterpretingService();
 
     private ObservableBooleanValue executeNotPossible = interpreterService.runningProperty().or(facade.readyToExecuteProperty().not());
 
+    public static void showExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String exceptionText = sw.toString();
+
+        Label label = new Label("The exception stacktrace was:");
+        TextArea textArea = new TextArea(exceptionText);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+        GridPane expContent = new GridPane();
+        expContent.setMaxWidth(Double.MAX_VALUE);
+        expContent.add(label, 0, 0);
+        expContent.add(textArea, 0, 1);
+
+        alert.getDialogPane().setExpandableContent(expContent);
+
+        alert.showAndWait();
+    }
 
     /**
      * @param location
@@ -133,18 +159,22 @@ public class DebuggerMainWindowController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         setDebugMode(false);
 
+        toolbar.getChildrenUnmodifiable().forEach(
+                n -> n.setOnMouseEntered(statusBar.getTooltipHandler()));
+
+        buttonStartInterpreter.setOnMouseEntered(statusBar.getTooltipHandler());
+
         model.scriptFileProperty().addListener((observable, oldValue, newValue) -> {
-            lblFilename.setText("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
+            statusBar.publishMessage("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
         });
 
 
         model.chosenContractProperty().addListener(o -> {
             IProgramMethod method = (IProgramMethod) model.getChosenContract().getTarget();
             javaSourceCode.clear();
-            javaSourceCode.getMarkedLines().clear();
+            javaSourceCode.getLineToClass().clear();
             StringWriter writer = new StringWriter();
             ProgramPrinter pp = new ProgramPrinter(writer);
             try {
@@ -157,7 +187,9 @@ public class DebuggerMainWindowController implements Initializable {
             javaSourceCode.insertText(0, writer.toString());
         });
 
-        scriptArea.getMarkedLines().addListener(new SetChangeListener<Integer>() {
+//        scriptArea.getMarkedLines().addListener(new SetChangeListener<Integer>() {
+        tabPane.getActiveScriptAreaTab().getScriptArea().getMarkedLines().addListener(new SetChangeListener<Integer>() {
+
             @Override
             public void onChanged(Change<? extends Integer> change) {
                 blocker.getBreakpoints().clear();
@@ -185,8 +217,27 @@ public class DebuggerMainWindowController implements Initializable {
         });
 
         goalView.setCellFactory(GoalNodeListCell::new);
-    }
+        CustomTabPaneSkin skin = new CustomTabPaneSkin(tabPane);
 
+      /*  startTab.textProperty().bind(new StringBinding() {
+            {
+                super.bind(model.scriptFileProperty());
+            }
+
+            @Override
+            protected String computeValue() {
+                if (model.scriptFileProperty().getValue() != null) {
+                    System.out.println(model.scriptFileProperty());
+                    return model.scriptFileProperty().get().getName();
+                } else {
+                    return "Untitled";
+                }
+            }
+
+        });*/
+
+
+    }
 
     //region Actions: Execution
     @FXML
@@ -203,7 +254,7 @@ public class DebuggerMainWindowController implements Initializable {
         int line = lm.getLine(scriptArea.getCaretPosition());
         int inLine = lm.getCharInLine(scriptArea.getCaretPosition());
 */
-        ib.ignoreLinesUntil(scriptArea.getCaretPosition());
+        ib.ignoreLinesUntil(tabPane.getActiveScriptAreaTab().getScriptArea().getCaretPosition());
 
 
         executeScript(ib, true);
@@ -213,15 +264,18 @@ public class DebuggerMainWindowController implements Initializable {
     public void executeInDebugMode() {
         executeScript(facade.buildInterpreter(), true);
     }
+    //endregion
 
     private void executeScript(InterpreterBuilder ib, boolean debugMode) {
         this.debugMode.set(debugMode);
         blocker.deinstall();
-        lblStatusMessage.setText("Parse ...");
+        statusBar.publishMessage("Parse ...");
         try {
-            List<ProofScript> scripts = Facade.getAST(scriptArea.getText());
-            lblStatusMessage.setText("Creating new Interpreter instance ...");
+            List<ProofScript> scripts = Facade.getAST(tabPane.getActiveScriptAreaTab().getScriptArea().getText());
+            statusBar.publishMessage("Creating new Interpreter instance ...");
             ib.setScripts(scripts);
+            ib.captureHistory();
+
             Interpreter<KeyData> currentInterpreter = ib.build();
 
             if (debugMode) {
@@ -235,7 +289,6 @@ public class DebuggerMainWindowController implements Initializable {
             showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
     }
-    //endregion
 
     //region Actions: Menu
     @FXML
@@ -263,7 +316,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     private void saveScript(File scriptFile) {
         try {
-            FileUtils.write(scriptFile, scriptArea.getText(), Charset.defaultCharset());
+            FileUtils.write(scriptFile, tabPane.getActiveScriptAreaTab().getScriptArea().getText(), Charset.defaultCharset());
         } catch (IOException e) {
             showExceptionDialog("Could not save file", "blubb", "...fsfsfsf fsa", e);
         }
@@ -281,7 +334,8 @@ public class DebuggerMainWindowController implements Initializable {
         assert scriptFile != null;
         try {
             String code = FileUtils.readFileToString(scriptFile, Charset.defaultCharset());
-            openScript(code);
+            tabPane.createNewTab(scriptFile.getAbsolutePath());
+            openScript(code, tabPane.getActiveScriptAreaTab().getScriptArea());
             model.setScriptFile(scriptFile);
         } catch (IOException e) {
             showExceptionDialog("Exception occured", "",
@@ -289,10 +343,14 @@ public class DebuggerMainWindowController implements Initializable {
         }
     }
 
-    private void openScript(String code) {
+    private void openScript(String code, ScriptArea area) {
         model.setScriptFile(null);
-        scriptArea.clear();
-        scriptArea.setText(code);
+        if (area.textProperty().getValue() != "") {
+            System.out.println(area.textProperty().getValue());
+            area.deleteText(0, area.textProperty().getValue().length());
+        }
+        area.setText(code);
+
     }
 
     @FXML
@@ -302,7 +360,7 @@ public class DebuggerMainWindowController implements Initializable {
         if (keyFile != null) {
             Task<Void> task = facade.loadKeyFileTask(keyFile);
             task.setOnSucceeded(event -> {
-                lblStatusMessage.setText("Loaded key file: " + keyFile);
+                statusBar.publishMessage("Loaded key file: %s", keyFile);
                 model.getCurrentGoalNodes().setAll(facade.getPseudoGoals());
             });
 
@@ -322,7 +380,9 @@ public class DebuggerMainWindowController implements Initializable {
     public void saveProof(ActionEvent actionEvent) {
 
     }
+    //endregion
 
+    //region Santa's Little Helper
 
     @FXML
     protected void loadJavaFile() {
@@ -332,9 +392,6 @@ public class DebuggerMainWindowController implements Initializable {
             contractLoaderService.start();
         }
     }
-    //endregion
-
-    //region Santa's Little Helper
 
     /**
      * Creates a filechooser dialog
@@ -382,6 +439,32 @@ public class DebuggerMainWindowController implements Initializable {
         goalOptionsMenu.show(n, actionEvent.getScreenX(), actionEvent.getScreenY());
     }
 
+    public KeYProofFacade getFacade() {
+        return facade;
+    }
+
+    //region Property
+    public boolean isDebugMode() {
+        return debugMode.get();
+    }
+    //endregion
+
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode.set(debugMode);
+    }
+
+    public SimpleBooleanProperty debugModeProperty() {
+        return debugMode;
+    }
+
+    public Boolean getExecuteNotPossible() {
+        return executeNotPossible.get();
+    }
+
+    public ObservableBooleanValue executeNotPossibleProperty() {
+        return executeNotPossible;
+    }
+
     public class ContractLoaderService extends Service<List<Contract>> {
         @Override
         protected Task<List<Contract>> createTask() {
@@ -395,9 +478,9 @@ public class DebuggerMainWindowController implements Initializable {
 
         @Override
         protected void succeeded() {
-            lblStatusMessage.setText("Contract loaded");
+            statusBar.publishMessage("Contract loaded");
             model.getLoadedContracts().setAll(getValue());
-            //FIXME
+            //FIXME model braucht contracts nicht
             ContractChooser cc = new ContractChooser(facade.getService(), model.loadedContractsProperty());
 
             cc.showAndWait().ifPresent(result -> {
@@ -410,54 +493,6 @@ public class DebuggerMainWindowController implements Initializable {
                 }
             });
         }
-    }
-
-    public KeYProofFacade getFacade() {
-        return facade;
-    }
-
-    public static void showExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(headerText);
-        alert.setContentText(contentText);
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        ex.printStackTrace(pw);
-        String exceptionText = sw.toString();
-
-        Label label = new Label("The exception stacktrace was:");
-        TextArea textArea = new TextArea(exceptionText);
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
-
-        textArea.setMaxWidth(Double.MAX_VALUE);
-        textArea.setMaxHeight(Double.MAX_VALUE);
-        GridPane.setVgrow(textArea, Priority.ALWAYS);
-        GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-        GridPane expContent = new GridPane();
-        expContent.setMaxWidth(Double.MAX_VALUE);
-        expContent.add(label, 0, 0);
-        expContent.add(textArea, 0, 1);
-
-        alert.getDialogPane().setExpandableContent(expContent);
-
-        alert.showAndWait();
-    }
-    //endregion
-
-    //region Property
-    public boolean isDebugMode() {
-        return debugMode.get();
-    }
-
-    public SimpleBooleanProperty debugModeProperty() {
-        return debugMode;
-    }
-
-    public void setDebugMode(boolean debugMode) {
-        this.debugMode.set(debugMode);
     }
 
     private class GoalNodeListCell extends ListCell<GoalNode<KeyData>> {
@@ -479,14 +514,6 @@ public class DebuggerMainWindowController implements Initializable {
             }
             setText(text);
         }
-    }
-
-    public Boolean getExecuteNotPossible() {
-        return executeNotPossible.get();
-    }
-
-    public ObservableBooleanValue executeNotPossibleProperty() {
-        return executeNotPossible;
     }
 
     private class InterpretingService extends Service<State<KeyData>> {
@@ -511,6 +538,10 @@ public class DebuggerMainWindowController implements Initializable {
         }
 
         private void updateView() {
+            //check proof
+            // check state for empty/error goal nodes leer
+            //currentGoals.set(state.getGoals());
+            //currentSelectedGoal.set(state.getSelectedGoalNode());
             blocker.publishState();
         }
 
