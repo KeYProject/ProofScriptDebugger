@@ -53,7 +53,7 @@ public class ProofScriptDebugger extends Application {
             logger.info("KeY: " + KeYConstants.COPYRIGHT);
             logger.info("KeY Version: " + KeYConstants.VERSION);
             logger.info("KeY Internal: " + KeYConstants.INTERNAL_VERSION);
-            logger.error("sfklsajflksajfsdajfsdalfjsdaf", new IllegalAccessError("dlfsdalfjsadflj"));
+            //logger.error("sfklsajflksajfsdajfsdalfjsdaf", new IllegalAccessError("dlfsdalfjsadflj"));
 
         } catch (IOException e) {
             e.printStackTrace();

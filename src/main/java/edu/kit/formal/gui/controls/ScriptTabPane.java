@@ -13,7 +13,7 @@ import java.util.Iterator;
 /**
  * Controller for TabPane
  */
-public class ScriptTabsController extends TabPane {
+public class ScriptTabPane extends TabPane {
     /**
      * String is filepath; if string already exists if new tab should be created nothing happens
      * If wished for, instead of filepath an object with omre script information may be used
@@ -23,7 +23,7 @@ public class ScriptTabsController extends TabPane {
 
     private SimpleObjectProperty<Tab> activeTab = new SimpleObjectProperty<>();
 
-    public ScriptTabsController() {
+    public ScriptTabPane() {
         super();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TabPaneScriptArea.fxml"));
         loader.setRoot(this);

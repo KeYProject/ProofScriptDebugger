@@ -30,4 +30,77 @@ public class InspectionModel {
     private Set<Integer> highlightedJavaLines;
 
     private boolean closable;
+    private boolean isInterpreterTab;
+
+    public ASTNode getNode() {
+        return node;
+    }
+
+    public void setNode(ASTNode node) {
+        this.node = node;
+    }
+
+    public List<GoalNode> getCurrentGoals() {
+        return currentGoals;
+    }
+
+    public void setCurrentGoals(List<GoalNode> currentGoals) {
+        this.currentGoals = currentGoals;
+    }
+
+    public GoalNode getSelectedGoalNodeToShow() {
+        return selectedGoalNodeToShow;
+    }
+
+    public void setSelectedGoalNodeToShow(GoalNode selectedGoalNodeToShow) {
+        this.selectedGoalNodeToShow = selectedGoalNodeToShow;
+    }
+
+    public Map<GoalNode, Color> getColorofEachGoalNodeinListView() {
+        return colorofEachGoalNodeinListView;
+    }
+
+    public void setColorofEachGoalNodeinListView(Map<GoalNode, Color> colorofEachGoalNodeinListView) {
+        this.colorofEachGoalNodeinListView = colorofEachGoalNodeinListView;
+    }
+
+    public boolean isShowJavaView() {
+        return showJavaView;
+    }
+
+    public void setShowJavaView(boolean showJavaView) {
+        this.showJavaView = showJavaView;
+    }
+
+    public String getJavaString() {
+        return javaString;
+    }
+
+    public void setJavaString(String javaString) {
+        this.javaString = javaString;
+    }
+
+    public Set<Integer> getHighlightedJavaLines() {
+        return highlightedJavaLines;
+    }
+
+    public void setHighlightedJavaLines(Set<Integer> highlightedJavaLines) {
+        this.highlightedJavaLines = highlightedJavaLines;
+    }
+
+    public boolean isClosable() {
+        return closable;
+    }
+
+    public void setClosable(boolean closable) {
+        this.closable = closable;
+    }
+
+    public boolean isInterpreterTab() {
+        return isInterpreterTab;
+    }
+
+    public void setInterpreterTab(boolean interpreterTab) {
+        isInterpreterTab = interpreterTab;
+    }
 }

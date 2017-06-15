@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import edu.kit.formal.gui.controls.ScriptAreaTab?>
-<?import edu.kit.formal.gui.controls.ScriptTabsController?>
+<?import edu.kit.formal.gui.controls.ScriptTabPane?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" prefHeight="100" prefWidth="250" styleClass="tab-pane"
-         type="ScriptTabsController" xmlns="http://javafx.com/javafx/8.0.112">
+         type="ScriptTabPane" xmlns="http://javafx.com/javafx/8.0.112">
     <!--  <VBox> -->
     <ScriptAreaTab text="Untitled"/>
 

@@ -2,11 +2,12 @@
 
 
 <?import de.jensd.fx.glyphs.materialdesignicons.*?>
-<?import edu.kit.formal.gui.controls.*?>
-<?import javafx.geometry.Insets?>
+<?import edu.kit.formal.gui.controls.DebuggerStatusBar?>
+<?import edu.kit.formal.gui.controls.InspectionViewTabPane?>
+<?import edu.kit.formal.gui.controls.ScriptTabPane?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import org.controlsfx.control.StatusBar?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.112"
             fx:controller="edu.kit.formal.gui.controller.DebuggerMainWindowController"
             prefWidth="1024" prefHeight="640">
@@ -18,7 +19,7 @@
                         <ToolBar fx:id="toolbar">
                             <items>
 
-                                <SplitMenuButton onAction="#executeScript"
+                                <SplitMenuButton fx:id="buttonStartInterpreter" onAction="#executeScript"
                                                  disable="${controller.executeNotPossible}">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="PLAY" size="24.0"/>
@@ -98,8 +99,8 @@
                                 </Button>
                             </items>
                         </ToolBar>
-                        <ScriptTabsController fx:id="tabPane" side="left" styleClass="tab-pane"
-                                              tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS"/>
+                        <ScriptTabPane fx:id="tabPane" side="left" styleClass="tab-pane"
+                                       tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS"/>
                         <!--    <TabPane fx:id="tabPane" side="left" styleClass="tab-pane"
                                      tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS">
                                 <tabs>
@@ -114,9 +115,10 @@
 
                     </children>
                 </VBox>
-                <SplitPane orientation="VERTICAL" dividerPositions="0.25,0.75">
+                <InspectionViewTabPane fx:id="inspectionViewTabPane"></InspectionViewTabPane>
+                <!--<SplitPane orientation="VERTICAL" dividerPositions="0.25,0.75">
                     <items>
-                        <SectionPane title="Current Goals">
+                       <SectionPane title="Current Goals">
                             <headerRight>
                                 <Button onMouseClicked="#showGoalOptions">
                                     <graphic>
@@ -154,7 +156,7 @@
                             </items>
                         </SplitPane>
                     </items>
-                </SplitPane>
+                </SplitPane>-->
             </items>
         </SplitPane>
     </center>

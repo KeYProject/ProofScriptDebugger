@@ -1,7 +1,5 @@
 package edu.kit.formal.gui.controller;
 
-import de.uka.ilkd.key.logic.op.IProgramMethod;
-import de.uka.ilkd.key.pp.ProgramPrinter;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.gui.controls.*;
@@ -71,7 +69,7 @@ public class DebuggerMainWindowController implements Initializable {
     //@FXML
     //private ScriptArea scriptArea;
     @FXML
-    private ScriptTabsController tabPane;
+    private ScriptTabPane tabPane;
     //@FXML
     //private Tab startTab;
     /***********************************************************************************************************
@@ -89,14 +87,16 @@ public class DebuggerMainWindowController implements Initializable {
     @FXML
     private ToolBar toolbar;
     @FXML
-    private Button buttonStartInterpreter;
+    private SplitMenuButton buttonStartInterpreter;
     @FXML
     private Button startDebugMode;
     /***********************************************************************************************************
      *      GoalView
      * **********************************************************************************************************/
+    //@FXML
+    //private ListView<GoalNode<KeyData>> goalView;
     @FXML
-    private ListView<GoalNode<KeyData>> goalView;
+    private InspectionViewTabPane inspectionViewTabPane;
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
     private KeYProofFacade facade = new KeYProofFacade();
     private ContractLoaderService contractLoaderService = new ContractLoaderService();
@@ -112,11 +112,11 @@ public class DebuggerMainWindowController implements Initializable {
 
     private File initialDirectory;
 
-    @FXML
-    private JavaArea javaSourceCode;
+    // @FXML
+    // private JavaArea javaSourceCode;
 
-    @FXML
-    private SequentView sequentView;
+    //@FXML
+    //private SequentView sequentView;
 
 
     private InterpretingService interpreterService = new InterpretingService();
@@ -169,25 +169,9 @@ public class DebuggerMainWindowController implements Initializable {
         model.scriptFileProperty().addListener((observable, oldValue, newValue) -> {
             statusBar.publishMessage("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
         });
+        inspectionViewTabPane.createNewInspectionViewTab(model, true);
 
 
-        model.chosenContractProperty().addListener(o -> {
-            IProgramMethod method = (IProgramMethod) model.getChosenContract().getTarget();
-            javaSourceCode.clear();
-            javaSourceCode.getLineToClass().clear();
-            StringWriter writer = new StringWriter();
-            ProgramPrinter pp = new ProgramPrinter(writer);
-            try {
-                pp.printFullMethodSignature(method);
-                pp.printStatementBlock(method.getBody());
-                writer.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            javaSourceCode.insertText(0, writer.toString());
-        });
-
-//        scriptArea.getMarkedLines().addListener(new SetChangeListener<Integer>() {
         tabPane.getActiveScriptAreaTab().getScriptArea().getMarkedLines().addListener(new SetChangeListener<Integer>() {
 
             @Override
@@ -201,41 +185,8 @@ public class DebuggerMainWindowController implements Initializable {
             model.currentGoalNodesProperty().setAll(fresh);
         });
         model.currentSelectedGoalNodeProperty().bind(blocker.currentSelectedGoalProperty());
-        goalView.itemsProperty().bind(model.currentGoalNodesProperty());
 
-        model.currentSelectedGoalNodeProperty().addListener((p, old, fresh) -> {
-            goalView.getSelectionModel().select(fresh);
-
-            /* TODO get lines of active statements marked lines
-            javaSourceCode.getMarkedLines().clear();
-            javaSourceCode.getMarkedLines().addAll(
-            );*/
-        });
-
-        goalView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            sequentView.setNode(newValue.getData().getNode());
-        });
-
-        goalView.setCellFactory(GoalNodeListCell::new);
         CustomTabPaneSkin skin = new CustomTabPaneSkin(tabPane);
-
-      /*  startTab.textProperty().bind(new StringBinding() {
-            {
-                super.bind(model.scriptFileProperty());
-            }
-
-            @Override
-            protected String computeValue() {
-                if (model.scriptFileProperty().getValue() != null) {
-                    System.out.println(model.scriptFileProperty());
-                    return model.scriptFileProperty().get().getName();
-                } else {
-                    return "Untitled";
-                }
-            }
-
-        });*/
-
 
     }
 
@@ -280,8 +231,9 @@ public class DebuggerMainWindowController implements Initializable {
 
             if (debugMode) {
                 blocker.getStepUntilBlock().set(1);
-                blocker.install(currentInterpreter);
             }
+            blocker.install(currentInterpreter);
+
             interpreterService.interpreter.set(currentInterpreter);
             interpreterService.mainScript.set(scripts.get(0));
             interpreterService.start();
@@ -403,14 +355,16 @@ public class DebuggerMainWindowController implements Initializable {
      */
     private File openFileChooserSaveDialog(String title, String description, String... fileEndings) {
         FileChooser fileChooser = getFileChooser(title, description, fileEndings);
-        File file = fileChooser.showSaveDialog(goalView.getScene().getWindow());
+        // File file = fileChooser.showSaveDialog(inspectionViewTabPane.getInspectionViewTab().getGoalView().getScene().getWindow());
+        File file = fileChooser.showOpenDialog(statusBar.getScene().getWindow());
         if (file != null) initialDirectory = file.getParentFile();
         return file;
     }
 
     private File openFileChooserOpenDialog(String title, String description, String... fileEndings) {
         FileChooser fileChooser = getFileChooser(title, description, fileEndings);
-        File file = fileChooser.showOpenDialog(goalView.getScene().getWindow());
+        //File file = fileChooser.showOpenDialog(inspectionViewTabPane.getInspectionViewTab().getGoalView().getScene().getWindow());
+        File file = fileChooser.showOpenDialog(statusBar.getScene().getWindow());
         if (file != null) initialDirectory = file.getParentFile();
         return file;
     }

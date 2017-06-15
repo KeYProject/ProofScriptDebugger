@@ -6,7 +6,9 @@
 <?import javafx.scene.control.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml"
          xmlns="http://javafx.com/javafx"
-         type="javafx.scene.control.Tab">
+         type="edu.kit.formal.gui.controls.InspectionViewTab">
+    <SplitPane orientation="VERTICAL" dividerPositions="0.25,0.75">
+        <items>
     <SectionPane title="Current Goals">
         <headerRight>
             <Button onMouseClicked="#showGoalOptions">
@@ -42,6 +44,8 @@
                     <JavaArea fx:id="javaSourceCode"/>
                 </center>
             </SectionPane>
+        </items>
+    </SplitPane>
         </items>
     </SplitPane>
 

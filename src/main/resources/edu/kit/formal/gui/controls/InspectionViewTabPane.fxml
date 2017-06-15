@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import edu.kit.formal.gui.controls.InspectionViewTabPane?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1" prefHeight="100" prefWidth="250" styleClass="tab-pane"
+         type="edu.kit.formal.gui.controls.InspectionViewTabPane" xmlns="http://javafx.com/javafx/8.0.112">
+    <!--<InspectionViewTab fx:id="inspectionViewTab"></InspectionViewTab>-->
+</fx:root>
