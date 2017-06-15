@@ -6,10 +6,12 @@ import edu.kit.formal.gui.model.InspectionModel;
 import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
+import javafx.beans.Observable;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.input.MouseEvent;
@@ -24,13 +26,13 @@ import java.util.ResourceBundle;
  */
 public class InspectionViewTab extends Tab implements Initializable {
 
+    public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
     @FXML
     private SequentView sequentView;
     @FXML
     private JavaArea javaSourceCode;
     @FXML
     private ListView goalView;
-    private GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
 
     public InspectionViewTab() {
         super();
@@ -43,7 +45,7 @@ public class InspectionViewTab extends Tab implements Initializable {
             e.printStackTrace();
         }
 
-        goalView.setVisible(true);
+
     }
 
     public SequentView getSequentView() {
@@ -98,5 +100,33 @@ public class InspectionViewTab extends Tab implements Initializable {
         getGoalView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             getSequentView().setNode(newValue.getData().getNode());
         });
+        getGoalView().setCellFactory(GoalNodeListCell::new);
+
+
     }
+
+    /**
+     * Cells for GoalView
+     */
+    private class GoalNodeListCell extends ListCell<GoalNode<KeyData>> {
+
+        public GoalNodeListCell(ListView<GoalNode<KeyData>> goalNodeListView) {
+            itemProperty().addListener(this::update);
+            goalOptionsMenu.selectedViewOptionProperty().addListener(this::update);
+        }
+
+        private void update(Observable observable) {
+            if (getItem() == null) {
+                setText("");
+                return;
+            }
+            KeyData item = getItem().getData();
+            String text = "n/a";
+            if (goalOptionsMenu.getSelectedViewOption() != null) {
+                text = goalOptionsMenu.getSelectedViewOption().getText(item);
+            }
+            setText(text);
+        }
+    }
+
 }

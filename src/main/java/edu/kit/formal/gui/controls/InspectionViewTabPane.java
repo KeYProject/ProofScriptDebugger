@@ -1,13 +1,8 @@
 package edu.kit.formal.gui.controls;
 
 import edu.kit.formal.gui.model.RootModel;
-import edu.kit.formal.interpreter.data.GoalNode;
-import edu.kit.formal.interpreter.data.KeyData;
-import javafx.beans.Observable;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TabPane;
 
 import java.io.IOException;
@@ -17,7 +12,14 @@ import java.io.IOException;
  */
 public class InspectionViewTabPane extends TabPane {
 
+    /**
+     * active tab in which the interpreter resp. Debugger state is shown.
+     * This tab can be changed and later on in this tab it should be possible to select proof commands
+     * All other tabs are only post morten tabs which cannot be shown
+     */
     private InspectionViewTab activeInterpreterTab;
+
+
     @FXML
     private InspectionViewTab inspectionViewTab;
 
@@ -32,17 +34,9 @@ public class InspectionViewTabPane extends TabPane {
             e.printStackTrace();
         }
 
-        // this.setActiveInterpreterTab(inspectionViewTab);
-
-
-        // getActiveInspectionViewTab().getGoalView().setCellFactory(GoalNodeListCell::new);
-
 
     }
 
-    public InspectionViewTab getInspectionViewTab() {
-        return inspectionViewTab;
-    }
 
     public void setActiveInterpreterTab(InspectionViewTab activeInterpreterTab) {
         this.activeInterpreterTab = activeInterpreterTab;
@@ -55,27 +49,22 @@ public class InspectionViewTabPane extends TabPane {
     public void createNewInspectionViewTab(RootModel model, boolean activeTab) {
         InspectionViewTab tab = new InspectionViewTab();
         if (activeTab) {
+            System.out.println(this.getActiveInspectionViewTab() == null);
+            this.setActiveInterpreterTab(tab);
+            tab.setText("Active Tab");
+            tab.setClosable(false);
             this.setActiveInterpreterTab(tab);
         }
-        tab.getGoalView().setCellFactory(GoalNodeListCell::new);
+
         model.chosenContractProperty().addListener(o -> {
             tab.refresh(model);
         });
         bindGoalNodesWithCurrentTab(model);
-        tab.getGoalView().setCellFactory(GoalNodeListCell::new);
-        tab.setText("New Tab");
-        if (activeTab) {
-            this.setActiveInterpreterTab(tab);
-        }
+
         this.getTabs().add(tab);
 
 
-        // inspectionViewTabPane.getInspectionViewTab().getGoalView().setCellFactory(GoalNodeListCell::new);
 
-    }
-
-    public void refresh(RootModel model) {
-        getActiveInspectionViewTab().refresh(model);
     }
 
     public void bindGoalNodesWithCurrentTab(RootModel model) {
@@ -90,30 +79,6 @@ public class InspectionViewTabPane extends TabPane {
 
     }
 
-    /**
-     * Cells for GoalView
-     */
-    private class GoalNodeListCell extends ListCell<GoalNode<KeyData>> {
-
-        public GoalNodeListCell(ListView<GoalNode<KeyData>> goalNodeListView) {
-            itemProperty().addListener(this::update);
-
-            // goalOptionsMenu.selectedViewOptionProperty().addListener(this::update);
-        }
-
-        private void update(Observable observable) {
-            if (getItem() == null) {
-                setText("");
-                return;
-            }
-            KeyData item = getItem().getData();
-            String text = "n/a";
-           /* if (goalOptionsMenu.getSelectedViewOption() != null) {
-                text = goalOptionsMenu.getSelectedViewOption().getText(item);
-            }*/
-            setText(text);
-        }
-    }
 
 
 }
