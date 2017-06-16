@@ -101,62 +101,9 @@
                         </ToolBar>
                         <ScriptTabPane fx:id="tabPane" side="left" styleClass="tab-pane"
                                        tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS"/>
-                        <!--    <TabPane fx:id="tabPane" side="left" styleClass="tab-pane"
-                                     tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS">
-                                <tabs>
-                                    <Tab fx:id="startTab" text="Untitled">
-                                        <content>
-                                            <ScriptArea fx:id="scriptArea" VBox.vgrow="ALWAYS"/>
-                                        </content>
-                                    </Tab>
-                                </tabs>
-                            </TabPane>-->
-
-
                     </children>
                 </VBox>
                 <InspectionViewTabPane fx:id="inspectionViewTabPane"></InspectionViewTabPane>
-                <!--<SplitPane orientation="VERTICAL" dividerPositions="0.25,0.75">
-                    <items>
-                       <SectionPane title="Current Goals">
-                            <headerRight>
-                                <Button onMouseClicked="#showGoalOptions">
-                                    <graphic>
-                                        <MaterialDesignIconView glyphName="WRENCH"/>
-                                    </graphic>
-                                </Button>
-                            </headerRight>
-                            <center>
-                                <ListView fx:id="goalView"/>
-                            </center>
-                        </SectionPane>
-
-                        <SplitPane>
-                            <padding>
-                                <Insets top="5" left="5" right="5" bottom="5"/>
-                            </padding>
-                            <items>
-                                <SectionPane title="Sequent">
-                                    <headerRight>
-                                        <Button>
-                                            <graphic>
-                                                <MaterialDesignIconView glyphName="WRENCH"/>
-                                            </graphic>
-                                        </Button>
-                                    </headerRight>
-                                    <center>
-                                        <SequentView fx:id="sequentView"/>
-                                    </center>
-                                </SectionPane>
-                                <SectionPane title="Source Code">
-                                    <center>
-                                        <JavaArea fx:id="javaSourceCode"/>
-                                    </center>
-                                </SectionPane>
-                            </items>
-                        </SplitPane>
-                    </items>
-                </SplitPane>-->
             </items>
         </SplitPane>
     </center>
