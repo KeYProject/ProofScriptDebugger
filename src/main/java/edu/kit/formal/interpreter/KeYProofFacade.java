@@ -1,7 +1,6 @@
 package edu.kit.formal.interpreter;
 
 import de.uka.ilkd.key.api.KeYApi;
-import de.uka.ilkd.key.api.ProjectedNode;
 import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.api.ProofManagementApi;
 import de.uka.ilkd.key.control.KeYEnvironment;
@@ -22,7 +21,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by sarah on 5/29/17.
+ * Facade to KeY. Build part of the interpreter
+ * @author S. Grebing
+ * @author A. Weigl
  */
 public class KeYProofFacade {
     private SimpleObjectProperty<Proof> proof = new SimpleObjectProperty<>();
@@ -31,6 +32,8 @@ public class KeYProofFacade {
     private SimpleObjectProperty<Contract> contract = new SimpleObjectProperty<>();
 
     private BooleanBinding readyToExecute = proof.isNotNull();
+    //Workaround until api is relaxed
+    private ProofManagementApi pma;
 
     //region loading
     public Task<Void> loadKeyFileTask(File keYFile) {
@@ -60,9 +63,6 @@ public class KeYProofFacade {
             }
         };
     }
-
-    //Workaround until api is relaxed
-    private ProofManagementApi pma;
 
     public List<Contract> getContractsForJavaFile(File javaFile)
             throws ProblemLoaderException {
@@ -111,36 +111,36 @@ public class KeYProofFacade {
         return proof.get();
     }
 
-    public SimpleObjectProperty<Proof> proofProperty() {
-        return proof;
-    }
-
     public void setProof(Proof proof) {
         this.proof.set(proof);
+    }
+
+    public SimpleObjectProperty<Proof> proofProperty() {
+        return proof;
     }
 
     public KeYEnvironment getEnvironment() {
         return environment.get();
     }
 
-    public SimpleObjectProperty<KeYEnvironment> environmentProperty() {
-        return environment;
-    }
-
     public void setEnvironment(KeYEnvironment environment) {
         this.environment.set(environment);
+    }
+
+    public SimpleObjectProperty<KeYEnvironment> environmentProperty() {
+        return environment;
     }
 
     public Contract getContract() {
         return contract.get();
     }
 
-    public SimpleObjectProperty<Contract> contractProperty() {
-        return contract;
-    }
-
     public void setContract(Contract contract) {
         this.contract.set(contract);
+    }
+
+    public SimpleObjectProperty<Contract> contractProperty() {
+        return contract;
     }
 
     public Boolean getReadyToExecute() {

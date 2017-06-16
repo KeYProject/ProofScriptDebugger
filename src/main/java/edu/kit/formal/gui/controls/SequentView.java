@@ -9,6 +9,8 @@ import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import org.fxmisc.richtext.CharacterHit;
 import org.fxmisc.richtext.CodeArea;
 
@@ -107,17 +109,21 @@ public class SequentView extends CodeArea {
 
         clear();
         insertText(0, backend.getString());
+        if (node.get().isClosed()) {
+            this.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+            this.getStyleClass().add("closed-sequent-view");
+        }
     }
 
     public Node getNode() {
         return node.get();
     }
 
-    public SimpleObjectProperty<Node> nodeProperty() {
-        return node;
-    }
-
     public void setNode(Node node) {
         this.node.set(node);
+    }
+
+    public SimpleObjectProperty<Node> nodeProperty() {
+        return node;
     }
 }

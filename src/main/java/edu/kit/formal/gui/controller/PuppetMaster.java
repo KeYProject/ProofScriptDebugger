@@ -73,16 +73,21 @@ public class PuppetMaster {
         return null;
     }
 
+    /**
+     * Publish state is called after the interpreter or debugger thread terminated. The resulting goals are set in teh root model
+     */
     public void publishState() {
         System.out.println("PuppetMaster.publishState");
-        //puppet is null if sucessful interprter state and publish state
+        //puppet is null if sucessful interpreter state and publish state
         if (puppet != null) {
 
             final State<KeyData> state = puppet.getCurrentState().copy();
-            System.out.println(state);
+
             Platform.runLater(() -> {
+
                 currentGoals.set(state.getGoals());
                 currentSelectedGoal.set(state.getSelectedGoalNode());
+
             });
         } else {
             //if puppet is null an empty state may be reached therefore state get goals etc returns null

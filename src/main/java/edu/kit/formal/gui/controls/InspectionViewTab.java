@@ -23,6 +23,7 @@ import java.util.ResourceBundle;
 
 /**
  * Right part of the splitpane that displays the different parts of a state
+ * @author S. Grebing
  */
 public class InspectionViewTab extends Tab implements Initializable {
 
@@ -33,6 +34,7 @@ public class InspectionViewTab extends Tab implements Initializable {
     private JavaArea javaSourceCode;
     @FXML
     private ListView goalView;
+
 
     public InspectionViewTab() {
         super();
@@ -100,6 +102,7 @@ public class InspectionViewTab extends Tab implements Initializable {
         getGoalView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             getSequentView().setNode(newValue.getData().getNode());
         });
+
         getGoalView().setCellFactory(GoalNodeListCell::new);
 
 

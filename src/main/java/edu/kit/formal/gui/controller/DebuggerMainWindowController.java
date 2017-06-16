@@ -7,12 +7,10 @@ import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.Interpreter;
 import edu.kit.formal.interpreter.InterpreterBuilder;
 import edu.kit.formal.interpreter.KeYProofFacade;
-import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
-import javafx.beans.Observable;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -22,9 +20,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -93,8 +89,7 @@ public class DebuggerMainWindowController implements Initializable {
     /***********************************************************************************************************
      *      GoalView
      * **********************************************************************************************************/
-    //@FXML
-    //private ListView<GoalNode<KeyData>> goalView;
+
     @FXML
     private InspectionViewTabPane inspectionViewTabPane;
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -112,11 +107,6 @@ public class DebuggerMainWindowController implements Initializable {
 
     private File initialDirectory;
 
-    // @FXML
-    // private JavaArea javaSourceCode;
-
-    //@FXML
-    //private SequentView sequentView;
 
 
     private InterpretingService interpreterService = new InterpretingService();
@@ -169,6 +159,10 @@ public class DebuggerMainWindowController implements Initializable {
         model.scriptFileProperty().addListener((observable, oldValue, newValue) -> {
             statusBar.publishMessage("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
         });
+
+        /**
+         * create a new insepctionviewtab that is the main tab and not closable
+         */
         inspectionViewTabPane.createNewInspectionViewTab(model, true);
 
 
@@ -217,6 +211,12 @@ public class DebuggerMainWindowController implements Initializable {
     }
     //endregion
 
+    /**
+     * Execute the script that with using the interpreter that is build using teh interpreterbuilder
+     *
+     * @param ib
+     * @param debugMode
+     */
     private void executeScript(InterpreterBuilder ib, boolean debugMode) {
         this.debugMode.set(debugMode);
         blocker.deinstall();
@@ -388,10 +388,7 @@ public class DebuggerMainWindowController implements Initializable {
         blocker.unlock();
     }
 
-    public void showGoalOptions(MouseEvent actionEvent) {
-        Node n = (Node) actionEvent.getTarget();
-        goalOptionsMenu.show(n, actionEvent.getScreenX(), actionEvent.getScreenY());
-    }
+
 
     public KeYProofFacade getFacade() {
         return facade;
@@ -449,26 +446,7 @@ public class DebuggerMainWindowController implements Initializable {
         }
     }
 
-    private class GoalNodeListCell extends ListCell<GoalNode<KeyData>> {
 
-        public GoalNodeListCell(ListView<GoalNode<KeyData>> goalNodeListView) {
-            itemProperty().addListener(this::update);
-            goalOptionsMenu.selectedViewOptionProperty().addListener(this::update);
-        }
-
-        private void update(Observable observable) {
-            if (getItem() == null) {
-                setText("");
-                return;
-            }
-            KeyData item = getItem().getData();
-            String text = "n/a";
-            if (goalOptionsMenu.getSelectedViewOption() != null) {
-                text = goalOptionsMenu.getSelectedViewOption().getText(item);
-            }
-            setText(text);
-        }
-    }
 
     private class InterpretingService extends Service<State<KeyData>> {
         private final SimpleObjectProperty<Interpreter<KeyData>> interpreter = new SimpleObjectProperty<>();
