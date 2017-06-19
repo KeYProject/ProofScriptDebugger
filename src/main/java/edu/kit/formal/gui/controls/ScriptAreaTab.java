@@ -24,9 +24,8 @@ public class ScriptAreaTab extends Tab {
         try {
             loader.load();
         } catch (IOException e) {
-            e.printStackTrace();
-        }
 
+        }
     }
 
     public ScriptArea getScriptArea() {

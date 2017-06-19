@@ -12,10 +12,14 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
@@ -26,27 +30,41 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import org.fxmisc.richtext.CharacterHit;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.MouseOverTextEvent;
+import org.fxmisc.richtext.model.NavigationActions;
+import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.StyledText;
 import org.reactfx.collection.LiveList;
 import org.reactfx.value.Val;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.function.IntFunction;
 
 /**
- * ScriptArea is the textarea on the left side of the GUI. It displays the script code and allows highlighting of lines and setting of breakpoints
+ * ScriptArea is the textarea on the left side of the GUI.
+ * It displays the script code and allows highlighting of lines and setting of breakpoints
+ *
  */
 public class ScriptArea extends CodeArea {
+    /**
+     * Lines to highlight?
+     */
     private ObservableSet<Integer> markedLines = FXCollections.observableSet();
     private GutterFactory gutter;
     private ANTLR4LexerHighlighter highlighter;
     private ListProperty<LintProblem> problems = new SimpleListProperty<>(FXCollections.observableArrayList());
-
+    private SimpleObjectProperty<CharacterHit> currentMouseOver = new SimpleObjectProperty<>();
 
     public ScriptArea() {
         init();
+    }
+
+    public void setCurrentMouseOver(CharacterHit i) {
+        currentMouseOver.set(i);
     }
 
     private void init() {
@@ -77,6 +95,21 @@ public class ScriptArea extends CodeArea {
                 }).subscribe(s -> setStyleSpans(0, s));*/
         getStyleClass().add("script-area");
         installPopup();
+
+
+        this.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
+            CharacterHit hit = this.hit(e.getX(), e.getY());
+            currentMouseOver.set(this.hit(e.getX(), e.getY()));
+            int characterPosition = hit.getInsertionIndex();
+            //System.out.println("characterPosition = " + characterPosition);
+            // move the caret to that character's position
+            this.moveTo(characterPosition, NavigationActions.SelectionPolicy.CLEAR);
+
+        });
+
+        ScriptAreaContextMenu cm = new ScriptAreaContextMenu(currentMouseOver);
+        this.setContextMenu(cm);
+
     }
 
     private void installPopup() {
@@ -151,6 +184,25 @@ public class ScriptArea extends CodeArea {
             );
         }
     }
+
+    /**
+     * Highlight line given by the characterindex
+     *
+     * @param chrIdx
+     */
+    public void highlightLine(int chrIdx) {
+        //calculate line number from characterindex
+        int lineNumber = this.offsetToPosition(chrIdx, Bias.Forward).getMajor();
+        Paragraph<Collection<String>, StyledText<Collection<String>>, Collection<String>> paragraph = this.getParagraph(lineNumber);
+        //calculate start and endposition
+        int startPos = getAbsolutePosition(this.offsetToPosition(chrIdx, Bias.Forward).getMajor(), 0);
+        int length = paragraph.length();
+        //highlight line
+
+        this.setStyle(startPos, startPos + length, Collections.singleton("line-highlight-postmortem"));
+
+    }
+
 
     public class GutterFactory implements IntFunction<Node> {
         private final Background defaultBackground =
@@ -230,6 +282,35 @@ public class ScriptArea extends CodeArea {
             int digits = (int) Math.floor(Math.log10(max)) + 1;
             return String.format("%" + digits + "d", x);
         }
+
+    }
+
+
+    private class ScriptAreaContextMenu extends ContextMenu {
+        MenuItem showPostmortemTab = new MenuItem("Show this State");
+        //MenuItem showPostmortemTab = new MenuItem("Show this State");
+
+        SimpleObjectProperty<CharacterHit> currentIdx = new SimpleObjectProperty<>();
+
+        public ScriptAreaContextMenu(SimpleObjectProperty<CharacterHit> currentMouseOver) {
+            super();
+            this.addEventHandler(ActionEvent.ACTION, e -> {
+                ScriptAreaContextMenu cm = (ScriptAreaContextMenu) e.getSource();
+                ScriptArea area = (ScriptArea) cm.getOwnerNode();
+                int chrIdx = currentIdx.get().getCharacterIndex().orElse(0);
+                if (chrIdx != 0) {
+                    area.highlightLine(chrIdx);
+                }
+            });
+
+            currentIdx.bind(currentMouseOver);
+            showPostmortemTab.addEventHandler(ActionEvent.ACTION, e -> {
+                System.out.println(currentIdx.get());
+            });
+            this.getItems().add(showPostmortemTab);
+
+        }
+
 
     }
 }

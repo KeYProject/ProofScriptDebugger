@@ -35,10 +35,6 @@ public class RootModel {
      */
     private final SimpleObjectProperty<File> keYFile = new SimpleObjectProperty<>();
 
-    /**
-     * Property: current loaded script string
-     */
-    //private ObservableValue<String> currentScript;
 
     /**
      * ListProperty: list of goal nodes in the current state (depending on interpreter state)
@@ -50,8 +46,14 @@ public class RootModel {
      */
     private final SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoalNode = new SimpleObjectProperty<>();
 
+    /**
+     * Loaded contracts
+     */
     private final SimpleListProperty<Contract> loadedContracts = new SimpleListProperty<>(FXCollections.observableArrayList());
 
+    /**
+     * Chosen contract for problem
+     */
     private final SimpleObjectProperty<Contract> chosenContract = new SimpleObjectProperty<>();
 
     public RootModel() {
