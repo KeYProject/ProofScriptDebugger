@@ -5,7 +5,7 @@
 
     <issue id="1" severity="error" rulename="equal_script_names">
         The identifier of scripts need to be unique.
-        {{markTokens.0.text}} clashes with {{markTokens.0.text}}.
+        {{toks.0.text}} clashes with {{toks.0.text}}.
     </issue>
 
     <issue id="2" severity="error" rulename="negated_match_with_using">
