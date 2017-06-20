@@ -1,5 +1,8 @@
 package edu.kit.formal.gui.controls;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.logic.op.IProgramMethod;
 import de.uka.ilkd.key.pp.ProgramPrinter;
 import edu.kit.formal.gui.model.InspectionModel;
@@ -7,27 +10,32 @@ import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import javafx.beans.Observable;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 /**
  * Right part of the splitpane that displays the different parts of a state
+ *
  * @author S. Grebing
  */
-public class InspectionViewTab extends Tab implements Initializable {
-
+public class InspectionViewTab extends Tab {
     public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
+    @FXML
+    private SectionPane sectionPaneJavaCode;
+    @FXML
+    private SplitPane lowerSplitPane;
     @FXML
     private SequentView sequentView;
     @FXML
@@ -35,19 +43,47 @@ public class InspectionViewTab extends Tab implements Initializable {
     @FXML
     private ListView goalView;
 
+    private ObjectProperty<Mode> mode = new SimpleObjectProperty<>();
+
+    private BooleanProperty showCode = new SimpleBooleanProperty(true);
 
     public InspectionViewTab() {
         super();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("InspectionView.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-        try {
-            loader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Utils.createWithFXML(this);
 
+        getGoalView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && newValue.getData() != null) {
+                getSequentView().setNode(newValue.getData().getNode());
+            }
+        });
+        getGoalView().setCellFactory(GoalNodeListCell::new);
 
+        mode.addListener(o -> {
+            getStyleClass().removeAll(
+                    Mode.DEAD.name(),
+                    Mode.LIVING.name(),
+                    Mode.POSTMORTEM.name()
+            );
+            getStyleClass().add(mode.get().name());
+
+            if (mode.get() == Mode.LIVING) {
+                MaterialDesignIconView icon = new MaterialDesignIconView(MaterialDesignIcon.RUN);
+                setClosable(false);
+                setGraphic(icon);
+            } else {
+                setGraphic(null);
+                setClosable(true);
+            }
+        });
+        mode.set(Mode.POSTMORTEM);
+
+        showCode.addListener(o -> {
+            if (showCode.get())
+                lowerSplitPane.getItems().add(sectionPaneJavaCode);
+            else
+                lowerSplitPane.getItems().remove(sectionPaneJavaCode);
+        });
+        showCode.set(false);
     }
 
     public SequentView getSequentView() {
@@ -72,7 +108,6 @@ public class InspectionViewTab extends Tab implements Initializable {
     }
 
     public void initialize(InspectionModel model) {
-
         System.out.println("model");
     }
 
@@ -96,18 +131,32 @@ public class InspectionViewTab extends Tab implements Initializable {
 
     }
 
+    public Mode getMode() {
+        return mode.get();
+    }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        getGoalView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && newValue.getData() != null) {
-                getSequentView().setNode(newValue.getData().getNode());
-            }
-        });
+    public void setMode(Mode mode) {
+        this.mode.set(mode);
+    }
 
-        getGoalView().setCellFactory(GoalNodeListCell::new);
+    public ObjectProperty<Mode> modeProperty() {
+        return mode;
+    }
 
+    public boolean isShowCode() {
+        return showCode.get();
+    }
 
+    public void setShowCode(boolean showCode) {
+        this.showCode.set(showCode);
+    }
+
+    public BooleanProperty showCodeProperty() {
+        return showCode;
+    }
+
+    enum Mode {
+        LIVING, DEAD, POSTMORTEM,
     }
 
     /**
@@ -133,5 +182,4 @@ public class InspectionViewTab extends Tab implements Initializable {
             setText(text);
         }
     }
-
 }

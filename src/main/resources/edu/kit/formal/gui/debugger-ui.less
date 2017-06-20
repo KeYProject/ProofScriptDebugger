@@ -80,16 +80,16 @@
     -fx-underline: true;
   }
 
-  .line-highlight-postmortem{
+  .line-highlight-postmortem {
     -rtfx-background-color: @blue;
   }
 
-  .line-unhighlight{
-       -fx-background-color: @base3;
+  .line-unhighlight {
+    -fx-background-color: @base3;
   }
 
-  .line-highlight-mainScript{
-      -rtfx-background-color: @green;
+  .line-highlight-mainScript {
+    -rtfx-background-color: @green;
   }
 
 }
@@ -234,4 +234,19 @@
 
 .tab-pane {
   -fx-skin: "edu.kit.formal.gui.controls.CustomTabPaneSkin";
+}
+
+/**********************************************************************************************************************/
+.inspection-view-tab {
+  &.LIVING {
+    -fx-background-color: forestgreen;
+  }
+
+  &.DEAD {
+    -fx-background-color: darkgrey;
+  }
+
+  &.POSTMORTEM {
+    -fx-background-color: blueviolet;
+  }
 }

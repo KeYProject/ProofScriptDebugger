@@ -2,10 +2,7 @@ package edu.kit.formal.gui.controls;
 
 import edu.kit.formal.gui.model.RootModel;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TabPane;
-
-import java.io.IOException;
 
 /**
  * TabPane on the right side of the GUI containing the inspection view as tabs
@@ -25,16 +22,7 @@ public class InspectionViewTabPane extends TabPane {
 
     public InspectionViewTabPane() {
         super();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("InspectionViewTabPane.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-        try {
-            loader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
+        Utils.createWithFXML(this);
     }
 
 
@@ -62,9 +50,6 @@ public class InspectionViewTabPane extends TabPane {
         bindGoalNodesWithCurrentTab(model);
 
         this.getTabs().add(tab);
-
-
-
     }
 
     public void bindGoalNodesWithCurrentTab(RootModel model) {
@@ -78,7 +63,4 @@ public class InspectionViewTabPane extends TabPane {
         });
 
     }
-
-
-
 }

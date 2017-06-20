@@ -6,26 +6,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
 
 import java.io.IOException;
+import java.io.UTFDataFormatException;
 
 /**
  * Tab with a ScriptArea
  */
 public class ScriptAreaTab extends Tab {
-
-
     @FXML
     private ScriptArea scriptArea;
 
     public ScriptAreaTab(@NamedArg("text") String title) {
         super(title);
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TabScriptArea.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-        try {
-            loader.load();
-        } catch (IOException e) {
-
-        }
+        Utils.createWithFXML(this);
     }
 
     public ScriptArea getScriptArea() {

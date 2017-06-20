@@ -1,42 +1,41 @@
 package edu.kit.formal.gui.controls;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.fxml.FXMLLoader;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Iterator;
 
 /**
  * Controller for TabPane
+ *
+ * @author Sarah Grebing
  */
 public class ScriptTabPane extends TabPane {
+    private static Logger logger = LogManager.getLogger(ScriptTabPane.class);
+
     /**
      * String is filepath; if string already exists if new tab should be created nothing happens
-     * If wished for, instead of filepath an object with omre script information may be used
+     * If wished for, instead of filepath an object with more script information may be used
      */
-    private HashMap<String, ScriptAreaTab> mappingOfTabs = new HashMap();
-
+    private BiMap<String, ScriptAreaTab> mappingOfTabs = HashBiMap.create();
 
     private SimpleObjectProperty<Tab> activeTab = new SimpleObjectProperty<>();
+    private StringProperty activeScriptPath = new SimpleStringProperty();
 
     public ScriptTabPane() {
-        super();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TabPaneScriptArea.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-        try {
-            loader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        Utils.createWithFXML(this);
         activeTab.bind(this.getSelectionModel().selectedItemProperty());
-
-
+        activeTab.addListener(o -> {
+            activeScriptPath.set(mappingOfTabs.inverse().get(activeTab.get()));
+        });
     }
 
     /**
@@ -52,7 +51,7 @@ public class ScriptTabPane extends TabPane {
             this.getSelectionModel().select(mappingOfTabs.get(filePath));
 
         } else {
-            System.out.println("File already exists. Will not load it again");
+            logger.info("File already exists. Will not load it again");
             this.getSelectionModel().select(mappingOfTabs.get(filePath));
         }
     }
@@ -76,7 +75,30 @@ public class ScriptTabPane extends TabPane {
 
     public ScriptAreaTab getActiveScriptAreaTab() {
         return (ScriptAreaTab) activeTab.get();
-
     }
 
+
+    public Tab getActiveTab() {
+        return activeTab.get();
+    }
+
+    public SimpleObjectProperty<Tab> activeTabProperty() {
+        return activeTab;
+    }
+
+    public void setActiveTab(Tab activeTab) {
+        this.activeTab.set(activeTab);
+    }
+
+    public String getActiveScriptPath() {
+        return activeScriptPath.get();
+    }
+
+    public StringProperty activeScriptPathProperty() {
+        return activeScriptPath;
+    }
+
+    public void setActiveScriptPath(String activeScriptPath) {
+        this.activeScriptPath.set(activeScriptPath);
+    }
 }
