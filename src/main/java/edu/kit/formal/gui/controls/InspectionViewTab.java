@@ -100,7 +100,9 @@ public class InspectionViewTab extends Tab implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         getGoalView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            getSequentView().setNode(newValue.getData().getNode());
+            if (newValue != null && newValue.getData() != null) {
+                getSequentView().setNode(newValue.getData().getNode());
+            }
         });
 
         getGoalView().setCellFactory(GoalNodeListCell::new);

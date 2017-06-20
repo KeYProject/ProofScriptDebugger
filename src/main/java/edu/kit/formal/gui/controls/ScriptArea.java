@@ -54,6 +54,7 @@ public class ScriptArea extends CodeArea {
      * Lines to highlight?
      */
     private ObservableSet<Integer> markedLines = FXCollections.observableSet();
+
     private GutterFactory gutter;
     private ANTLR4LexerHighlighter highlighter;
     private ListProperty<LintProblem> problems = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -187,20 +188,44 @@ public class ScriptArea extends CodeArea {
 
     /**
      * Highlight line given by the characterindex
-     *
-     * @param chrIdx
+     * @param lineNumber
      */
-    public void highlightLine(int chrIdx) {
+    public void highlightStmt(int lineNumber, String cssStyleTag) {
         //calculate line number from characterindex
-        int lineNumber = this.offsetToPosition(chrIdx, Bias.Forward).getMajor();
+        //int lineNumber = this.offsetToPosition(chrIdx, Bias.Forward).getMajor();
         Paragraph<Collection<String>, StyledText<Collection<String>>, Collection<String>> paragraph = this.getParagraph(lineNumber);
         //calculate start and endposition
-        int startPos = getAbsolutePosition(this.offsetToPosition(chrIdx, Bias.Forward).getMajor(), 0);
+        //int startPos = getAbsolutePosition(this.offsetToPosition(chrIdx, Bias.Forward).getMajor(), 0);
+        int startPos = getAbsolutePosition(lineNumber, 0);
+
         int length = paragraph.length();
         //highlight line
 
-        this.setStyle(startPos, startPos + length, Collections.singleton("line-highlight-postmortem"));
+        this.setStyle(startPos, startPos + length, Collections.singleton(cssStyleTag));
 
+    }
+
+    /**
+     * Remove the highlighting of a statement
+     *
+     * @param lineNumber
+     */
+    public void removeHighlightStmt(int lineNumber) {
+        highlightStmt(lineNumber, "line-unhighlight");
+    }
+
+    /**
+     * Set a mark in the gutter next to the definition of the main script
+     *
+     * @param lineNumberOfSigMainScript
+     */
+    public void setDebugMark(int lineNumberOfSigMainScript) {
+        highlightStmt(lineNumberOfSigMainScript - 1, "line-highlight-mainScript");
+
+    }
+
+    public void unsetDebugMark(int lineNumberOfSigMainScript) {
+        removeHighlightStmt(lineNumberOfSigMainScript - 1);
     }
 
 
@@ -299,7 +324,8 @@ public class ScriptArea extends CodeArea {
                 ScriptArea area = (ScriptArea) cm.getOwnerNode();
                 int chrIdx = currentIdx.get().getCharacterIndex().orElse(0);
                 if (chrIdx != 0) {
-                    area.highlightLine(chrIdx);
+                    int lineNumber = area.offsetToPosition(chrIdx, Bias.Forward).getMajor();
+                    area.highlightStmt(lineNumber, "line-highlight-postmortem");
                 }
             });
 

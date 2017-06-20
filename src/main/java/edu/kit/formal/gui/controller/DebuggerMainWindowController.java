@@ -234,6 +234,9 @@ public class DebuggerMainWindowController implements Initializable {
             }
             blocker.install(currentInterpreter);
 
+            System.out.println("Start of Script in: " + scripts.get(0).getStartPosition());
+            tabPane.getActiveScriptAreaTab().getScriptArea().setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
+
             interpreterService.interpreter.set(currentInterpreter);
             interpreterService.mainScript.set(scripts.get(0));
             interpreterService.start();
@@ -414,6 +417,12 @@ public class DebuggerMainWindowController implements Initializable {
 
     public ObservableBooleanValue executeNotPossibleProperty() {
         return executeNotPossible;
+    }
+
+    public void stopDebugMode(ActionEvent actionEvent) {
+        //linenumberMainscript from model?
+        // tabPane.getActiveScriptAreaTab().getScriptArea().removeHighlightStmt(lineNumberMainScript);
+        //inspectionViewTabPane.getInspectionViewTab.clear();
     }
 
     public class ContractLoaderService extends Service<List<Contract>> {
