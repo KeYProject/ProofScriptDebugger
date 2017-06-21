@@ -279,11 +279,13 @@ public class ScriptArea extends CodeArea {
         return gutter.lineAnnotations.stream()
                 .filter(GutterAnnotation::isBreakpoint)
                 .map(ga -> new Breakpoint(filePath.get(),
-                        Integer.parseInt(ga.lineNumber.getText())))
+                        Integer.parseInt(ga.getText())))
                 .collect(Collectors.toList());
     }
 
-    private static class GutterAnnotation extends HBox {
+    private static class GutterView extends HBox {
+        private final SimpleObjectProperty<GutterAnnotation> annotation = new SimpleObjectProperty<>();
+
         private MaterialDesignIconView iconMainScript = new MaterialDesignIconView(
                 MaterialDesignIcon.SQUARE_INC, "12"
         );
@@ -295,30 +297,37 @@ public class ScriptArea extends CodeArea {
                 MaterialDesignIcon.ACCOUNT_CIRCLE, "12"
         );
 
-        private StringProperty text;
-        private BooleanProperty breakpoint = new SimpleBooleanProperty();
-        private BooleanProperty mainScript = new SimpleBooleanProperty();
-
-        private SimpleObjectProperty<ConditionalBreakpoint> conditionalBreakpoint = new SimpleObjectProperty<>();
         private Label lineNumber = new Label("not set");
 
-        public GutterAnnotation() {
-            text = lineNumber.textProperty();
+        public GutterView(GutterAnnotation ga) {
+            annotation.addListener((o, old, nv) -> {
+                if (old != null) {
+                    old.breakpoint.removeListener(this::update);
+                    old.conditionalBreakpoint.removeListener(this::update);
+                    old.mainScript.removeListener(this::update);
+                    lineNumber.textProperty().unbind();
+                }
 
-            breakpoint.addListener(this::update);
-            mainScript.addListener(this::update);
-            conditionalBreakpoint.addListener(this::update);
-            update(null);
+                nv.breakpoint.addListener(this::update);
+                nv.mainScript.addListener(this::update);
+                nv.conditionalBreakpoint.addListener(this::update);
+
+
+                lineNumber.textProperty().bind(nv.textProperty());
+
+                update(null);
+            });
+            setAnnotation(ga);
         }
 
         public void update(Observable o) {
             getChildren().setAll(lineNumber);
-            if (isMainScript()) getChildren().add(iconMainScript);
+            if (getAnnotation().isMainScript()) getChildren().add(iconMainScript);
             else addPlaceholder();
 
-            if (isBreakpoint() && conditionalBreakpoint.isNull().get())
+            if (getAnnotation().isBreakpoint() && getAnnotation().conditionalBreakpoint.isNull().get())
                 getChildren().add(iconBreakPoint);
-            else if (isBreakpoint() && conditionalBreakpoint.isNotNull().get())
+            else if (getAnnotation().isBreakpoint() && getAnnotation().conditionalBreakpoint.isNotNull().get())
                 getChildren().add(iconConditionalBreakPoint);
             else
                 addPlaceholder();
@@ -329,6 +338,30 @@ public class ScriptArea extends CodeArea {
             lbl.setMinWidth(12);
             lbl.setMinHeight(12);
             getChildren().add(lbl);
+        }
+
+
+        public GutterAnnotation getAnnotation() {
+            return annotation.get();
+        }
+
+        public void setAnnotation(GutterAnnotation annotation) {
+            this.annotation.set(annotation);
+        }
+
+        public SimpleObjectProperty<GutterAnnotation> annotationProperty() {
+            return annotation;
+        }
+    }
+
+    private static class GutterAnnotation {
+        private StringProperty text = new SimpleStringProperty();
+        private BooleanProperty breakpoint = new SimpleBooleanProperty();
+        private BooleanProperty mainScript = new SimpleBooleanProperty();
+        private SimpleObjectProperty<ConditionalBreakpoint> conditionalBreakpoint = new SimpleObjectProperty<>();
+
+        public GutterAnnotation() {
+
         }
 
         public String getText() {
@@ -387,13 +420,13 @@ public class ScriptArea extends CodeArea {
         private Insets defaultInsets = new Insets(0.0, 5.0, 0.0, 5.0);
         private Paint defaultTextFill = Color.web("#666");
         private Font defaultFont = Font.font("monospace", FontPosture.ITALIC, 13);
+
         private ObservableList<GutterAnnotation> lineAnnotations =
                 new SimpleListProperty<>(FXCollections.observableArrayList());
 
 
         public GutterFactory() {
             nParagraphs = LiveList.sizeOf(getParagraphs());
-
             for (int i = 0; i < 100; i++) {
                 lineAnnotations.add(new GutterAnnotation());
             }
@@ -402,11 +435,6 @@ public class ScriptArea extends CodeArea {
             // If a line is deleted, delete also the image entry for this line
             nParagraphs.addInvalidationObserver((n) -> {
                 int diff = lineAnnotations.size() - n;
-            /*if (diff < 0) {
-                for (int i = 0; i < diff; i++) {
-                    lineAnnotations.add(new SimpleObjectProperty<>());
-                }
-            }*/
                 if (diff > 0) {
                     lineAnnotations.remove(n, lineAnnotations.size());
                 }
@@ -418,8 +446,9 @@ public class ScriptArea extends CodeArea {
         @Override
         public Node apply(int idx) {
             Val<String> formatted = nParagraphs.map(n -> format(idx + 1, n));
-            GutterAnnotation hbox = getLineAnnotation(idx);
-            hbox.textProperty().bind(formatted);
+            GutterAnnotation model = getLineAnnotation(idx);
+            GutterView hbox = new GutterView(model);
+            model.textProperty().bind(formatted);
 
             hbox.setOnMouseClicked((mevent) -> {
                 if (mevent.getButton() == MouseButton.SECONDARY)
