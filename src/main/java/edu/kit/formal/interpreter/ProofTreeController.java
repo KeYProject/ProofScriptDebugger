@@ -1,6 +1,7 @@
 package edu.kit.formal.interpreter;
 
 import com.google.common.graph.MutableValueGraph;
+import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 
 /**
@@ -12,12 +13,12 @@ public class ProofTreeController {
 
     private MutableValueGraph<PTreeNode, EdgeTypes> graph;
 
-    private Interpreter currentInterpreter;
+    private Interpreter<KeyData> currentInterpreter;
 
 
     private PTreeNode statePointer;
 
-    public ProofTreeController(Interpreter inter, ProofScript mainScript) {
+    public ProofTreeController(Interpreter<KeyData> inter, ProofScript mainScript) {
         this.currentInterpreter = inter;
         buildEmptyGraph(mainScript);
 
@@ -25,7 +26,7 @@ public class ProofTreeController {
     }
 
     private void buildEmptyGraph(ProofScript mainScript) {
-        ProgramFlowVisitor visitor = new ProgramFlowVisitor();
+        ProgramFlowVisitor visitor = new ProgramFlowVisitor(currentInterpreter);
 
         mainScript.accept(visitor);
         System.out.println(visitor.getGraph());

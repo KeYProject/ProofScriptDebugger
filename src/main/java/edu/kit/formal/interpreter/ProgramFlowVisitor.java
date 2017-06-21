@@ -2,11 +2,10 @@ package edu.kit.formal.interpreter;
 
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
+import edu.kit.formal.interpreter.data.KeyData;
+import edu.kit.formal.interpreter.funchdl.CommandLookup;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
-import edu.kit.formal.proofscriptparser.ast.AssignmentStatement;
-import edu.kit.formal.proofscriptparser.ast.ProofScript;
-import edu.kit.formal.proofscriptparser.ast.Statement;
-import edu.kit.formal.proofscriptparser.ast.Statements;
+import edu.kit.formal.proofscriptparser.ast.*;
 
 /**
  * Visitor to create ProgramFlowGraph
@@ -14,7 +13,14 @@ import edu.kit.formal.proofscriptparser.ast.Statements;
 public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
 
     private PTreeNode lastNode;
+
     private MutableValueGraph<PTreeNode, EdgeTypes> graph = ValueGraphBuilder.directed().build();
+    private Interpreter<KeyData> inter;
+
+    public ProgramFlowVisitor(Interpreter<KeyData> inter) {
+        this.inter = inter;
+
+    }
 
     public MutableValueGraph<PTreeNode, EdgeTypes> getGraph() {
         return graph;
@@ -47,4 +53,38 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
         lastNode = curLastNode;
         return null;
     }
+
+    @Override
+    public Void visit(CallStatement call) {
+        PTreeNode currentNode = new PTreeNode(call);
+        //fixme handle stepinto
+        CommandLookup lookup = inter.getFunctionLookup();
+
+        graph.addNode(currentNode);
+        graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
+        graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
+        lastNode = currentNode;
+        return null;
+    }
+
+    @Override
+    public Void visit(ForeachStatement foreach) {
+        return super.visit(foreach);
+    }
+
+    @Override
+    public Void visit(TheOnlyStatement theOnly) {
+        return super.visit(theOnly);
+    }
+
+    @Override
+    public Void visit(RepeatStatement repeatStatement) {
+        return super.visit(repeatStatement);
+    }
+
+    @Override
+    public Void visit(CasesStatement casesStatement) {
+        return super.visit(casesStatement);
+    }
+
 }
