@@ -39,7 +39,7 @@ public class MacroCommandHandler implements CommandHandler {
         Parameters p = new Parameters();
         p.put(new Variable("#2"), new StringLiteral(call.getCommand()));
         CallStatement macroCall = new CallStatement("macro", p);
-        macroCall.setRuleContext(call.getRuleContext().get());
+        macroCall.setRuleContext(call.getRuleContext());
         //macro proofscript command
         interpreter.getFunctionLookup().callCommand(interpreter, call, params);
         //TODO change MacroCommand.Parameters to public

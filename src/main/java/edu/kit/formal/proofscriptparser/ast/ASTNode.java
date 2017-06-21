@@ -25,9 +25,8 @@ package edu.kit.formal.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.Visitable;
 import edu.kit.formal.proofscriptparser.Visitor;
+import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
-
-import java.util.Optional;
 
 /**
  * @author Alexander Weigl
@@ -35,24 +34,44 @@ import java.util.Optional;
  */
 public abstract class ASTNode<T extends ParserRuleContext>
         implements Visitable, Copyable<ASTNode<T>> {
+    /**
+     * The corresponding parse rule context
+     */
     protected T ruleContext;
+
+    /**
+     *
+     */
+    @Getter
     protected Position startPosition = new Position();
+
+    /**
+     *
+     */
+    @Getter
     protected Position endPosition = new Position();
+
+    /**
+     * Returns the sourceName which defined this ast node or null
+     *
+     * @return
+     */
+    public String getOrigin() {
+        if (ruleContext != null) {
+            String src = ruleContext.getStart().getInputStream().getSourceName();
+            return src;
+        }
+        return null;
+    }
+
+    public T getRuleContext() {
+        return ruleContext;
+    }
 
     public void setRuleContext(T c) {
         startPosition = Position.from(c.getStart());
         endPosition = Position.from(c.getStop());
         ruleContext = c;
-    }
-
-    public T getRuleCtx() {
-        return ruleContext;
-    }
-
-    public Optional<T> getRuleContext() {
-        if (ruleContext == null)
-            return Optional.empty();
-        return Optional.of(ruleContext);
     }
 
     public Position getStartPosition() {

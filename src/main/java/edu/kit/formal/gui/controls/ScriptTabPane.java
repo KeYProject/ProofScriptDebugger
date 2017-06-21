@@ -1,17 +1,17 @@
 package edu.kit.formal.gui.controls;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import edu.kit.formal.gui.model.Breakpoint;
+import edu.kit.formal.gui.model.MainScriptIdentifier;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.file.Paths;
-import java.util.Iterator;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Controller for TabPane
@@ -20,22 +20,10 @@ import java.util.Iterator;
  */
 public class ScriptTabPane extends TabPane {
     private static Logger logger = LogManager.getLogger(ScriptTabPane.class);
-
-    /**
-     * String is filepath; if string already exists if new tab should be created nothing happens
-     * If wished for, instead of filepath an object with more script information may be used
-     */
-    private BiMap<String, ScriptAreaTab> mappingOfTabs = HashBiMap.create();
-
-    private SimpleObjectProperty<Tab> activeTab = new SimpleObjectProperty<>();
-    private StringProperty activeScriptPath = new SimpleStringProperty();
+    private ObjectProperty<MainScriptIdentifier> mainScript = new SimpleObjectProperty<>();
 
     public ScriptTabPane() {
         Utils.createWithFXML(this);
-        activeTab.bind(this.getSelectionModel().selectedItemProperty());
-        activeTab.addListener(o -> {
-            activeScriptPath.set(mappingOfTabs.inverse().get(activeTab.get()));
-        });
     }
 
     /**
@@ -43,62 +31,51 @@ public class ScriptTabPane extends TabPane {
      *
      * @param
      */
-    public void createNewTab(String filePath) {
-        if (!mappingOfTabs.containsKey(filePath)) {
-            ScriptAreaTab newTab = new ScriptAreaTab(Paths.get(filePath).getFileName().toString());
-            mappingOfTabs.put(filePath, newTab);
-            this.getTabs().add(newTab);
-            this.getSelectionModel().select(mappingOfTabs.get(filePath));
+    public ScriptArea createNewTab(String filePath) {
+        return createNewTab(new File(filePath));
+    }
 
+    public ScriptArea createNewTab(File filePath) {
+        filePath = filePath.getAbsoluteFile();
+        if (findTabForFile(filePath) == null) {
+            Tab newTab = new Tab(filePath.getName());
+            ScriptArea area = new ScriptArea();
+            newTab.setContent(area);
+            area.mainScriptProperty().bindBidirectional(mainScript);
+            area.setFilePath(filePath);
+            this.getTabs().add(newTab);
+            return area;
         } else {
             logger.info("File already exists. Will not load it again");
-            this.getSelectionModel().select(mappingOfTabs.get(filePath));
+            return findScriptAreaForFile(filePath);
         }
     }
 
-    /**
-     * Get the tab with the specified filename as title
-     *
-     * @param title
-     * @return
-     */
-    public ScriptArea getTabContent(String title) {
-        Iterator<Tab> iter = this.getTabs().iterator();
-        while (iter.hasNext()) {
-            ScriptAreaTab currentTab = (ScriptAreaTab) iter.next();
-            if (currentTab.getText().equals(title)) {
-                return currentTab.getScriptArea();
-            }
-        }
-        return null;
+    public Set<Breakpoint> getBreakpoints() {
+        HashSet<Breakpoint> breakpoints = new HashSet<>();
+        getTabs().forEach(tab ->
+                breakpoints.addAll(((ScriptArea) tab.getContent()).getBreakpoints())
+        );
+        return breakpoints;
     }
 
-    public ScriptAreaTab getActiveScriptAreaTab() {
-        return (ScriptAreaTab) activeTab.get();
+    public ScriptArea findScriptAreaForFile(File filePath) {
+        Tab t = findTabForFile(filePath);
+        if (t == null) return null;
+        return ((ScriptArea) t.getContent());
     }
 
-
-    public Tab getActiveTab() {
-        return activeTab.get();
+    public Tab findTabForFile(File filePath) {
+        return getTabs().stream()
+                .filter(tab -> {
+                    File path = ((ScriptArea) tab.getContent()).getFilePath();
+                    return filePath.equals(path);
+                })
+                .findAny()
+                .orElse(null);
     }
 
-    public SimpleObjectProperty<Tab> activeTabProperty() {
-        return activeTab;
-    }
-
-    public void setActiveTab(Tab activeTab) {
-        this.activeTab.set(activeTab);
-    }
-
-    public String getActiveScriptPath() {
-        return activeScriptPath.get();
-    }
-
-    public StringProperty activeScriptPathProperty() {
-        return activeScriptPath;
-    }
-
-    public void setActiveScriptPath(String activeScriptPath) {
-        this.activeScriptPath.set(activeScriptPath);
+    public ScriptArea getSelectedScriptArea() {
+        return (ScriptArea) getSelectionModel().getSelectedItem().getContent();
     }
 }

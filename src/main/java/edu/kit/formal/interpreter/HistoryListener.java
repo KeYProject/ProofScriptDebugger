@@ -53,7 +53,7 @@ public class HistoryListener extends DefaultASTVisitor<Void> {
         int nearestFoundCaret = -1;
 
         for (int i = 0; i < queueNode.size(); i++) {
-            int currentPos = queueNode.get(i).getRuleCtx().start.getStartIndex();
+            int currentPos = queueNode.get(i).getRuleContext().start.getStartIndex();
             if (currentPos > nearestFoundCaret && currentPos <= caret) {
                 list.clear();
                 nearestFoundCaret = currentPos;

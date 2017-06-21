@@ -172,7 +172,7 @@ public class InterpreterBuilder {
         CommandHandler<KeyData> ignoreHandler = new CommandHandler<KeyData>() {
             @Override
             public boolean handles(CallStatement call) throws IllegalArgumentException {
-                return call.getRuleCtx().getStart().getStartIndex() < caretPosition;
+                return call.getRuleContext().getStart().getStartIndex() < caretPosition;
             }
 
             @Override

@@ -75,7 +75,7 @@ public class InspectionViewTab extends Tab {
                 setClosable(true);
             }
         });
-        mode.set(Mode.POSTMORTEM);
+
 
         showCode.addListener(o -> {
             if (showCode.get())

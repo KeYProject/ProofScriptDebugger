@@ -80,7 +80,7 @@ public class KeYProofFacade {
     //endregion
 
     /**
-     * Build the KeYInterpreter that handles the execution of the loaded key problem file
+     * Build the KeYInterpreter that handles the execution of the loaded key problem sourceName
      *
      * @param keYFile
      * @param scriptText

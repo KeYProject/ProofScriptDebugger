@@ -28,10 +28,10 @@ public class EqualScriptNames implements LintRule {
                 if (scripts.containsKey(proofScript.getName())) {
                     problems.add(LintProblem.create(ISSUE,
                             scripts.get(proofScript.getName()),
-                            proofScript.getRuleContext().get().name));
+                            proofScript.getRuleContext().name));
                 }
                 scripts.put(proofScript.getName(),
-                        proofScript.getRuleContext().get().name);
+                        proofScript.getRuleContext().name);
             }
         }
     }

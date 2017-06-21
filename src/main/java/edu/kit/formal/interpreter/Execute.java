@@ -74,7 +74,7 @@ public class Execute {
         options.addOption("h", "--help", false, "print help text");
         options.addOption("p", "--script-path", true, "include folder for scripts");
         options.addOption("l", "--linter", false, "run linter before execute");
-        options.addOption("s", "--script", true, "script file");
+        options.addOption("s", "--script", true, "script sourceName");
         return options;
     }
 }

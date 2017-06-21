@@ -166,14 +166,11 @@ public class DebuggerMainWindowController implements Initializable {
         inspectionViewTabPane.createNewInspectionViewTab(model, true);
 
 
-        tabPane.getActiveScriptAreaTab().getScriptArea().getMarkedLines().addListener(new SetChangeListener<Integer>() {
-
-            @Override
-            public void onChanged(Change<? extends Integer> change) {
-                blocker.getBreakpoints().clear();
-                blocker.getBreakpoints().addAll(change.getSet());
-            }
-        });
+        //TODO this does not work any more
+        /*tabPane.getActiveScriptAreaTab().getScriptArea().getMarkedLines().addListener((SetChangeListener<Integer>) change -> {
+            blocker.getBreakpoints().clear();
+            blocker.getBreakpoints().addAll(change.getSet());
+        });*/
 
         blocker.currentGoalsProperty().addListener((o, old, fresh) -> {
             model.currentGoalNodesProperty().setAll(fresh);
@@ -199,9 +196,7 @@ public class DebuggerMainWindowController implements Initializable {
         int line = lm.getLine(scriptArea.getCaretPosition());
         int inLine = lm.getCharInLine(scriptArea.getCaretPosition());
 */
-        ib.ignoreLinesUntil(tabPane.getActiveScriptAreaTab().getScriptArea().getCaretPosition());
-
-
+        ib.ignoreLinesUntil(tabPane.getSelectedScriptArea().getCaretPosition());
         executeScript(ib, true);
     }
 
@@ -222,7 +217,7 @@ public class DebuggerMainWindowController implements Initializable {
         blocker.deinstall();
         statusBar.publishMessage("Parse ...");
         try {
-            List<ProofScript> scripts = Facade.getAST(tabPane.getActiveScriptAreaTab().getScriptArea().getText());
+            List<ProofScript> scripts = Facade.getAST(tabPane.getSelectedScriptArea().getText());
             statusBar.publishMessage("Creating new Interpreter instance ...");
             ib.setScripts(scripts);
             ib.captureHistory();
@@ -235,7 +230,7 @@ public class DebuggerMainWindowController implements Initializable {
             blocker.install(currentInterpreter);
 
             System.out.println("Start of Script in: " + scripts.get(0).getStartPosition());
-            tabPane.getActiveScriptAreaTab().getScriptArea().setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
+            tabPane.getSelectedScriptArea().setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
 
             interpreterService.interpreter.set(currentInterpreter);
             interpreterService.mainScript.set(scripts.get(0));
@@ -271,9 +266,9 @@ public class DebuggerMainWindowController implements Initializable {
 
     private void saveScript(File scriptFile) {
         try {
-            FileUtils.write(scriptFile, tabPane.getActiveScriptAreaTab().getScriptArea().getText(), Charset.defaultCharset());
+            FileUtils.write(scriptFile, tabPane.getSelectedScriptArea().getText(), Charset.defaultCharset());
         } catch (IOException e) {
-            showExceptionDialog("Could not save file", "blubb", "...fsfsfsf fsa", e);
+            showExceptionDialog("Could not save sourceName", "blubb", "...fsfsfsf fsa", e);
         }
     }
 
@@ -289,19 +284,18 @@ public class DebuggerMainWindowController implements Initializable {
         assert scriptFile != null;
         try {
             String code = FileUtils.readFileToString(scriptFile, Charset.defaultCharset());
-            tabPane.createNewTab(scriptFile.getAbsolutePath());
-            openScript(code, tabPane.getActiveScriptAreaTab().getScriptArea());
+            ScriptArea area = tabPane.createNewTab(scriptFile);
+            openScript(code, area);
             model.setScriptFile(scriptFile);
         } catch (IOException e) {
             showExceptionDialog("Exception occured", "",
-                    "Could not load file " + scriptFile, e);
+                    "Could not load sourceName " + scriptFile, e);
         }
     }
 
     private void openScript(String code, ScriptArea area) {
         model.setScriptFile(null);
-        if (area.textProperty().getValue() != "") {
-            System.out.println(area.textProperty().getValue());
+        if (!area.textProperty().getValue().isEmpty()) {
             area.deleteText(0, area.textProperty().getValue().length());
         }
         area.setText(code);
@@ -315,13 +309,13 @@ public class DebuggerMainWindowController implements Initializable {
         if (keyFile != null) {
             Task<Void> task = facade.loadKeyFileTask(keyFile);
             task.setOnSucceeded(event -> {
-                statusBar.publishMessage("Loaded key file: %s", keyFile);
+                statusBar.publishMessage("Loaded key sourceName: %s", keyFile);
                 model.getCurrentGoalNodes().setAll(facade.getPseudoGoals());
             });
 
             task.setOnFailed(event -> {
                 event.getSource().exceptionProperty().get();
-                showExceptionDialog("Could not load file", "Key file loading error", "",
+                showExceptionDialog("Could not load sourceName", "Key sourceName loading error", "",
                         (Throwable) event.getSource().exceptionProperty().get()
                 );
             });
@@ -353,12 +347,12 @@ public class DebuggerMainWindowController implements Initializable {
      *
      * @param title       of the dialog
      * @param description of the files
-     * @param fileEndings file that should be shown
+     * @param fileEndings sourceName that should be shown
      * @return
      */
     private File openFileChooserSaveDialog(String title, String description, String... fileEndings) {
         FileChooser fileChooser = getFileChooser(title, description, fileEndings);
-        // File file = fileChooser.showSaveDialog(inspectionViewTabPane.getInspectionViewTab().getGoalView().getScene().getWindow());
+        // File sourceName = fileChooser.showSaveDialog(inspectionViewTabPane.getInspectionViewTab().getGoalView().getScene().getWindow());
         File file = fileChooser.showOpenDialog(statusBar.getScene().getWindow());
         if (file != null) initialDirectory = file.getParentFile();
         return file;
@@ -366,7 +360,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     private File openFileChooserOpenDialog(String title, String description, String... fileEndings) {
         FileChooser fileChooser = getFileChooser(title, description, fileEndings);
-        //File file = fileChooser.showOpenDialog(inspectionViewTabPane.getInspectionViewTab().getGoalView().getScene().getWindow());
+        //File sourceName = fileChooser.showOpenDialog(inspectionViewTabPane.getInspectionViewTab().getGoalView().getScene().getWindow());
         File file = fileChooser.showOpenDialog(statusBar.getScene().getWindow());
         if (file != null) initialDirectory = file.getParentFile();
         return file;

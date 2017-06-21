@@ -54,7 +54,7 @@ public abstract class Literal extends Expression<ParserRuleContext> {
      * @return always {@link Optional#empty()}
      */
     @Override
-    public Optional<ParserRuleContext> getRuleContext() {
-        return Optional.empty();
+    public ParserRuleContext getRuleContext() {
+        return null;
     }
 }

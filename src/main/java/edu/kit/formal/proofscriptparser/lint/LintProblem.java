@@ -89,7 +89,7 @@ public class LintProblem {
 
     public <T extends ParserRuleContext> LintProblem nodes(ASTNode<T>... nodes) {
         for (ASTNode n : nodes) {
-            ParserRuleContext ctx = n.getRuleCtx();
+            ParserRuleContext ctx = n.getRuleContext();
             if (ctx != null)
                 markTokens.add(ctx.getStart());
         }
