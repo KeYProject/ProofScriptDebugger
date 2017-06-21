@@ -1,5 +1,6 @@
 package edu.kit.formal.gui.controller;
 
+import edu.kit.formal.interpreter.HistoryListener;
 import edu.kit.formal.interpreter.Interpreter;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
@@ -29,15 +30,19 @@ public class PuppetMaster {
     private final SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoal = new SimpleObjectProperty<>();
     private Interpreter<KeyData> puppet;
     private AtomicInteger stepUntilBlock = new AtomicInteger(-1);
+    private HistoryListener historyLogger;
     private Set<Integer> brkpnts = new ConcurrentSkipListSet<>();
     private Visitor<Void> entryListener = new EntryListener();
     private Visitor<Void> exitListener = new ExitListener();
-
     public PuppetMaster() {
     }
 
     public PuppetMaster(Interpreter<KeyData> inter) {
         install(puppet);
+    }
+
+    public HistoryListener getHistoryLogger() {
+        return historyLogger;
     }
 
     public void install(Interpreter<KeyData> interpreter) {
@@ -56,6 +61,7 @@ public class PuppetMaster {
 
     public Void checkForHalt(ASTNode node) {
         System.out.println("node = [" + node + "]");
+
         //<0 run
         if (stepUntilBlock.get() > 0)
             stepUntilBlock.decrementAndGet();
@@ -74,11 +80,11 @@ public class PuppetMaster {
     }
 
     /**
-     * Publish state is called after the interpreter or debugger thread terminated. The resulting goals are set in teh root model
+     * Publish state is called after the interpreter or debugger thread terminated. The resulting goals are set in the root model
      */
     public void publishState() {
         System.out.println("PuppetMaster.publishState");
-        //puppet is null if sucessful interpreter state and publish state
+        //puppet is null if successful interpreter state and publish state
         if (puppet != null) {
 
             final State<KeyData> state = puppet.getCurrentState().copy();
@@ -163,6 +169,10 @@ public class PuppetMaster {
 
     public void deinstall() {
         deinstall(puppet);
+    }
+
+    public void addHistoryLogger(HistoryListener historyLogger) {
+        this.historyLogger = historyLogger;
     }
 
     private class EntryListener extends DefaultASTVisitor<Void> {

@@ -7,6 +7,7 @@ import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.Interpreter;
 import edu.kit.formal.interpreter.InterpreterBuilder;
 import edu.kit.formal.interpreter.KeYProofFacade;
+import edu.kit.formal.interpreter.ProofTreeController;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.proofscriptparser.Facade;
@@ -14,7 +15,6 @@ import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
-import javafx.collections.SetChangeListener;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -52,7 +52,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     private final PuppetMaster blocker = new PuppetMaster();
     private SimpleBooleanProperty debugMode = new SimpleBooleanProperty(false);
-    private GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
+    // private GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
 
     @FXML
     private Pane rootPane;
@@ -225,15 +225,18 @@ public class DebuggerMainWindowController implements Initializable {
             Interpreter<KeyData> currentInterpreter = ib.build();
 
             if (debugMode) {
-                blocker.getStepUntilBlock().set(1);
+                ProofTreeController pc = new ProofTreeController(currentInterpreter, scripts.get(0));
+                //blocker.getStepUntilBlock().set(1);
+
             }
             blocker.install(currentInterpreter);
 
-            System.out.println("Start of Script in: " + scripts.get(0).getStartPosition());
+            //highlight signature of main script
             tabPane.getSelectedScriptArea().setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
 
             interpreterService.interpreter.set(currentInterpreter);
             interpreterService.mainScript.set(scripts.get(0));
+
             interpreterService.start();
         } catch (RecognitionException e) {
             showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
@@ -382,6 +385,11 @@ public class DebuggerMainWindowController implements Initializable {
 
     public void stepOver(ActionEvent actionEvent) {
         blocker.getStepUntilBlock().addAndGet(1);
+        blocker.unlock();
+    }
+
+    public void stepBack(ActionEvent actionEvent) {
+        System.out.println(blocker.getHistoryLogger());
         blocker.unlock();
     }
 

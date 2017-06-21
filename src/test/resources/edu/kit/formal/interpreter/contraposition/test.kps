@@ -1,0 +1,4 @@
+script t(i:int, j:int){
+    i:= 0;
+    j:= 0;
+}
