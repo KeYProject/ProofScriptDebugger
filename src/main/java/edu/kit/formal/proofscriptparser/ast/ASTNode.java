@@ -88,7 +88,7 @@ public abstract class ASTNode<T extends ParserRuleContext>
      * @return a {@link java.lang.String} object.
      */
     public String getNodeName() {
-        return getClass().getName();
+        return getClass().getSimpleName();
     }
 
     /**

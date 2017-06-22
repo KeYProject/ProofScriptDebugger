@@ -26,7 +26,7 @@ public class ProofTreeController {
     }
 
     private void buildEmptyGraph(ProofScript mainScript) {
-        ProgramFlowVisitor visitor = new ProgramFlowVisitor(currentInterpreter);
+        ProgramFlowVisitor visitor = new ProgramFlowVisitor(currentInterpreter.getFunctionLookup());
 
         mainScript.accept(visitor);
         System.out.println(visitor.getGraph());
