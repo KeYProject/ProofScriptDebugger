@@ -32,7 +32,15 @@ public class DefaultLookup implements CommandLookup {
         b.evaluate(interpreter, call, params);
     }
 
-    private CommandHandler getBuilder(CallStatement callStatement) {
+    @Override
+    public boolean isAtomic(CallStatement call) {
+        CommandHandler cmdh = getBuilder(call);
+        if (cmdh != null)
+            return cmdh.isAtomic();
+        return true;
+    }
+
+    public CommandHandler getBuilder(CallStatement callStatement) {
         CommandHandler found = null;
         for (CommandHandler b : builders) {
             if (b.handles(callStatement)) {

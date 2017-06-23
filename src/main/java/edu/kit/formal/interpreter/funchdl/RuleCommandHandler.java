@@ -70,4 +70,5 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
             throw new RuntimeException(e);
         }
     }
+
 }

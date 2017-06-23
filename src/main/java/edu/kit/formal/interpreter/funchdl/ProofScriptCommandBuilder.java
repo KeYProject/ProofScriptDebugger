@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * This class handle the call of key's proof script commands, e.g. select or auto;
  * @author Alexander Weigl
  * @version 1 (21.05.17)
  */

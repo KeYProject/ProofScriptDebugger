@@ -5,31 +5,50 @@ import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 
 /**
- * Class controlling proof tree structure for debugger
+ * Class controlling and maintaining proof tree structure for debugger and handling step functions for the debugger
  *
  * @author S. Grebing
  */
 public class ProofTreeController {
 
-    private MutableValueGraph<PTreeNode, EdgeTypes> graph;
+    /**
+     * ControlFlowGraph to lookup edges
+     */
+    private MutableValueGraph<ControlFlowNode, EdgeTypes> controlFlowGraph;
 
+    /**
+     * Graph that is computed on the fly in order to allow stepping
+     */
+    private MutableValueGraph<PTreeNode, EdgeTypes> stateGraph;
+
+    /**
+     * Current interpreter
+     */
     private Interpreter<KeyData> currentInterpreter;
 
-
+    /**
+     * Current State in graph
+     */
     private PTreeNode statePointer;
 
     public ProofTreeController(Interpreter<KeyData> inter, ProofScript mainScript) {
         this.currentInterpreter = inter;
-        buildEmptyGraph(mainScript);
+        buildControlFlowGraph(mainScript);
 
 
     }
 
-    private void buildEmptyGraph(ProofScript mainScript) {
+    /**
+     * Build the control flow graph for looking up step-edges for the given script inligning called script commands
+     *
+     * @param mainScript
+     */
+    private void buildControlFlowGraph(ProofScript mainScript) {
         ProgramFlowVisitor visitor = new ProgramFlowVisitor(currentInterpreter.getFunctionLookup());
 
         mainScript.accept(visitor);
-        System.out.println(visitor.getGraph());
+        this.controlFlowGraph = visitor.getGraph();
+        System.out.println(controlFlowGraph);
 
     }
 

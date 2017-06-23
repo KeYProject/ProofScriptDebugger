@@ -37,6 +37,9 @@ public class ProofScriptHandler implements CommandHandler {
         proofScripts.forEach(s -> scripts.put(s.getName(), s));
     }
 
+    public ProofScript getScript(String name) {
+        return scripts.get(name);
+    }
     /**
      * lib/test.test
      *
@@ -91,6 +94,11 @@ public class ProofScriptHandler implements CommandHandler {
         //
         //TODO create new context/introduce signature
         ps.accept(interpreter);
+    }
+
+    @Override
+    public boolean isAtomic() {
+        return true;
     }
 
     public void addScripts(List<ProofScript> ast) {

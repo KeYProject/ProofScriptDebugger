@@ -10,4 +10,8 @@ import edu.kit.formal.proofscriptparser.ast.CallStatement;
  */
 public interface CommandLookup<T> {
     void callCommand(Interpreter<T> i, CallStatement c, VariableAssignment p);
+
+    boolean isAtomic(CallStatement call);
+
+    public CommandHandler getBuilder(CallStatement callStatement);
 }

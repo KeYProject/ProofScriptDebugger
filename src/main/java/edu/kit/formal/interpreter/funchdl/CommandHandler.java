@@ -26,4 +26,8 @@ public interface CommandHandler<T> {
     void evaluate(Interpreter<T> interpreter,
                   CallStatement call,
                   VariableAssignment params);
+
+    default boolean isAtomic() {
+        return false;
+    }
 }

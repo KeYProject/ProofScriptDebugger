@@ -2,7 +2,9 @@ package edu.kit.formal.interpreter;
 
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
+import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.funchdl.CommandLookup;
+import edu.kit.formal.interpreter.funchdl.ProofScriptHandler;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 
@@ -10,29 +12,32 @@ import edu.kit.formal.proofscriptparser.ast.*;
  * Visitor to create ProgramFlowGraph
  */
 public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
-    private final CommandLookup functionLookup;
-    private PTreeNode lastNode;
 
-    private MutableValueGraph<PTreeNode, EdgeTypes> graph = ValueGraphBuilder.directed().allowsSelfLoops(true).build();
+    private final CommandLookup functionLookup;
+    private ControlFlowNode lastNode;
+
+    private MutableValueGraph<ControlFlowNode, EdgeTypes> graph = ValueGraphBuilder.directed().allowsSelfLoops(true).build();
+
+    private Interpreter<KeyData> inter;
 
     public ProgramFlowVisitor(CommandLookup functionLookup) {
         this.functionLookup = functionLookup;
     }
 
-    public MutableValueGraph<PTreeNode, EdgeTypes> getGraph() {
+    public MutableValueGraph<ControlFlowNode, EdgeTypes> getGraph() {
         return graph;
     }
 
     @Override
     public Void visit(ProofScript proofScript) {
-        PTreeNode scriptNode = new PTreeNode(proofScript);
+        ControlFlowNode scriptNode = new ControlFlowNode(proofScript);
         lastNode = scriptNode;
         return this.visit(proofScript.getBody());
     }
 
     @Override
     public Void visit(AssignmentStatement assignment) {
-        PTreeNode node = new PTreeNode(assignment);
+        ControlFlowNode node = new ControlFlowNode(assignment);
         graph.addNode(node);
         lastNode = node;
         return null;
@@ -40,7 +45,7 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
 
     @Override
     public Void visit(Statements statements) {
-        PTreeNode curLastNode = lastNode;
+        ControlFlowNode curLastNode = lastNode;
         for (Statement stmnt : statements) {
             stmnt.accept(this);
             graph.putEdgeValue(curLastNode, lastNode, EdgeTypes.STEP_OVER);
@@ -53,19 +58,47 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
 
     @Override
     public Void visit(CallStatement call) {
-        PTreeNode currentNode = new PTreeNode(call);
-        //fixme handle stepinto
+        ControlFlowNode currentNode = new ControlFlowNode(call);
 
         graph.addNode(currentNode);
         graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
+
+
         lastNode = currentNode;
+
+        CommandLookup lookup = inter.getFunctionLookup();
+        boolean atomic = lookup.isAtomic(call);
+
+
+        //Annahme: wenn ich zwischendrin keine return kante habe, dann wird solange durchgegangen, bis eine return kante da ist
+        if (atomic) {
+            graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_INTO);
+//            graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
+
+            ProofScriptHandler psh = (ProofScriptHandler) lookup.getBuilder(call);
+            psh.getScript(call.getCommand()).getBody().accept(this);
+
+            //verbinde letzten knoten aus auruf mi step return zu aktuellem knoten
+            graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
+        }
+
+        lastNode = currentNode;
+
         return null;
     }
 
     @Override
     public Void visit(ForeachStatement foreach) {
-        return super.visit(foreach);
+        ControlFlowNode currentNode = new ControlFlowNode(foreach);
+        graph.addNode(currentNode);
+        graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
+        graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
+        lastNode = currentNode;
+        foreach.getBody().accept(this);
+        graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_RETURN);
+        lastNode = currentNode;
+        return null;
     }
 
     @Override
