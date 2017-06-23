@@ -48,7 +48,8 @@ public class ProofTreeController {
 
         mainScript.accept(visitor);
         this.controlFlowGraph = visitor.getGraph();
-        System.out.println(controlFlowGraph);
+        System.out.println(visitor.asdot());
+        // System.out.println(controlFlowGraph);
 
     }
 

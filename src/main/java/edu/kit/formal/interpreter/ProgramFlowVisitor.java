@@ -67,8 +67,8 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
 
         lastNode = currentNode;
 
-        CommandLookup lookup = inter.getFunctionLookup();
-        boolean atomic = lookup.isAtomic(call);
+
+        boolean atomic = functionLookup.isAtomic(call);
 
 
         //Annahme: wenn ich zwischendrin keine return kante habe, dann wird solange durchgegangen, bis eine return kante da ist
@@ -76,7 +76,7 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
             graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_INTO);
 //            graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
 
-            ProofScriptHandler psh = (ProofScriptHandler) lookup.getBuilder(call);
+            ProofScriptHandler psh = (ProofScriptHandler) functionLookup.getBuilder(call);
             psh.getScript(call.getCommand()).getBody().accept(this);
 
             //verbinde letzten knoten aus auruf mi step return zu aktuellem knoten
