@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root type="javafx.scene.layout.BorderPane" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1">
+    <center>
+        <VBox alignment="CENTER_LEFT" prefHeight="94.0" prefWidth="266.0" spacing="10.0">
+            <CheckBox fx:id="enabled" layoutX="15.0" text="_Enabled" />
+            <HBox alignment="BASELINE_LEFT">
+                <Label text="Condition: " />
+                <TextField fx:id="condition" HBox.hgrow="ALWAYS" />
+            </HBox>
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+        </VBox>
+    </center>
+    <top>
+        <Label fx:id="title" alignment="CENTER" contentDisplay="TOP" style="-fx-font-weight: bold; -fx-font-size: 110%;" text="Here stands the filename!" />
+    </top>
+    <bottom>
+        <FlowPane alignment="BASELINE_RIGHT">
+            <Button onAction="#save" text="Apply" />
+        </FlowPane>
+    </bottom>
+   <padding>
+      <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+   </padding>
+</fx:root>

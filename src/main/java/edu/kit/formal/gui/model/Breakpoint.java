@@ -16,6 +16,17 @@ import java.io.File;
 @ToString
 @EqualsAndHashCode
 public class Breakpoint {
-    private final File file;
-    private final int lineNumber;
+    private File file;
+    private int lineNumber;
+    private boolean enabled;
+    private String condition;
+
+    public Breakpoint(File file, int lineNumber) {
+        this.file = file;
+        this.lineNumber = lineNumber;
+    }
+
+    public boolean isConditional() {
+        return condition != null;
+    }
 }

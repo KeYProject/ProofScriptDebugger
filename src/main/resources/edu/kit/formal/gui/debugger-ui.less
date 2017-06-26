@@ -31,6 +31,10 @@
   -fx-font-size: 12pt;
   -fx-fill: @base00;
 
+  .lineno {
+
+  }
+
   // Structures
   .FOREACH, .CASES, .CASE, .DEFAULT
   .THEONLY, .SCRIPT, .USING, .REPEAT {
@@ -76,7 +80,10 @@
   }
 
   .problem {
-    -rtfx-background-color: @magenta;
+    // -rtfx-background-color: @magenta;
+    -rtfx-underline-cap: butt;
+    -rtfx-underline-color: red;
+    -rtfx-underline-width: 2px;
     -fx-underline: true;
   }
 

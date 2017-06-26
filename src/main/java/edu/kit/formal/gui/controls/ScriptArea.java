@@ -3,7 +3,6 @@ package edu.kit.formal.gui.controls;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import edu.kit.formal.gui.model.Breakpoint;
-import edu.kit.formal.gui.model.ConditionalBreakpoint;
 import edu.kit.formal.gui.model.MainScriptIdentifier;
 import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ScriptLanguageLexer;
@@ -11,21 +10,19 @@ import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import edu.kit.formal.proofscriptparser.lint.LintProblem;
 import edu.kit.formal.proofscriptparser.lint.LinterStrategy;
 import javafx.beans.Observable;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -33,6 +30,7 @@ import javafx.scene.text.FontPosture;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CharacterHit;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.MouseOverTextEvent;
@@ -45,12 +43,8 @@ import org.reactfx.value.Val;
 
 import java.io.File;
 import java.time.Duration;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.IntFunction;
-import java.util.stream.Collectors;
 
 /**
  * ScriptArea is the textarea on the left side of the GUI.
@@ -72,6 +66,7 @@ public class ScriptArea extends CodeArea {
     private ANTLR4LexerHighlighter highlighter;
     private ListProperty<LintProblem> problems = new SimpleListProperty<>(FXCollections.observableArrayList());
     private SimpleObjectProperty<CharacterHit> currentMouseOver = new SimpleObjectProperty<>();
+    private ScriptAreaContextMenu contextMenu;
 
 
     public ScriptArea() {
@@ -123,7 +118,7 @@ public class ScriptArea extends CodeArea {
         mainScript.addListener((observable) ->
                 updateMainScriptMarker());
 
-        setContextMenu(new ScriptAreaContextMenu());
+        contextMenu = new ScriptAreaContextMenu();
     }
 
     private void updateMainScriptMarker() {
@@ -157,10 +152,12 @@ public class ScriptArea extends CodeArea {
             Point2D pos = e.getScreenPosition();
             popup.show(this, pos.getX(), pos.getY() + 10);
         });
-
+/*
         addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
             popup.hide();
-        });
+        });*/
+
+        popup.setAutoHide(true);
     }
 
     private Node createPopupInformation(int chIdx) {
@@ -276,11 +273,44 @@ public class ScriptArea extends CodeArea {
     }
 
     public Collection<? extends Breakpoint> getBreakpoints() {
-        return gutter.lineAnnotations.stream()
-                .filter(GutterAnnotation::isBreakpoint)
-                .map(ga -> new Breakpoint(filePath.get(),
-                        Integer.parseInt(ga.getText())))
-                .collect(Collectors.toList());
+        List<Breakpoint> list = new ArrayList<>();
+        int line = 0;
+        for (GutterAnnotation s : gutter.lineAnnotations) {
+            if (s.isBreakpoint()) {
+                Breakpoint b = new Breakpoint(filePath.get(), line);
+                b.setCondition(s.getBreakpointCondition());
+                list.add(b);
+            }
+            line++;
+        }
+        return list;
+    }
+
+    private void showBreakPointMenu(MouseEvent event, int line) {
+        PopOver d = new PopOver();
+        //d.initStyle(StageStyle.UNDECORATED);
+        // d.setX(event.getScreenX());
+        //d.setY(event.getScreenY());
+        BreakpointDialog bd = new BreakpointDialog();
+        GutterAnnotation anno = gutter.getLineAnnotation(line);
+        String oldcondition = anno.getBreakpointCondition();
+        boolean oldEnabled = anno.isBreakpoint();
+
+        bd.condition.textProperty().bindBidirectional(anno.breakpointCondition);
+        bd.enabled.selectedProperty().bindBidirectional(anno.breakpoint);
+
+        bd.title.setText(filePath.get().getName() + ":" + line);
+        d.setContentNode(bd);
+        d.setFadeInDuration(javafx.util.Duration.millis(500));
+        d.setAutoFix(true);
+        d.setAutoHide(true);
+        d.setOnHiding(windowEvent -> {
+            if (!bd.accepted) {
+                anno.setBreakpointCondition(oldcondition);
+                anno.setBreakpoint(oldEnabled);
+            }
+        });
+        d.show((Node) event.getTarget(), event.getScreenX(), event.getScreenY());
     }
 
     private static class GutterView extends HBox {
@@ -294,7 +324,7 @@ public class ScriptArea extends CodeArea {
         );
 
         private MaterialDesignIconView iconConditionalBreakPoint = new MaterialDesignIconView(
-                MaterialDesignIcon.ACCOUNT_CIRCLE, "12"
+                MaterialDesignIcon.CHECK, "12"
         );
 
         private Label lineNumber = new Label("not set");
@@ -303,15 +333,15 @@ public class ScriptArea extends CodeArea {
             annotation.addListener((o, old, nv) -> {
                 if (old != null) {
                     old.breakpoint.removeListener(this::update);
-                    old.conditionalBreakpoint.removeListener(this::update);
+                    old.breakpoint.removeListener(this::update);
                     old.mainScript.removeListener(this::update);
                     lineNumber.textProperty().unbind();
                 }
 
                 nv.breakpoint.addListener(this::update);
                 nv.mainScript.addListener(this::update);
-                nv.conditionalBreakpoint.addListener(this::update);
-
+                nv.breakpoint.addListener(this::update);
+                nv.conditional.addListener(this::update);
 
                 lineNumber.textProperty().bind(nv.textProperty());
 
@@ -324,11 +354,10 @@ public class ScriptArea extends CodeArea {
             getChildren().setAll(lineNumber);
             if (getAnnotation().isMainScript()) getChildren().add(iconMainScript);
             else addPlaceholder();
-
-            if (getAnnotation().isBreakpoint() && getAnnotation().conditionalBreakpoint.isNull().get())
-                getChildren().add(iconBreakPoint);
-            else if (getAnnotation().isBreakpoint() && getAnnotation().conditionalBreakpoint.isNotNull().get())
-                getChildren().add(iconConditionalBreakPoint);
+            if (getAnnotation().isBreakpoint())
+                getChildren().add(getAnnotation().getConditional()
+                        ? iconConditionalBreakPoint
+                        : iconBreakPoint);
             else
                 addPlaceholder();
         }
@@ -356,13 +385,10 @@ public class ScriptArea extends CodeArea {
 
     private static class GutterAnnotation {
         private StringProperty text = new SimpleStringProperty();
-        private BooleanProperty breakpoint = new SimpleBooleanProperty();
+        private SimpleBooleanProperty breakpoint = new SimpleBooleanProperty();
+        private StringProperty breakpointCondition = new SimpleStringProperty();
+        private BooleanBinding conditional = breakpointCondition.isNotNull().and(breakpointCondition.isNotEmpty());
         private BooleanProperty mainScript = new SimpleBooleanProperty();
-        private SimpleObjectProperty<ConditionalBreakpoint> conditionalBreakpoint = new SimpleObjectProperty<>();
-
-        public GutterAnnotation() {
-
-        }
 
         public String getText() {
             return text.get();
@@ -384,8 +410,28 @@ public class ScriptArea extends CodeArea {
             this.breakpoint.set(breakpoint);
         }
 
-        public BooleanProperty breakpointProperty() {
+        public SimpleBooleanProperty breakpointProperty() {
             return breakpoint;
+        }
+
+        public String getBreakpointCondition() {
+            return breakpointCondition.get();
+        }
+
+        public void setBreakpointCondition(String breakpointCondition) {
+            this.breakpointCondition.set(breakpointCondition);
+        }
+
+        public StringProperty breakpointConditionProperty() {
+            return breakpointCondition;
+        }
+
+        public Boolean getConditional() {
+            return conditional.get();
+        }
+
+        public BooleanBinding conditionalProperty() {
+            return conditional;
         }
 
         public boolean isMainScript() {
@@ -399,17 +445,28 @@ public class ScriptArea extends CodeArea {
         public BooleanProperty mainScriptProperty() {
             return mainScript;
         }
+    }
 
-        public ConditionalBreakpoint getConditionalBreakpoint() {
-            return conditionalBreakpoint.get();
+    public static class BreakpointDialog extends BorderPane {
+        @FXML
+        private CheckBox enabled;
+
+        @FXML
+        private TextField condition;
+
+        @FXML
+        private Label title;
+
+        @FXML
+        private boolean accepted = false;
+
+        public BreakpointDialog() {
+            Utils.createWithFXML(this);
         }
 
-        public void setConditionalBreakpoint(ConditionalBreakpoint conditionalBreakpoint) {
-            this.conditionalBreakpoint.set(conditionalBreakpoint);
-        }
-
-        public SimpleObjectProperty<ConditionalBreakpoint> conditionalBreakpointProperty() {
-            return conditionalBreakpoint;
+        public void save(ActionEvent e) {
+            accepted = true;
+            ((Button) e.getTarget()).getScene().getWindow().hide();
         }
     }
 
@@ -452,7 +509,7 @@ public class ScriptArea extends CodeArea {
 
             hbox.setOnMouseClicked((mevent) -> {
                 if (mevent.getButton() == MouseButton.SECONDARY)
-                    updateMainScriptMarker();
+                    showBreakPointMenu(mevent, idx);
                 else
                     toggleBreakpoint(idx);
             });
@@ -463,7 +520,6 @@ public class ScriptArea extends CodeArea {
             hbox.setPadding(defaultInsets);
             hbox.getStyleClass().add("lineno");
             hbox.setStyle("-fx-cursor: hand");
-
             return hbox;
         }
 
