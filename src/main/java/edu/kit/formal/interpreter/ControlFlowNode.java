@@ -5,20 +5,21 @@ import edu.kit.formal.proofscriptparser.ast.ASTNode;
 /**
  * ControlFlowNode for ControlFlowGraph to look up step-edges for teh debugger.
  */
+@Deprecated
 public class ControlFlowNode {
 
-    ASTNode scriptstmt;
+    edu.kit.formal.proofscriptparser.ast.ASTNode scriptstmt;
 
     public ControlFlowNode(ASTNode node) {
         this.setScriptstmt(node);
     }
 
 
-    public ASTNode getScriptstmt() {
+    public edu.kit.formal.proofscriptparser.ast.ASTNode getScriptstmt() {
         return scriptstmt;
     }
 
-    public void setScriptstmt(ASTNode scriptstmt) {
+    public void setScriptstmt(edu.kit.formal.proofscriptparser.ast.ASTNode scriptstmt) {
         this.scriptstmt = scriptstmt;
     }
 
@@ -33,5 +34,6 @@ public class ControlFlowNode {
         sb.append("}");
         return sb.toString();
     }
+
 
 }

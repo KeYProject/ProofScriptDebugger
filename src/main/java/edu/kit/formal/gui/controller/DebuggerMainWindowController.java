@@ -4,10 +4,7 @@ import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.gui.controls.*;
 import edu.kit.formal.gui.model.RootModel;
-import edu.kit.formal.interpreter.Interpreter;
-import edu.kit.formal.interpreter.InterpreterBuilder;
-import edu.kit.formal.interpreter.KeYProofFacade;
-import edu.kit.formal.interpreter.ProofTreeController;
+import edu.kit.formal.interpreter.*;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.proofscriptparser.Facade;
@@ -113,6 +110,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     private ObservableBooleanValue executeNotPossible = interpreterService.runningProperty().or(facade.readyToExecuteProperty().not());
 
+    private ProofTreeController pc;
     public static void showExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -225,8 +223,11 @@ public class DebuggerMainWindowController implements Initializable {
             Interpreter<KeyData> currentInterpreter = ib.build();
 
             if (debugMode) {
-                ProofTreeController pc = new ProofTreeController(currentInterpreter, scripts.get(0));
-                //blocker.getStepUntilBlock().set(1);
+                blocker.getStepUntilBlock().set(1);
+                //for stepping functionality
+                StateGraphVisitor visitor = new StateGraphVisitor(currentInterpreter, scripts.get(0));
+                pc = new ProofTreeController(currentInterpreter, scripts.get(0), visitor);
+                currentInterpreter.getEntryListeners().add(visitor);
 
             }
             blocker.install(currentInterpreter);
@@ -386,11 +387,13 @@ public class DebuggerMainWindowController implements Initializable {
     public void stepOver(ActionEvent actionEvent) {
         blocker.getStepUntilBlock().addAndGet(1);
         blocker.unlock();
+        pc.stepOver();
     }
 
     public void stepBack(ActionEvent actionEvent) {
         System.out.println(blocker.getHistoryLogger());
         blocker.unlock();
+        pc.stepBack();
     }
 
 
