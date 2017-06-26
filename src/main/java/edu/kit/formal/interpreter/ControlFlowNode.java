@@ -2,24 +2,35 @@ package edu.kit.formal.interpreter;
 
 import edu.kit.formal.proofscriptparser.ast.ASTNode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * ControlFlowNode for ControlFlowGraph to look up step-edges for teh debugger.
  */
-@Deprecated
+
 public class ControlFlowNode {
 
-    edu.kit.formal.proofscriptparser.ast.ASTNode scriptstmt;
+    private ASTNode scriptstmt;
+    private List<ASTNode> callCtx = new ArrayList<>();
 
     public ControlFlowNode(ASTNode node) {
         this.setScriptstmt(node);
     }
 
+    public List<ASTNode> getCallCtx() {
+        return callCtx;
+    }
 
-    public edu.kit.formal.proofscriptparser.ast.ASTNode getScriptstmt() {
+    public void setCallCtx(List<ASTNode> callCtx) {
+        this.callCtx = callCtx;
+    }
+
+    public ASTNode getScriptstmt() {
         return scriptstmt;
     }
 
-    public void setScriptstmt(edu.kit.formal.proofscriptparser.ast.ASTNode scriptstmt) {
+    public void setScriptstmt(ASTNode scriptstmt) {
         this.scriptstmt = scriptstmt;
     }
 
@@ -27,9 +38,14 @@ public class ControlFlowNode {
         StringBuilder sb = new StringBuilder();
         sb.append("Node {");
         if (scriptstmt != null) {
-            sb.append(scriptstmt.toString());
+            sb.append(scriptstmt.getNodeName().toString());
         } else {
             sb.append("No Stmt");
+        }
+        if (callCtx.isEmpty()) {
+            sb.append("Empty Context");
+        } else {
+            sb.append(callCtx.toString());
         }
         sb.append("}");
         return sb.toString();

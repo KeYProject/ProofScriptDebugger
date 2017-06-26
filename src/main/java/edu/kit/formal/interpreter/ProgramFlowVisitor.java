@@ -7,6 +7,7 @@ import edu.kit.formal.interpreter.funchdl.ProofScriptHandler;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,40 +23,47 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
     /**
      * Last visited Node
      */
-    private ASTNode lastNode;
+    private ControlFlowNode lastNode;
 
     /**
      * Control Flow Graph
      */
-    private MutableValueGraph<ASTNode, EdgeTypes> graph = ValueGraphBuilder.directed().allowsSelfLoops(true).build();
+    private MutableValueGraph<ControlFlowNode, EdgeTypes> graph = ValueGraphBuilder.directed().allowsSelfLoops(true).build();
 
+    private List<ASTNode> context = new ArrayList<>();
 
     public ProgramFlowVisitor(CommandLookup functionLookup) {
         this.functionLookup = functionLookup;
     }
 
-    public MutableValueGraph<ASTNode, EdgeTypes> getGraph() {
+    public MutableValueGraph<ControlFlowNode, EdgeTypes> getGraph() {
         return graph;
     }
 
     @Override
     public Void visit(ProofScript proofScript) {
 
-        lastNode = proofScript;
+        ControlFlowNode scriptNode = new ControlFlowNode(proofScript);
+        graph.addNode(scriptNode);
+        System.out.println("\n" + scriptNode + "\n");
+        lastNode = scriptNode;
+
         return this.visit(proofScript.getBody());
     }
 
     @Override
     public Void visit(AssignmentStatement assignment) {
 
-        graph.addNode(assignment);
-        lastNode = assignment;
+        ControlFlowNode assignmentNode = new ControlFlowNode(assignment);
+        graph.addNode(assignmentNode);
+        System.out.println("\n" + assignmentNode + "\n");
+        lastNode = assignmentNode;
         return null;
     }
 
     @Override
     public Void visit(Statements statements) {
-        ASTNode curLastNode = lastNode;
+        ControlFlowNode curLastNode = lastNode;
         for (Statement stmnt : statements) {
             stmnt.accept(this);
             graph.putEdgeValue(curLastNode, lastNode, EdgeTypes.STEP_OVER);
@@ -66,26 +74,24 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
         return null;
     }
 
+    //stack wenn atomic false
     @Override
     public Void visit(CallStatement call) {
-        ASTNode currentNode = call;
-
+        ControlFlowNode currentNode = new ControlFlowNode(call);
+        if (!context.isEmpty()) {
+            currentNode.setCallCtx(context);
+        }
         graph.addNode(currentNode);
+        System.out.println("\n" + currentNode + "\n");
         graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
-
-
         lastNode = currentNode;
-
-
         boolean atomic = functionLookup.isAtomic(call);
-
-
         //Annahme: wenn ich zwischendrin keine return kante habe, dann wird solange durchgegangen, bis eine return kante da ist
         if (atomic) {
 
+            context.add(call);
 //            graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
-
             ProofScriptHandler psh = (ProofScriptHandler) functionLookup.getBuilder(call);
             psh.getScript(call.getCommand()).getBody().accept(this);
 
@@ -93,7 +99,7 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
             graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
             graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_INTO);
         }
-
+        context.remove(call);
         lastNode = currentNode;
 
         return null;
@@ -101,8 +107,9 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
 
     @Override
     public Void visit(ForeachStatement foreach) {
-        ASTNode currentNode = foreach;
+        ControlFlowNode currentNode = new ControlFlowNode(foreach);
         graph.addNode(currentNode);
+        System.out.println("\n" + currentNode + "\n");
         graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
         lastNode = currentNode;
@@ -114,8 +121,9 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
 
     @Override
     public Void visit(TheOnlyStatement theOnly) {
-        ASTNode currentNode = theOnly;
+        ControlFlowNode currentNode = new ControlFlowNode(theOnly);
         graph.addNode(currentNode);
+        System.out.println("\n" + currentNode + "\n");
         graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
         lastNode = currentNode;
@@ -128,8 +136,9 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
 
     @Override
     public Void visit(RepeatStatement repeatStatement) {
-        ASTNode currentNode = repeatStatement;
+        ControlFlowNode currentNode = new ControlFlowNode(repeatStatement);
         graph.addNode(currentNode);
+        System.out.println("\n" + currentNode + "\n");
         graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
         lastNode = currentNode;
@@ -141,14 +150,16 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
 
     @Override
     public Void visit(CasesStatement casesStatement) {
-        ASTNode currentNode = casesStatement;
+        ControlFlowNode currentNode = new ControlFlowNode(casesStatement);
         graph.addNode(currentNode);
+        System.out.println("\n" + currentNode + "\n");
         graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
         List<CaseStatement> cases = casesStatement.getCases();
         for (CaseStatement aCase : cases) {
-            ASTNode caseNode = aCase;
+            ControlFlowNode caseNode = new ControlFlowNode(aCase);
             graph.addNode(caseNode);
+            System.out.println("\n" + caseNode + "\n");
             graph.putEdgeValue(currentNode, caseNode, EdgeTypes.STEP_OVER); //??is this right?
             graph.putEdgeValue(caseNode, currentNode, EdgeTypes.STEP_BACK);
             lastNode = caseNode;
@@ -167,9 +178,9 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
         graph.nodes().forEach(n -> {
             sb.append(n.hashCode())
                     .append(" [label=\"")
-                    .append(n.getNodeName())
+                    .append(n.getScriptstmt().getNodeName())
                     .append("@")
-                    .append(n.getStartPosition().getLineNumber())
+                    .append(n.getScriptstmt().getStartPosition().getLineNumber())
                     .append("\"]\n");
         });
 

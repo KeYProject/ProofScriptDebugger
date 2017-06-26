@@ -2,6 +2,7 @@ package edu.kit.formal.interpreter;
 
 import com.google.common.graph.MutableValueGraph;
 import edu.kit.formal.interpreter.data.KeyData;
+import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.ASTNode;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 
@@ -11,12 +12,15 @@ import edu.kit.formal.proofscriptparser.ast.ProofScript;
  * @author S. Grebing
  */
 public class ProofTreeController {
-    //TODO Listener auf den Interperter
-    StateGraphVisitor stateGraphVisitor;
+
+    /**
+     * Visitor to retrieve state graph
+     */
+    private StateGraphVisitor stateGraphVisitor;
     /**
      * ControlFlowGraph to lookup edges
      */
-    private MutableValueGraph<ASTNode, EdgeTypes> controlFlowGraph;
+    private MutableValueGraph<ControlFlowNode, EdgeTypes> controlFlowGraph;
     /**
      * Graph that is computed on the fly in order to allow stepping
      */
@@ -30,13 +34,14 @@ public class ProofTreeController {
      */
     private PTreeNode statePointer;
 
-    public ProofTreeController(Interpreter<KeyData> inter, ProofScript mainScript, StateGraphVisitor stateGraphVisitor) {
+    public ProofTreeController(Interpreter<KeyData> inter, ProofScript mainScript) {
         this.currentInterpreter = inter;
 
         buildControlFlowGraph(mainScript);
+        this.stateGraphVisitor = new StateGraphVisitor(inter, mainScript, this.controlFlowGraph);
         stateGraph = stateGraphVisitor.getStateGraph();
         statePointer = stateGraphVisitor.getRootNode();
-        this.stateGraphVisitor = stateGraphVisitor;
+
         // System.out.println(stateGraph.nodes());
         //initializeStateGraph(mainScript);
 
@@ -50,44 +55,29 @@ public class ProofTreeController {
      */
     private void buildControlFlowGraph(ProofScript mainScript) {
         ProgramFlowVisitor visitor = new ProgramFlowVisitor(currentInterpreter.getFunctionLookup());
-
         mainScript.accept(visitor);
         this.controlFlowGraph = visitor.getGraph();
-        // System.out.println(visitor.asdot());
+        System.out.println(visitor.asdot());
 
     }
 
- /*   private void initializeStateGraph(ProofScript mainScript){
-       stateGraph = ValueGraphBuilder.directed().build();
-
-        State<KeyData> initState = currentInterpreter.getCurrentState();
-        System.out.println(initState);
-        PTreeNode initNode = new PTreeNode(mainScript);
-        initNode.setState(initState);
-        stateGraph.addNode(initNode);
-
-       // statePointer = initNode;
-
-    }*/
-
-
     public PTreeNode stepOver() {
+        if (statePointer == null) {
+            this.statePointer = stateGraphVisitor.getLastNode();
+        }
         PTreeNode current = statePointer;
         ASTNode stmt = current.getScriptstmt();
+        System.out.println("CurrentPointer: " + stmt.getNodeName() + "@" + stmt.getStartPosition());
         if (controlFlowGraph.asGraph().nodes().contains(stmt)) {
-            // System.out.println("\n\nAdjacent:{\n"+controlFlowGraph.asGraph().adjacentNodes(stmt)+"}\n\n\n");
-            Object[] nodeArray = controlFlowGraph.asGraph().adjacentNodes(stmt).toArray();
-            ASTNode firtSucc = (ASTNode) nodeArray[0];
-            for (PTreeNode succ : stateGraph.successors(current)) {
-                if (succ.getScriptstmt().equals(firtSucc)) {
-                    statePointer = succ;
-                }
-            }
+            // Object[] nodeArray = controlFlowGraph.asGraph().adjacentNodes(stmt).toArray();
+            // ControlFlowNode firtSucc = (ControlFlowNode) nodeArray[0];
+            // for (PTreeNode succ : stateGraph.successors(current)) {
+            //    if (succ.getScriptstmt().equals(firtSucc)) {
+            //       statePointer = succ;
+            //  }
+            // }
         }
         //System.out.println(stateGraphVisitor.asdot());
-
-
-
         return null;
     }
 
@@ -104,4 +94,7 @@ public class ProofTreeController {
     }
 
 
+    public Visitor getStateVisitor() {
+        return this.stateGraphVisitor;
+    }
 }

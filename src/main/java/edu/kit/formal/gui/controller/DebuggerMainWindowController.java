@@ -4,7 +4,10 @@ import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.gui.controls.*;
 import edu.kit.formal.gui.model.RootModel;
-import edu.kit.formal.interpreter.*;
+import edu.kit.formal.interpreter.Interpreter;
+import edu.kit.formal.interpreter.InterpreterBuilder;
+import edu.kit.formal.interpreter.KeYProofFacade;
+import edu.kit.formal.interpreter.ProofTreeController;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.proofscriptparser.Facade;
@@ -159,7 +162,7 @@ public class DebuggerMainWindowController implements Initializable {
         });
 
         /**
-         * create a new insepctionviewtab that is the main tab and not closable
+         * create a new inspectionviewtab that is the main tab and not closable
          */
         inspectionViewTabPane.createNewInspectionViewTab(model, true);
 
@@ -224,10 +227,10 @@ public class DebuggerMainWindowController implements Initializable {
 
             if (debugMode) {
                 blocker.getStepUntilBlock().set(1);
+
                 //for stepping functionality
-                StateGraphVisitor visitor = new StateGraphVisitor(currentInterpreter, scripts.get(0));
-                pc = new ProofTreeController(currentInterpreter, scripts.get(0), visitor);
-                currentInterpreter.getEntryListeners().add(visitor);
+                pc = new ProofTreeController(currentInterpreter, scripts.get(0));
+                currentInterpreter.getEntryListeners().add(pc.getStateVisitor());
 
             }
             blocker.install(currentInterpreter);
@@ -391,8 +394,7 @@ public class DebuggerMainWindowController implements Initializable {
     }
 
     public void stepBack(ActionEvent actionEvent) {
-        System.out.println(blocker.getHistoryLogger());
-        blocker.unlock();
+
         pc.stepBack();
     }
 
