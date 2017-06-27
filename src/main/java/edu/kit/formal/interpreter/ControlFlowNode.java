@@ -2,7 +2,7 @@ package edu.kit.formal.interpreter;
 
 import edu.kit.formal.proofscriptparser.ast.ASTNode;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -11,18 +11,27 @@ import java.util.List;
 
 public class ControlFlowNode {
 
+    /**
+     * Statement node
+     */
     private ASTNode scriptstmt;
-    private List<ASTNode> callCtx = new ArrayList<>();
+
+    /**
+     * Call context
+     */
+    private LinkedList<ASTNode> callCtx = new LinkedList<>();
+
 
     public ControlFlowNode(ASTNode node) {
         this.setScriptstmt(node);
     }
 
+
     public List<ASTNode> getCallCtx() {
         return callCtx;
     }
 
-    public void setCallCtx(List<ASTNode> callCtx) {
+    public void setCallCtx(LinkedList<ASTNode> callCtx) {
         this.callCtx = callCtx;
     }
 
@@ -38,7 +47,7 @@ public class ControlFlowNode {
         StringBuilder sb = new StringBuilder();
         sb.append("Node {");
         if (scriptstmt != null) {
-            sb.append(scriptstmt.getNodeName().toString());
+            sb.append(scriptstmt.getNodeName().toString() + "@" + scriptstmt.getStartPosition());
         } else {
             sb.append("No Stmt");
         }

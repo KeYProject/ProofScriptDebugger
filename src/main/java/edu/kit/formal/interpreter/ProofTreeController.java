@@ -1,9 +1,8 @@
 package edu.kit.formal.interpreter;
 
-import com.google.common.graph.MutableValueGraph;
+import edu.kit.formal.gui.controller.PuppetMaster;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.proofscriptparser.Visitor;
-import edu.kit.formal.proofscriptparser.ast.ASTNode;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 
 /**
@@ -14,17 +13,18 @@ import edu.kit.formal.proofscriptparser.ast.ProofScript;
 public class ProofTreeController {
 
     /**
+     * To control stepping
+     */
+    private final PuppetMaster blocker = new PuppetMaster();
+    /**
      * Visitor to retrieve state graph
      */
     private StateGraphVisitor stateGraphVisitor;
     /**
-     * ControlFlowGraph to lookup edges
-     */
-    private MutableValueGraph<ControlFlowNode, EdgeTypes> controlFlowGraph;
-    /**
      * Graph that is computed on the fly in order to allow stepping
      */
-    private MutableValueGraph<PTreeNode, EdgeTypes> stateGraph;
+
+    private ProgramFlowVisitor controlFlowGraphVisitor;
     /**
      * Current interpreter
      */
@@ -35,17 +35,15 @@ public class ProofTreeController {
     private PTreeNode statePointer;
 
     public ProofTreeController(Interpreter<KeyData> inter, ProofScript mainScript) {
-        this.currentInterpreter = inter;
+        blocker.deinstall();
 
+        this.currentInterpreter = inter;
         buildControlFlowGraph(mainScript);
-        this.stateGraphVisitor = new StateGraphVisitor(inter, mainScript, this.controlFlowGraph);
-        stateGraph = stateGraphVisitor.getStateGraph();
+        this.stateGraphVisitor = new StateGraphVisitor(inter, mainScript, controlFlowGraphVisitor);
         statePointer = stateGraphVisitor.getRootNode();
 
-        // System.out.println(stateGraph.nodes());
-        //initializeStateGraph(mainScript);
-
-
+        blocker.getStepUntilBlock().set(1);
+        blocker.install(currentInterpreter);
     }
 
     /**
@@ -54,30 +52,26 @@ public class ProofTreeController {
      * @param mainScript
      */
     private void buildControlFlowGraph(ProofScript mainScript) {
-        ProgramFlowVisitor visitor = new ProgramFlowVisitor(currentInterpreter.getFunctionLookup());
-        mainScript.accept(visitor);
-        this.controlFlowGraph = visitor.getGraph();
-        System.out.println(visitor.asdot());
+        this.controlFlowGraphVisitor = new ProgramFlowVisitor(currentInterpreter.getFunctionLookup());
+        mainScript.accept(controlFlowGraphVisitor);
+
+        System.out.println("CFG\n" + controlFlowGraphVisitor.asdot());
 
     }
 
     public PTreeNode stepOver() {
+        blocker.getStepUntilBlock().addAndGet(1);
+        blocker.unlock();
+
+
+
         if (statePointer == null) {
             this.statePointer = stateGraphVisitor.getLastNode();
         }
-        PTreeNode current = statePointer;
-        ASTNode stmt = current.getScriptstmt();
-        System.out.println("CurrentPointer: " + stmt.getNodeName() + "@" + stmt.getStartPosition());
-        if (controlFlowGraph.asGraph().nodes().contains(stmt)) {
-            // Object[] nodeArray = controlFlowGraph.asGraph().adjacentNodes(stmt).toArray();
-            // ControlFlowNode firtSucc = (ControlFlowNode) nodeArray[0];
-            // for (PTreeNode succ : stateGraph.successors(current)) {
-            //    if (succ.getScriptstmt().equals(firtSucc)) {
-            //       statePointer = succ;
-            //  }
-            // }
-        }
-        //System.out.println(stateGraphVisitor.asdot());
+        //PTreeNode current = statePointer;
+        //ASTNode stmt = current.getScriptstmt();
+        //System.out.println("CurrentPointer: " + stmt.getNodeName() + "@" + stmt.getStartPosition());
+
         return null;
     }
 

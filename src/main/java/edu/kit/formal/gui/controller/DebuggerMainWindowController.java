@@ -52,7 +52,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     private final PuppetMaster blocker = new PuppetMaster();
     private SimpleBooleanProperty debugMode = new SimpleBooleanProperty(false);
-    // private GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
+
 
     @FXML
     private Pane rootPane;
@@ -62,12 +62,9 @@ public class DebuggerMainWindowController implements Initializable {
      *      Code Area
      * **********************************************************************************************************/
 
-    //@FXML
-    //private ScriptArea scriptArea;
     @FXML
     private ScriptTabPane tabPane;
-    //@FXML
-    //private Tab startTab;
+
     /***********************************************************************************************************
      *      MenuBar
      * **********************************************************************************************************/
@@ -113,7 +110,11 @@ public class DebuggerMainWindowController implements Initializable {
 
     private ObservableBooleanValue executeNotPossible = interpreterService.runningProperty().or(facade.readyToExecuteProperty().not());
 
+    /**
+     * Controller for debugging functions
+     */
     private ProofTreeController pc;
+
     public static void showExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -226,14 +227,14 @@ public class DebuggerMainWindowController implements Initializable {
             Interpreter<KeyData> currentInterpreter = ib.build();
 
             if (debugMode) {
-                blocker.getStepUntilBlock().set(1);
+                //blocker.getStepUntilBlock().set(1);
 
                 //for stepping functionality
                 pc = new ProofTreeController(currentInterpreter, scripts.get(0));
                 currentInterpreter.getEntryListeners().add(pc.getStateVisitor());
 
             }
-            blocker.install(currentInterpreter);
+            // blocker.install(currentInterpreter);
 
             //highlight signature of main script
             tabPane.getSelectedScriptArea().setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
@@ -388,8 +389,8 @@ public class DebuggerMainWindowController implements Initializable {
     }
 
     public void stepOver(ActionEvent actionEvent) {
-        blocker.getStepUntilBlock().addAndGet(1);
-        blocker.unlock();
+        // blocker.getStepUntilBlock().addAndGet(1);
+        // blocker.unlock();
         pc.stepOver();
     }
 
@@ -487,7 +488,7 @@ public class DebuggerMainWindowController implements Initializable {
 
         private void updateView() {
             //check proof
-            // check state for empty/error goal nodes leer
+            //check state for empty/error goal nodes
             //currentGoals.set(state.getGoals());
             //currentSelectedGoal.set(state.getSelectedGoalNode());
             blocker.publishState();
