@@ -9,11 +9,9 @@ import edu.kit.formal.interpreter.InterpreterBuilder;
 import edu.kit.formal.interpreter.KeYProofFacade;
 import edu.kit.formal.interpreter.ProofTreeController;
 import edu.kit.formal.interpreter.data.KeyData;
-import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -50,7 +48,6 @@ import java.util.concurrent.Executors;
 public class DebuggerMainWindowController implements Initializable {
     private static final Logger LOGGER = LogManager.getLogger(DebuggerMainWindowController.class);
 
-    private final PuppetMaster blocker = new PuppetMaster();
     private SimpleBooleanProperty debugMode = new SimpleBooleanProperty(false);
 
 
@@ -106,14 +103,15 @@ public class DebuggerMainWindowController implements Initializable {
 
 
 
-    private InterpretingService interpreterService = new InterpretingService();
-
-    private ObservableBooleanValue executeNotPossible = interpreterService.runningProperty().or(facade.readyToExecuteProperty().not());
 
     /**
      * Controller for debugging functions
      */
-    private ProofTreeController pc;
+    private ProofTreeController pc = new ProofTreeController();
+
+    //TODO
+    private ObservableBooleanValue executeNotPossible = pc.executeNotPossibleProperty().or(facade.readyToExecuteProperty().not());
+
 
     public static void showExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -174,10 +172,10 @@ public class DebuggerMainWindowController implements Initializable {
             blocker.getBreakpoints().addAll(change.getSet());
         });*/
 
-        blocker.currentGoalsProperty().addListener((o, old, fresh) -> {
+        pc.currentGoalsProperty().addListener((o, old, fresh) -> {
             model.currentGoalNodesProperty().setAll(fresh);
         });
-        model.currentSelectedGoalNodeProperty().bind(blocker.currentSelectedGoalProperty());
+        model.currentSelectedGoalNodeProperty().bind(pc.currentSelectedGoalProperty());
 
         CustomTabPaneSkin skin = new CustomTabPaneSkin(tabPane);
 
@@ -191,15 +189,15 @@ public class DebuggerMainWindowController implements Initializable {
 
     @FXML
     public void executeScriptFromCursor() {
-        InterpreterBuilder ib = facade.buildInterpreter();
-        ib.inheritState(interpreterService.interpreter.get());
-/*
-        LineMapping lm = new LineMapping(scriptArea.getText());
-        int line = lm.getLine(scriptArea.getCaretPosition());
-        int inLine = lm.getCharInLine(scriptArea.getCaretPosition());
-*/
-        ib.ignoreLinesUntil(tabPane.getSelectedScriptArea().getCaretPosition());
-        executeScript(ib, true);
+//        InterpreterBuilder ib = facade.buildInterpreter();
+//        ib.inheritState(interpreterService.interpreterProperty().get());
+///*
+//        LineMapping lm = new LineMapping(scriptArea.getText());
+//        int line = lm.getLine(scriptArea.getCaretPosition());
+//        int inLine = lm.getCharInLine(scriptArea.getCaretPosition());
+//*/
+//        ib.ignoreLinesUntil(tabPane.getSelectedScriptArea().getCaretPosition());
+//        executeScript(ib, true);
     }
 
     @FXML
@@ -216,33 +214,20 @@ public class DebuggerMainWindowController implements Initializable {
      */
     private void executeScript(InterpreterBuilder ib, boolean debugMode) {
         this.debugMode.set(debugMode);
-        blocker.deinstall();
         statusBar.publishMessage("Parse ...");
         try {
             List<ProofScript> scripts = Facade.getAST(tabPane.getSelectedScriptArea().getText());
             statusBar.publishMessage("Creating new Interpreter instance ...");
             ib.setScripts(scripts);
-            ib.captureHistory();
 
             Interpreter<KeyData> currentInterpreter = ib.build();
 
-            if (debugMode) {
-                //blocker.getStepUntilBlock().set(1);
-
-                //for stepping functionality
-                pc = new ProofTreeController(currentInterpreter, scripts.get(0));
-                currentInterpreter.getEntryListeners().add(pc.getStateVisitor());
-
-            }
-            // blocker.install(currentInterpreter);
+            pc.setCurrentInterpreter(currentInterpreter);
+            pc.setMainScript(scripts.get(0));
+            pc.executeScript(this.debugMode.get());
 
             //highlight signature of main script
             tabPane.getSelectedScriptArea().setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
-
-            interpreterService.interpreter.set(currentInterpreter);
-            interpreterService.mainScript.set(scripts.get(0));
-
-            interpreterService.start();
         } catch (RecognitionException e) {
             showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
@@ -421,6 +406,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     public Boolean getExecuteNotPossible() {
         return executeNotPossible.get();
+
     }
 
     public ObservableBooleanValue executeNotPossibleProperty() {
@@ -464,49 +450,5 @@ public class DebuggerMainWindowController implements Initializable {
     }
 
 
-
-    private class InterpretingService extends Service<State<KeyData>> {
-        private final SimpleObjectProperty<Interpreter<KeyData>> interpreter = new SimpleObjectProperty<>();
-        private final SimpleObjectProperty<ProofScript> mainScript = new SimpleObjectProperty<>();
-
-        @Override
-        protected void succeeded() {
-            updateView();
-        }
-
-        @Override
-        protected void cancelled() {
-            updateView();
-        }
-
-        @Override
-        protected void failed() {
-            getException().printStackTrace();
-            showExceptionDialog("Execution failed", "", "", getException());
-            updateView();
-        }
-
-        private void updateView() {
-            //check proof
-            //check state for empty/error goal nodes
-            //currentGoals.set(state.getGoals());
-            //currentSelectedGoal.set(state.getSelectedGoalNode());
-            blocker.publishState();
-        }
-
-        @Override
-        protected Task<edu.kit.formal.interpreter.data.State<KeyData>> createTask() {
-            return new Task<edu.kit.formal.interpreter.data.State<KeyData>>() {
-                final Interpreter<KeyData> i = interpreter.get();
-                final ProofScript ast = mainScript.get();
-
-                @Override
-                protected edu.kit.formal.interpreter.data.State<KeyData> call() throws Exception {
-                    i.interpret(ast);
-                    return i.peekState();
-                }
-            };
-        }
-    }
-//endregion
+    //endregion
 }

@@ -4,14 +4,32 @@ import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.proofscriptparser.ast.ASTNode;
 
+import java.util.LinkedList;
+
 /**
  * Inner class representing nodes in the graph
  * A node contains a reference to the ASTNode and a reference to the corresponding interpreter state if this state is already interpreted, null otherwise.
  */
 public class PTreeNode {
-    State<KeyData> state;
+    /**
+     * State  after statement
+     */
+    private State<KeyData> state;
 
-    ASTNode scriptstmt;
+    /**
+     * Statement
+     */
+    private ASTNode scriptstmt;
+
+
+    /**
+     * Call context
+     */
+    private LinkedList<ASTNode> context = new LinkedList<>();
+
+    private boolean root;
+
+
 
     public PTreeNode(ASTNode node) {
         this.setScriptstmt(node);
@@ -37,13 +55,21 @@ public class PTreeNode {
         return state != null;
     }
 
+    public LinkedList<ASTNode> getContext() {
+        return context;
+    }
+
+    public void setContext(LinkedList<ASTNode> context) {
+        this.context = context;
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Node {");
         if (scriptstmt != null) {
             sb.append(scriptstmt.getNodeName() + "\n");
         } else {
-            sb.append("No Stmt");
+            sb.append("Root Node");
         }
         if (hasState()) {
             sb.append("\nState " + state.getGoals() + "\n");

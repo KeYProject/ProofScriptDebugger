@@ -1,12 +1,14 @@
 package edu.kit.formal.interpreter;
 
 
-import com.google.common.graph.EndpointPair;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
+import edu.kit.formal.gui.controller.PuppetMaster;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.ast.*;
+import javafx.beans.property.SimpleObjectProperty;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -18,15 +20,18 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
      * Interpreter
      */
     private Interpreter currentInterpreter;
+
+    private PuppetMaster blocker;
     /**
      * Graph that is computed on the fly in order to allow stepping
      */
     private MutableValueGraph<PTreeNode, EdgeTypes> stateGraph;
 
+
     /**
      * Root of state graph
      */
-    private PTreeNode root;
+    private SimpleObjectProperty<PTreeNode> root = new SimpleObjectProperty<>();
 
     /**
      * last added node
@@ -38,35 +43,99 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
      */
     private ProgramFlowVisitor cfgVisitor;
 
+    /**
+     * Pointer for stepping
+     */
+    private PTreeNode currentStatePointer;
 
     public StateGraphVisitor(Interpreter inter, ProofScript mainScript, ProgramFlowVisitor cfgVisitor) {
         stateGraph = ValueGraphBuilder.directed().build();
         this.currentInterpreter = inter;
         this.cfgVisitor = cfgVisitor;
-
+        createRootNode();
 
     }
 
+  /*  public StateGraphVisitor(PuppetMaster blocker, ProofScript mainScript, ProgramFlowVisitor cfgVisitor) {
+        stateGraph = ValueGraphBuilder.directed().build();
+        this.cfgVisitor = cfgVisitor;
+        this.blocker = blocker;
+        createRootNode();
+    }*/
 
     public MutableValueGraph<PTreeNode, EdgeTypes> getStateGraph() {
         return stateGraph;
     }
 
-    public PTreeNode getRootNode() {
-        return root;
-    }
+
 
     public PTreeNode getLastNode() {
         return lastNode;
     }
 
-    //public (ControlFlowNode, ControlflowNode, Edge) getReturnEdge(ASTNode node)
+
+    public void createRootNode() {
+        PTreeNode newStateNode = new PTreeNode(null);
+        newStateNode.setState(currentInterpreter.getCurrentState());
+        stateGraph.addNode(newStateNode);
+        this.root.set(newStateNode);
+        lastNode = newStateNode;
+    }
 
 
-    //public Node findNode(ASTNode, state){}
+    //careful TODO look for right edges
+    //TODO handle endpoint of graph
+    public PTreeNode getStepOver(PTreeNode statePointer) {
 
+        Set<PTreeNode> successors = this.stateGraph.successors(statePointer);
+        if (successors.isEmpty()) {
+            return null;
+        } else {
+            Object[] sucs = successors.toArray();
+            getNodeWithEdgeType(statePointer, EdgeTypes.STATE_FLOW);
+            return (PTreeNode) sucs[0];
+        }
+
+
+    }
+
+    //TODO handle endpoint of graph
+    public PTreeNode getStepBack(PTreeNode statePointer) {
+
+        Set<PTreeNode> pred = this.stateGraph.predecessors(statePointer);
+        if (pred.isEmpty()) {
+            return null;
+        } else {
+            Object[] sucs = pred.toArray();
+            return (PTreeNode) sucs[0];
+        }
+
+    }
+
+    private PTreeNode getNodeWithEdgeType(PTreeNode source, EdgeTypes type) {
+        Set<PTreeNode> predecessors = stateGraph.predecessors(source);
+        Set<PTreeNode> chosenNodes = new HashSet<>();
+
+        predecessors.forEach(pred -> {
+            EdgeTypes typeToCheck = stateGraph.edgeValue(pred, source);
+            if (type.equals(typeToCheck)) {
+                chosenNodes.add(pred);
+            }
+        });
+
+        Set<PTreeNode> successors = stateGraph.successors(source);
+        successors.forEach(succ -> {
+            EdgeTypes typeToCheck = stateGraph.edgeValue(source, succ);
+            if (type.equals(typeToCheck)) {
+                chosenNodes.add(succ);
+            }
+        });
+        chosenNodes.forEach(n -> System.out.println(n.toString()));
+        //stateGraph.edgeValue()
+        return null;
+    }
     /**
-     * Creat a new node for the state graph and add edges to already existing nodes
+     * Create a new node for the state graph and add edges to already existing nodes
      *
      * @param node
      * @return
@@ -76,19 +145,15 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
         PTreeNode newStateNode = new PTreeNode(node);
         newStateNode.setState(currentInterpreter.getCurrentState());
         stateGraph.addNode(newStateNode);
-        Set<EndpointPair<ControlFlowNode>> targetEdges = cfgVisitor.getAllEdgesForNodeAsTarget(node);
+
+        /*Set<EndpointPair<ControlFlowNode>> targetEdges = cfgVisitor.getAllEdgesForNodeAsTarget(node);
         for (EndpointPair<ControlFlowNode> targetEdge : targetEdges) {
             ControlFlowNode cfn = targetEdge.source();
             ASTNode assocNode = cfn.getScriptstmt();
             //mapping
-        }
-        if (lastNode == null) {
-            root = newStateNode;
-        } else {
-            stateGraph.putEdgeValue(lastNode, newStateNode, EdgeTypes.STATE_FLOW);
+        }*/
 
-        }
-
+        stateGraph.putEdgeValue(lastNode, newStateNode, EdgeTypes.STATE_FLOW);
         lastNode = newStateNode;
 
         return null;
@@ -167,5 +232,17 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
         return sb.toString();
     }
 
+
+    public PTreeNode getRoot() {
+        return root.get();
+    }
+
+    public void setRoot(PTreeNode root) {
+        this.root.set(root);
+    }
+
+    public SimpleObjectProperty<PTreeNode> rootProperty() {
+        return root;
+    }
 
 }
