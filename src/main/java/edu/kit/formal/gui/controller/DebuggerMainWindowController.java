@@ -189,7 +189,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     @FXML
     public void executeScriptFromCursor() {
-//        InterpreterBuilder ib = facade.buildInterpreter();
+        InterpreterBuilder ib = facade.buildInterpreter();
 //        ib.inheritState(interpreterService.interpreterProperty().get());
 ///*
 //        LineMapping lm = new LineMapping(scriptArea.getText());

@@ -89,14 +89,14 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
 
     @Override
     public Void visit(Statements statements) {
-        ControlFlowNode curLastNode = lastNode;
+        //ControlFlowNode curLastNode = lastNode;
         for (Statement stmnt : statements) {
             stmnt.accept(this);
-            graph.putEdgeValue(curLastNode, lastNode, EdgeTypes.STEP_OVER);
-            graph.putEdgeValue(lastNode, curLastNode, EdgeTypes.STEP_BACK);
-            curLastNode = lastNode;
+            //graph.putEdgeValue(curLastNode, lastNode, EdgeTypes.STEP_OVER);
+            //graph.putEdgeValue(lastNode, curLastNode, EdgeTypes.STEP_BACK);
+            //curLastNode = lastNode;
         }
-        lastNode = curLastNode;
+        //lastNode = curLastNode;
         return null;
     }
 

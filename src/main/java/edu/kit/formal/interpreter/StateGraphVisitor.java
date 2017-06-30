@@ -4,22 +4,35 @@ package edu.kit.formal.interpreter;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
 import edu.kit.formal.gui.controller.PuppetMaster;
+import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 import javafx.beans.property.SimpleObjectProperty;
+import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
 /**
- * Created by sarah on 6/26/17.
+ * State graph that is computed on the fly while stepping through script
+ * A Node in the graph is a PTreeNode {@link edu.kit.formal.interpreter.PTreeNode}
+ * Edges are computed on the fly while
  */
 public class StateGraphVisitor extends DefaultASTVisitor<Void> {
+
+    /**
+     * Listeners getting informed when new node added to state graph
+     */
+    @Getter
+    private List<GraphChangedListener> changeListeners = new ArrayList();
+
     /**
      * Interpreter
      */
-    private Interpreter currentInterpreter;
+    private Interpreter<KeyData> currentInterpreter;
 
     private PuppetMaster blocker;
     /**
@@ -48,25 +61,21 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
      */
     private PTreeNode currentStatePointer;
 
+    private ProofScript mainScript;
+
     public StateGraphVisitor(Interpreter inter, ProofScript mainScript, ProgramFlowVisitor cfgVisitor) {
         stateGraph = ValueGraphBuilder.directed().build();
         this.currentInterpreter = inter;
         this.cfgVisitor = cfgVisitor;
+        this.mainScript = mainScript;
         createRootNode();
 
     }
 
-  /*  public StateGraphVisitor(PuppetMaster blocker, ProofScript mainScript, ProgramFlowVisitor cfgVisitor) {
-        stateGraph = ValueGraphBuilder.directed().build();
-        this.cfgVisitor = cfgVisitor;
-        this.blocker = blocker;
-        createRootNode();
-    }*/
 
     public MutableValueGraph<PTreeNode, EdgeTypes> getStateGraph() {
         return stateGraph;
     }
-
 
 
     public PTreeNode getLastNode() {
@@ -86,7 +95,6 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
     //careful TODO look for right edges
     //TODO handle endpoint of graph
     public PTreeNode getStepOver(PTreeNode statePointer) {
-
         Set<PTreeNode> successors = this.stateGraph.successors(statePointer);
         if (successors.isEmpty()) {
             return null;
@@ -99,7 +107,7 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
 
     }
 
-    //TODO handle endpoint of graph
+
     public PTreeNode getStepBack(PTreeNode statePointer) {
 
         Set<PTreeNode> pred = this.stateGraph.predecessors(statePointer);
@@ -130,10 +138,11 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
                 chosenNodes.add(succ);
             }
         });
-        chosenNodes.forEach(n -> System.out.println(n.toString()));
+        //chosenNodes.forEach(n -> System.out.println(n.toString()));
         //stateGraph.edgeValue()
         return null;
     }
+
     /**
      * Create a new node for the state graph and add edges to already existing nodes
      *
@@ -141,21 +150,16 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
      * @return
      */
     public Void createNewNode(ASTNode node) {
+        PTreeNode newStateNode;
+        newStateNode = new PTreeNode(node);
 
-        PTreeNode newStateNode = new PTreeNode(node);
         newStateNode.setState(currentInterpreter.getCurrentState());
         stateGraph.addNode(newStateNode);
 
-        /*Set<EndpointPair<ControlFlowNode>> targetEdges = cfgVisitor.getAllEdgesForNodeAsTarget(node);
-        for (EndpointPair<ControlFlowNode> targetEdge : targetEdges) {
-            ControlFlowNode cfn = targetEdge.source();
-            ASTNode assocNode = cfn.getScriptstmt();
-            //mapping
-        }*/
 
         stateGraph.putEdgeValue(lastNode, newStateNode, EdgeTypes.STATE_FLOW);
+        fireNodeAdded(new NodeAddedEvent(lastNode, newStateNode));
         lastNode = newStateNode;
-
         return null;
     }
 
@@ -171,10 +175,6 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
         return createNewNode(assignment);
     }
 
-    @Override
-    public Void visit(Statements statements) {
-        return createNewNode(statements);
-    }
 
     @Override
     public Void visit(CasesStatement casesStatement) {
@@ -244,5 +244,23 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
     public SimpleObjectProperty<PTreeNode> rootProperty() {
         return root;
     }
+
+    public void addChangeListener(GraphChangedListener listener) {
+        changeListeners.add(listener);
+    }
+
+    public void removeChangeListener(GraphChangedListener listener) {
+        changeListeners.remove(listener);
+    }
+
+
+    protected void fireNodeAdded(NodeAddedEvent nodeAddedEvent) {
+        System.out.println("New Node added " + nodeAddedEvent.toString());
+        changeListeners.forEach(list -> {
+            list.graphChanged(nodeAddedEvent);
+        });
+
+    }
+
 
 }

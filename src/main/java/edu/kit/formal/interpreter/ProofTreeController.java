@@ -5,8 +5,11 @@ import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 
 import java.util.List;
 
@@ -21,11 +24,17 @@ public class ProofTreeController {
      * To control stepping
      */
     private final PuppetMaster blocker = new PuppetMaster();
-    private final SimpleObjectProperty<List<GoalNode<KeyData>>> currentGoals = blocker.currentGoalsProperty();
-    private final SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoal = blocker.currentSelectedGoalProperty();
+    private final SimpleObjectProperty<List<GoalNode<KeyData>>> currentGoals = new SimpleObjectProperty<>();
+    //= blocker.currentGoalsProperty();
+    private final ListProperty<GoalNode<KeyData>> currentGoalList = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoal = new SimpleObjectProperty<>();
+    //= blocker.currentSelectedGoalProperty();
     //new SimpleBooleanProperty(false);
     private InterpretingService interpreterService = new InterpretingService(blocker);
     private ReadOnlyBooleanProperty executeNotPossible = interpreterService.runningProperty();
+
+    private SimpleObjectProperty<PTreeNode> nextComputedNode = new SimpleObjectProperty<>();
+
     /**
      * Visitor to retrieve state graph
      */
@@ -50,22 +59,24 @@ public class ProofTreeController {
 
     private ProofScript mainScript;
 
+    /**
+     * Add a change listener for the stategraph
+     */
+    private GraphChangedListener graphChangedListener = nodeAddedEvent -> {
+
+        if (statePointer.equals(nodeAddedEvent.getLastPointer())) {
+            nextComputedNode.setValue(nodeAddedEvent.getAddedNode());
+
+        }
+
+    };
+
     public ProofTreeController() {
-
+        this.currentGoals.bindBidirectional(blocker.currentGoalsProperty());
+        this.currentSelectedGoal.bindBidirectional(blocker.currentSelectedGoalProperty());
 
     }
 
-    private ProofTreeController(Interpreter<KeyData> inter, ProofScript mainScript) {
-        blocker.deinstall();
-
-        this.currentInterpreter = inter;
-        buildControlFlowGraph(mainScript);
-        this.stateGraphVisitor = new StateGraphVisitor(inter, mainScript, controlFlowGraphVisitor);
-        //statePointer = stateGraphVisitor.getRoot();
-
-        blocker.getStepUntilBlock().set(1);
-        blocker.install(currentInterpreter);
-    }
 
     /**
      * Build the control flow graph for looking up step-edges for the given script inligning called script commands
@@ -79,28 +90,37 @@ public class ProofTreeController {
 
     }
 
+    //TODO handle endpoint
+    //handle inconsistency
     public PTreeNode stepOver() {
         PTreeNode currentPointer = statePointer;
-        if (statePointer == null) {
+
+        if (currentPointer == null) {
             System.out.println("StatePointer is null");
         } else {
+            if (this.statePointer.getState() != null && this.statePointer.getScriptstmt() != null) {
+                System.out.println("StatePointer is " + currentPointer.getScriptstmt().getNodeName() + currentPointer.getScriptstmt().getStartPosition());
+            } else {
+                System.out.println("Possibly root node");
+            }
             PTreeNode nextNode = stateGraphVisitor.getStepOver(currentPointer);
+
             if (nextNode != null) {
                 this.statePointer = nextNode;
             } else {
+                nextComputedNode.addListener((observable, oldValue, newValue) -> {
+                    this.statePointer = newValue;
+                    System.out.println("Added new Value to Statepointer: " + this.statePointer.getScriptstmt().getNodeName() + this.statePointer.getScriptstmt().getStartPosition());
+                });
                 //let interpreter run for one step
                 blocker.getStepUntilBlock().addAndGet(1);
                 blocker.unlock();
-                //sync problem???
-                //TODO make this right!
-                //TODO handle endpoint of graph
-                nextNode = stateGraphVisitor.getStepOver(currentPointer);
-                while (nextNode == null) {
-                    nextNode = stateGraphVisitor.getStepOver(currentPointer);
-                }
-                this.statePointer = nextNode;
+
+                //stateGraphListener
+
+                //this.statePointer = nextNode;
             }
-            System.out.println("NEXT NODE \n\n" + this.statePointer + "\n-------------------\n");
+
         }
 
 
@@ -111,7 +131,14 @@ public class ProofTreeController {
     public PTreeNode stepBack() {
         PTreeNode current = statePointer;
         this.statePointer = stateGraphVisitor.getStepBack(current);
-        System.out.println("PRED NODE \n\n" + this.statePointer + "\n-------------------\n");
+        if (this.statePointer == null) {
+
+        } else {
+            this.currentGoals.set(this.statePointer.getState().getGoals());
+            this.currentSelectedGoal.set(this.statePointer.getState().getSelectedGoalNode());
+        }
+        System.out.println("PRED NODE \n\n" + this.statePointer.getState().getSelectedGoalNode().getData().getNode().serialNr() + ":" +
+                this.statePointer.getScriptstmt().getNodeName() + "@" + this.statePointer.getScriptstmt().getStartPosition() + "\n-------------------\n");
         return null;
     }
 
@@ -137,6 +164,7 @@ public class ProofTreeController {
             //  this.stateGraphVisitor = new StateGraphVisitor(blocker, this.mainScript, this.controlFlowGraphVisitor);
 
             currentInterpreter.getEntryListeners().add(this.stateGraphVisitor);
+            this.stateGraphVisitor.addChangeListener(graphChangedListener);
             //
             // stateGraphVisitor.rootProperty().addListener((observable, oldValue, newValue) -> {
             //     this.statePointer = newValue;
@@ -167,6 +195,7 @@ public class ProofTreeController {
         this.mainScript = mainScript;
 
     }
+
     public Visitor getStateVisitor() {
         return this.stateGraphVisitor;
     }
@@ -202,5 +231,6 @@ public class ProofTreeController {
     public ReadOnlyBooleanProperty executeNotPossibleProperty() {
         return executeNotPossible;
     }
+
 
 }

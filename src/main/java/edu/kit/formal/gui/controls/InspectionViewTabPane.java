@@ -52,6 +52,7 @@ public class InspectionViewTabPane extends TabPane {
         this.getTabs().add(tab);
     }
 
+    //TODO schauen wie Goallist ins model kommt
     public void bindGoalNodesWithCurrentTab(RootModel model) {
         getActiveInspectionViewTab().getGoalView().itemsProperty().bind(model.currentGoalNodesProperty());
         model.currentSelectedGoalNodeProperty().addListener((p, old, fresh) -> {
