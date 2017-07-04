@@ -1,10 +1,13 @@
-package edu.kit.formal.interpreter;
+package edu.kit.formal.interpreter.graphs;
 
 
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
+import edu.kit.formal.interpreter.Interpreter;
+import edu.kit.formal.interpreter.NodeAddedEvent;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
+import edu.kit.formal.interpreter.exceptions.StateGraphException;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 import javafx.application.Platform;
@@ -19,7 +22,7 @@ import java.util.Set;
 
 /**
  * State graph that is computed on the fly while stepping through script
- * A Node in the graph is a PTreeNode {@link edu.kit.formal.interpreter.PTreeNode}
+ * A Node in the graph is a PTreeNode {@link PTreeNode}
  * Edges are computed on the fly while
  */
 public class StateGraphVisitor extends DefaultASTVisitor<Void> {
@@ -85,10 +88,13 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
     public void createRootNode(ASTNode node) {
         PTreeNode newStateNode = new PTreeNode(node);
         newStateNode.setState(currentInterpreter.getCurrentState().copy());
-        stateGraph.addNode(newStateNode);
-        this.root.set(newStateNode);
-        lastNode = newStateNode;
-
+        boolean res = stateGraph.addNode(newStateNode);
+        if (!res) {
+            throw new StateGraphException("Could not create new state for ASTNode " + node + " and add it to the stategraph");
+        } else {
+            this.root.set(newStateNode);
+            lastNode = newStateNode;
+        }
     }
 
     public void setUpGraph() {
@@ -161,8 +167,7 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
      */
     public Void createNewNode(ASTNode node) {
         State<KeyData> lastState = lastNode.getState();
-        //maybe delete
-        //lastNode.setState(currentInterpreter.getCurrentState());
+
         PTreeNode newStateNode;
         newStateNode = new PTreeNode(node);
 
@@ -273,7 +278,7 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
     }
 
 
-    protected void fireNodeAdded(NodeAddedEvent nodeAddedEvent) {
+    private void fireNodeAdded(NodeAddedEvent nodeAddedEvent) {
         changeListeners.forEach(list -> {
             Platform.runLater(() -> {
                 list.graphChanged(nodeAddedEvent);

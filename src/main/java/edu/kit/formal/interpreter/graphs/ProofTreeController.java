@@ -1,6 +1,8 @@
-package edu.kit.formal.interpreter;
+package edu.kit.formal.interpreter.graphs;
 
 import edu.kit.formal.gui.controller.PuppetMaster;
+import edu.kit.formal.interpreter.Interpreter;
+import edu.kit.formal.interpreter.InterpretingService;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
@@ -162,8 +164,7 @@ public class ProofTreeController {
      */
     public PTreeNode stepBack() {
         PTreeNode current = statePointer;
-        PTreeNode backState = stateGraphVisitor.getStepBack(current);
-        this.statePointer = backState;
+        this.statePointer = stateGraphVisitor.getStepBack(current);
         setNewState(statePointer.getState());
         return statePointer;
 

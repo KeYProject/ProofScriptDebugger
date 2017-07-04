@@ -1,5 +1,6 @@
 package edu.kit.formal.interpreter;
 
+import edu.kit.formal.interpreter.graphs.PTreeNode;
 import lombok.Getter;
 
 /**

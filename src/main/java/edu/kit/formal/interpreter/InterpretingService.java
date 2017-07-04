@@ -14,7 +14,7 @@ import javafx.concurrent.Task;
  *
  * @author A. Weigl
  */
-class InterpretingService extends Service<State<KeyData>> {
+public class InterpretingService extends Service<State<KeyData>> {
 
     /**
      * The interpreter (with teh appropriate KeY state) that is used to traverse and execute the script
@@ -31,7 +31,7 @@ class InterpretingService extends Service<State<KeyData>> {
      */
     private PuppetMaster blocker;
 
-    InterpretingService(PuppetMaster blocker) {
+    public InterpretingService(PuppetMaster blocker) {
         this.blocker = blocker;
     }
 

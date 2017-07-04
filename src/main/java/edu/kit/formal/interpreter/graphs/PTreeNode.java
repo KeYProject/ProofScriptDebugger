@@ -1,4 +1,4 @@
-package edu.kit.formal.interpreter;
+package edu.kit.formal.interpreter.graphs;
 
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
@@ -7,7 +7,7 @@ import edu.kit.formal.proofscriptparser.ast.ASTNode;
 import java.util.LinkedList;
 
 /**
- * Inner class representing nodes in the graph
+ * Inner class representing nodes in the stategraph graph
  * A node contains a reference to the ASTNode and a reference to the corresponding interpreter state if this state is already interpreted, null otherwise.
  */
 public class PTreeNode {

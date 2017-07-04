@@ -1,4 +1,4 @@
-package edu.kit.formal.interpreter;
+package edu.kit.formal.interpreter.graphs;
 
 import com.google.common.graph.EndpointPair;
 import com.google.common.graph.MutableValueGraph;

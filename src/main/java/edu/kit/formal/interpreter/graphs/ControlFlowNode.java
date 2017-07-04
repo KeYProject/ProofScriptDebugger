@@ -1,4 +1,4 @@
-package edu.kit.formal.interpreter;
+package edu.kit.formal.interpreter.graphs;
 
 import edu.kit.formal.proofscriptparser.ast.ASTNode;
 
@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * ControlFlowNode for ControlFlowGraph to look up step-edges for teh debugger.
+ * ControlFlowNode for ControlFlowGraph to look up step-edges for the debugger.
  */
 
 public class ControlFlowNode {
@@ -47,7 +47,7 @@ public class ControlFlowNode {
         StringBuilder sb = new StringBuilder();
         sb.append("Node {");
         if (scriptstmt != null) {
-            sb.append(scriptstmt.getNodeName().toString() + "@" + scriptstmt.getStartPosition());
+            sb.append(scriptstmt.getNodeName()).append("@").append(scriptstmt.getStartPosition());
         } else {
             sb.append("No Stmt");
         }
