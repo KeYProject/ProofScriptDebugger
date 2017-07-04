@@ -4,8 +4,6 @@ import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
@@ -52,7 +50,7 @@ public class ListGoalView extends VBox {
     /**
      * Set Bindings and listener
      */
-    public void init() {
+ /*   public void init() {
         listOfGoalsView.itemsProperty().bind(this.rootModel.currentGoalNodesProperty());
 
         listOfGoalsView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<GoalNode<KeyData>>() {
@@ -63,7 +61,7 @@ public class ListGoalView extends VBox {
         });
 
     }
-
+*/
 
     private static class GoalNodeCell extends ListCell<GoalNode<KeyData>> {
 

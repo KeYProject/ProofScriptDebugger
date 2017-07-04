@@ -26,6 +26,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class PuppetMaster {
     private final Lock lock = new ReentrantLock();
     private final Condition block = lock.newCondition();
+    /**
+     * Properties that are changed, when new states are added using the blocker
+     */
     private final SimpleObjectProperty<List<GoalNode<KeyData>>> currentGoals = new SimpleObjectProperty<>();
     private final SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoal = new SimpleObjectProperty<>();
     private Interpreter<KeyData> puppet;
@@ -155,9 +158,9 @@ public class PuppetMaster {
         this.currentGoals.set(currentGoals);
     }
 
-    public SimpleObjectProperty<List<GoalNode<KeyData>>> currentGoalsProperty() {
+  /*  public SimpleObjectProperty<List<GoalNode<KeyData>>> currentGoalsProperty() {
         return currentGoals;
-    }
+    }*/
 
     public Set<Integer> getBreakpoints() {
         return brkpnts;

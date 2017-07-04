@@ -4,10 +4,7 @@ import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.gui.controls.*;
 import edu.kit.formal.gui.model.RootModel;
-import edu.kit.formal.interpreter.Interpreter;
-import edu.kit.formal.interpreter.InterpreterBuilder;
-import edu.kit.formal.interpreter.KeYProofFacade;
-import edu.kit.formal.interpreter.ProofTreeController;
+import edu.kit.formal.interpreter.*;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
@@ -102,8 +99,6 @@ public class DebuggerMainWindowController implements Initializable {
     private File initialDirectory;
 
 
-
-
     /**
      * Controller for debugging functions
      */
@@ -172,10 +167,12 @@ public class DebuggerMainWindowController implements Initializable {
             blocker.getBreakpoints().addAll(change.getSet());
         });*/
 
-        pc.currentGoalsProperty().addListener((o, old, fresh) -> {
+        /*pc.currentGoalsProperty().addListener((o, old, fresh) -> {
             model.currentGoalNodesProperty().setAll(fresh);
         });
-        model.currentSelectedGoalNodeProperty().bind(pc.currentSelectedGoalProperty());
+        model.currentSelectedGoalNodeProperty().bind(pc.currentSelectedGoalProperty());*/
+
+        //model.currentGoalNodesProperty().bind(pc.currentGoalsProperty());
 
         CustomTabPaneSkin skin = new CustomTabPaneSkin(tabPane);
 
@@ -225,6 +222,20 @@ public class DebuggerMainWindowController implements Initializable {
             pc.setCurrentInterpreter(currentInterpreter);
             pc.setMainScript(scripts.get(0));
             pc.executeScript(this.debugMode.get());
+
+            pc.currentGoalsProperty().addListener((o, old, fresh) -> {
+                if (fresh != null) {
+                    model.currentGoalNodesProperty().setAll(fresh);
+                }
+            });
+            model.currentSelectedGoalNodeProperty().bind(pc.currentSelectedGoalProperty());
+
+           /* pc.currentGoalsProperty().addListener((observable, oldValue, newValue) -> {
+                if(newValue != null) {
+                    model.currentGoalNodesProperty().get().
+                            setAll(pc.currentGoalsProperty());
+                }
+            });*/
 
             //highlight signature of main script
             tabPane.getSelectedScriptArea().setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
@@ -376,14 +387,17 @@ public class DebuggerMainWindowController implements Initializable {
     public void stepOver(ActionEvent actionEvent) {
         // blocker.getStepUntilBlock().addAndGet(1);
         // blocker.unlock();
-        pc.stepOver();
+        PTreeNode newState = pc.stepOver();
+        // model.currentGoalNodesProperty().setAll(newState.getState().getGoals());
+        // model.setCurrentSelectedGoalNode(newState.getState().getSelectedGoalNode());
     }
 
     public void stepBack(ActionEvent actionEvent) {
 
-        pc.stepBack();
+        PTreeNode newState = pc.stepBack();
+        // model.currentGoalNodesProperty().setAll(newState.getState().getGoals());
+        // model.setCurrentSelectedGoalNode(newState.getState().getSelectedGoalNode());
     }
-
 
 
     public KeYProofFacade getFacade() {
