@@ -13,12 +13,15 @@ import java.util.*;
 /**
  * Visitor to create ProgramFlowGraph
  */
-public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
+public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
 
     /**
      * Lookup for names of scripts
      */
     private final CommandLookup functionLookup;
+    /**
+     * Mapping of ASTNodes to CFG nodes
+     */
     private Map<ASTNode, ControlFlowNode> mappingOfNodes;
     /**
      * Last visited Node
@@ -30,15 +33,15 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
      */
     private MutableValueGraph<ControlFlowNode, EdgeTypes> graph = ValueGraphBuilder.directed().allowsSelfLoops(true).build();
 
+    /**
+     * Call context
+     */
     private LinkedList<ASTNode> context = new LinkedList<>();
 
-    public ProgramFlowVisitor(CommandLookup functionLookup) {
+
+    public ControlFlowVisitor(CommandLookup functionLookup) {
         this.functionLookup = functionLookup;
         mappingOfNodes = new HashMap<>();
-    }
-
-    public MutableValueGraph<ControlFlowNode, EdgeTypes> getGraph() {
-        return graph;
     }
 
 
@@ -68,9 +71,10 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
     public Void visit(ProofScript proofScript) {
 
         ControlFlowNode scriptNode = new ControlFlowNode(proofScript);
+        context.add(proofScript);
         mappingOfNodes.put(proofScript, scriptNode);
         graph.addNode(scriptNode);
-        System.out.println("\n" + scriptNode + "\n");
+        //System.out.println("\n" + scriptNode + "\n");
         lastNode = scriptNode;
 
         return this.visit(proofScript.getBody());
@@ -82,7 +86,7 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
         ControlFlowNode assignmentNode = new ControlFlowNode(assignment);
         mappingOfNodes.put(assignment, assignmentNode);
         graph.addNode(assignmentNode);
-        System.out.println("\n" + assignmentNode + "\n");
+        //System.out.println("\n" + assignmentNode + "\n");
         lastNode = assignmentNode;
         return null;
     }
@@ -149,7 +153,7 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
         ControlFlowNode currentNode = new ControlFlowNode(foreach);
         mappingOfNodes.put(foreach, currentNode);
         graph.addNode(currentNode);
-        System.out.println("\n" + currentNode + "\n");
+        //System.out.println("\n" + currentNode + "\n");
         graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
         lastNode = currentNode;
@@ -164,7 +168,7 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
         ControlFlowNode currentNode = new ControlFlowNode(theOnly);
         mappingOfNodes.put(theOnly, currentNode);
         graph.addNode(currentNode);
-        System.out.println("\n" + currentNode + "\n");
+        //System.out.println("\n" + currentNode + "\n");
         graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
         lastNode = currentNode;
@@ -180,7 +184,7 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
         ControlFlowNode currentNode = new ControlFlowNode(repeatStatement);
         mappingOfNodes.put(repeatStatement, currentNode);
         graph.addNode(currentNode);
-        System.out.println("\n" + currentNode + "\n");
+        // System.out.println("\n" + currentNode + "\n");
         graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
         lastNode = currentNode;
@@ -195,7 +199,7 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
         ControlFlowNode currentNode = new ControlFlowNode(casesStatement);
         mappingOfNodes.put(casesStatement, currentNode);
         graph.addNode(currentNode);
-        System.out.println("\n" + currentNode + "\n");
+        //System.out.println("\n" + currentNode + "\n");
         graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
         List<CaseStatement> cases = casesStatement.getCases();
@@ -203,7 +207,7 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
             ControlFlowNode caseNode = new ControlFlowNode(aCase);
             mappingOfNodes.put(aCase, caseNode);
             graph.addNode(caseNode);
-            System.out.println("\n" + caseNode + "\n");
+            //System.out.println("\n" + caseNode + "\n");
             graph.putEdgeValue(currentNode, caseNode, EdgeTypes.STEP_OVER); //??is this right?
             graph.putEdgeValue(caseNode, currentNode, EdgeTypes.STEP_BACK);
             lastNode = caseNode;
@@ -240,6 +244,11 @@ public class ProgramFlowVisitor extends DefaultASTVisitor<Void> {
         sb.append("}");
         return sb.toString();
     }
+
+    public MutableValueGraph<ControlFlowNode, EdgeTypes> getGraph() {
+        return graph;
+    }
+
 
 
 }

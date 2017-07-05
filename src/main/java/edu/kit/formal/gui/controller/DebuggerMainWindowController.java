@@ -225,22 +225,24 @@ public class DebuggerMainWindowController implements Initializable {
 
             pc.setCurrentInterpreter(currentInterpreter);
             pc.setMainScript(scripts.get(0));
-            pc.executeScript(this.debugMode.get());
-
             pc.currentGoalsProperty().addListener((o, old, fresh) -> {
                 if (fresh != null) {
                     model.currentGoalNodesProperty().setAll(fresh);
                 }
             });
+            pc.executeScript(this.debugMode.get());
             model.currentSelectedGoalNodeProperty().bind(pc.currentSelectedGoalProperty());
 
-           /* pc.currentGoalsProperty().addListener((observable, oldValue, newValue) -> {
-                if(newValue != null) {
-                    model.currentGoalNodesProperty().get().
-                            setAll(pc.currentGoalsProperty());
+            pc.startHighlightPositionPropertyProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue.getLineNumber() > -1) {
+                    tabPane.getSelectedScriptArea().highlightStmt(newValue.getLineNumber(), "line-highlight-postmortem");
                 }
-            });*/
+                if (oldValue.getLineNumber() > -1) {
+                    tabPane.getSelectedScriptArea().removeHighlightStmt(oldValue.getLineNumber());
+                }
 
+
+            });
             //highlight signature of main script
             tabPane.getSelectedScriptArea().setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
         } catch (RecognitionException e) {
@@ -389,18 +391,12 @@ public class DebuggerMainWindowController implements Initializable {
     }
 
     public void stepOver(ActionEvent actionEvent) {
-        // blocker.getStepUntilBlock().addAndGet(1);
-        // blocker.unlock();
         PTreeNode newState = pc.stepOver();
-        // model.currentGoalNodesProperty().setAll(newState.getState().getGoals());
-        // model.setCurrentSelectedGoalNode(newState.getState().getSelectedGoalNode());
     }
 
     public void stepBack(ActionEvent actionEvent) {
 
         PTreeNode newState = pc.stepBack();
-        // model.currentGoalNodesProperty().setAll(newState.getState().getGoals());
-        // model.setCurrentSelectedGoalNode(newState.getState().getSelectedGoalNode());
     }
 
 
@@ -432,8 +428,9 @@ public class DebuggerMainWindowController implements Initializable {
     }
 
     public void stopDebugMode(ActionEvent actionEvent) {
+
         //linenumberMainscript from model?
-        // tabPane.getActiveScriptAreaTab().getScriptArea().removeHighlightStmt(lineNumberMainScript);
+        //tabPane.getActiveScriptAreaTab().getScriptArea().removeHighlightStmt(lineNumberMainScript);
         //inspectionViewTabPane.getInspectionViewTab.clear();
     }
 

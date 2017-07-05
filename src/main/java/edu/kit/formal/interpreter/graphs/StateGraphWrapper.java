@@ -9,15 +9,13 @@ import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.interpreter.exceptions.StateGraphException;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
+import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -25,7 +23,7 @@ import java.util.Set;
  * A Node in the graph is a PTreeNode {@link PTreeNode}
  * Edges are computed on the fly while
  */
-public class StateGraphVisitor extends DefaultASTVisitor<Void> {
+public class StateGraphWrapper {
 
     /**
      * Listeners getting informed when new node added to state graph
@@ -56,21 +54,28 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
     private PTreeNode lastNode;
 
     /**
+     * Mapping ASTNode to PTreeNode
+     */
+
+    private HashMap<ASTNode, PTreeNode> addedNodes = new LinkedHashMap<>();
+
+    /**
      * Visitor for control flow graph
      */
-    private ProgramFlowVisitor cfgVisitor;
+    private ControlFlowVisitor cfgVisitor;
 
-
+    private Visitor<Void> entryListener = new StateGraphWrapper.EntryListener();
+    private Visitor<Void> exitListener = new StateGraphWrapper.ExitListener();
 
     private ProofScript mainScript;
 
-    public StateGraphVisitor(Interpreter inter, ProofScript mainScript, ProgramFlowVisitor cfgVisitor) {
+    public StateGraphWrapper(Interpreter inter, ProofScript mainScript, ControlFlowVisitor cfgVisitor) {
         stateGraph = ValueGraphBuilder.directed().build();
         this.currentInterpreter = inter;
         this.cfgVisitor = cfgVisitor;
         this.mainScript = mainScript;
 
-        //createRootNode();
+        // createRootNode(null);
 
     }
 
@@ -107,7 +112,12 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
     //careful TODO look for right edges
     //TODO handle endpoint of graph
     public PTreeNode getStepOver(PTreeNode statePointer) {
-
+        /*Set<PTreeNode> pTreeNodesNeigbours = stateGraph.adjacentNodes(statePointer);
+        if(pTreeNodesNeigbours.isEmpty()){
+            return null;
+        }else{
+            pTreeNodesNeigbours.forEach(e-> System.out.println(e.getScriptstmt().getNodeName()+e.getScriptstmt().getStartPosition()));
+        }*/
         if (statePointer == null) {
             return this.rootProperty().get();
         }
@@ -119,6 +129,7 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
             getNodeWithEdgeType(statePointer, EdgeTypes.STATE_FLOW);
             return (PTreeNode) sucs[0];
         }
+        //return statePointer;
 
 
     }
@@ -127,6 +138,7 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
     public PTreeNode getStepBack(PTreeNode statePointer) {
 
         Set<PTreeNode> pred = this.stateGraph.predecessors(statePointer);
+
         if (pred.isEmpty()) {
             return null;
         } else {
@@ -134,6 +146,7 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
             return (PTreeNode) sucs[0];
         }
 
+        //return statePointer;
     }
 
     private PTreeNode getNodeWithEdgeType(PTreeNode source, EdgeTypes type) {
@@ -165,69 +178,45 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
      * @param node
      * @return
      */
-    public Void createNewNode(ASTNode node) {
+    private Void createNewNode(ASTNode node) {
         State<KeyData> lastState = lastNode.getState();
 
         PTreeNode newStateNode;
         newStateNode = new PTreeNode(node);
 
-        State<KeyData> currentState = currentInterpreter.getCurrentState().copy();
-        System.out.println("Equals of states " + currentState.equals(lastState));
-        newStateNode.setState(currentState);
+        //State<KeyData> currentState = currentInterpreter.getCurrentState().copy();
+        //System.out.println("Equals of states " + currentState.equals(lastState));
+        //newStateNode.setState(currentState);
 
         stateGraph.addNode(newStateNode);
         stateGraph.putEdgeValue(lastNode, newStateNode, EdgeTypes.STATE_FLOW);
         fireNodeAdded(new NodeAddedEvent(lastNode, newStateNode));
+        addedNodes.put(node, newStateNode);
         lastNode = newStateNode;
 
         return null;
     }
 
+    public Void addState(ASTNode node) {
+        PTreeNode newStateNode = addedNodes.get(node);
+        State<KeyData> currentState = currentInterpreter.getCurrentState().copy();
 
-    @Override
-    public Void visit(ProofScript proofScript) {
-        if (this.root.get() == null) {
-            createRootNode(proofScript);
-        } else {
-            createNewNode(proofScript);
-        }
+        newStateNode.setState(currentState);
         return null;
     }
 
-    @Override
-    public Void visit(AssignmentStatement assignment) {
-        return createNewNode(assignment);
+    public void install(Interpreter<KeyData> interpreter) {
+        if (currentInterpreter != null) deinstall(interpreter);
+        interpreter.getEntryListeners().add(entryListener);
+        interpreter.getEntryListeners().add(exitListener);
+        currentInterpreter = interpreter;
     }
 
-
-    @Override
-    public Void visit(CasesStatement casesStatement) {
-        return createNewNode(casesStatement);
-    }
-
-    @Override
-    public Void visit(CaseStatement caseStatement) {
-        return createNewNode(caseStatement);
-    }
-
-    @Override
-    public Void visit(CallStatement call) {
-        return createNewNode(call);
-    }
-
-    @Override
-    public Void visit(TheOnlyStatement theOnly) {
-        return createNewNode(theOnly);
-    }
-
-    @Override
-    public Void visit(ForeachStatement foreach) {
-        return createNewNode(foreach);
-    }
-
-    @Override
-    public Void visit(RepeatStatement repeatStatement) {
-        return createNewNode(repeatStatement);
+    public void deinstall(Interpreter<KeyData> interpreter) {
+        if (interpreter != null) {
+            interpreter.getEntryListeners().remove(entryListener);
+            interpreter.getEntryListeners().remove(exitListener);
+        }
     }
 
     public String asdot() {
@@ -256,7 +245,6 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
         return sb.toString();
     }
 
-
     public PTreeNode getRoot() {
         return root.get();
     }
@@ -277,7 +265,6 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
         changeListeners.remove(listener);
     }
 
-
     private void fireNodeAdded(NodeAddedEvent nodeAddedEvent) {
         changeListeners.forEach(list -> {
             Platform.runLater(() -> {
@@ -287,5 +274,94 @@ public class StateGraphVisitor extends DefaultASTVisitor<Void> {
 
     }
 
+    private class EntryListener extends DefaultASTVisitor<Void> {
+        @Override
+        public Void visit(ProofScript proofScript) {
+            if (root.get() == null) {
+                createRootNode(proofScript);
+            } else {
+                createNewNode(proofScript);
+            }
+            return null;
+        }
+
+        @Override
+        public Void visit(AssignmentStatement assignment) {
+            return createNewNode(assignment);
+        }
+
+
+        @Override
+        public Void visit(CasesStatement casesStatement) {
+            return createNewNode(casesStatement);
+        }
+
+        @Override
+        public Void visit(CaseStatement caseStatement) {
+            return createNewNode(caseStatement);
+        }
+
+        @Override
+        public Void visit(CallStatement call) {
+            return createNewNode(call);
+        }
+
+        @Override
+        public Void visit(TheOnlyStatement theOnly) {
+            return createNewNode(theOnly);
+        }
+
+        @Override
+        public Void visit(ForeachStatement foreach) {
+            return createNewNode(foreach);
+        }
+
+        @Override
+        public Void visit(RepeatStatement repeatStatement) {
+            return createNewNode(repeatStatement);
+        }
+    }
+
+    private class ExitListener extends DefaultASTVisitor<Void> {
+        @Override
+        public Void visit(AssignmentStatement assignment) {
+            return addState(assignment);
+        }
+
+        @Override
+        public Void visit(CasesStatement casesStatement) {
+            return addState(casesStatement);
+        }
+
+        @Override
+        public Void visit(CaseStatement caseStatement) {
+            return addState(caseStatement);
+        }
+
+        @Override
+        public Void visit(CallStatement call) {
+            return addState(call);
+        }
+
+        @Override
+        public Void visit(TheOnlyStatement theOnly) {
+            return addState(theOnly);
+        }
+
+        @Override
+        public Void visit(ForeachStatement foreach) {
+            return addState(foreach);
+        }
+
+        @Override
+        public Void visit(RepeatStatement repeatStatement) {
+            return addState(repeatStatement);
+        }
+
+       /* @Override
+        public Void visit(ProofScript proofScript) {
+            return addState(proofScript);
+        }*/
+    }
 
 }

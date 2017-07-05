@@ -6,7 +6,6 @@ import edu.kit.formal.interpreter.InterpretingService;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
-import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.Position;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import javafx.beans.property.ListProperty;
@@ -54,6 +53,7 @@ public class ProofTreeController {
      */
     private SimpleObjectProperty<PTreeNode> nextComputedNode = new SimpleObjectProperty<>();
 
+
     private SimpleObjectProperty<Position> startHighlightPositionProperty = new SimpleObjectProperty<>();
 
     private SimpleObjectProperty<Position> endHighlightPositionProperty = new SimpleObjectProperty<>();
@@ -61,12 +61,12 @@ public class ProofTreeController {
     /**
      * Visitor to retrieve state graph
      */
-    private StateGraphVisitor stateGraphVisitor;
+    private StateGraphWrapper stateGraphWrapper;
     /**
      * Graph that is computed on the fly in order to allow stepping
      */
 
-    private ProgramFlowVisitor controlFlowGraphVisitor;
+    private ControlFlowVisitor controlFlowGraphVisitor;
 
 
     /**
@@ -108,6 +108,7 @@ public class ProofTreeController {
             //update statepointer
             this.statePointer = newValue;
             setNewState(this.statePointer.getState());
+
         });
 
 
@@ -120,7 +121,7 @@ public class ProofTreeController {
      * @param mainScript
      */
     private void buildControlFlowGraph(ProofScript mainScript) {
-        this.controlFlowGraphVisitor = new ProgramFlowVisitor(currentInterpreter.getFunctionLookup());
+        this.controlFlowGraphVisitor = new ControlFlowVisitor(currentInterpreter.getFunctionLookup());
         mainScript.accept(controlFlowGraphVisitor);
         System.out.println("CFG\n" + controlFlowGraphVisitor.asdot());
 
@@ -139,14 +140,17 @@ public class ProofTreeController {
         //if pointer is null, we do not have a root yet
         if (currentPointer == null) {
             //ask for root
-            currentPointer = stateGraphVisitor.rootProperty().get();
+            currentPointer = stateGraphWrapper.rootProperty().get();
             statePointer = currentPointer;
 
         }
-        PTreeNode nextNode = stateGraphVisitor.getStepOver(currentPointer);
+        //get next node
+        PTreeNode nextNode = stateGraphWrapper.getStepOver(currentPointer);
+        //if nextnode is null ask interpreter
         if (nextNode != null) {
             this.statePointer = nextNode;
             setNewState(statePointer.getState());
+            //  setHighlightStmt(this.statePointer.getScriptstmt().getStartPosition(), this.statePointer.getScriptstmt().getStartPosition());
         } else {
             //no next node is present yet
             //let interpreter run for one step and let listener handle updating the statepointer
@@ -164,8 +168,9 @@ public class ProofTreeController {
      */
     public PTreeNode stepBack() {
         PTreeNode current = statePointer;
-        this.statePointer = stateGraphVisitor.getStepBack(current);
+        this.statePointer = stateGraphWrapper.getStepBack(current);
         setNewState(statePointer.getState());
+        //setHighlightStmt(this.statePointer.getScriptstmt().getStartPosition(), this.statePointer.getScriptstmt().getStartPosition());
         return statePointer;
 
     }
@@ -190,12 +195,10 @@ public class ProofTreeController {
             //build CFG
             buildControlFlowGraph(mainScript);
             //build StateGraph
-            this.stateGraphVisitor = new StateGraphVisitor(this.currentInterpreter, this.mainScript, this.controlFlowGraphVisitor);
+            this.stateGraphWrapper = new StateGraphWrapper(currentInterpreter, this.mainScript, this.controlFlowGraphVisitor);
 
-
-            currentInterpreter.getEntryListeners().add(this.stateGraphVisitor);
-            //currentInterpreter.getExitListeners().add(this.stateGraphVisitor);
-            this.stateGraphVisitor.addChangeListener(graphChangedListener);
+            this.stateGraphWrapper.install(currentInterpreter);
+            this.stateGraphWrapper.addChangeListener(graphChangedListener);
             blocker.getStepUntilBlock().set(1);
         }
         interpreterService.interpreterProperty().set(currentInterpreter);
@@ -214,7 +217,22 @@ public class ProofTreeController {
     private void setNewState(State<KeyData> state) {
         this.setCurrentGoals(state.getGoals());
         this.setCurrentSelectedGoal(state.getSelectedGoalNode());
+        setHighlightStmt(this.statePointer.getScriptstmt().getStartPosition(), this.statePointer.getScriptstmt().getStartPosition());
         System.out.println("New State from this command: " + this.statePointer.getScriptstmt().getNodeName() + "@" + this.statePointer.getScriptstmt().getStartPosition());
+    }
+
+    /**
+     * Set Position for highlighting statement
+     *
+     * @param start
+     * @param end
+     */
+    private void setHighlightStmt(Position start, Position end) {
+
+        this.startHighlightPositionProperty.set(start);
+        this.endHighlightPositionProperty.set(end);
+
+
     }
 
     /**************************************************************************************************************
@@ -232,8 +250,8 @@ public class ProofTreeController {
 
     }
 
-    public Visitor getStateVisitor() {
-        return this.stateGraphVisitor;
+    public StateGraphWrapper getStateVisitor() {
+        return this.stateGraphWrapper;
     }
 
     public List<GoalNode<KeyData>> getCurrentGoals() {
@@ -268,6 +286,28 @@ public class ProofTreeController {
         return executeNotPossible;
     }
 
+    public Position getStartHighlightPositionProperty() {
+        return startHighlightPositionProperty.get();
+    }
 
+    public void setStartHighlightPositionProperty(Position startHighlightPositionProperty) {
+        this.startHighlightPositionProperty.set(startHighlightPositionProperty);
+    }
+
+    public SimpleObjectProperty<Position> startHighlightPositionPropertyProperty() {
+        return startHighlightPositionProperty;
+    }
+
+    public Position getEndHighlightPositionProperty() {
+        return endHighlightPositionProperty.get();
+    }
+
+    public void setEndHighlightPositionProperty(Position endHighlightPositionProperty) {
+        this.endHighlightPositionProperty.set(endHighlightPositionProperty);
+    }
+
+    public SimpleObjectProperty<Position> endHighlightPositionPropertyProperty() {
+        return endHighlightPositionProperty;
+    }
 
 }
