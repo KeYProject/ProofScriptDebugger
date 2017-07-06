@@ -2,11 +2,9 @@ package edu.kit.formal.interpreter.funchdl;
 
 import de.uka.ilkd.key.macros.ProofMacro;
 import edu.kit.formal.interpreter.Interpreter;
+import edu.kit.formal.interpreter.data.Value;
 import edu.kit.formal.interpreter.data.VariableAssignment;
-import edu.kit.formal.proofscriptparser.ast.CallStatement;
-import edu.kit.formal.proofscriptparser.ast.Parameters;
-import edu.kit.formal.proofscriptparser.ast.StringLiteral;
-import edu.kit.formal.proofscriptparser.ast.Variable;
+import edu.kit.formal.proofscriptparser.ast.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -36,15 +34,16 @@ public class MacroCommandHandler implements CommandHandler {
                          CallStatement call,
                          VariableAssignment params) {
         //ProofMacro m = macros.get(call.getCommand());
-        macros.forEach((k, v) -> {
-            System.out.println(k);
-        });
         Parameters p = new Parameters();
         p.put(new Variable("#2"), new StringLiteral(call.getCommand()));
         CallStatement macroCall = new CallStatement("macro", p);
         macroCall.setRuleContext(call.getRuleContext());
+        VariableAssignment newParam = new VariableAssignment(null);
+        newParam.declare("#2", Type.STRING);
+        newParam.assign("#2", Value.from(call.getCommand()));
         //macro proofscript command
-        interpreter.getFunctionLookup().callCommand(interpreter, call, params);
+        interpreter.getFunctionLookup().callCommand(interpreter, macroCall, newParam);
+
         //TODO change MacroCommand.Parameters to public
     }
 }

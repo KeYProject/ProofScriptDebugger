@@ -96,7 +96,7 @@ public class InterpreterBuilder {
     }
 
     public InterpreterBuilder macros(Collection<ProofMacro> macros) {
-        macros.forEach(m -> pmh.getMacros().put(m.getName(), m));
+        macros.forEach(m -> pmh.getMacros().put(m.getScriptCommandName(), m));
         return this;
     }
 

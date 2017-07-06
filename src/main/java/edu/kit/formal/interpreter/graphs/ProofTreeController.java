@@ -108,6 +108,7 @@ public class ProofTreeController {
                 this.setCurrentGoals(newValue);
             });
         });
+
         //add listener to nextcomputed node, that is updated whenever a new node is added to the stategraph
         nextComputedNode.addListener((observable, oldValue, newValue) -> {
             //update statepointer

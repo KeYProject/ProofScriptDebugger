@@ -231,8 +231,9 @@ public class DebuggerMainWindowController implements Initializable {
                 }
             });
             pc.executeScript(this.debugMode.get());
-            model.currentSelectedGoalNodeProperty().bind(pc.currentSelectedGoalProperty());
-            model.currentGoalNodesProperty().bind(pc.currentGoalsProperty());
+            pc.currentGoalsProperty().addListener((observable, oldValue, newValue) -> {
+                model.setCurrentGoalNodes(newValue);
+            });
 
             pc.startHighlightPositionPropertyProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue.getLineNumber() > -1) {
