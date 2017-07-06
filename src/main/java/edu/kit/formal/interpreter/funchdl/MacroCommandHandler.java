@@ -36,6 +36,9 @@ public class MacroCommandHandler implements CommandHandler {
                          CallStatement call,
                          VariableAssignment params) {
         //ProofMacro m = macros.get(call.getCommand());
+        macros.forEach((k, v) -> {
+            System.out.println(k);
+        });
         Parameters p = new Parameters();
         p.put(new Variable("#2"), new StringLiteral(call.getCommand()));
         CallStatement macroCall = new CallStatement("macro", p);

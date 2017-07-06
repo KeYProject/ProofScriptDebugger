@@ -39,9 +39,12 @@ public class PuppetMaster {
     private Visitor<Void> exitListener = new ExitListener();
     public PuppetMaster() {
     }
-
     public PuppetMaster(Interpreter<KeyData> inter) {
         install(puppet);
+    }
+
+    public SimpleObjectProperty<List<GoalNode<KeyData>>> currentGoalsProperty() {
+        return currentGoals;
     }
 
     public HistoryListener getHistoryLogger() {

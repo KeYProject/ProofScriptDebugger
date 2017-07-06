@@ -38,6 +38,7 @@ public class InterpretingService extends Service<State<KeyData>> {
 
     @Override
     protected void succeeded() {
+        System.out.println("Finished executing");
         updateView();
     }
 

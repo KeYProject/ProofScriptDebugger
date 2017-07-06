@@ -8,6 +8,7 @@ import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.proofscriptparser.ast.Position;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -102,7 +103,11 @@ public class ProofTreeController {
 
         //get state from blocker, who communicates with interpreter
         this.currentSelectedGoal.bindBidirectional(blocker.currentSelectedGoalProperty());
-
+        blocker.currentGoalsProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                this.setCurrentGoals(newValue);
+            });
+        });
         //add listener to nextcomputed node, that is updated whenever a new node is added to the stategraph
         nextComputedNode.addListener((observable, oldValue, newValue) -> {
             //update statepointer

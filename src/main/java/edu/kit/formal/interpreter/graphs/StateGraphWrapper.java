@@ -5,6 +5,7 @@ import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
 import edu.kit.formal.interpreter.Interpreter;
 import edu.kit.formal.interpreter.NodeAddedEvent;
+import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.interpreter.exceptions.StateGraphException;
@@ -271,6 +272,20 @@ public class StateGraphWrapper {
                 list.graphChanged(nodeAddedEvent);
             });
         });
+
+    }
+
+    public PTreeNode getNode(List<GoalNode<KeyData>> newValue) {
+
+        Iterator<Map.Entry<ASTNode, PTreeNode>> iterator = addedNodes.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<ASTNode, PTreeNode> next = iterator.next();
+            PTreeNode value = next.getValue();
+            if (value.getState().getGoals().equals(newValue)) {
+                return value;
+            }
+        }
+        return null;
 
     }
 
