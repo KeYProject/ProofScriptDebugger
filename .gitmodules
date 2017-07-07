@@ -1,3 +1,6 @@
 [submodule "doc"]
 	path = doc
 	url = git@git.scc.kit.edu:xt9634/ProofScriptParser.wiki.git
+[submodule "lib/DockFX"]
+	path = lib/DockFX
+	url = https://github.com/ClearControl/DockFX.git
