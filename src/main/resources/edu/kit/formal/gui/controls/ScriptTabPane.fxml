@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import edu.kit.formal.gui.controls.ScriptTabPane?>
+<?import edu.kit.formal.gui.controls.ScriptController?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1" prefHeight="100" prefWidth="250" styleClass="tab-pane"
-         type="ScriptTabPane" xmlns="http://javafx.com/javafx/8.0.112">
+         type="ScriptController" xmlns="http://javafx.com/javafx/8.0.112">
     <!--  <VBox> -->
     <!--        <TabPane fx:id="tabPane" side="left"
                      tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS">

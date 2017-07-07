@@ -1,5 +1,7 @@
 package edu.kit.formal.gui.controller;
 
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.gui.controls.*;
@@ -10,16 +12,18 @@ import edu.kit.formal.interpreter.KeYProofFacade;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.graphs.PTreeNode;
 import edu.kit.formal.interpreter.graphs.ProofTreeController;
-import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -28,6 +32,10 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dockfx.DockNode;
+import org.dockfx.DockPane;
+import org.dockfx.DockPos;
+import org.dockfx.demo.DockFX;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,20 +56,23 @@ import java.util.concurrent.Executors;
  */
 public class DebuggerMainWindowController implements Initializable {
     private static final Logger LOGGER = LogManager.getLogger(DebuggerMainWindowController.class);
-
     private SimpleBooleanProperty debugMode = new SimpleBooleanProperty(false);
 
 
     @FXML
     private Pane rootPane;
+
     @FXML
-    private SplitPane splitPane;
+    private DockPane dockStation;
+
+    //@FXML
+    //private SplitPane splitPane;
     /***********************************************************************************************************
      *      Code Area
      * **********************************************************************************************************/
 
-    @FXML
-    private ScriptTabPane tabPane;
+    //@FXML
+    private ScriptController scriptController;
 
     /***********************************************************************************************************
      *      MenuBar
@@ -142,6 +153,12 @@ public class DebuggerMainWindowController implements Initializable {
         alert.showAndWait();
     }
 
+    private ObservableList<ScriptArea> openScripts = FXCollections.observableArrayList();
+    private WelcomePane welcomePane = new WelcomePane();
+    private DockNode welcomePaneDock = new DockNode(welcomePane,"Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
+
+
+
     /**
      * @param location
      * @param resources
@@ -149,8 +166,23 @@ public class DebuggerMainWindowController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setDebugMode(false);
+        scriptController = new ScriptController(dockStation);
 
-        toolbar.getChildrenUnmodifiable().forEach(
+        Image dockImage = new Image(DockFX.class.getResource("docknode.png").toExternalForm());
+        welcomePaneDock.dock(dockStation, DockPos.LEFT);
+
+        /*
+        DockNode scripts = AnchorageSystem.createDock("Scripts", scriptController);
+        DockNode a = AnchorageSystem.createDock("Abc", new ScriptArea());
+        DockNode b = AnchorageSystem.createDock("Def", new ScriptArea());
+
+        scripts.dock(dockStation, DockNode.DockPosition.CENTER);
+        a.dock(dockStation, DockNode.DockPosition.LEFT);
+        b.dock(dockStation, DockNode.DockPosition.LEFT);
+        */
+
+
+/*        toolbar.getChildrenUnmodifiable().forEach(
                 n -> n.setOnMouseEntered(statusBar.getTooltipHandler()));
 
         buttonStartInterpreter.setOnMouseEntered(statusBar.getTooltipHandler());
@@ -162,11 +194,11 @@ public class DebuggerMainWindowController implements Initializable {
         /**
          * create a new inspectionviewtab that is the main tab and not closable
          */
-        inspectionViewTabPane.createNewInspectionViewTab(model, true);
+      //  inspectionViewTabPane.createNewInspectionViewTab(model, true);
 
 
         //TODO this does not work any more
-        /*tabPane.getActiveScriptAreaTab().getScriptArea().getMarkedLines().addListener((SetChangeListener<Integer>) change -> {
+        /*scriptController.getActiveScriptAreaTab().getScriptArea().getMarkedRegions().addListener((SetChangeListener<Integer>) change -> {
             blocker.getBreakpoints().clear();
             blocker.getBreakpoints().addAll(change.getSet());
         });*/
@@ -178,7 +210,7 @@ public class DebuggerMainWindowController implements Initializable {
 
         //model.currentGoalNodesProperty().bind(pc.currentGoalsProperty());
 
-        CustomTabPaneSkin skin = new CustomTabPaneSkin(tabPane);
+        //CustomTabPaneSkin skin = new CustomTabPaneSkin(scriptController);
 
     }
 
@@ -197,7 +229,7 @@ public class DebuggerMainWindowController implements Initializable {
 //        int line = lm.getLine(scriptArea.getCaretPosition());
 //        int inLine = lm.getCharInLine(scriptArea.getCaretPosition());
 //*/
-//        ib.ignoreLinesUntil(tabPane.getSelectedScriptArea().getCaretPosition());
+//        ib.ignoreLinesUntil(scriptController.getSelectedScriptArea().getCaretPosition());
 //        executeScript(ib, true);
     }
 
@@ -217,7 +249,7 @@ public class DebuggerMainWindowController implements Initializable {
         this.debugMode.set(debugMode);
         statusBar.publishMessage("Parse ...");
         try {
-            List<ProofScript> scripts = Facade.getAST(tabPane.getSelectedScriptArea().getText());
+            List<ProofScript> scripts = scriptController.getCombinedAST();
             statusBar.publishMessage("Creating new Interpreter instance ...");
             ib.setScripts(scripts);
 
@@ -235,18 +267,11 @@ public class DebuggerMainWindowController implements Initializable {
                 model.setCurrentGoalNodes(newValue);
             });
 
-            pc.startHighlightPositionPropertyProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue.getLineNumber() > -1) {
-                    tabPane.getSelectedScriptArea().highlightStmt(newValue.getLineNumber(), "line-highlight-postmortem");
-                }
-                if (oldValue.getLineNumber() > -1) {
-                    tabPane.getSelectedScriptArea().removeHighlightStmt(oldValue.getLineNumber());
-                }
-
-
+            pc.currentHighlightNodeProperty().addListener((observable, oldValue, newValue) -> {
+                scriptController.getPostMortemHighlighter().highlight(newValue);
             });
             //highlight signature of main script
-            tabPane.getSelectedScriptArea().setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
+            //scriptController.setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
         } catch (RecognitionException e) {
             showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
@@ -278,7 +303,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     private void saveScript(File scriptFile) {
         try {
-            FileUtils.write(scriptFile, tabPane.getSelectedScriptArea().getText(), Charset.defaultCharset());
+            scriptController.saveCurrentScriptAs(scriptFile);
         } catch (IOException e) {
             showExceptionDialog("Could not save sourceName", "blubb", "...fsfsfsf fsa", e);
         }
@@ -296,7 +321,7 @@ public class DebuggerMainWindowController implements Initializable {
         assert scriptFile != null;
         try {
             String code = FileUtils.readFileToString(scriptFile, Charset.defaultCharset());
-            ScriptArea area = tabPane.createNewTab(scriptFile);
+            ScriptArea area = scriptController.createNewTab(scriptFile);
             openScript(code, area);
             model.setScriptFile(scriptFile);
         } catch (IOException e) {
@@ -432,8 +457,12 @@ public class DebuggerMainWindowController implements Initializable {
     public void stopDebugMode(ActionEvent actionEvent) {
 
         //linenumberMainscript from model?
-        //tabPane.getActiveScriptAreaTab().getScriptArea().removeHighlightStmt(lineNumberMainScript);
+        //scriptController.getActiveScriptAreaTab().getScriptArea().removeHighlightStmt(lineNumberMainScript);
         //inspectionViewTabPane.getInspectionViewTab.clear();
+    }
+
+    public void newScript(ActionEvent actionEvent) {
+        scriptController.newScript();
     }
 
     public class ContractLoaderService extends Service<List<Contract>> {

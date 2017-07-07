@@ -1,6 +1,5 @@
 package edu.kit.formal.gui.controls;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.logic.op.IProgramMethod;
@@ -19,8 +18,8 @@ import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -30,7 +29,7 @@ import java.io.StringWriter;
  *
  * @author S. Grebing
  */
-public class InspectionViewTab extends Tab {
+public class InspectionViewTab extends BorderPane {
     public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
     @FXML
     private SectionPane sectionPaneJavaCode;

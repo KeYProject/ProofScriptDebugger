@@ -14,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dockfx.DockNode;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -33,15 +34,14 @@ public class ProofScriptDebugger extends Application {
     public void start(Stage primaryStage) {
         Locale.setDefault(Locale.ENGLISH);
 
-        
-
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/DebuggerMain.fxml"));
             Parent root = fxmlLoader.load();
             //DebuggerMainWindowController controller = fxmlLoader.<DebuggerMainWindowController>getController();
             Scene scene = new Scene(root);
             scene.getStylesheets().addAll(
-                    getClass().getResource("debugger-ui.css").toExternalForm()
+                    getClass().getResource("debugger-ui.css").toExternalForm(),
+                    DockNode.class.getResource("default.css").toExternalForm()
             );
             primaryStage.setTitle(NAME + " (" + VERSION + ") with KeY:" + KEY_VERSION);
             primaryStage.setScene(scene);
