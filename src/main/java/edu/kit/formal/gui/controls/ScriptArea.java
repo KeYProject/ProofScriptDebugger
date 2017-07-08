@@ -9,11 +9,13 @@ import edu.kit.formal.proofscriptparser.ScriptLanguageLexer;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import edu.kit.formal.proofscriptparser.lint.LintProblem;
 import edu.kit.formal.proofscriptparser.lint.LinterStrategy;
+import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -27,6 +29,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
@@ -52,13 +56,16 @@ import java.util.function.IntFunction;
  */
 public class ScriptArea extends CodeArea {
     private final ObjectProperty<File> filePath = new SimpleObjectProperty<>();
+
+    private final BooleanProperty dirty = new SimpleBooleanProperty(this, "dirty", false);
+
     /**
      * Lines to highlight?
      */
-    private final SetProperty<Integer> markedLines =
+    private final SetProperty<RegionStyle> markedRegions =
             new SimpleSetProperty<>(FXCollections.observableSet());
     /**
-     * set by {@link ScriptTabPane}
+     * set by {@link ScriptController}
      */
     private final ObjectProperty<MainScriptIdentifier> mainScript = new SimpleObjectProperty<>();
 
@@ -82,15 +89,13 @@ public class ScriptArea extends CodeArea {
         //getStylesheets().add(getClass().getResource("script-keywords.css").toExternalForm());
         getStyleClass().add("script-area");
         textProperty().addListener((prop, oldValue, newValue) -> {
-            if (newValue.length() != 0) {
-                clearStyle(0, newValue.length());
-                StyleSpans<? extends Collection<String>> spans = highlighter.highlight(newValue);
-                if (spans != null) setStyleSpans(0, spans);
-            }
+            dirty.set(true);
+            updateMainScriptMarker();
+            updateHighlight();
             highlightProblems();
 
-            updateMainScriptMarker();
-        });
+        markedRegions.addListener((InvalidationListener) o -> updateHighlight());
+
                /* .successionEnds(Duration.ofMillis(100))
                 .hook(collectionRichTextChange -> this.getUndoManager().mark())
                 .supplyTask(this::computeHighlightingAsync).awaitLatest(richChanges())
@@ -119,6 +124,19 @@ public class ScriptArea extends CodeArea {
                 updateMainScriptMarker());
 
         contextMenu = new ScriptAreaContextMenu();
+    }
+
+    private void updateHighlight() {
+        String newValue = getText();
+        if (newValue.length() != 0) {
+            clearStyle(0, newValue.length());
+            StyleSpans<? extends Collection<String>> spans = highlighter.highlight(newValue);
+            if (spans != null) setStyleSpans(0, spans);
+        }
+
+        markedRegions.forEach(reg -> {
+            setStyle(reg.start, reg.stop, Collections.singleton(reg.clazzName));
+        });
     }
 
     private void updateMainScriptMarker() {
@@ -211,52 +229,6 @@ public class ScriptArea extends CodeArea {
         a.setBreakpoint(!a.isBreakpoint());
     }
 
-    /**
-     * Highlight line given by the characterindex
-     *
-     * @param lineNumber
-     */
-    public void highlightStmt(int lineNumber, String cssStyleTag) {
-        //calculate line number from characterindex
-        //int lineNumber = this.offsetToPosition(chrIdx, Bias.Forward).getMajor();
-        Paragraph<Collection<String>, StyledText<Collection<String>>, Collection<String>> paragraph = this.getParagraph(lineNumber);
-        //calculate start and endposition
-        //int startPos = getAbsolutePosition(this.offsetToPosition(chrIdx, Bias.Forward).getMajor(), 0);
-        int startPos = getAbsolutePosition(lineNumber, 0);
-
-        int length = paragraph.length();
-        //highlight line
-
-        this.setStyle(startPos, startPos + length, Collections.singleton(cssStyleTag));
-
-    }
-
-    /**
-     * Remove the highlighting of a statement
-     *
-     * @param lineNumber
-     */
-    public void removeHighlightStmt(int lineNumber) {
-        highlightStmt(lineNumber, "line-unhighlight");
-    }
-
-    /**
-     * Set a mark in the gutter next to the definition of the main script
-     *
-     * @param lineNumberOfSigMainScript
-     */
-    public void setDebugMark(int lineNumberOfSigMainScript) {
-        highlightStmt(lineNumberOfSigMainScript - 1, "line-highlight-mainScript");
-
-    }
-
-    public void removeDebugHighlight() {
-        // removeHighlightStmt(this.getMainScript().getLineNumber());
-    }
-    public void unsetDebugMark(int lineNumberOfSigMainScript) {
-        removeHighlightStmt(lineNumberOfSigMainScript - 1);
-    }
-
     public File getFilePath() {
         return filePath.get();
     }
@@ -315,7 +287,6 @@ public class ScriptArea extends CodeArea {
         });
         d.show((Node) event.getTarget(), event.getScreenX(), event.getScreenY());
     }
-
 
     private static class GutterView extends HBox {
         private final SimpleObjectProperty<GutterAnnotation> annotation = new SimpleObjectProperty<>();
@@ -562,12 +533,45 @@ public class ScriptArea extends CodeArea {
         }
 
         public void showPostMortem(ActionEvent event) {
-            ScriptArea area = ScriptArea.this;
+            //TODO forward to ProofTreeController, it jumps to the node and this should be done via the callbacks.
+
+            /*ScriptArea area = ScriptArea.this;
             int chrIdx = currentMouseOver.get().getCharacterIndex().orElse(0);
             if (chrIdx != 0) {
                 int lineNumber = area.offsetToPosition(chrIdx, Bias.Forward).getMajor();
                 area.highlightStmt(lineNumber, "line-highlight-postmortem");
-            }
+            }*/
         }
+    }
+}
+    public ObservableSet<RegionStyle> getMarkedRegions() {
+        return markedRegions.get();
+    }
+
+    public SetProperty<RegionStyle> markedRegionsProperty() {
+        return markedRegions;
+    }
+
+    public void setMarkedRegions(ObservableSet<RegionStyle> markedRegions) {
+        this.markedRegions.set(markedRegions);
+    }
+
+    public boolean isDirty() {
+        return dirty.get();
+    }
+
+    public BooleanProperty dirtyProperty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty.set(dirty);
+    }
+
+    @RequiredArgsConstructor
+    @Data
+    public static class RegionStyle {
+        public final int start, stop;
+        public final String clazzName;
     }
 }

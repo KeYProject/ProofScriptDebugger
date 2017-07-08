@@ -1,124 +1,130 @@
 package edu.kit.formal.gui.model;
 
 import edu.kit.formal.interpreter.data.GoalNode;
+import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.proofscriptparser.ast.ASTNode;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.collections.ObservableSet;
 import javafx.scene.paint.Color;
-
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Model for the inspection view
  *
  * @author S.Grebing
+ * @author Alexander Weigl
  */
 public class InspectionModel {
-
-    private ASTNode node;
-
-    private SimpleListProperty<GoalNode> currentGoals;
-
-    private SimpleObjectProperty<GoalNode> selectedGoalNodeToShow;
-
-    private Map<GoalNode, Color> colorofEachGoalNodeinListView;
-
-    private boolean showJavaView;
-
-    private String javaString;
-
-    private Set<Integer> highlightedJavaLines;
-
-    private boolean closable;
-
-    private boolean isInterpreterTab;
-
-    public InspectionModel() {
+    enum Mode {
+        LIVING, DEAD, POSTMORTEM,
     }
 
-    /***************************************************************************************************************
-     *   Getter and Setter
-     *
-     ***************************************************************************************************************/
+    private final ObjectProperty<ASTNode> node = new SimpleObjectProperty<>();
+    private final ListProperty<GoalNode<KeyData>> goals = new SimpleListProperty<>();
+    private final ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShow = new SimpleObjectProperty<>();
+    private final MapProperty<GoalNode, Color> colorofEachGoalNodeinListView = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    //private final StringProperty javaString = new SimpleStringProperty();
+    private final SetProperty<Integer> highlightedJavaLines = new SimpleSetProperty<>(FXCollections.observableSet());
+    private final BooleanProperty closable = new SimpleBooleanProperty();
+    private final BooleanProperty isInterpreterTab = new SimpleBooleanProperty();
+    private ObjectProperty<Mode> mode = new SimpleObjectProperty<>();
+
     public ASTNode getNode() {
+        return node.get();
+    }
+
+    public ObjectProperty<ASTNode> nodeProperty() {
         return node;
     }
 
     public void setNode(ASTNode node) {
-        this.node = node;
+        this.node.set(node);
     }
 
-    public ObservableList<GoalNode> getCurrentGoals() {
-        return currentGoals.get();
+    public ObservableList<GoalNode<KeyData>> getGoals() {
+        return goals.get();
     }
 
-    public void setCurrentGoals(ObservableList<GoalNode> currentGoals) {
-        this.currentGoals.set(currentGoals);
+    public ListProperty<GoalNode<KeyData>> goalsProperty() {
+        return goals;
     }
 
-    public SimpleListProperty<GoalNode> currentGoalsProperty() {
-        return currentGoals;
+    public void setGoals(ObservableList<GoalNode<KeyData>> goals) {
+        this.goals.set(goals);
     }
 
     public GoalNode getSelectedGoalNodeToShow() {
         return selectedGoalNodeToShow.get();
     }
 
+    public ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShowProperty() {
+        return selectedGoalNodeToShow;
+    }
+
     public void setSelectedGoalNodeToShow(GoalNode selectedGoalNodeToShow) {
         this.selectedGoalNodeToShow.set(selectedGoalNodeToShow);
     }
 
-    public SimpleObjectProperty<GoalNode> selectedGoalNodeToShowProperty() {
-        return selectedGoalNodeToShow;
+    public ObservableMap<GoalNode, Color> getColorofEachGoalNodeinListView() {
+        return colorofEachGoalNodeinListView.get();
     }
 
-    public Map<GoalNode, Color> getColorofEachGoalNodeinListView() {
+    public MapProperty<GoalNode, Color> colorofEachGoalNodeinListViewProperty() {
         return colorofEachGoalNodeinListView;
     }
 
-    public void setColorofEachGoalNodeinListView(Map<GoalNode, Color> colorofEachGoalNodeinListView) {
-        this.colorofEachGoalNodeinListView = colorofEachGoalNodeinListView;
+    public void setColorofEachGoalNodeinListView(ObservableMap<GoalNode, Color> colorofEachGoalNodeinListView) {
+        this.colorofEachGoalNodeinListView.set(colorofEachGoalNodeinListView);
     }
 
-    public boolean isShowJavaView() {
-        return showJavaView;
+    /*
+        public String getJavaString() {
+            return javaString.get();
+        }
+
+        public StringProperty javaStringProperty() {
+            return javaString;
+        }
+
+        public void setJavaString(String javaString) {
+            this.javaString.set(javaString);
+        }
+    */
+    public ObservableSet<Integer> getHighlightedJavaLines() {
+        return highlightedJavaLines.get();
     }
 
-    public void setShowJavaView(boolean showJavaView) {
-        this.showJavaView = showJavaView;
-    }
-
-    public String getJavaString() {
-        return javaString;
-    }
-
-    public void setJavaString(String javaString) {
-        this.javaString = javaString;
-    }
-
-    public Set<Integer> getHighlightedJavaLines() {
+    public SetProperty<Integer> highlightedJavaLinesProperty() {
         return highlightedJavaLines;
     }
 
-    public void setHighlightedJavaLines(Set<Integer> highlightedJavaLines) {
-        this.highlightedJavaLines = highlightedJavaLines;
+    public void setHighlightedJavaLines(ObservableSet<Integer> highlightedJavaLines) {
+        this.highlightedJavaLines.set(highlightedJavaLines);
     }
 
     public boolean isClosable() {
+        return closable.get();
+    }
+
+    public BooleanProperty closableProperty() {
         return closable;
     }
 
     public void setClosable(boolean closable) {
-        this.closable = closable;
+        this.closable.set(closable);
     }
 
-    public boolean isInterpreterTab() {
+    public boolean isIsInterpreterTab() {
+        return isInterpreterTab.get();
+    }
+
+    public BooleanProperty isInterpreterTabProperty() {
         return isInterpreterTab;
     }
 
-    public void setInterpreterTab(boolean interpreterTab) {
-        isInterpreterTab = interpreterTab;
+    public void setIsInterpreterTab(boolean isInterpreterTab) {
+        this.isInterpreterTab.set(isInterpreterTab);
     }
 }

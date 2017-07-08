@@ -6,13 +6,10 @@ import edu.kit.formal.interpreter.InterpretingService;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
-import edu.kit.formal.proofscriptparser.ast.Position;
+import edu.kit.formal.proofscriptparser.ast.ASTNode;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import javafx.application.Platform;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 
 import java.util.List;
@@ -54,10 +51,11 @@ public class ProofTreeController {
      */
     private SimpleObjectProperty<PTreeNode> nextComputedNode = new SimpleObjectProperty<>();
 
+    /**
+     * Instead of start and end position.
+     */
+    private ObjectProperty<ASTNode> currentHighlightNode = new SimpleObjectProperty<>();
 
-    private SimpleObjectProperty<Position> startHighlightPositionProperty = new SimpleObjectProperty<>();
-
-    private SimpleObjectProperty<Position> endHighlightPositionProperty = new SimpleObjectProperty<>();
 
     /**
      * Visitor to retrieve state graph
@@ -178,6 +176,7 @@ public class ProofTreeController {
 
     /**
      * Step Back one Node in the stategraph
+     *
      * @return
      */
     public PTreeNode stepBack() {
@@ -215,8 +214,8 @@ public class ProofTreeController {
         if (!debugMode) {
             blocker.getStepUntilBlock().set(-1);
         } else {
-            this.startHighlightPositionProperty.set(mainScript.getSignature().getStartPosition());
-            this.endHighlightPositionProperty.set(mainScript.getSignature().getEndPosition());
+            setCurrentHighlightNode(mainScript.getSignature());
+
             //build CFG
             buildControlFlowGraph(mainScript);
             //build StateGraph
@@ -243,22 +242,8 @@ public class ProofTreeController {
     private void setNewState(State<KeyData> state) {
         this.setCurrentGoals(state.getGoals());
         this.setCurrentSelectedGoal(state.getSelectedGoalNode());
-        setHighlightStmt(this.statePointer.getScriptstmt().getStartPosition(), this.statePointer.getScriptstmt().getStartPosition());
+        setCurrentHighlightNode(statePointer.getScriptstmt());
         System.out.println("New State from this command: " + this.statePointer.getScriptstmt().getNodeName() + "@" + this.statePointer.getScriptstmt().getStartPosition());
-    }
-
-    /**
-     * Set Position for highlighting statement
-     *
-     * @param start
-     * @param end
-     */
-    private void setHighlightStmt(Position start, Position end) {
-
-        this.startHighlightPositionProperty.set(start);
-        this.endHighlightPositionProperty.set(end);
-
-
     }
 
     /**************************************************************************************************************
@@ -312,28 +297,15 @@ public class ProofTreeController {
         return executeNotPossible;
     }
 
-    public Position getStartHighlightPositionProperty() {
-        return startHighlightPositionProperty.get();
+    public ASTNode getCurrentHighlightNode() {
+        return currentHighlightNode.get();
     }
 
-    public void setStartHighlightPositionProperty(Position startHighlightPositionProperty) {
-        this.startHighlightPositionProperty.set(startHighlightPositionProperty);
+    public ObjectProperty<ASTNode> currentHighlightNodeProperty() {
+        return currentHighlightNode;
     }
 
-    public SimpleObjectProperty<Position> startHighlightPositionPropertyProperty() {
-        return startHighlightPositionProperty;
+    public void setCurrentHighlightNode(ASTNode currentHighlightNode) {
+        this.currentHighlightNode.set(currentHighlightNode);
     }
-
-    public Position getEndHighlightPositionProperty() {
-        return endHighlightPositionProperty.get();
-    }
-
-    public void setEndHighlightPositionProperty(Position endHighlightPositionProperty) {
-        this.endHighlightPositionProperty.set(endHighlightPositionProperty);
-    }
-
-    public SimpleObjectProperty<Position> endHighlightPositionPropertyProperty() {
-        return endHighlightPositionProperty;
-    }
-
 }
