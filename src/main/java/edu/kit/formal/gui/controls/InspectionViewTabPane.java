@@ -48,6 +48,9 @@ public class InspectionViewTabPane extends TabPane {
             tab.refresh(model);
         });
         bindGoalNodesWithCurrentTab(model);
+        model.javaFileProperty().addListener((observable, oldValue, newValue) -> {
+            tab.setShowCode(true);
+        });
 
         this.getTabs().add(tab);
     }

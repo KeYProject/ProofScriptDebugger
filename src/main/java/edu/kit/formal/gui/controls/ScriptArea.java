@@ -250,6 +250,9 @@ public class ScriptArea extends CodeArea {
 
     }
 
+    public void removeDebugHighlight() {
+        // removeHighlightStmt(this.getMainScript().getLineNumber());
+    }
     public void unsetDebugMark(int lineNumberOfSigMainScript) {
         removeHighlightStmt(lineNumberOfSigMainScript - 1);
     }
@@ -312,6 +315,7 @@ public class ScriptArea extends CodeArea {
         });
         d.show((Node) event.getTarget(), event.getScreenX(), event.getScreenY());
     }
+
 
     private static class GutterView extends HBox {
         private final SimpleObjectProperty<GutterAnnotation> annotation = new SimpleObjectProperty<>();

@@ -99,10 +99,18 @@ public class ProofTreeController {
 
     };
 
+    /**
+     *
+     */
     public ProofTreeController() {
 
         //get state from blocker, who communicates with interpreter
-        this.currentSelectedGoal.bindBidirectional(blocker.currentSelectedGoalProperty());
+        //this.currentSelectedGoal.bindBidirectional(blocker.currentSelectedGoalProperty());
+        blocker.currentSelectedGoalProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                this.setCurrentSelectedGoal(newValue);
+            });
+        });
         blocker.currentGoalsProperty().addListener((observable, oldValue, newValue) -> {
             Platform.runLater(() -> {
                 this.setCurrentGoals(newValue);
@@ -136,7 +144,7 @@ public class ProofTreeController {
     //TODO handle endpoint
 
     /**
-     * StepOver and return the node to shich the state pointer is pointing to
+     * StepOver and return the node to which the state pointer is pointing to
      *
      * @return
      */
@@ -152,7 +160,7 @@ public class ProofTreeController {
         }
         //get next node
         PTreeNode nextNode = stateGraphWrapper.getStepOver(currentPointer);
-        //if nextnode is null ask interpreter
+        //if nextnode is null ask interpreter to execute next statement and compute next state
         if (nextNode != null) {
             this.statePointer = nextNode;
             setNewState(statePointer.getState());
@@ -173,9 +181,15 @@ public class ProofTreeController {
      * @return
      */
     public PTreeNode stepBack() {
-        PTreeNode current = statePointer;
-        this.statePointer = stateGraphWrapper.getStepBack(current);
-        setNewState(statePointer.getState());
+        PTreeNode current = this.statePointer;
+        if (current != null) {
+            this.statePointer = stateGraphWrapper.getStepBack(current);
+            if (this.statePointer != null) {
+                setNewState(statePointer.getState());
+            } else {
+                this.statePointer = current;
+            }
+        }
         //setHighlightStmt(this.statePointer.getScriptstmt().getStartPosition(), this.statePointer.getScriptstmt().getStartPosition());
         return statePointer;
 
@@ -189,7 +203,12 @@ public class ProofTreeController {
         return null;
     }
 
-
+    /**
+     * Execute the script that is identified by the mainscript.
+     * If this method is executed with debug mode true, it executes only statements after invoking the methods stepOver() and stepInto()
+     *
+     * @param debugMode
+     */
     public void executeScript(boolean debugMode) {
         blocker.deinstall();
         blocker.install(currentInterpreter);
@@ -207,9 +226,10 @@ public class ProofTreeController {
             this.stateGraphWrapper.addChangeListener(graphChangedListener);
             blocker.getStepUntilBlock().set(1);
         }
+
+        //create interpreter service and start
         interpreterService.interpreterProperty().set(currentInterpreter);
         interpreterService.mainScriptProperty().set(mainScript);
-
         interpreterService.start();
 
 

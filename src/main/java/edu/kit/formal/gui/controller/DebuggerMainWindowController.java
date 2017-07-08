@@ -225,15 +225,21 @@ public class DebuggerMainWindowController implements Initializable {
 
             pc.setCurrentInterpreter(currentInterpreter);
             pc.setMainScript(scripts.get(0));
+
+            pc.executeScript(this.debugMode.get());
+            //set all listeners
             pc.currentGoalsProperty().addListener((o, old, fresh) -> {
                 if (fresh != null) {
-                    model.currentGoalNodesProperty().setAll(fresh);
+                    model.setCurrentGoalNodes(fresh);
+                    // model.currentGoalNodesProperty().setAll(fresh);
                 }
             });
-            pc.executeScript(this.debugMode.get());
-            pc.currentGoalsProperty().addListener((observable, oldValue, newValue) -> {
-                model.setCurrentGoalNodes(newValue);
+            pc.currentSelectedGoalProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    model.setCurrentSelectedGoalNode(newValue);
+                }
             });
+
 
             pc.startHighlightPositionPropertyProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue.getLineNumber() > -1) {
@@ -430,7 +436,7 @@ public class DebuggerMainWindowController implements Initializable {
     }
 
     public void stopDebugMode(ActionEvent actionEvent) {
-
+        tabPane.getSelectedScriptArea().removeDebugHighlight();
         //linenumberMainscript from model?
         //tabPane.getActiveScriptAreaTab().getScriptArea().removeHighlightStmt(lineNumberMainScript);
         //inspectionViewTabPane.getInspectionViewTab.clear();
