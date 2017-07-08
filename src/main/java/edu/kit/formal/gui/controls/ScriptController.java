@@ -67,8 +67,6 @@ public class ScriptController {
             area.setFilePath(filePath);
             DockNode dockNode = createDockNode(area);
             openScripts.put(area, dockNode);
-            dockNode.dock(parent, DockPos.LEFT);
-
             return area;
         } else {
             logger.info("File already exists. Will not load it again");

@@ -24,30 +24,18 @@
                     </center>
                 </SectionPane>
 
-                <SplitPane fx:id="lowerSplitPane">
-                    <padding>
-                        <Insets top="5" left="5" right="5" bottom="5"/>
-                    </padding>
-                    <items>
-                        <SectionPane title="Sequent">
-                            <headerRight>
-                                <Button>
-                                    <graphic>
-                                        <MaterialDesignIconView glyphName="WRENCH"/>
-                                    </graphic>
-                                </Button>
-                            </headerRight>
-                            <center>
-                                <SequentView fx:id="sequentView"/>
-                            </center>
-                        </SectionPane>
-                        <SectionPane title="Source Code" fx:id="sectionPaneJavaCode">
-                            <center>
-                                <JavaArea fx:id="javaSourceCode"/>
-                            </center>
-                        </SectionPane>
-                    </items>
-                </SplitPane>
+                <SectionPane title="Sequent">
+                    <headerRight>
+                        <Button>
+                            <graphic>
+                                <MaterialDesignIconView glyphName="WRENCH"/>
+                            </graphic>
+                        </Button>
+                    </headerRight>
+                    <center>
+                        <SequentView fx:id="sequentView"/>
+                    </center>
+                </SectionPane>
             </items>
         </SplitPane>
     </center>

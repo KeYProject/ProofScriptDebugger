@@ -27,7 +27,7 @@
                                        tabClosingPolicy="SELECTED_TAB" VBox.vgrow="ALWAYS"/>
                     </children>
                 </VBox>
-                <InspectionViewTabPane fx:id="inspectionViewTabPane"></InspectionViewTabPane>
+                <InspectionViewsController fx:id="inspectionViewsController"></InspectionViewsController>
             </items>
         </SplitPane>-->
     </center>
@@ -54,6 +54,13 @@
                         <Menu text="Edit">
                             <items>
                                 <MenuItem text="Delete"/>
+                            </items>
+                        </Menu>
+                        <Menu text="View">
+                            <items>
+                                <MenuItem onAction="#showCodeDock" text="Show Java Code window"/>
+                                <MenuItem onAction="#showWelcomeDock" text="Show Welcome window"/>
+                                <MenuItem onAction="#showActiveInspector" text="Show Active Inspector window"/>
                             </items>
                         </Menu>
                         <Menu text="Help">

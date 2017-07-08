@@ -15,8 +15,6 @@ import edu.kit.formal.interpreter.graphs.ProofTreeController;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -96,8 +94,17 @@ public class DebuggerMainWindowController implements Initializable {
      *      GoalView
      * **********************************************************************************************************/
 
-    @FXML
-    private InspectionViewTabPane inspectionViewTabPane;
+    private final InspectionViewsController inspectionViewsController = new InspectionViewsController();
+
+    /**
+     *
+     */
+    private JavaArea javaArea = new JavaArea();
+    private DockNode javaAreaDock = new DockNode(javaArea, "Java Source",
+            new MaterialDesignIconView(MaterialDesignIcon.CODEPEN)
+    );
+
+
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
     private KeYProofFacade facade = new KeYProofFacade();
     private ContractLoaderService contractLoaderService = new ContractLoaderService();
@@ -121,6 +128,10 @@ public class DebuggerMainWindowController implements Initializable {
 
     //TODO
     private ObservableBooleanValue executeNotPossible = pc.executeNotPossibleProperty().or(facade.readyToExecuteProperty().not());
+
+    private WelcomePane welcomePane = new WelcomePane(this);
+    private DockNode welcomePaneDock = new DockNode(welcomePane, "Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
+    private DockNode activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
 
 
     public static void showExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
@@ -153,12 +164,6 @@ public class DebuggerMainWindowController implements Initializable {
         alert.showAndWait();
     }
 
-    private ObservableList<ScriptArea> openScripts = FXCollections.observableArrayList();
-    private WelcomePane welcomePane = new WelcomePane();
-    private DockNode welcomePaneDock = new DockNode(welcomePane,"Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
-
-
-
     /**
      * @param location
      * @param resources
@@ -172,20 +177,10 @@ public class DebuggerMainWindowController implements Initializable {
         welcomePaneDock.dock(dockStation, DockPos.LEFT);
 
         /*
-        DockNode scripts = AnchorageSystem.createDock("Scripts", scriptController);
-        DockNode a = AnchorageSystem.createDock("Abc", new ScriptArea());
-        DockNode b = AnchorageSystem.createDock("Def", new ScriptArea());
-
-        scripts.dock(dockStation, DockNode.DockPosition.CENTER);
-        a.dock(dockStation, DockNode.DockPosition.LEFT);
-        b.dock(dockStation, DockNode.DockPosition.LEFT);
-        */
-
-
-/*        toolbar.getChildrenUnmodifiable().forEach(
+        toolbar.getChildrenUnmodifiable().forEach(
                 n -> n.setOnMouseEntered(statusBar.getTooltipHandler()));
-
         buttonStartInterpreter.setOnMouseEntered(statusBar.getTooltipHandler());
+        */
 
         model.scriptFileProperty().addListener((observable, oldValue, newValue) -> {
             statusBar.publishMessage("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
@@ -194,24 +189,15 @@ public class DebuggerMainWindowController implements Initializable {
         /**
          * create a new inspectionviewtab that is the main tab and not closable
          */
-      //  inspectionViewTabPane.createNewInspectionViewTab(model, true);
+        inspectionViewsController.connectActiveView(model);
 
-
-        //TODO this does not work any more
-        /*scriptController.getActiveScriptAreaTab().getScriptArea().getMarkedRegions().addListener((SetChangeListener<Integer>) change -> {
-            blocker.getBreakpoints().clear();
-            blocker.getBreakpoints().addAll(change.getSet());
-        });*/
-
-        /*pc.currentGoalsProperty().addListener((o, old, fresh) -> {
+        /*pc.goalsProperty().addListener((o, old, fresh) -> {
             model.currentGoalNodesProperty().setAll(fresh);
         });
         model.currentSelectedGoalNodeProperty().bind(pc.currentSelectedGoalProperty());*/
 
-        //model.currentGoalNodesProperty().bind(pc.currentGoalsProperty());
-
+        //model.currentGoalNodesProperty().bind(pc.goalsProperty());
         //CustomTabPaneSkin skin = new CustomTabPaneSkin(scriptController);
-
     }
 
     //region Actions: Execution
@@ -330,7 +316,7 @@ public class DebuggerMainWindowController implements Initializable {
         }
     }
 
-    private void openScript(String code, ScriptArea area) {
+    public void openScript(String code, ScriptArea area) {
         model.setScriptFile(null);
         if (!area.textProperty().getValue().isEmpty()) {
             area.deleteText(0, area.textProperty().getValue().length());
@@ -342,8 +328,12 @@ public class DebuggerMainWindowController implements Initializable {
     @FXML
     protected void loadKeYFile() {
         File keyFile = openFileChooserOpenDialog("Select KeY File", "KeY Files", "key", "script");
-        this.model.setKeYFile(keyFile);
+        openKeyFile(keyFile);
+    }
+
+    public void openKeyFile(File keyFile) {
         if (keyFile != null) {
+            this.model.setKeYFile(keyFile);
             Task<Void> task = facade.loadKeyFileTask(keyFile);
             task.setOnSucceeded(event -> {
                 statusBar.publishMessage("Loaded key sourceName: %s", keyFile);
@@ -373,6 +363,10 @@ public class DebuggerMainWindowController implements Initializable {
     @FXML
     protected void loadJavaFile() {
         File javaFile = openFileChooserOpenDialog("Select Java File", "Java Files", "java");
+        openJavaFile(javaFile);
+    }
+
+    public void openJavaFile(File javaFile) {
         if (javaFile != null) {
             model.setJavaFile(javaFile);
             contractLoaderService.start();
@@ -389,7 +383,7 @@ public class DebuggerMainWindowController implements Initializable {
      */
     private File openFileChooserSaveDialog(String title, String description, String... fileEndings) {
         FileChooser fileChooser = getFileChooser(title, description, fileEndings);
-        // File sourceName = fileChooser.showSaveDialog(inspectionViewTabPane.getInspectionViewTab().getGoalView().getScene().getWindow());
+        // File sourceName = fileChooser.showSaveDialog(inspectionViewsController.getInspectionViewTab().getGoalView().getScene().getWindow());
         File file = fileChooser.showOpenDialog(statusBar.getScene().getWindow());
         if (file != null) initialDirectory = file.getParentFile();
         return file;
@@ -397,7 +391,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     private File openFileChooserOpenDialog(String title, String description, String... fileEndings) {
         FileChooser fileChooser = getFileChooser(title, description, fileEndings);
-        //File sourceName = fileChooser.showOpenDialog(inspectionViewTabPane.getInspectionViewTab().getGoalView().getScene().getWindow());
+        //File sourceName = fileChooser.showOpenDialog(inspectionViewsController.getInspectionViewTab().getGoalView().getScene().getWindow());
         File file = fileChooser.showOpenDialog(statusBar.getScene().getWindow());
         if (file != null) initialDirectory = file.getParentFile();
         return file;
@@ -458,11 +452,42 @@ public class DebuggerMainWindowController implements Initializable {
 
         //linenumberMainscript from model?
         //scriptController.getActiveScriptAreaTab().getScriptArea().removeHighlightStmt(lineNumberMainScript);
-        //inspectionViewTabPane.getInspectionViewTab.clear();
+        //inspectionViewsController.getInspectionViewTab.clear();
     }
 
     public void newScript(ActionEvent actionEvent) {
         scriptController.newScript();
+    }
+
+    public void showCodeDock(ActionEvent actionEvent) {
+        if (!javaAreaDock.isDocked()) {
+            javaAreaDock.dock(dockStation, DockPos.RIGHT);
+        }
+    }
+
+    public void showWelcomeDock(ActionEvent actionEvent) {
+        if (!welcomePaneDock.isDocked()) {
+            welcomePaneDock.dock(dockStation, DockPos.CENTER);
+        }
+    }
+
+    public void showActiveInspector(ActionEvent actionEvent) {
+        if (!activeInspectorDock.isDocked() &&
+                !activeInspectorDock.isFloating()) {
+            activeInspectorDock.dock(dockStation, DockPos.CENTER);
+        }
+    }
+
+    public DockNode getJavaAreaDock() {
+        return javaAreaDock;
+    }
+
+    public DockNode getWelcomePaneDock() {
+        return welcomePaneDock;
+    }
+
+    public DockNode getActiveInspectorDock() {
+        return activeInspectorDock;
     }
 
     public class ContractLoaderService extends Service<List<Contract>> {
