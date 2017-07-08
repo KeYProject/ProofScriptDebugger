@@ -24,12 +24,39 @@ public class InspectionModel {
     private final ObjectProperty<ASTNode> node = new SimpleObjectProperty<>();
     private final ListProperty<GoalNode<KeyData>> goals = new SimpleListProperty<>();
     private final ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShow = new SimpleObjectProperty<>();
+    private final ObjectProperty<GoalNode<KeyData>> currentInterpreterGoal = new SimpleObjectProperty<>();
+
     private final MapProperty<GoalNode, Color> colorofEachGoalNodeinListView = new SimpleMapProperty<>(FXCollections.observableHashMap());
     //private final StringProperty javaString = new SimpleStringProperty();
     private final SetProperty<Integer> highlightedJavaLines = new SimpleSetProperty<>(FXCollections.observableSet());
     private final BooleanProperty closable = new SimpleBooleanProperty();
     private final BooleanProperty isInterpreterTab = new SimpleBooleanProperty();
     private ObjectProperty<Mode> mode = new SimpleObjectProperty<>();
+
+
+    public GoalNode<KeyData> getCurrentInterpreterGoal() {
+        return currentInterpreterGoal.get();
+    }
+
+    public ObjectProperty<GoalNode<KeyData>> currentInterpreterGoalProperty() {
+        return currentInterpreterGoal;
+    }
+
+    public void setCurrentInterpreterGoal(GoalNode<KeyData> currentInterpreterGoal) {
+        this.currentInterpreterGoal.set(currentInterpreterGoal);
+    }
+
+    public Mode getMode() {
+        return mode.get();
+    }
+
+    public ObjectProperty<Mode> modeProperty() {
+        return mode;
+    }
+
+    public void setMode(Mode mode) {
+        this.mode.set(mode);
+    }
 
     public ASTNode getNode() {
         return node.get();

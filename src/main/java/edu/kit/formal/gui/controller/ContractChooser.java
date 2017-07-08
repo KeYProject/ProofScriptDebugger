@@ -12,6 +12,7 @@ import javafx.stage.Modality;
 import lombok.Getter;
 
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 /**
  * A Contract Chooser is a modal dialog, which shows a list of contracts and lets the user select one.
@@ -64,6 +65,11 @@ public class ContractChooser extends Dialog<Contract> {
                            SimpleListProperty<Contract> contracts) {
         this(services);
         listOfContractsView.itemsProperty().bind(contracts);
+    }
+
+    public ContractChooser(Services service, List<Contract> contracts) {
+        this(service);
+        listOfContractsView.itemsProperty().get().setAll(contracts);
     }
 
     public MultipleSelectionModel<Contract> getSelectionModel() {

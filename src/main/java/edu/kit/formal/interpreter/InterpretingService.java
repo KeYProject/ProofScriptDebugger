@@ -1,7 +1,7 @@
 package edu.kit.formal.interpreter;
 
-import edu.kit.formal.gui.controller.DebuggerMainWindowController;
 import edu.kit.formal.gui.controller.PuppetMaster;
+import edu.kit.formal.gui.controls.Utils;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
@@ -50,7 +50,7 @@ public class InterpretingService extends Service<State<KeyData>> {
     @Override
     protected void failed() {
         getException().printStackTrace();
-        DebuggerMainWindowController.showExceptionDialog("Execution failed", "", "", getException());
+        Utils.showExceptionDialog("Execution failed", "", "", getException());
         updateView();
     }
 

@@ -11,6 +11,8 @@ import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ import java.util.List;
  * @author S. Grebing
  */
 public class ProofTreeController {
+    private static final Logger LOGGER = LogManager.getLogger(ProofTreeController.class);
 
     /**
      * To control stepping
@@ -240,10 +243,12 @@ public class ProofTreeController {
      * @param state
      */
     private void setNewState(State<KeyData> state) {
-        this.setCurrentGoals(state.getGoals());
-        this.setCurrentSelectedGoal(state.getSelectedGoalNode());
+        setCurrentGoals(state.getGoals());
+        setCurrentSelectedGoal(state.getSelectedGoalNode());
         setCurrentHighlightNode(statePointer.getScriptstmt());
-        System.out.println("New State from this command: " + this.statePointer.getScriptstmt().getNodeName() + "@" + this.statePointer.getScriptstmt().getStartPosition());
+        LOGGER.debug("New State from this command: %s@%s",
+                this.statePointer.getScriptstmt().getNodeName(),
+                this.statePointer.getScriptstmt().getStartPosition());
     }
 
     /**************************************************************************************************************

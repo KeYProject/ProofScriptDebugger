@@ -1,7 +1,6 @@
 package edu.kit.formal.gui.controls;
 
 import edu.kit.formal.gui.model.InspectionModel;
-import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import javafx.beans.Observable;
@@ -20,7 +19,7 @@ import javafx.scene.layout.BorderPane;
  *
  * @author S. Grebing
  */
-public class InspectionViewTab extends BorderPane {
+public class InspectionView extends BorderPane {
     public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
 
     @FXML
@@ -33,8 +32,7 @@ public class InspectionViewTab extends BorderPane {
             new InspectionModel()
     );
 
-    public InspectionViewTab() {
-        super();
+    public InspectionView() {
         Utils.createWithFXML(this);
 
         model.get().selectedGoalNodeToShowProperty().bind(
@@ -83,21 +81,6 @@ public class InspectionViewTab extends BorderPane {
     public void showGoalOptions(MouseEvent actionEvent) {
         Node n = (Node) actionEvent.getTarget();
         goalOptionsMenu.show(n, actionEvent.getScreenX(), actionEvent.getScreenY());
-    }
-
-    public void refresh(RootModel model) {
-     /*   IProgramMethod method = (IProgramMethod) model.getChosenContract().getTarget();
-        StringWriter writer = new StringWriter();
-        ProgramPrinter pp = new ProgramPrinter(writer);
-        try {
-            pp.printFullMethodSignature(method);
-            pp.printStatementBlock(method.getBody());
-            writer.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
-
     }
 
     /**

@@ -8,6 +8,7 @@ package edu.kit.formal.gui;
 
 import de.uka.ilkd.key.util.KeYConstants;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -39,6 +40,7 @@ public class ProofScriptDebugger extends Application {
             Parent root = fxmlLoader.load();
             //DebuggerMainWindowController controller = fxmlLoader.<DebuggerMainWindowController>getController();
             Scene scene = new Scene(root);
+            primaryStage.setOnCloseRequest(event -> Platform.exit());
             scene.getStylesheets().addAll(
                     getClass().getResource("debugger-ui.css").toExternalForm(),
                     DockNode.class.getResource("default.css").toExternalForm()
@@ -55,10 +57,14 @@ public class ProofScriptDebugger extends Application {
             logger.info("KeY Internal: " + KeYConstants.INTERNAL_VERSION);
             //logger.error("sfklsajflksajfsdajfsdalfjsdaf", new IllegalAccessError("dlfsdalfjsadflj"));
 
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
-
+    @Override
+    public void stop() throws Exception {
+        System.exit(0);//needed, else non-termination of process
     }
 }

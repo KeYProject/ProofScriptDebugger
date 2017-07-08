@@ -1,9 +1,9 @@
 package edu.kit.formal.gui.controls;
 
 import edu.kit.formal.gui.controller.DebuggerMainWindowController;
+import javafx.event.ActionEvent;
 import javafx.scene.layout.AnchorPane;
 
-import java.awt.event.ActionEvent;
 import java.io.File;
 
 /**
@@ -17,7 +17,7 @@ public class WelcomePane extends AnchorPane {
         Utils.createWithFXML(this);
     }
 
-    public void loadContraPosition(javafx.event.ActionEvent event) {
+    public void loadContraPosition(ActionEvent event) {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
         proofScriptDebugger.openScript(
@@ -27,5 +27,16 @@ public class WelcomePane extends AnchorPane {
         proofScriptDebugger.openKeyFile(
                 new File("src/test/resources/edu/kit/formal/interpreter/contraposition/contraposition.key"));
 
+    }
+
+    public void loadJavaTest(ActionEvent event) {
+        proofScriptDebugger.getWelcomePaneDock().close();
+        proofScriptDebugger.showActiveInspector(null);
+        proofScriptDebugger.openScript(
+                new File("src/test/resources/edu/kit/formal/interpreter/dbg.kps")
+        );
+
+        proofScriptDebugger.openJavaFile(
+                new File("src/test/resources/edu/kit/formal/interpreter/javaExample/TwoWaySwap.java"));
     }
 }

@@ -1,13 +1,17 @@
 package edu.kit.formal.gui.controls;
 
-import edu.kit.formal.gui.model.RootModel;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import org.dockfx.DockNode;
 
 /**
- * TabPane on the right side of the GUI containing the inspection view as tabs
+ * This controller manages a list of {@link InspectionView} and the associated {@link DockNode}s.
+ *
+ * Espeically, this class holds the active tab, which is connected with the {@link edu.kit.formal.interpreter.graphs.ProofTreeController},
+ * and shows the current interpreter state.
+ *
+ * @author weigl
  */
 public class InspectionViewsController {
 
@@ -16,23 +20,31 @@ public class InspectionViewsController {
      * This tab can be changed and later on in this tab it should be possible to select proof commands
      * All other tabs are only post morten tabs which cannot be shown
      */
-    private final InspectionViewTab activeInterpreterTab = new InspectionViewTab();
+    private final InspectionView activeInterpreterTab = new InspectionView();
     private final DockNode activeInterpreterTabDock = new DockNode(activeInterpreterTab, "Active");
+    private final ObservableMap<InspectionView, DockNode> inspectionViews = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
-    private final ObservableMap<InspectionViewTab, DockNode> inspectionViews = new SimpleMapProperty<>(FXCollections.observableHashMap());
-
-    public InspectionViewTab getActiveInspectionViewTab() {
+    public InspectionView getActiveInspectionViewTab() {
         return this.activeInterpreterTab;
     }
+
     public DockNode getActiveInterpreterTabDock() {
         return activeInterpreterTabDock;
     }
 
-    public void connectActiveView(RootModel model) {
+
+    public DockNode newPostMortemInspector() {
+        InspectionView iv = new InspectionView();
+        DockNode dn = new DockNode(iv, "post mortem: ");
+        inspectionViews.put(iv, dn);
+        return dn;
+    }
+
+    /*public void connectActiveView(DebuggerModel model) {
         getActiveInspectionViewTab().getGoalView().itemsProperty().bind(model.currentGoalNodesProperty());
         model.currentSelectedGoalNodeProperty().addListener((p, old, fresh) -> {
             getActiveInspectionViewTab().getGoalView().getSelectionModel().select(fresh);
         });
 
-    }
+    }*/
 }

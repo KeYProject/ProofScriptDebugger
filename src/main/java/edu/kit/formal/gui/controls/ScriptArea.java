@@ -34,6 +34,8 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CharacterHit;
 import org.fxmisc.richtext.CodeArea;
@@ -49,19 +51,26 @@ import java.util.*;
 import java.util.function.IntFunction;
 
 /**
- * ScriptArea is the textarea on the left side of the GUI.
+ * ScriptArea is the {@link CodeArea} for writing Proof Scripts.
+ * <p>
  * It displays the script code and allows highlighting of lines and setting of breakpoints
  */
 public class ScriptArea extends CodeArea {
-    private final ObjectProperty<File> filePath = new SimpleObjectProperty<>();
+    private static final Logger LOGGER = LogManager.getLogger(ScriptArea.class);
+    /**
+     * Underlying filepath, should not be null
+     */
+    private final ObjectProperty<File> filePath = new SimpleObjectProperty<>(new File(Utils.getRandomName()));
 
+    /**
+     * If true, the content was changed since last save.
+     */
     private final BooleanProperty dirty = new SimpleBooleanProperty(this, "dirty", false);
 
     /**
-     * Lines to highlight?
+     * CSS classes for regions, used for "manually" highlightning. e.g. debugging marker
      */
-    private final SetProperty<RegionStyle> markedRegions =
-            new SimpleSetProperty<>(FXCollections.observableSet());
+    private final SetProperty<RegionStyle> markedRegions = new SimpleSetProperty<>(FXCollections.observableSet());
     /**
      * set by {@link ScriptController}
      */
@@ -71,7 +80,7 @@ public class ScriptArea extends CodeArea {
     private ANTLR4LexerHighlighter highlighter;
     private ListProperty<LintProblem> problems = new SimpleListProperty<>(FXCollections.observableArrayList());
     private SimpleObjectProperty<CharacterHit> currentMouseOver = new SimpleObjectProperty<>();
-    private ScriptAreaContextMenu contextMenu;
+    private ScriptAreaContextMenu contextMenu = new ScriptAreaContextMenu();
 
 
     public ScriptArea() {
@@ -84,8 +93,11 @@ public class ScriptArea extends CodeArea {
         highlighter = new ANTLR4LexerHighlighter(
                 (String val) -> new ScriptLanguageLexer(CharStreams.fromString(val)));
         this.setParagraphGraphicFactory(gutter);
-        //getStylesheets().add(getClass().getResource("script-keywords.css").toExternalForm());
         getStyleClass().add("script-area");
+        installPopup();
+
+        setOnMouseClicked(this::showContextMenu);
+
         textProperty().addListener((prop, oldValue, newValue) -> {
             dirty.set(true);
             updateMainScriptMarker();
@@ -105,8 +117,6 @@ public class ScriptArea extends CodeArea {
                         return Optional.empty();
                     }
                 }).subscribe(s -> setStyleSpans(0, s));*/
-        getStyleClass().add("script-area");
-        installPopup();
 
 
         this.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
@@ -118,10 +128,20 @@ public class ScriptArea extends CodeArea {
             this.moveTo(characterPosition, NavigationActions.SelectionPolicy.CLEAR);
         });
 
-        mainScript.addListener((observable) ->
-                updateMainScriptMarker());
+        mainScript.addListener((observable) -> updateMainScriptMarker());
+    }
 
-        contextMenu = new ScriptAreaContextMenu();
+    public void showContextMenu(MouseEvent mouseEvent) {
+        if (contextMenu.isShowing())
+            contextMenu.hide();
+
+        if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+            contextMenu.setAutoHide(true);
+            contextMenu.show(this, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+            mouseEvent.consume();
+        } else {
+
+        }
     }
 
     private void updateHighlight() {
@@ -517,7 +537,7 @@ public class ScriptArea extends CodeArea {
         }
 
         public void setMainScript(ActionEvent event) {
-            System.out.println("ScriptAreaContextMenu.setMainScript");
+            LOGGER.debug("ScriptAreaContextMenu.setMainScript");
             List<ProofScript> ast = Facade.getAST(getText());
             int pos = currentMouseOver.get().getInsertionIndex();
             ast.stream().filter(ps ->
@@ -531,6 +551,10 @@ public class ScriptArea extends CodeArea {
         }
 
         public void showPostMortem(ActionEvent event) {
+            LOGGER.debug("ScriptAreaContextMenu.showPostMortem " + event);
+
+
+
             //TODO forward to ProofTreeController, it jumps to the node and this should be done via the callbacks.
 
             /*ScriptArea area = ScriptArea.this;
