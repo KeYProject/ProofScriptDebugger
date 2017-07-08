@@ -39,9 +39,7 @@ import org.fxmisc.richtext.CharacterHit;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.MouseOverTextEvent;
 import org.fxmisc.richtext.model.NavigationActions;
-import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyledText;
 import org.reactfx.collection.LiveList;
 import org.reactfx.value.Val;
 
@@ -93,7 +91,7 @@ public class ScriptArea extends CodeArea {
             updateMainScriptMarker();
             updateHighlight();
             highlightProblems();
-
+        });
         markedRegions.addListener((InvalidationListener) o -> updateHighlight());
 
                /* .successionEnds(Duration.ofMillis(100))
@@ -543,7 +541,7 @@ public class ScriptArea extends CodeArea {
             }*/
         }
     }
-}
+
     public ObservableSet<RegionStyle> getMarkedRegions() {
         return markedRegions.get();
     }

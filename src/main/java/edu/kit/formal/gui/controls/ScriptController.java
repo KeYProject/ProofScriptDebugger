@@ -238,7 +238,7 @@ public class ScriptController {
         return area;
     }
 
-    public ASTNodeHighlighter getPostMortemHighlighter() {
+    public ASTNodeHighlighter getDebugPositionHighlighter() {
         return postMortemHighlighter;
     }
 

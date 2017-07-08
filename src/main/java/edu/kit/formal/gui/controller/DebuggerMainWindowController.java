@@ -12,7 +12,6 @@ import edu.kit.formal.interpreter.KeYProofFacade;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.graphs.PTreeNode;
 import edu.kit.formal.interpreter.graphs.ProofTreeController;
-import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -65,13 +64,6 @@ public class DebuggerMainWindowController implements Initializable {
     @FXML
     private DockPane dockStation;
 
-    //@FXML
-    //private SplitPane splitPane;
-    /***********************************************************************************************************
-     *      Code Area
-     * **********************************************************************************************************/
-
-    //@FXML
     private ScriptController scriptController;
 
     /***********************************************************************************************************
@@ -205,12 +197,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     //region Actions: Execution
     @FXML
-    public void executeScript() {.
-
-Bitte ändere nichts am Stepping (also die beiden Graphenerstellungen
-etc.) und an der Labelsache, da ich hier das selber machen möchte.
-
-
+    public void executeScript() {
         executeScript(facade.buildInterpreter(), false);
     }
 
@@ -267,7 +254,7 @@ etc.) und an der Labelsache, da ich hier das selber machen möchte.
             });
 
             pc.currentHighlightNodeProperty().addListener((observable, oldValue, newValue) -> {
-                scriptController.getPostMortemHighlighter().highlight(newValue);
+                scriptController.getDebugPositionHighlighter().highlight(newValue);
             });
             //highlight signature of main script
             //scriptController.setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
@@ -462,7 +449,7 @@ etc.) und an der Labelsache, da ich hier das selber machen möchte.
     }
 
     public void stopDebugMode(ActionEvent actionEvent) {
-        tabPane.getSelectedScriptArea().removeDebugHighlight();
+        scriptController.getDebugPositionHighlighter().remove();
         //linenumberMainscript from model?
         //scriptController.getActiveScriptAreaTab().getScriptArea().removeHighlightStmt(lineNumberMainScript);
         //inspectionViewsController.getInspectionViewTab.clear();
