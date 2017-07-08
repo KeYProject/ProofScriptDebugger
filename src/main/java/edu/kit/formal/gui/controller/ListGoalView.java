@@ -1,5 +1,6 @@
 package edu.kit.formal.gui.controller;
 
+import edu.kit.formal.gui.controls.Utils;
 import edu.kit.formal.gui.model.RootModel;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
@@ -26,20 +27,8 @@ public class ListGoalView extends VBox {
     private RootModel rootModel;
 
     public ListGoalView() {
-
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/GoalView.fxml"));
-        fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this);
-
-        try {
-            fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-
+        Utils.createWithFXML(this);
         listOfGoalsView.setCellFactory(list -> new GoalNodeCell());
-
     }
 
 
