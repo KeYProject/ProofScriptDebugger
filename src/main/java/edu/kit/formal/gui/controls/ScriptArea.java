@@ -48,6 +48,7 @@ import org.reactfx.value.Val;
 import java.io.File;
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
 /**
@@ -56,11 +57,13 @@ import java.util.function.IntFunction;
  * It displays the script code and allows highlighting of lines and setting of breakpoints
  */
 public class ScriptArea extends CodeArea {
-    private static final Logger LOGGER = LogManager.getLogger(ScriptArea.class);
+    public static final Logger LOGGER = LogManager.getLogger(ScriptArea.class);
+    public static final String EXECUTION_MARKER = "\u2316";
+
     /**
      * Underlying filepath, should not be null
      */
-    private final ObjectProperty<File> filePath = new SimpleObjectProperty<>(new File(Utils.getRandomName()));
+    private final ObjectProperty<File> filePath = new SimpleObjectProperty<>(this, "filePath", new File(Utils.getRandomName()));
 
     /**
      * If true, the content was changed since last save.
@@ -71,6 +74,7 @@ public class ScriptArea extends CodeArea {
      * CSS classes for regions, used for "manually" highlightning. e.g. debugging marker
      */
     private final SetProperty<RegionStyle> markedRegions = new SimpleSetProperty<>(FXCollections.observableSet());
+
     /**
      * set by {@link ScriptController}
      */
@@ -82,6 +86,9 @@ public class ScriptArea extends CodeArea {
     private SimpleObjectProperty<CharacterHit> currentMouseOver = new SimpleObjectProperty<>();
     private ScriptAreaContextMenu contextMenu = new ScriptAreaContextMenu();
 
+    private Consumer<Token> onPostMortem = token -> {
+    };
+    private int getTextWithoutMarker;
 
     public ScriptArea() {
         init();
@@ -96,14 +103,17 @@ public class ScriptArea extends CodeArea {
         getStyleClass().add("script-area");
         installPopup();
 
-        setOnMouseClicked(this::showContextMenu);
+        // setOnMouseClicked(this::showContextMenu);
+        setContextMenu(contextMenu);
 
         textProperty().addListener((prop, oldValue, newValue) -> {
             dirty.set(true);
             updateMainScriptMarker();
             updateHighlight();
             highlightProblems();
+            highlightNonExecutionArea();
         });
+
         markedRegions.addListener((InvalidationListener) o -> updateHighlight());
 
                /* .successionEnds(Duration.ofMillis(100))
@@ -118,7 +128,6 @@ public class ScriptArea extends CodeArea {
                     }
                 }).subscribe(s -> setStyleSpans(0, s));*/
 
-
         this.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent e) -> {
             CharacterHit hit = this.hit(e.getX(), e.getY());
             currentMouseOver.set(this.hit(e.getX(), e.getY()));
@@ -129,6 +138,16 @@ public class ScriptArea extends CodeArea {
         });
 
         mainScript.addListener((observable) -> updateMainScriptMarker());
+    }
+
+    private void highlightNonExecutionArea() {
+        if (hasExecutionMarker()) {
+            setStyle(0, getExecutionMarkerPosition(), Collections.singleton("NON_EXE_AREA"));
+        }
+    }
+
+    private boolean hasExecutionMarker() {
+        return getText().contains(EXECUTION_MARKER);
     }
 
     public void showContextMenu(MouseEvent mouseEvent) {
@@ -160,7 +179,8 @@ public class ScriptArea extends CodeArea {
     private void updateMainScriptMarker() {
         try {
             MainScriptIdentifier ms = mainScript.get();
-            System.out.println("ScriptArea.updateMainScriptMarker");
+            LOGGER.debug("ScriptArea.updateMainScriptMarker");
+
             if (ms != null && filePath.get().getAbsolutePath().equals(ms.getSourceName())) {
                 System.out.println(ms);
                 CharStream stream = CharStreams.fromString(getText(), filePath.get().getAbsolutePath());
@@ -239,6 +259,7 @@ public class ScriptArea extends CodeArea {
     }
 
     public void setText(String text) {
+        clear();
         insertText(0, text);
     }
 
@@ -304,6 +325,57 @@ public class ScriptArea extends CodeArea {
             }
         });
         d.show((Node) event.getTarget(), event.getScreenX(), event.getScreenY());
+    }
+
+    public Consumer<Token> getOnPostMortem() {
+        return onPostMortem;
+    }
+
+    public void setOnPostMortem(Consumer<Token> onPostMortem) {
+        this.onPostMortem = onPostMortem;
+    }
+
+    public ObservableSet<RegionStyle> getMarkedRegions() {
+        return markedRegions.get();
+    }
+
+    public void setMarkedRegions(ObservableSet<RegionStyle> markedRegions) {
+        this.markedRegions.set(markedRegions);
+    }
+
+    public SetProperty<RegionStyle> markedRegionsProperty() {
+        return markedRegions;
+    }
+
+    public boolean isDirty() {
+        return dirty.get();
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty.set(dirty);
+    }
+
+    public BooleanProperty dirtyProperty() {
+        return dirty;
+    }
+
+
+    public void removeExecutionMarker() {
+        setText(getTextWithoutMarker());
+    }
+
+    private String getTextWithoutMarker() {
+        return getText().replace("" + EXECUTION_MARKER, "");
+    }
+
+    public void insertExecutionMarker(int pos) {
+        LOGGER.debug("ScriptArea.insertExecutionMarker");
+        String text = getText();
+        setText(text.substring(0, pos) + EXECUTION_MARKER + text.substring(pos));
+    }
+
+    public int getExecutionMarkerPosition() {
+        return getText().lastIndexOf(EXECUTION_MARKER);
     }
 
     private static class GutterView extends HBox {
@@ -463,6 +535,13 @@ public class ScriptArea extends CodeArea {
         }
     }
 
+    @RequiredArgsConstructor
+    @Data
+    public static class RegionStyle {
+        public final int start, stop;
+        public final String clazzName;
+    }
+
     public class GutterFactory implements IntFunction<Node> {
         private final Background defaultBackground =
                 new Background(new BackgroundFill(Color.web("#ddd"), null, null));
@@ -553,7 +632,9 @@ public class ScriptArea extends CodeArea {
         public void showPostMortem(ActionEvent event) {
             LOGGER.debug("ScriptAreaContextMenu.showPostMortem " + event);
 
-
+            CharacterHit pos = currentMouseOver.get();
+            Token node = Utils.findToken(getText(), pos.getInsertionIndex());
+            onPostMortem.accept(node);
 
             //TODO forward to ProofTreeController, it jumps to the node and this should be done via the callbacks.
 
@@ -564,36 +645,12 @@ public class ScriptArea extends CodeArea {
                 area.highlightStmt(lineNumber, "line-highlight-postmortem");
             }*/
         }
-    }
 
-    public ObservableSet<RegionStyle> getMarkedRegions() {
-        return markedRegions.get();
-    }
-
-    public SetProperty<RegionStyle> markedRegionsProperty() {
-        return markedRegions;
-    }
-
-    public void setMarkedRegions(ObservableSet<RegionStyle> markedRegions) {
-        this.markedRegions.set(markedRegions);
-    }
-
-    public boolean isDirty() {
-        return dirty.get();
-    }
-
-    public BooleanProperty dirtyProperty() {
-        return dirty;
-    }
-
-    public void setDirty(boolean dirty) {
-        this.dirty.set(dirty);
-    }
-
-    @RequiredArgsConstructor
-    @Data
-    public static class RegionStyle {
-        public final int start, stop;
-        public final String clazzName;
+        public void setExecutionMarker(ActionEvent event) {
+            LOGGER.debug("ScriptAreaContextMenu.setExecutionMarker");
+            int pos = getCaretPosition();
+            removeExecutionMarker();
+            insertExecutionMarker(pos);
+        }
     }
 }

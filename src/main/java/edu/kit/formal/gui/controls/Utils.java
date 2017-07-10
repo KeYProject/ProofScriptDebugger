@@ -3,6 +3,7 @@ package edu.kit.formal.gui.controls;
 import de.uka.ilkd.key.logic.op.IProgramMethod;
 import de.uka.ilkd.key.pp.ProgramPrinter;
 import de.uka.ilkd.key.speclang.Contract;
+import edu.kit.formal.proofscriptparser.ScriptLanguageLexer;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -12,6 +13,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -191,5 +194,19 @@ public class Utils {
     public static void addDebugListener(ObservableValue<?> o, String id) {
         o.addListener((ChangeListener<Object>) (observable, oldValue, newValue) ->
                 logger.debug("Observable {} changed from {} to {}", id, oldValue, newValue));
+    }
+
+    public static Token findToken(String text, int insertionIndex) {
+        ScriptLanguageLexer lexer = new ScriptLanguageLexer(CharStreams.fromString(text));
+        for (Token t : lexer.getAllTokens()) {
+            if (t.getType() == ScriptLanguageLexer.WS
+                    || t.getType() == ScriptLanguageLexer.MULTI_LINE_COMMENT
+                    || t.getType() == ScriptLanguageLexer.SINGLE_LINE_COMMENT)
+                continue;
+
+            if (t.getStopIndex() >= insertionIndex)
+                return t;
+        }
+        return null;
     }
 }
