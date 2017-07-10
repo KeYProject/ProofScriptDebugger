@@ -22,6 +22,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -114,6 +115,8 @@ public class ScriptArea extends CodeArea {
             highlightNonExecutionArea();
         });
 
+
+
         markedRegions.addListener((InvalidationListener) o -> updateHighlight());
 
                /* .successionEnds(Duration.ofMillis(100))
@@ -138,11 +141,17 @@ public class ScriptArea extends CodeArea {
         });
 
         mainScript.addListener((observable) -> updateMainScriptMarker());
+
+
+
     }
 
     private void highlightNonExecutionArea() {
         if (hasExecutionMarker()) {
-            setStyle(0, getExecutionMarkerPosition(), Collections.singleton("NON_EXE_AREA"));
+            getStyleSpans(0, getExecutionMarkerPosition()).forEach(span -> {
+                span.getStyle().add("NON_EXE_AREA");
+            });
+            //setStyle(0, getExecutionMarkerPosition(), Collections.singleton("NON_EXE_AREA"));
         }
     }
 
@@ -172,7 +181,9 @@ public class ScriptArea extends CodeArea {
         }
 
         markedRegions.forEach(reg -> {
-            setStyle(reg.start, reg.stop, Collections.singleton(reg.clazzName));
+            Collection<String> list = new HashSet<>();
+            list.add(reg.clazzName);
+            setStyle(reg.start, reg.stop, list);
         });
     }
 
@@ -237,8 +248,10 @@ public class ScriptArea extends CodeArea {
             problems.setAll(ls.check(Facade.getAST(CharStreams.fromString(getText()))));
             for (LintProblem p : problems) {
                 for (Token tok : p.getMarkTokens()) {
+                    Set<String> problem = new HashSet<>();
+                    problem.add("problem");
                     setStyle(tok.getStartIndex(),
-                            tok.getStopIndex() + 1, Collections.singleton("problem"));
+                            tok.getStopIndex() + 1, problem);
                 }
             }
         } catch (Exception e) {
@@ -300,8 +313,11 @@ public class ScriptArea extends CodeArea {
         return list;
     }
 
-    private void showBreakPointMenu(MouseEvent event, int line) {
+    private void showBreakPointMenu(ContextMenuEvent event, int line) {
+        event.consume();
+
         PopOver d = new PopOver();
+        d.setStyle("-fx-font-family:sans-serif; -fx-font-size:9pt");
         //d.initStyle(StageStyle.UNDECORATED);
         // d.setX(event.getScreenX());
         //d.setY(event.getScreenY());
@@ -527,6 +543,7 @@ public class ScriptArea extends CodeArea {
 
         public BreakpointDialog() {
             Utils.createWithFXML(this);
+            getStyleClass().add("breakpoint-menu");
         }
 
         public void save(ActionEvent e) {
@@ -579,10 +596,13 @@ public class ScriptArea extends CodeArea {
             GutterView hbox = new GutterView(model);
             model.textProperty().bind(formatted);
 
+            hbox.setOnContextMenuRequested(mevent ->
+                    showBreakPointMenu(mevent, idx)
+            );
+
             hbox.setOnMouseClicked((mevent) -> {
-                if (mevent.getButton() == MouseButton.SECONDARY)
-                    showBreakPointMenu(mevent, idx);
-                else
+                mevent.consume();
+                if (mevent.getButton() == MouseButton.PRIMARY)
                     toggleBreakpoint(idx);
             });
 

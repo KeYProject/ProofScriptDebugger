@@ -4,6 +4,7 @@
 <?import de.jensd.fx.glyphs.materialdesignicons.*?>
 <?import edu.kit.formal.gui.controls.DebuggerStatusBar?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.dockfx.DockPane?>
@@ -38,17 +39,16 @@
                     <menus>
                         <Menu fx:id="fileMenu" text="File">
                             <items>
-                                <MenuItem fx:id="newScriptMenuItem" onAction="#newScript" text="New Script"/>
-
-                                <MenuItem fx:id="openScriptFileMenuItem" onAction="#openScript" text="Open Script"/>
+                                <MenuItem fx:id="newScriptMenuItem" onAction="#newScript" text="_New Script" accelerator="Shortcut+n"/>
+                                <MenuItem fx:id="openScriptFileMenuItem" onAction="#openScript" text="_Open Script" accelerator="Shortcut+o"/>
                                 <SeparatorMenuItem/>
-                                <MenuItem fx:id="loadKeYFileMenuItem" onAction="#loadKeYFile" text="Load KeY File"/>
-                                <MenuItem fx:id="loadJavaFileMenuItem" onAction="#loadJavaFile" text="Load Java File"/>
+                                <MenuItem fx:id="loadKeYFileMenuItem" onAction="#loadKeYFile" text="Load _KeY File" accelerator="Shortcut+Alt+o"/>
+                                <MenuItem fx:id="loadJavaFileMenuItem" onAction="#loadJavaFile" text="Load _Java File" accelerator="Shortcut+Shift+o"/>
                                 <SeparatorMenuItem/>
-                                <MenuItem onAction="#saveScript" text="Save Script"/>
-                                <MenuItem onAction="#saveAsScript" text="Save Script As ..."/>
-                                <MenuItem onAction="#saveProof" text="Save Proof"/>
-                                <MenuItem fx:id="closeMenuItem" onAction="#closeProgram" text="Close"/>
+                                <MenuItem onAction="#saveScript" text="_Save Script" accelerator="Shortcut+s"/>
+                                <MenuItem onAction="#saveAsScript" text="Save Script _As ..." accelerator="Shortcut+Shift+s"/>
+                                <MenuItem onAction="#saveProof" text="_Save Proof" accelerator="Shortcut+Alt+s"/>
+                                <MenuItem fx:id="closeMenuItem" onAction="#closeProgram" text="_Close" accelerator="Shortcut+q"/>
                             </items>
                         </Menu>
                         <Menu text="Edit">

@@ -5,10 +5,7 @@ import org.antlr.v4.runtime.Token;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -33,7 +30,8 @@ public class ANTLR4LexerHighlighter {
 
             tokens.forEach(token -> {
                 String clazz = lexer.getVocabulary().getSymbolicName(token.getType());
-                Set<String> clazzes = Collections.singleton(clazz);
+                Set<String> clazzes = new HashSet<>();
+                clazzes.add(clazz);
                 //System.out.format("%25s %s%n", clazz, token.getText());
                 spansBuilder.add(
                         clazzes,
