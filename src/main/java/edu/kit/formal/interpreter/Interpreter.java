@@ -36,6 +36,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
                     .put(Type.TERM, VariableAssignments.VarType.FORMULA) //TODO: parametrisierte Terms
                     .put(Type.INT, VariableAssignments.VarType.INT)
                     .put(Type.STRING, VariableAssignments.VarType.OBJECT)
+                    .put(Type.INT_ARRAY, VariableAssignments.VarType.INT_ARRAY)
                     .build();
     private static Logger logger = Logger.getLogger("interpreter");
     //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
