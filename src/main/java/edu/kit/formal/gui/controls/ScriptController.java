@@ -89,7 +89,7 @@ public class ScriptController {
 
     private DockNode createDockNode(ScriptArea area) {
         DockNode dockNode = new DockNode(area, area.getFilePath().getName(), new MaterialDesignIconView(MaterialDesignIcon.FILE_DOCUMENT));
-        dockNode.closedProperty().addListener(o -> {
+        dockNode.closableProperty().addListener(o -> {
             openScripts.remove(area);
         });
         area.filePathProperty().addListener((observable, oldValue, newValue) -> dockNode.setTitle(newValue.getName()));

@@ -34,6 +34,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
     @Override
     public List<VariableAssignment> matchLabel(GoalNode<KeyData> currentState,
                                                String label) {
+
         return null;
     }
 

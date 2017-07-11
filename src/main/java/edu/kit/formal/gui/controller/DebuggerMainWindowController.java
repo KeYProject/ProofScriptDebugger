@@ -4,6 +4,7 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.speclang.Contract;
+import edu.kit.formal.gui.ProofScriptDebugger;
 import edu.kit.formal.gui.controls.*;
 import edu.kit.formal.gui.model.InspectionModel;
 import edu.kit.formal.interpreter.Interpreter;
@@ -23,6 +24,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.io.FileUtils;
@@ -49,14 +52,24 @@ import java.util.concurrent.Executors;
  */
 public class DebuggerMainWindowController implements Initializable {
     protected static final Logger LOGGER = LogManager.getLogger(DebuggerMainWindowController.class);
-
-    private ScriptController scriptController;
     private final ProofTreeController proofTreeController = new ProofTreeController();
     private final InspectionViewsController inspectionViewsController = new InspectionViewsController();
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
     private final KeYProofFacade facade = new KeYProofFacade();
     private final ContractLoaderService contractLoaderService = new ContractLoaderService();
-
+    /**
+     * Property: current loaded javaFile
+     */
+    private final ObjectProperty<File> javaFile = new SimpleObjectProperty<>(this, "javaFile");
+    /**
+     * Property: current loaded KeY File
+     */
+    private final ObjectProperty<File> keyFile = new SimpleObjectProperty<>(this, "keyFile");
+    /**
+     * Chosen contract for problem
+     */
+    private final ObjectProperty<Contract> chosenContract = new SimpleObjectProperty<>(this, "chosenContract");
+    private ScriptController scriptController;
     @FXML
     private DebuggerStatusBar statusBar;
     @FXML
@@ -65,27 +78,12 @@ public class DebuggerMainWindowController implements Initializable {
     private DockNode javaAreaDock = new DockNode(javaArea, "Java Source",
             new MaterialDesignIconView(MaterialDesignIcon.CODEPEN)
     );
-    private WelcomePane welcomePane = new WelcomePane(this);
-    private DockNode welcomePaneDock = new DockNode(welcomePane, "Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
-    private DockNode activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
 
 
     //-----------------------------------------------------------------------------------------------------------------
-    /**
-     * Property: current loaded javaFile
-     */
-    private final ObjectProperty<File> javaFile = new SimpleObjectProperty<>(this, "javaFile");
-
-    /**
-     * Property: current loaded KeY File
-     */
-    private final ObjectProperty<File> keyFile = new SimpleObjectProperty<>(this, "keyFile");
-
-    /**
-     * Chosen contract for problem
-     */
-    private final ObjectProperty<Contract> chosenContract = new SimpleObjectProperty<>(this, "chosenContract");
-
+    private WelcomePane welcomePane = new WelcomePane(this);
+    private DockNode welcomePaneDock = new DockNode(welcomePane, "Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
+    private DockNode activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
     private BooleanProperty debugMode = new SimpleBooleanProperty(this, "debugMode", false);
 
     /**
@@ -118,16 +116,7 @@ public class DebuggerMainWindowController implements Initializable {
         marriageProofTreeControllerWithActiveInspectionView();
         //statusBar.publishMessage("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
 
-        javaCode.addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                try {
-                    javaArea.setText(newValue);
-                } catch (Exception e) {
-                    LOGGER.catching(e);
-                }
-            }
-        });
+
 
         //Debugging
         Utils.addDebugListener(javaCode);
@@ -158,6 +147,26 @@ public class DebuggerMainWindowController implements Initializable {
             scriptController.getDebugPositionHighlighter().highlight(newValue);
         });
 
+        javaFileProperty().addListener((observable, oldValue, newValue) -> {
+            showCodeDock(null);
+            try {
+                String code = FileUtils.readFileToString(newValue, Charset.defaultCharset());
+                javaCode.set(code);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        javaCode.addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                try {
+                    javaArea.setText(newValue);
+                } catch (Exception e) {
+                    LOGGER.catching(e);
+                }
+            }
+        });
         Utils.addDebugListener(proofTreeController.currentGoalsProperty());
         Utils.addDebugListener(proofTreeController.currentSelectedGoalProperty());
         Utils.addDebugListener(proofTreeController.currentHighlightNodeProperty());
@@ -322,6 +331,10 @@ public class DebuggerMainWindowController implements Initializable {
         }
     }
 
+    public void openJavaFile() {
+        loadJavaFile();
+        showCodeDock(null);
+    }
     /**
      * Creates a filechooser dialog
      *
@@ -440,35 +453,17 @@ public class DebuggerMainWindowController implements Initializable {
         return activeInspectorDock;
     }
 
-    public class ContractLoaderService extends Service<List<Contract>> {
-        @Override
-        protected Task<List<Contract>> createTask() {
-            return facade.getContractsForJavaFileTask(getJavaFile());
-        }
+    public void showHelpText() {
 
-        @Override
-        protected void failed() {
-            Utils.showExceptionDialog("", "", "", exceptionProperty().get());
-        }
+        WebView browser = new WebView();
+        WebEngine webEngine = browser.getEngine();
+        String url = ProofScriptDebugger.class.getResource("intro.html").toExternalForm();
+        webEngine.load(url);
+        DockNode dn = new DockNode(browser);
 
-        @Override
-        protected void succeeded() {
-            statusBar.publishMessage("Contract loaded");
-            List<Contract> contracts = getValue();
-            ContractChooser cc = new ContractChooser(facade.getService(), contracts);
+        this.dockStation.getChildren().add(dn);
 
-            cc.showAndWait().ifPresent(result -> {
-                setChosenContract(result);
-                try {
-                    facade.activateContract(result);
-                    getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(facade.getPseudoGoals());
-                } catch (ProofInputException e) {
-                    Utils.showExceptionDialog("", "", "", e);
-                }
-            });
-        }
     }
-
 
     public ScriptController getScriptController() {
         return scriptController;
@@ -510,12 +505,20 @@ public class DebuggerMainWindowController implements Initializable {
         return javaFile.get();
     }
 
+    public void setJavaFile(File javaFile) {
+        this.javaFile.set(javaFile);
+    }
+
     public ObjectProperty<File> javaFileProperty() {
         return javaFile;
     }
 
     public File getKeyFile() {
         return keyFile.get();
+    }
+
+    public void setKeyFile(File keyFile) {
+        this.keyFile.set(keyFile);
     }
 
     public ObjectProperty<File> keyFileProperty() {
@@ -526,32 +529,53 @@ public class DebuggerMainWindowController implements Initializable {
         return chosenContract.get();
     }
 
-    public ObjectProperty<Contract> chosenContractProperty() {
-        return chosenContract;
-    }
-
-    public void setJavaFile(File javaFile) {
-        this.javaFile.set(javaFile);
-    }
-
-    public void setKeyFile(File keyFile) {
-        this.keyFile.set(keyFile);
-    }
-
     public void setChosenContract(Contract chosenContract) {
         this.chosenContract.set(chosenContract);
+    }
+
+    public ObjectProperty<Contract> chosenContractProperty() {
+        return chosenContract;
     }
 
     public File getInitialDirectory() {
         return initialDirectory.get();
     }
 
+    public void setInitialDirectory(File initialDirectory) {
+        this.initialDirectory.set(initialDirectory);
+    }
+
     public ObjectProperty<File> initialDirectoryProperty() {
         return initialDirectory;
     }
 
-    public void setInitialDirectory(File initialDirectory) {
-        this.initialDirectory.set(initialDirectory);
+    public class ContractLoaderService extends Service<List<Contract>> {
+        @Override
+        protected Task<List<Contract>> createTask() {
+            return facade.getContractsForJavaFileTask(getJavaFile());
+        }
+
+        @Override
+        protected void failed() {
+            Utils.showExceptionDialog("", "", "", exceptionProperty().get());
+        }
+
+        @Override
+        protected void succeeded() {
+            statusBar.publishMessage("Contract loaded");
+            List<Contract> contracts = getValue();
+            ContractChooser cc = new ContractChooser(facade.getService(), contracts);
+
+            cc.showAndWait().ifPresent(result -> {
+                setChosenContract(result);
+                try {
+                    facade.activateContract(result);
+                    getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(facade.getPseudoGoals());
+                } catch (ProofInputException e) {
+                    Utils.showExceptionDialog("", "", "", e);
+                }
+            });
+        }
     }
 
     //endregion
