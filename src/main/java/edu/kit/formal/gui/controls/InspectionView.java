@@ -43,7 +43,7 @@ public class InspectionView extends BorderPane {
                 (observable, oldValue, newValue) -> {
                     goalView.getSelectionModel().select(newValue);
                     if (newValue != null && newValue.getData() != null) {
-                        getSequentView().setNode(newValue.getData().getNode());
+                        getSequentView().setNode(newValue.getData().getGoal());
                         // TODO weigl: get marked lines of the program, and set it
                         model.get().highlightedJavaLinesProperty().get()
                                 .clear();

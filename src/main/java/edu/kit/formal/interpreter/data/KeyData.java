@@ -1,6 +1,7 @@
 package edu.kit.formal.interpreter.data;
 
 import de.uka.ilkd.key.control.KeYEnvironment;
+import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import lombok.*;
@@ -18,7 +19,6 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class KeyData {
     private static final String SEPARATOR = " // ";
-    private final Node node;
     private final KeYEnvironment env;
     private final Proof proof;
 
@@ -27,13 +27,28 @@ public class KeyData {
             programLinesLabel,
             programStatementsLabel,
             nameLabel;
+    private Goal goal;
 
-    public KeyData(KeyData data, Node node) {
+    public KeyData(KeyData data, Goal node) {
         env = data.env;
         //proofApi = data.proofApi;
         //scriptApi = data.scriptApi;
         this.proof = data.proof;
-        this.node = node;
+        this.goal = node;
+    }
+
+    public KeyData(Goal g, KeYEnvironment environment, Proof proof) {
+        goal = g;
+        env = environment;
+        this.proof = proof;
+    }
+
+    public KeyData(Node root, KeYEnvironment environment, Proof proof) {
+        this(proof.getGoal(root), environment, proof);
+    }
+
+    public KeyData(KeyData kd, Node node) {
+        this(kd, kd.getProof().getGoal(node));
     }
 
     public String getRuleLabel() {
@@ -45,10 +60,10 @@ public class KeyData {
 
     private String constructLabel(Function<Node, String> projection) {
         StringBuilder sb = new StringBuilder();
-        Node cur = node;
+        Node cur = getNode();
         do {
             try {
-                String section = projection.apply(node);
+                String section = projection.apply(getNode());
                 if (section != null) {
                     sb.append(section);
                     sb.append(SEPARATOR);
@@ -93,4 +108,11 @@ public class KeyData {
     }
 
 
+    public Goal getGoal() {
+        return goal;
+    }
+
+    public Node getNode() {
+        return getGoal().node();
+    }
 }

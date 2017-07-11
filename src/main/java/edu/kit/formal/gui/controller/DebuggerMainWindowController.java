@@ -55,8 +55,8 @@ public class DebuggerMainWindowController implements Initializable {
     private final ProofTreeController proofTreeController = new ProofTreeController();
     private final InspectionViewsController inspectionViewsController = new InspectionViewsController();
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
-    private final KeYProofFacade facade = new KeYProofFacade();
-    private final ContractLoaderService contractLoaderService = new ContractLoaderService();
+    public static final KeYProofFacade FACADE = new KeYProofFacade();
+    public final ContractLoaderService contractLoaderService = new ContractLoaderService();
     /**
      * Property: current loaded javaFile
      */
@@ -89,7 +89,7 @@ public class DebuggerMainWindowController implements Initializable {
     /**
      * True, iff the execution is not possible
      */
-    private ObservableBooleanValue executeNotPossible = proofTreeController.executeNotPossibleProperty().or(facade.readyToExecuteProperty().not());
+    private ObservableBooleanValue executeNotPossible = proofTreeController.executeNotPossibleProperty().or(FACADE.readyToExecuteProperty().not());
 
     /**
      *
@@ -115,7 +115,6 @@ public class DebuggerMainWindowController implements Initializable {
         registerToolbarToStatusBar();
         marriageProofTreeControllerWithActiveInspectionView();
         //statusBar.publishMessage("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
-
 
 
         //Debugging
@@ -186,12 +185,12 @@ public class DebuggerMainWindowController implements Initializable {
     //region Actions: Execution
     @FXML
     public void executeScript() {
-        executeScript(facade.buildInterpreter(), false);
+        executeScript(FACADE.buildInterpreter(), false);
     }
 
     @FXML
     public void executeScriptFromCursor() {
-        InterpreterBuilder ib = facade.buildInterpreter();
+        InterpreterBuilder ib = FACADE.buildInterpreter();
 //        ib.inheritState(interpreterService.interpreterProperty().get());
 ///*
 //        LineMapping lm = new LineMapping(scriptArea.getText());
@@ -204,7 +203,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     @FXML
     public void executeInDebugMode() {
-        executeScript(facade.buildInterpreter(), true);
+        executeScript(FACADE.buildInterpreter(), true);
     }
     //endregion
 
@@ -271,7 +270,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     public void openScript(File scriptFile) {
         assert scriptFile != null;
-        setInitialDirectory(scriptFile.getParentFile() );
+        setInitialDirectory(scriptFile.getParentFile());
         try {
             String code = FileUtils.readFileToString(scriptFile, Charset.defaultCharset());
             ScriptArea area = scriptController.createNewTab(scriptFile);
@@ -291,10 +290,10 @@ public class DebuggerMainWindowController implements Initializable {
         if (keyFile != null) {
             setKeyFile(keyFile);
             setInitialDirectory(keyFile.getParentFile());
-            Task<Void> task = facade.loadKeyFileTask(keyFile);
+            Task<Void> task = FACADE.loadKeyFileTask(keyFile);
             task.setOnSucceeded(event -> {
                 statusBar.publishMessage("Loaded key sourceName: %s", keyFile);
-                getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(facade.getPseudoGoals());
+                getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(FACADE.getPseudoGoals());
             });
 
             task.setOnFailed(event -> {
@@ -335,6 +334,7 @@ public class DebuggerMainWindowController implements Initializable {
         loadJavaFile();
         showCodeDock(null);
     }
+
     /**
      * Creates a filechooser dialog
      *
@@ -385,7 +385,7 @@ public class DebuggerMainWindowController implements Initializable {
 
 
     public KeYProofFacade getFacade() {
-        return facade;
+        return FACADE;
     }
 
     //region Property
@@ -552,7 +552,7 @@ public class DebuggerMainWindowController implements Initializable {
     public class ContractLoaderService extends Service<List<Contract>> {
         @Override
         protected Task<List<Contract>> createTask() {
-            return facade.getContractsForJavaFileTask(getJavaFile());
+            return FACADE.getContractsForJavaFileTask(getJavaFile());
         }
 
         @Override
@@ -564,13 +564,13 @@ public class DebuggerMainWindowController implements Initializable {
         protected void succeeded() {
             statusBar.publishMessage("Contract loaded");
             List<Contract> contracts = getValue();
-            ContractChooser cc = new ContractChooser(facade.getService(), contracts);
+            ContractChooser cc = new ContractChooser(FACADE.getService(), contracts);
 
             cc.showAndWait().ifPresent(result -> {
                 setChosenContract(result);
                 try {
-                    facade.activateContract(result);
-                    getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(facade.getPseudoGoals());
+                    FACADE.activateContract(result);
+                    getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(FACADE.getPseudoGoals());
                 } catch (ProofInputException e) {
                     Utils.showExceptionDialog("", "", "", e);
                 }

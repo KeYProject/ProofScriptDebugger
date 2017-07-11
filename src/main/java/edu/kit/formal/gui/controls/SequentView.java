@@ -4,10 +4,12 @@ import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.NamespaceSet;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.pp.*;
-import de.uka.ilkd.key.proof.Node;
+import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
+import edu.kit.formal.interpreter.KeYProofFacade;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -26,7 +28,9 @@ public class SequentView extends CodeArea {
     private LogicPrinter lp;
     private IdentitySequentPrintFilter filter;
     private LogicPrinter.PosTableStringBackend backend;
-    private SimpleObjectProperty<de.uka.ilkd.key.proof.Node> node = new SimpleObjectProperty<>();
+    private SimpleObjectProperty<de.uka.ilkd.key.proof.Goal> node = new SimpleObjectProperty<>();
+    private KeYProofFacade keYProofFacade;
+    private TacletContextMenu menu;
 
 
     public SequentView() {
@@ -34,11 +38,11 @@ public class SequentView extends CodeArea {
         setEditable(false);
         node.addListener(this::update);
         setOnMouseMoved(this::hightlight);
+        setOnMouseClicked(this::onMouseClick);
     }
 
     private void hightlight(MouseEvent mouseEvent) {
         if (backend == null) return;
-
         CharacterHit hit = hit(mouseEvent.getX(), mouseEvent.getY());
         int insertionPoint = hit.getInsertionIndex();
         PosInSequent pis = backend.getInitialPositionTable().getPosInSequent(insertionPoint, filter);
@@ -51,14 +55,26 @@ public class SequentView extends CodeArea {
         mouseEvent.consume();
     }
 
-    public void mouseClick(MouseEvent e) {
+    public void onMouseClick(MouseEvent e) {
+        if (menu != null && menu.isShowing()) {
+            menu.hide();
+        }
+
         if (backend == null) {
             return;
         }
-        CharacterHit hit = hit(e.getX(), e.getY());
-        int insertionPoint = hit.getInsertionIndex();
-        PosInSequent pis = backend.getInitialPositionTable().getPosInSequent(insertionPoint, filter);
+        if (e.getButton() == MouseButton.SECONDARY) {
+            CharacterHit hit = hit(e.getX(), e.getY());
+            int insertionPoint = hit.getInsertionIndex();
+            PosInSequent pis = backend.getInitialPositionTable().getPosInSequent(insertionPoint, filter);
+            if (pis == null) return;
 
+            menu = new TacletContextMenu(keYProofFacade, pis, node.get());
+            menu.setAutoFix(true);
+            menu.setAutoHide(true);
+            menu.show(this, e.getScreenX(), e.getScreenY());
+            e.consume();
+        }
 /*
         Goal g = new Goal(node, null);
         ImmutableList<NoPosTacletApp> rules = g.ruleAppIndex().getFindTaclet(new TacletFilter() {
@@ -109,21 +125,29 @@ public class SequentView extends CodeArea {
 
         clear();
         insertText(0, backend.getString());
-        if (node.get().isClosed()) {
+        if (node.get().node().isClosed()) {
             this.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
             this.getStyleClass().add("closed-sequent-view");
         }
     }
 
-    public Node getNode() {
+    public Goal getNode() {
         return node.get();
     }
 
-    public void setNode(Node node) {
+    public SimpleObjectProperty<Goal> nodeProperty() {
+        return node;
+    }
+
+    public void setNode(Goal node) {
         this.node.set(node);
     }
 
-    public SimpleObjectProperty<Node> nodeProperty() {
-        return node;
+    public KeYProofFacade getKeYProofFacade() {
+        return keYProofFacade;
+    }
+
+    public void setKeYProofFacade(KeYProofFacade keYProofFacade) {
+        this.keYProofFacade = keYProofFacade;
     }
 }

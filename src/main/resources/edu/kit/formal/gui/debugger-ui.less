@@ -118,14 +118,6 @@
 
 /**********************************************************************************************************************/
 
-
-.context-menu {
-  -fx-skin: "com.sun.javafx.scene.control.skin.ContextMenuSkin";
-  -fx-font-family: sans-serif;
-  -fx-font-size: 9pt;
-}
-
-
 .breakpoint-menu {
   -fx-skin: "com.sun.javafx.scene.control.skin.ContextMenuSkin";
   -fx-font-family: sans-serif;
@@ -223,11 +215,12 @@
 
 .sequent-view {
   -fx-font-size: 14pt;
-  -fx-background-color: @base01;
+  -fx-background-color: @base2;
+  -fx-fill: black;
 
   .sequent-highlight {
-    -rtfx-background-color: @base1;
-    -fx-fill: @violet
+    -rtfx-background-color: @base0;
+    -fx-fill: black;
   }
 }
 
@@ -287,4 +280,11 @@
   &.POSTMORTEM {
     -fx-background-color: blueviolet;
   }
+}
+/**********************************************************************************************************************/
+
+.context-menu {
+  -fx-skin: "com.sun.javafx.scene.control.skin.ContextMenuSkin";
+  -fx-font-family: sans-serif;
+  -fx-font-size: 9pt;
 }

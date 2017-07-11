@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.Random;
 
 /**
@@ -121,9 +122,12 @@ public class Utils {
     }
 
     public static void createWithFXML(Object node) {
-        FXMLLoader loader = new FXMLLoader(
-                node.getClass().getResource(node.getClass().getSimpleName() + ".fxml")
-        );
+        URL resource = node.getClass().getResource(node.getClass().getSimpleName() + ".fxml");
+        if (resource == null) {
+            throw new IllegalArgumentException("Could not find FXML resource: " + node.getClass().getSimpleName() + ".fxml");
+        }
+
+        FXMLLoader loader = new FXMLLoader(resource);
         loader.setController(node);
         loader.setRoot(node);
         try {
