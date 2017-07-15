@@ -2,7 +2,16 @@ package edu.kit.formal.interpreter;
 
 import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.api.VariableAssignments;
+import de.uka.ilkd.key.logic.Name;
 import de.uka.ilkd.key.logic.Term;
+import de.uka.ilkd.key.logic.op.SchemaVariable;
+import de.uka.ilkd.key.proof.ApplyStrategy;
+import de.uka.ilkd.key.proof.Goal;
+import de.uka.ilkd.key.proof.Proof;
+import de.uka.ilkd.key.proof.init.Profile;
+import de.uka.ilkd.key.rule.NoPosTacletApp;
+import de.uka.ilkd.key.rule.Taclet;
+import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.Value;
@@ -11,11 +20,10 @@ import edu.kit.formal.proofscriptparser.ast.Signature;
 import edu.kit.formal.proofscriptparser.ast.TermLiteral;
 import edu.kit.formal.proofscriptparser.ast.Type;
 import edu.kit.formal.proofscriptparser.ast.Variable;
+import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Interface to KeY Matcher Api
@@ -23,6 +31,7 @@ import java.util.Set;
  * @author S. Grebing
  */
 public class KeYMatcher implements MatcherApi<KeyData> {
+    private static final Name CUT_TACLET_NAME = new Name("cut");
     private ScriptApi scrapi;
     private Interpreter<KeyData> interpreter;
 
@@ -100,5 +109,47 @@ public class KeYMatcher implements MatcherApi<KeyData> {
 
     private TermLiteral from(Term t) {
         return new TermLiteral(t.toString());
+    }
+
+
+    /**
+     * @param proof
+     * @param kd
+     * @param term
+     * @return null if the term is not derivable or the new state
+     */
+    public GoalNode<KeyData> isDerivable(Proof proof, GoalNode<KeyData> kd, Term term) {
+        Taclet cut = proof.getEnv().getInitConfigForEnvironment().lookupActiveTaclet(CUT_TACLET_NAME);
+        TacletApp app = NoPosTacletApp.createNoPosTacletApp(cut);
+        SchemaVariable sv = (SchemaVariable) app.uninstantiatedVars().iterator().next();
+        TacletApp cutApp = app.addCheckedInstantiation(sv, term, proof.getServices(), true);
+        ImmutableList<Goal> goalList = kd.getData().getGoal().apply(app);
+
+        if(goalList.size() !=2) {
+            throw new IllegalStateException("Cut created more than two sub goals!");
+        }
+
+        // apply auto on the first (hope that is the "to show" case.
+        Goal toShow = goalList.head();
+
+        //apply auto to close this branch, from AutoCommand.java
+        Profile profile = proof.getServices().getProfile();
+        ApplyStrategy applyStrategy = new ApplyStrategy(profile.getSelectedGoalChooserBuilder().create());
+        applyStrategy.start(proof, toShow);
+
+        //check if there are no goals under toShow
+        boolean isDerivable = proof.getSubtreeGoals(toShow.node()).size() == 0;
+
+        // maybe we should prune
+        //proof.pruneProof(kd.getData().getNode(), false);
+        // or not prune?
+
+        if(isDerivable) {
+            GoalNode<KeyData> newGoalNode = new GoalNode<KeyData>(kd, new KeyData(kd.getData(), goalList.head()));
+            return newGoalNode;
+        }else{
+            return null;
+        }
+
     }
 }
