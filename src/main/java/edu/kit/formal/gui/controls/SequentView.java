@@ -5,10 +5,12 @@ import de.uka.ilkd.key.logic.NamespaceSet;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.pp.*;
 import de.uka.ilkd.key.proof.Goal;
+import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import edu.kit.formal.interpreter.KeYProofFacade;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -28,7 +30,9 @@ public class SequentView extends CodeArea {
     private LogicPrinter lp;
     private IdentitySequentPrintFilter filter;
     private LogicPrinter.PosTableStringBackend backend;
-    private SimpleObjectProperty<de.uka.ilkd.key.proof.Goal> node = new SimpleObjectProperty<>();
+    private SimpleObjectProperty<de.uka.ilkd.key.proof.Goal> goal = new SimpleObjectProperty<>();
+    private SimpleObjectProperty<de.uka.ilkd.key.proof.Node> node = new SimpleObjectProperty<>();
+    private ObservableBooleanValue rulesAvailable = goal.isNotNull();
     private KeYProofFacade keYProofFacade;
     private TacletContextMenu menu;
 
@@ -63,13 +67,13 @@ public class SequentView extends CodeArea {
         if (backend == null) {
             return;
         }
-        if (e.getButton() == MouseButton.SECONDARY) {
+        if (e.getButton() == MouseButton.SECONDARY && rulesAvailable.get()) {
             CharacterHit hit = hit(e.getX(), e.getY());
             int insertionPoint = hit.getInsertionIndex();
             PosInSequent pis = backend.getInitialPositionTable().getPosInSequent(insertionPoint, filter);
             if (pis == null) return;
 
-            menu = new TacletContextMenu(keYProofFacade, pis, node.get());
+            menu = new TacletContextMenu(keYProofFacade, pis, goal.get());
             menu.setAutoFix(true);
             menu.setAutoHide(true);
             menu.show(this, e.getScreenX(), e.getScreenY());
@@ -125,22 +129,34 @@ public class SequentView extends CodeArea {
 
         clear();
         insertText(0, backend.getString());
-        if (node.get().node().isClosed()) {
+        if (node.get().isClosed()) {
             this.setBorder(new Border(new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
             this.getStyleClass().add("closed-sequent-view");
         }
     }
 
-    public Goal getNode() {
+    public Goal getGoal() {
+        return goal.get();
+    }
+
+    public void setGoal(Goal goal) {
+        this.goal.set(goal);
+    }
+
+    public SimpleObjectProperty<Goal> goalProperty() {
+        return goal;
+    }
+
+    public Node getNode() {
         return node.get();
     }
 
-    public SimpleObjectProperty<Goal> nodeProperty() {
-        return node;
+    public void setNode(Node node) {
+        this.node.set(node);
     }
 
-    public void setNode(Goal node) {
-        this.node.set(node);
+    public SimpleObjectProperty<Node> nodeProperty() {
+        return node;
     }
 
     public KeYProofFacade getKeYProofFacade() {
@@ -150,4 +166,6 @@ public class SequentView extends CodeArea {
     public void setKeYProofFacade(KeYProofFacade keYProofFacade) {
         this.keYProofFacade = keYProofFacade;
     }
+
+
 }

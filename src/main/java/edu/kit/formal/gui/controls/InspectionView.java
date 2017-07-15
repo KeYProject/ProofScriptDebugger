@@ -35,15 +35,19 @@ public class InspectionView extends BorderPane {
     public InspectionView() {
         Utils.createWithFXML(this);
 
-        model.get().selectedGoalNodeToShowProperty().bind(
-                goalView.getSelectionModel().selectedItemProperty()
-        );
+        model.get().selectedGoalNodeToShowProperty().addListener((o, a, b) -> {
+            goalView.getSelectionModel().select(b);
+        });
+        goalView.getSelectionModel().selectedItemProperty().addListener((o, a, b) -> {
+            model.get().setSelectedGoalNodeToShow(b);
+        });
 
         model.get().selectedGoalNodeToShowProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     goalView.getSelectionModel().select(newValue);
                     if (newValue != null && newValue.getData() != null) {
-                        getSequentView().setNode(newValue.getData().getGoal());
+                        getSequentView().setNode(newValue.getData().getNode());
+                        getSequentView().setGoal(newValue.getData().getGoal());
                         // TODO weigl: get marked lines of the program, and set it
                         model.get().highlightedJavaLinesProperty().get()
                                 .clear();
@@ -83,6 +87,14 @@ public class InspectionView extends BorderPane {
         goalOptionsMenu.show(n, actionEvent.getScreenX(), actionEvent.getScreenY());
     }
 
+    public InspectionModel getModel() {
+        return model.get();
+    }
+
+    public ReadOnlyObjectProperty<InspectionModel> modelProperty() {
+        return model;
+    }
+
     /**
      * Cells for GoalView
      */
@@ -105,13 +117,5 @@ public class InspectionView extends BorderPane {
             }
             setText(text);
         }
-    }
-
-    public InspectionModel getModel() {
-        return model.get();
-    }
-
-    public ReadOnlyObjectProperty<InspectionModel> modelProperty() {
-        return model;
     }
 }

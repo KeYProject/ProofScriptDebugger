@@ -1,5 +1,6 @@
 package edu.kit.formal.gui.controller;
 
+import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.proof.init.ProofInputException;
@@ -18,6 +19,7 @@ import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -51,12 +53,12 @@ import java.util.concurrent.Executors;
  * @author Alexander Weigl
  */
 public class DebuggerMainWindowController implements Initializable {
+    public static final KeYProofFacade FACADE = new KeYProofFacade();
     protected static final Logger LOGGER = LogManager.getLogger(DebuggerMainWindowController.class);
+    public final ContractLoaderService contractLoaderService = new ContractLoaderService();
     private final ProofTreeController proofTreeController = new ProofTreeController();
     private final InspectionViewsController inspectionViewsController = new InspectionViewsController();
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
-    public static final KeYProofFacade FACADE = new KeYProofFacade();
-    public final ContractLoaderService contractLoaderService = new ContractLoaderService();
     /**
      * Property: current loaded javaFile
      */
@@ -70,8 +72,10 @@ public class DebuggerMainWindowController implements Initializable {
      */
     private final ObjectProperty<Contract> chosenContract = new SimpleObjectProperty<>(this, "chosenContract");
     private ScriptController scriptController;
+
     @FXML
     private DebuggerStatusBar statusBar;
+
     @FXML
     private DockPane dockStation;
     private JavaArea javaArea = new JavaArea();
@@ -107,6 +111,8 @@ public class DebuggerMainWindowController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Events.register(this);
+
         setDebugMode(false);
         scriptController = new ScriptController(dockStation);
 
@@ -115,11 +121,13 @@ public class DebuggerMainWindowController implements Initializable {
         registerToolbarToStatusBar();
         marriageProofTreeControllerWithActiveInspectionView();
         //statusBar.publishMessage("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
-
+        marriageJavaCode();
 
         //Debugging
         Utils.addDebugListener(javaCode);
         Utils.addDebugListener(executeNotPossible, "executeNotPossible");
+
+        scriptController.mainScriptProperty().bindBidirectional(statusBar.mainScriptIdentifierProperty());
 
     }
 
@@ -133,20 +141,29 @@ public class DebuggerMainWindowController implements Initializable {
         proofTreeController.currentGoalsProperty().addListener((o, old, fresh) -> {
             if (fresh != null) {
                 imodel.setGoals(fresh);
+            } else {
+                // no goals, set an empty list
+                imodel.setGoals(FXCollections.observableArrayList());
             }
         });
 
         proofTreeController.currentSelectedGoalProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                imodel.setCurrentInterpreterGoal(newValue);
-            }
+            imodel.setCurrentInterpreterGoal(newValue);
+            //also update the selected to be shown
+            imodel.setSelectedGoalNodeToShow(newValue);
         });
 
         proofTreeController.currentHighlightNodeProperty().addListener((observable, oldValue, newValue) -> {
             scriptController.getDebugPositionHighlighter().highlight(newValue);
         });
 
-        javaFileProperty().addListener((observable, oldValue, newValue) -> {
+        Utils.addDebugListener(proofTreeController.currentGoalsProperty(), Utils::reprKeyDataList);
+        Utils.addDebugListener(proofTreeController.currentSelectedGoalProperty(), Utils::reprKeyData);
+        Utils.addDebugListener(proofTreeController.currentHighlightNodeProperty());
+    }
+
+    public void marriageJavaCode() {
+        /*javaFileProperty().addListener((observable, oldValue, newValue) -> {
             showCodeDock(null);
             try {
                 String code = FileUtils.readFileToString(newValue, Charset.defaultCharset());
@@ -154,7 +171,13 @@ public class DebuggerMainWindowController implements Initializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        });*/
+
+        chosenContract.addListener(o -> {
+            javaCode.set(Utils.getJavaCode(chosenContract.get()));
+            showCodeDock(null);
         });
+
 
         javaCode.addListener(new ChangeListener<String>() {
             @Override
@@ -166,10 +189,9 @@ public class DebuggerMainWindowController implements Initializable {
                 }
             }
         });
-        Utils.addDebugListener(proofTreeController.currentGoalsProperty());
-        Utils.addDebugListener(proofTreeController.currentSelectedGoalProperty());
-        Utils.addDebugListener(proofTreeController.currentHighlightNodeProperty());
+
     }
+
 
     /**
      * If the mouse moves other toolbar button, the help text should display in the status bar

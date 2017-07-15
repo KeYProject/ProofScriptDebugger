@@ -48,7 +48,7 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
         KeyData kd = expandedNode.getData();
         Map<String, String> map = new HashMap<>();
         params.asMap().forEach((k, v) -> map.put(k.getIdentifier(), v.getData().toString()));
-        System.out.println(map);
+        //System.out.println(map);
         try {
             EngineState estate = new EngineState(kd.getProof());
             estate.setGoal(kd.getNode());

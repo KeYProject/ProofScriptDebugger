@@ -1,7 +1,9 @@
 package edu.kit.formal.gui.controls;
 
+import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import edu.kit.formal.gui.controller.Events;
 import edu.kit.formal.gui.model.Breakpoint;
 import edu.kit.formal.gui.model.MainScriptIdentifier;
 import edu.kit.formal.proofscriptparser.Facade;
@@ -21,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +47,13 @@ public class ScriptController {
 
     public ScriptController(DockPane parent) {
         this.parent = parent;
+        Events.register(this);
+    }
+
+    @Subscribe public void handle(Events.FocusScriptArea fsa) {
+        logger.debug("FocusScriptArea handled!");
+        openScripts.get(fsa.getScriptArea()).focus();
+        fsa.getScriptArea().requestFocus();
     }
 
     public ObservableMap<ScriptArea, DockNode> getOpenScripts() {
@@ -111,7 +121,7 @@ public class ScriptController {
 
         this.lastScriptArea = area;
         area.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("area = [" + area + "]");
+            logger.debug("area = [" + area + "]");
             if (newValue)
                 lastScriptArea = area;
         });
@@ -168,7 +178,19 @@ public class ScriptController {
     }
 
     public void saveCurrentScript() {
-        //TODO
+        throw new NotImplementedException();
+    }
+
+    public MainScriptIdentifier getMainScript() {
+        return mainScript.get();
+    }
+
+    public ObjectProperty<MainScriptIdentifier> mainScriptProperty() {
+        return mainScript;
+    }
+
+    public void setMainScript(MainScriptIdentifier mainScript) {
+        this.mainScript.set(mainScript);
     }
 
     private ScriptArea findEditor(ASTNode node) {
@@ -186,13 +208,20 @@ public class ScriptController {
         }
 
         public void remove() {
-            if (lastScriptArea != null)
+            logger.debug("remove highlight");
+            if (lastScriptArea != null) {
+                logger.debug("previous highlight on {} for {}", lastScriptArea, lastRegion);
                 lastScriptArea.getMarkedRegions().remove(lastRegion);
+            }
         }
 
         public void highlight(ASTNode node) {
+            logger.debug("Highlight requested for {}", node);
             remove();
+
             ScriptArea.RegionStyle r = asRegion(node);
+            logger.debug("Region for highlighting: {}", r);
+
             ScriptArea area = findEditor(node);
             area.getMarkedRegions().add(r);
 

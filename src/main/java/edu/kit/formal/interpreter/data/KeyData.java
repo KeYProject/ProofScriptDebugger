@@ -27,6 +27,8 @@ public class KeyData {
             programLinesLabel,
             programStatementsLabel,
             nameLabel;
+
+    private Node node;
     private Goal goal;
 
     public KeyData(KeyData data, Goal node) {
@@ -35,6 +37,7 @@ public class KeyData {
         //scriptApi = data.scriptApi;
         this.proof = data.proof;
         this.goal = node;
+        this.node = goal.node();
     }
 
     public KeyData(Goal g, KeYEnvironment environment, Proof proof) {
@@ -45,10 +48,11 @@ public class KeyData {
 
     public KeyData(Node root, KeYEnvironment environment, Proof proof) {
         this(proof.getGoal(root), environment, proof);
+        node = root;
     }
 
     public KeyData(KeyData kd, Node node) {
-        this(kd, kd.getProof().getGoal(node));
+        this(node, kd.getEnv(),  kd.getProof());
     }
 
     public String getRuleLabel() {

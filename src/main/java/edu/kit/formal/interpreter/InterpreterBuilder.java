@@ -161,7 +161,7 @@ public class InterpreterBuilder {
 
             @Override
             public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params) {
-                System.out.println("InterpreterBuilder.evaluate");
+                //System.out.println("InterpreterBuilder.evaluate");
             }
         };
         lookup.getBuilders().add(0, ignoreHandler);

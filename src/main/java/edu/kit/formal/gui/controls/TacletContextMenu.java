@@ -14,6 +14,7 @@ import edu.kit.formal.gui.controller.DebuggerMainWindowController;
 import edu.kit.formal.interpreter.KeYProofFacade;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;

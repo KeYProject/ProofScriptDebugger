@@ -3,10 +3,13 @@ package edu.kit.formal.gui.controls;
 import de.uka.ilkd.key.logic.op.IProgramMethod;
 import de.uka.ilkd.key.pp.ProgramPrinter;
 import de.uka.ilkd.key.speclang.Contract;
+import edu.kit.formal.interpreter.data.GoalNode;
+import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.proofscriptparser.ScriptLanguageLexer;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -190,9 +193,13 @@ public class Utils {
     }
 
     public static <T> void addDebugListener(Property<T> property, java.util.function.Function<T, String> conv) {
-        property.addListener((observable, oldValue, newValue) ->
-                logger.debug("Property '{}' of '%s' changed from {} to {}", property.getName(),
-                        property.getBean().getClass().getSimpleName(), conv.apply(oldValue), conv.apply(newValue)));
+        property.addListener((observable, oldValue, newValue) -> {
+            String simpleName = property.getBean() != null ? property.getBean().getClass().getSimpleName() : "<n/a>";
+            logger.debug("Property '{}' of '{}' changed from {} to {}", property.getName(),
+                    simpleName,
+                    oldValue == null ? "<null>" : conv.apply(oldValue),
+                    newValue == null ? "<null>" : conv.apply(newValue));
+        });
     }
 
     public static void addDebugListener(ObservableValue<?> o, String id) {
@@ -212,5 +219,16 @@ public class Utils {
                 return t;
         }
         return null;
+    }
+
+    public static String reprKeyDataList(ObservableList<GoalNode<KeyData>> kd) {
+        return kd.stream()
+                .map(Utils::reprKeyData)
+                .reduce((a, b) -> a + b)
+                .orElse("<no goal nodes>");
+    }
+
+    public static <T> String reprKeyData(GoalNode<KeyData> t) {
+        return String.valueOf(t.getData().getNode().serialNr());
     }
 }

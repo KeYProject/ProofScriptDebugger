@@ -7,6 +7,7 @@ import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 import lombok.Getter;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -90,9 +91,8 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
             case NEQ:
                 return null;
             default:
-                System.out.println("Need to be implemented");
+                throw new NotImplementedException("Need to be implemented");
         }
-        return null;
     }
 
     /**

@@ -2,10 +2,9 @@ package edu.kit.formal.gui.controls;
 
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import edu.kit.formal.gui.controller.Events;
+import edu.kit.formal.gui.model.MainScriptIdentifier;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,22 +32,23 @@ import java.util.LinkedList;
  */
 public class DebuggerStatusBar extends StatusBar {
     private static final Logger LOGGER = LogManager.getLogger(DebuggerStatusBar.class);
-
+    private final Appender loggerHandler = createAppender();
+    private final ContextMenu contextMenu = createContextMenu();
+    private ObjectProperty<MainScriptIdentifier> mainScriptIdentifier = new SimpleObjectProperty<>();
     private Label lblCurrentNodes = new Label("#nodes: %s");
+    private Label lblMainscript = new Label();
     private ProgressIndicator progressIndicator = new ProgressIndicator();
     private LogCatchHandlerFX logCatchHandler = new LogCatchHandlerFX();
+    private final Dialog<Void> loggerDialog = createDialog();
     private EventHandler<MouseEvent> toolTipHandler = event -> {
         publishMessage(((Control) event.getTarget()).getTooltip().getText());
     };
-
-
-    private final ContextMenu contextMenu = createContextMenu();
-    private final Dialog<Void> loggerDialog = createDialog();
 
     public DebuggerStatusBar() {
         listenOnField("psdbg");
 
         getRightItems().addAll(
+                lblMainscript,
                 lblCurrentNodes,
                 progressIndicator
         );
@@ -60,9 +60,32 @@ public class DebuggerStatusBar extends StatusBar {
         });
 
 
-    }
+        mainScriptIdentifier.addListener((ov, o, n) -> {
+            if (n != null) {
+                lblMainscript.setText("Main Script: " +
+                        n.getScriptArea().getFilePath().getName() +
+                        (n.getScriptName() != null
+                                ? '\\' + n.getScriptName()
+                                : " @ " + n.getLineNumber()));
+                lblMainscript.setStyle("-fx-background-color: greenyellow;-fx-padding: 5pt;");
+            } else {
+                lblMainscript.setStyle("-fx-background-color: orangered;-fx-padding: 5pt;");
+                lblMainscript.setText("No main script selected");
+            }
+        });
 
-    private final Appender loggerHandler = createAppender();
+        lblMainscript.setStyle("-fx-background-color: orangered;-fx-padding: 5pt;");
+        lblMainscript.setText("No main script selected");
+
+        lblMainscript.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                event.consume();
+                ScriptArea area = mainScriptIdentifier.get().getScriptArea();
+                Events.fire(new Events.FocusScriptArea(area));
+            }
+        });
+
+    }
 
     private Appender createAppender() {
         PatternLayout layout = PatternLayout.createDefaultLayout();
@@ -115,6 +138,18 @@ public class DebuggerStatusBar extends StatusBar {
         showLog.setOnAction(this::showLog);
         cm.getItems().addAll(viewOptions, showLog);
         return cm;
+    }
+
+    public MainScriptIdentifier getMainScriptIdentifier() {
+        return mainScriptIdentifier.get();
+    }
+
+    public void setMainScriptIdentifier(MainScriptIdentifier mainScriptIdentifier) {
+        this.mainScriptIdentifier.set(mainScriptIdentifier);
+    }
+
+    public ObjectProperty<MainScriptIdentifier> mainScriptIdentifierProperty() {
+        return mainScriptIdentifier;
     }
 
     private void showLog(ActionEvent actionEvent) {
@@ -192,12 +227,12 @@ public class DebuggerStatusBar extends StatusBar {
             return records.get();
         }
 
-        public ListProperty<LogEvent> recordsProperty() {
-            return records;
-        }
-
         public void setRecords(ObservableList<LogEvent> records) {
             this.records.set(records);
+        }
+
+        public ListProperty<LogEvent> recordsProperty() {
+            return records;
         }
 
         public int getMaxRecords() {

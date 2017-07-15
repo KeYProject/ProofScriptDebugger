@@ -89,7 +89,7 @@ public class PuppetMaster {
      * Publish state is called after the interpreter or debugger thread terminated. The resulting goals are set in the root model
      */
     public void publishState() {
-        System.out.println("PuppetMaster.publishState");
+        //("PuppetMaster.publishState");
         //puppet is null if successful interpreter state and publish state
         if (puppet != null) {
 

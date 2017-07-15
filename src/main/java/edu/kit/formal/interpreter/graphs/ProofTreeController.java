@@ -243,10 +243,10 @@ public class ProofTreeController {
      * @param state
      */
     private void setNewState(State<KeyData> state) {
-        setCurrentGoals(state.getGoals());
-        setCurrentSelectedGoal(state.getSelectedGoalNode());
+        setCurrentGoals(state==null? null : state.getGoals());
+        setCurrentSelectedGoal(state==null?null:state.getSelectedGoalNode());
         setCurrentHighlightNode(statePointer.getScriptstmt());
-        LOGGER.debug("New State from this command: %s@%s",
+        LOGGER.debug("New State from this command: {}@{}",
                 this.statePointer.getScriptstmt().getNodeName(),
                 this.statePointer.getScriptstmt().getStartPosition());
     }
