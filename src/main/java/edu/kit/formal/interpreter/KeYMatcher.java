@@ -118,12 +118,12 @@ public class KeYMatcher implements MatcherApi<KeyData> {
      * @param term
      * @return null if the term is not derivable or the new state
      */
-    public GoalNode<KeyData> isDerivable(Proof proof, GoalNode<KeyData> kd, Term term) {
+    public static GoalNode<KeyData> isDerivable(Proof proof, GoalNode<KeyData> kd, Term term) {
         Taclet cut = proof.getEnv().getInitConfigForEnvironment().lookupActiveTaclet(CUT_TACLET_NAME);
         TacletApp app = NoPosTacletApp.createNoPosTacletApp(cut);
         SchemaVariable sv = (SchemaVariable) app.uninstantiatedVars().iterator().next();
         TacletApp cutApp = app.addCheckedInstantiation(sv, term, proof.getServices(), true);
-        ImmutableList<Goal> goalList = kd.getData().getGoal().apply(app);
+        ImmutableList<Goal> goalList = kd.getData().getGoal().apply(cutApp);
 
         if(goalList.size() !=2) {
             throw new IllegalStateException("Cut created more than two sub goals!");
