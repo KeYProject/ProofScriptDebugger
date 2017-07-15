@@ -17,15 +17,10 @@ import javafx.scene.paint.Color;
  * @author Alexander Weigl
  */
 public class InspectionModel {
-    enum Mode {
-        LIVING, DEAD, POSTMORTEM,
-    }
-
-    private final ObjectProperty<ASTNode> node = new SimpleObjectProperty<>();
-    private final ListProperty<GoalNode<KeyData>> goals = new SimpleListProperty<>();
-    private final ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShow = new SimpleObjectProperty<>();
-    private final ObjectProperty<GoalNode<KeyData>> currentInterpreterGoal = new SimpleObjectProperty<>();
-
+    private final ObjectProperty<ASTNode> node = new SimpleObjectProperty<>(this, "node");
+    private final ListProperty<GoalNode<KeyData>> goals = new SimpleListProperty<>(this, "goals");
+    private final ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShow = new SimpleObjectProperty<>(this, "selectedGoalNodeToShow");
+    private final ObjectProperty<GoalNode<KeyData>> currentInterpreterGoal = new SimpleObjectProperty<>(this, "currentInterpreterGoal");
     private final MapProperty<GoalNode, Color> colorofEachGoalNodeinListView = new SimpleMapProperty<>(FXCollections.observableHashMap());
     //private final StringProperty javaString = new SimpleStringProperty();
     private final SetProperty<Integer> highlightedJavaLines = new SimpleSetProperty<>(FXCollections.observableSet());
@@ -33,77 +28,76 @@ public class InspectionModel {
     private final BooleanProperty isInterpreterTab = new SimpleBooleanProperty();
     private ObjectProperty<Mode> mode = new SimpleObjectProperty<>();
 
-
     public GoalNode<KeyData> getCurrentInterpreterGoal() {
         return currentInterpreterGoal.get();
-    }
-
-    public ObjectProperty<GoalNode<KeyData>> currentInterpreterGoalProperty() {
-        return currentInterpreterGoal;
     }
 
     public void setCurrentInterpreterGoal(GoalNode<KeyData> currentInterpreterGoal) {
         this.currentInterpreterGoal.set(currentInterpreterGoal);
     }
 
-    public Mode getMode() {
-        return mode.get();
+    public ObjectProperty<GoalNode<KeyData>> currentInterpreterGoalProperty() {
+        return currentInterpreterGoal;
     }
 
-    public ObjectProperty<Mode> modeProperty() {
-        return mode;
+    public Mode getMode() {
+        return mode.get();
     }
 
     public void setMode(Mode mode) {
         this.mode.set(mode);
     }
 
-    public ASTNode getNode() {
-        return node.get();
+    public ObjectProperty<Mode> modeProperty() {
+        return mode;
     }
 
-    public ObjectProperty<ASTNode> nodeProperty() {
-        return node;
+    public ASTNode getNode() {
+        return node.get();
     }
 
     public void setNode(ASTNode node) {
         this.node.set(node);
     }
 
-    public ObservableList<GoalNode<KeyData>> getGoals() {
-        return goals.get();
+    public ObjectProperty<ASTNode> nodeProperty() {
+        return node;
     }
 
-    public ListProperty<GoalNode<KeyData>> goalsProperty() {
-        return goals;
+    public ObservableList<GoalNode<KeyData>> getGoals() {
+        return goals.get();
     }
 
     public void setGoals(ObservableList<GoalNode<KeyData>> goals) {
         this.goals.set(goals);
     }
 
-    public GoalNode getSelectedGoalNodeToShow() {
-        return selectedGoalNodeToShow.get();
+    public ListProperty<GoalNode<KeyData>> goalsProperty() {
+        return goals;
     }
 
-    public ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShowProperty() {
-        return selectedGoalNodeToShow;
+    public GoalNode getSelectedGoalNodeToShow() {
+        return selectedGoalNodeToShow.get();
     }
 
     public void setSelectedGoalNodeToShow(GoalNode selectedGoalNodeToShow) {
         this.selectedGoalNodeToShow.set(selectedGoalNodeToShow);
     }
 
+    public ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShowProperty() {
+        return selectedGoalNodeToShow;
+    }
+
     public ObservableMap<GoalNode, Color> getColorofEachGoalNodeinListView() {
         return colorofEachGoalNodeinListView.get();
     }
 
-    public MapProperty<GoalNode, Color> colorofEachGoalNodeinListViewProperty() {
-        return colorofEachGoalNodeinListView;
-    }
-
     public void setColorofEachGoalNodeinListView(ObservableMap<GoalNode, Color> colorofEachGoalNodeinListView) {
         this.colorofEachGoalNodeinListView.set(colorofEachGoalNodeinListView);
+    }
+
+    public MapProperty<GoalNode, Color> colorofEachGoalNodeinListViewProperty() {
+        return colorofEachGoalNodeinListView;
     }
 
     /*
@@ -123,35 +117,39 @@ public class InspectionModel {
         return highlightedJavaLines.get();
     }
 
-    public SetProperty<Integer> highlightedJavaLinesProperty() {
-        return highlightedJavaLines;
-    }
-
     public void setHighlightedJavaLines(ObservableSet<Integer> highlightedJavaLines) {
         this.highlightedJavaLines.set(highlightedJavaLines);
+    }
+
+    public SetProperty<Integer> highlightedJavaLinesProperty() {
+        return highlightedJavaLines;
     }
 
     public boolean isClosable() {
         return closable.get();
     }
 
-    public BooleanProperty closableProperty() {
-        return closable;
-    }
-
     public void setClosable(boolean closable) {
         this.closable.set(closable);
+    }
+
+    public BooleanProperty closableProperty() {
+        return closable;
     }
 
     public boolean isIsInterpreterTab() {
         return isInterpreterTab.get();
     }
 
+    public void setIsInterpreterTab(boolean isInterpreterTab) {
+        this.isInterpreterTab.set(isInterpreterTab);
+    }
+
     public BooleanProperty isInterpreterTabProperty() {
         return isInterpreterTab;
     }
 
-    public void setIsInterpreterTab(boolean isInterpreterTab) {
-        this.isInterpreterTab.set(isInterpreterTab);
+    enum Mode {
+        LIVING, DEAD, POSTMORTEM,
     }
 }

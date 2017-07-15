@@ -31,7 +31,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 /**
- * A controller for manageing the open script files in the dock nodes.
+ * A controller for managing the open script files in the dock nodes.
  *
  * @author Sarah Grebing
  */
@@ -185,12 +185,12 @@ public class ScriptController {
         return mainScript.get();
     }
 
-    public ObjectProperty<MainScriptIdentifier> mainScriptProperty() {
-        return mainScript;
-    }
-
     public void setMainScript(MainScriptIdentifier mainScript) {
         this.mainScript.set(mainScript);
+    }
+
+    public ObjectProperty<MainScriptIdentifier> mainScriptProperty() {
+        return mainScript;
     }
 
     private ScriptArea findEditor(ASTNode node) {

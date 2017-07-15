@@ -21,7 +21,6 @@ public class WelcomePane extends AnchorPane {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
         proofScriptDebugger.openScript(
-        //        new File("src/test/resources/edu/kit/formal/interpreter/contraposition/test.kps")
                 new File("src/test/resources/edu/kit/formal/interpreter/contraposition/wo_branching.kps")
         );
 

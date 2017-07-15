@@ -149,6 +149,8 @@ BOOL: 'bool' ;
 TERMTYPE : 'term' ;*/
 FOREACH : 'foreach' ;
 THEONLY : 'theonly' ;
+CLOSED_BY : 'closed_by';
+DERIVABLE : 'derivable';
 INDENT : '{' ;
 DEDENT : '}' ;
 SEMICOLON : ';' ;

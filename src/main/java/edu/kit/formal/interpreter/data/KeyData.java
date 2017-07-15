@@ -21,14 +21,13 @@ public class KeyData {
     private static final String SEPARATOR = " // ";
     private final KeYEnvironment env;
     private final Proof proof;
+    private Node node;
 
     private String branchingLabel,
             ruleLabel,
             programLinesLabel,
             programStatementsLabel,
             nameLabel;
-
-    private Node node;
     private Goal goal;
 
     public KeyData(KeyData data, Goal node) {
@@ -117,6 +116,7 @@ public class KeyData {
     }
 
     public Node getNode() {
-        return getGoal().node();
+        return node;
+        //return getGoal().node();
     }
 }

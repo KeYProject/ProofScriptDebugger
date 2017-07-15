@@ -4,7 +4,6 @@ import edu.kit.formal.gui.model.InspectionModel;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import javafx.beans.Observable;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -20,17 +19,14 @@ import javafx.scene.layout.BorderPane;
  * @author S. Grebing
  */
 public class InspectionView extends BorderPane {
-    public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
-
-    @FXML
-    private SequentView sequentView;
-
-    @FXML
-    private ListView<GoalNode<KeyData>> goalView;
-
-    private ObjectProperty<InspectionModel> model = new SimpleObjectProperty<>(
+    private final ReadOnlyObjectProperty<InspectionModel> model = new SimpleObjectProperty<>(
             new InspectionModel()
     );
+    public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
+    @FXML
+    private SequentView sequentView;
+    @FXML
+    private ListView<GoalNode<KeyData>> goalView;
 
     public InspectionView() {
         Utils.createWithFXML(this);
@@ -42,7 +38,7 @@ public class InspectionView extends BorderPane {
             model.get().setSelectedGoalNodeToShow(b);
         });
 
-        model.get().selectedGoalNodeToShowProperty().addListener(
+        model.get().currentInterpreterGoalProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     goalView.getSelectionModel().select(newValue);
                     if (newValue != null && newValue.getData() != null) {
@@ -56,6 +52,10 @@ public class InspectionView extends BorderPane {
 
         model.get().goalsProperty().bindBidirectional(goalView.itemsProperty());
         getGoalView().setCellFactory(GoalNodeListCell::new);
+
+        Utils.addDebugListener(model.get().goalsProperty());
+        Utils.addDebugListener(model.get().selectedGoalNodeToShowProperty());
+        Utils.addDebugListener(model.get().currentInterpreterGoalProperty());
 
         /*TODO redefine CSS bases on selected mode
         mode.addListener(o -> {
