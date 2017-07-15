@@ -1,6 +1,4 @@
 grammar ScriptLanguage;
-//TODO There is still sth. missing:import statements at the beginning to allow scripts from other files
-
 /*start
     : stmtList
     ;
@@ -78,8 +76,8 @@ literals :
 
      </pre>*/
 matchPattern
-    :   MATCH pattern=expression
-        (USING LBRACKET argList RBRACKET)?
+    :   MATCH (pattern=expression
+        (USING LBRACKET argList RBRACKET)?) | DERIVABLE TERM_LITERAL | IFCLOSED
     ;
 
 scriptVar
@@ -149,7 +147,7 @@ BOOL: 'bool' ;
 TERMTYPE : 'term' ;*/
 FOREACH : 'foreach' ;
 THEONLY : 'theonly' ;
-CLOSED_BY : 'closed_by';
+ISCLOSED: 'isClosable';
 DERIVABLE : 'derivable';
 INDENT : '{' ;
 DEDENT : '}' ;
