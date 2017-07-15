@@ -21,9 +21,11 @@ import edu.kit.formal.proofscriptparser.ast.TermLiteral;
 import edu.kit.formal.proofscriptparser.ast.Type;
 import edu.kit.formal.proofscriptparser.ast.Variable;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Interface to KeY Matcher Api
@@ -38,6 +40,43 @@ public class KeYMatcher implements MatcherApi<KeyData> {
     public KeYMatcher(ScriptApi scrapi, Interpreter<KeyData> interpreter) {
         this.scrapi = scrapi;
         this.interpreter = interpreter;
+    }
+
+    /**
+     * @param proof
+     * @param kd
+     * @param term
+     * @return null if the term is not derivable or the new state
+     */
+    public static GoalNode<KeyData> isDerivable(Proof proof, GoalNode<KeyData> kd, Term term) {
+        Taclet cut = proof.getEnv().getInitConfigForEnvironment().lookupActiveTaclet(CUT_TACLET_NAME);
+        TacletApp app = NoPosTacletApp.createNoPosTacletApp(cut);
+        SchemaVariable sv = (SchemaVariable) app.uninstantiatedVars().iterator().next();
+        TacletApp cutApp = app.addCheckedInstantiation(sv, term, proof.getServices(), true);
+        ImmutableList<Goal> goalList = kd.getData().getGoal().apply(cutApp);
+
+        if (goalList.size() != 2) {
+            throw new IllegalStateException("Cut created more than two sub goals!");
+        }
+
+        // apply auto on the first (hope that is the "to show" case.
+        Goal toShow = goalList.head();
+
+        //apply auto to close this branch, from AutoCommand.java
+        Profile profile = proof.getServices().getProfile();
+        ApplyStrategy applyStrategy = new ApplyStrategy(profile.getSelectedGoalChooserBuilder().create());
+        applyStrategy.start(proof, toShow);
+
+        //check if there are no goals under toShow
+        boolean isDerivable = proof.getSubtreeGoals(toShow.node()).size() == 0;
+
+        if (isDerivable) {
+            GoalNode<KeyData> newGoalNode = new GoalNode<KeyData>(kd, new KeyData(kd.getData(), goalList.head()));
+            return newGoalNode;
+        } else {
+            proof.pruneProof(kd.getData().getNode(), false);
+            return null;
+        }
     }
 
     @Override
@@ -109,47 +148,5 @@ public class KeYMatcher implements MatcherApi<KeyData> {
 
     private TermLiteral from(Term t) {
         return new TermLiteral(t.toString());
-    }
-
-
-    /**
-     * @param proof
-     * @param kd
-     * @param term
-     * @return null if the term is not derivable or the new state
-     */
-    public static GoalNode<KeyData> isDerivable(Proof proof, GoalNode<KeyData> kd, Term term) {
-        Taclet cut = proof.getEnv().getInitConfigForEnvironment().lookupActiveTaclet(CUT_TACLET_NAME);
-        TacletApp app = NoPosTacletApp.createNoPosTacletApp(cut);
-        SchemaVariable sv = (SchemaVariable) app.uninstantiatedVars().iterator().next();
-        TacletApp cutApp = app.addCheckedInstantiation(sv, term, proof.getServices(), true);
-        ImmutableList<Goal> goalList = kd.getData().getGoal().apply(cutApp);
-
-        if(goalList.size() !=2) {
-            throw new IllegalStateException("Cut created more than two sub goals!");
-        }
-
-        // apply auto on the first (hope that is the "to show" case.
-        Goal toShow = goalList.head();
-
-        //apply auto to close this branch, from AutoCommand.java
-        Profile profile = proof.getServices().getProfile();
-        ApplyStrategy applyStrategy = new ApplyStrategy(profile.getSelectedGoalChooserBuilder().create());
-        applyStrategy.start(proof, toShow);
-
-        //check if there are no goals under toShow
-        boolean isDerivable = proof.getSubtreeGoals(toShow.node()).size() == 0;
-
-        // maybe we should prune
-        //proof.pruneProof(kd.getData().getNode(), false);
-        // or not prune?
-
-        if(isDerivable) {
-            GoalNode<KeyData> newGoalNode = new GoalNode<KeyData>(kd, new KeyData(kd.getData(), goalList.head()));
-            return newGoalNode;
-        }else{
-            return null;
-        }
-
     }
 }
