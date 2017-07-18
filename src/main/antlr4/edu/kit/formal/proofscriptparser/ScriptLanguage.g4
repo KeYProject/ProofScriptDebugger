@@ -47,6 +47,7 @@ expression
     :
         MINUS expression   #exprNegate
     |   NOT expression  #exprNot
+    |   expression '[' substExpressionList ']'  #exprSubst
     |   expression MUL expression #exprMultiplication
     |   <assoc=right> expression DIV expression #exprDivision
     |   expression op=(PLUS|MINUS) expression #exprLineOperators
@@ -60,6 +61,12 @@ expression
     | literals             #exprLiterals
     | matchPattern         #exprMatch
 ;
+
+
+substExpressionList
+    :
+    scriptVar '/' expression (',' substExpressionList)*
+    ;
 
 literals :
         ID             #literalID
@@ -164,6 +171,7 @@ INDENT : '{' ;
 DEDENT : '}' ;
 SEMICOLON : ';' ;
 COLON : ':' ;
+
 
 STRING_LITERAL
    : '\'' ('\'\'' | ~ ('\''))* '\''
