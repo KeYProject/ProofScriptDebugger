@@ -221,7 +221,7 @@ public class Debugger {
         }
 
         @Override
-        public Void visit(CaseStatement caseStatement) {
+        public Void visit(SimpleCaseStatement caseStatement) {
             suffix(caseStatement);
             System.out.println("case " + Facade.prettyPrint(caseStatement.getGuard()));
             return super.visit(caseStatement);

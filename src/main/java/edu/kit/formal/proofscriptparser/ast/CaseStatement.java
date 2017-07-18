@@ -38,8 +38,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CaseStatement extends Statement<ScriptLanguageParser.CasesListContext> {
-    private Expression guard;
-    private Statements body;
+    public boolean isClosedStmt;
+    protected Statements body;
 
     /**
      * {@inheritDoc}
@@ -52,6 +52,6 @@ public class CaseStatement extends Statement<ScriptLanguageParser.CasesListConte
      * {@inheritDoc}
      */
     @Override public CaseStatement copy() {
-        return new CaseStatement(guard.copy(), body.copy());
+        return new CaseStatement(body.copy(), isClosedStmt);
     }
 }

@@ -54,7 +54,7 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
     }
 
     /**
-     * TODO Connect with KeY
+     * Visit a match expression and evaluate expression using matcher
      *
      * @param match
      * @return
@@ -64,15 +64,17 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
         if (match.getSignature() != null && !match.getSignature().isEmpty()) {
             throw new IllegalStateException("not supported");
         }
-
-        Value pattern = (Value) match.getPattern().accept(this);
-
         List<VariableAssignment> va = null;
-        if (pattern.getType() == Type.STRING) {
-            va = matcher.matchLabel(goal, (String) pattern.getData());
-        } else if (pattern.getType() == Type.TERM) {
-            va = matcher.matchSeq(goal, (String) pattern.getData(), match.getSignature());
+        Value pattern = (Value) match.getPattern().accept(this);
+        if (match.isDerivable()) {
+        } else {
+            if (pattern.getType() == Type.STRING) {
+                va = matcher.matchLabel(goal, (String) pattern.getData());
+            } else if (pattern.getType() == Type.TERM) {
+                va = matcher.matchSeq(goal, (String) pattern.getData(), match.getSignature());
+            }
         }
+
 
         return va != null && va.size() > 0 ? Value.TRUE : Value.FALSE;
     }

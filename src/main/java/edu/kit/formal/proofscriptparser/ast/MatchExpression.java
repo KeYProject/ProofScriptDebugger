@@ -27,6 +27,8 @@ import edu.kit.formal.proofscriptparser.NotWelldefinedException;
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formal.proofscriptparser.Visitor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A match expression contains an argument and a uses clause.
@@ -38,6 +40,12 @@ import lombok.Data;
 public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatternContext> {
     private Signature signature = new Signature();
     private Expression pattern;
+    @Getter
+    @Setter
+    private boolean isDerivable;
+    @Getter
+    @Setter
+    private Expression derivableTerm;
 
     /**
      * {@inheritDoc}

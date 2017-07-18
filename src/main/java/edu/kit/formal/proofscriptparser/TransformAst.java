@@ -249,9 +249,16 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     public Object visitMatchPattern(ScriptLanguageParser.MatchPatternContext ctx) {
         MatchExpression match = new MatchExpression();
         match.setRuleContext(ctx);
-        if (ctx.argList() != null)
-            match.setSignature((Signature) ctx.argList().accept(this));
-        match.setPattern((Expression) ctx.pattern.accept(this));
+
+        if (ctx.derivable != null) {
+            match.setDerivable(true);
+            match.setDerivableTerm((Expression) ctx.derivableExpression.accept(this));
+        } else {
+            if (ctx.argList() != null)
+                match.setSignature((Signature) ctx.argList().accept(this));
+            match.setPattern((Expression) ctx.pattern.accept(this));
+        }
+
         return match;
     }
 
@@ -283,12 +290,46 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
 
     @Override
     public Object visitCasesList(ScriptLanguageParser.CasesListContext ctx) {
-        CaseStatement caseStatement = new CaseStatement();
+
+        if (ctx.ISCLOSED() != null) {
+            IsClosableCase isClosableCase = new IsClosableCase();
+            isClosableCase.setRuleContext(ctx);
+            isClosableCase.setBody((Statements) ctx.stmtList().accept(this));
+            return isClosableCase;
+        } else {
+            SimpleCaseStatement caseStatement = new SimpleCaseStatement();
+            caseStatement.setRuleContext(ctx);
+            caseStatement.setGuard((Expression) ctx.expression().accept(this));
+            caseStatement.setBody((Statements) ctx.stmtList().accept(this));
+            return caseStatement;
+        }
+     /*   CaseStatement caseStatement = new CaseStatement();
+        caseStatement.setRuleContext(ctx);
+        caseStatement.setGuard((Expression) ctx.expression().accept(this));
+        caseStatement.setBody((Statements) ctx.stmtList().accept(this));
+        return caseStatement;*/
+
+    }
+
+/*
+    @Override
+    public Object visitSimpleCase(ScriptLanguageParser.SimpleCaseContext ctx) {
+        SimpleCaseStatement caseStatement = new SimpleCaseStatement();
         caseStatement.setRuleContext(ctx);
         caseStatement.setGuard((Expression) ctx.expression().accept(this));
         caseStatement.setBody((Statements) ctx.stmtList().accept(this));
         return caseStatement;
+
     }
+
+    @Override
+    public Object visitClosableCase(ScriptLanguageParser.ClosableCaseContext ctx) {
+        IsClosableCase isClosableCase = new IsClosableCase();
+        isClosableCase.setRuleContext(ctx);
+        isClosableCase.setBody((Statements) ctx.stmtList().accept(this));
+        return isClosableCase;
+    }
+*/
 
     @Override
     public Object visitForEachStmt(ScriptLanguageParser.ForEachStmtContext ctx) {

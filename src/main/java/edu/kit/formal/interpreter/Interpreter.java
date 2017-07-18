@@ -168,15 +168,19 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
         List<GoalNode<T>> goalsAfterCases = new ArrayList<>();
         //copy the list of goal nodes for keeping track of goals
         Set<GoalNode<T>> remainingGoalsSet = new HashSet<>(allGoalsBeforeCases);
-
+        //TODO
         //handle cases
         List<CaseStatement> cases = casesStatement.getCases();
         for (CaseStatement aCase : cases) {
-            Map<GoalNode<T>, VariableAssignment> matchedGoals =
-                    matchGoal(remainingGoalsSet, aCase);
-            if (matchedGoals != null) {
-                remainingGoalsSet.removeAll(matchedGoals.keySet());
-                goalsAfterCases.addAll(executeCase(aCase.getBody(), matchedGoals));
+            if (aCase.isClosedStmt) {
+                System.out.println("IsClosableStmt not implemented yet");
+            } else {
+                Map<GoalNode<T>, VariableAssignment> matchedGoals =
+                        matchGoal(remainingGoalsSet, (SimpleCaseStatement) aCase);
+                if (matchedGoals != null) {
+                    remainingGoalsSet.removeAll(matchedGoals.keySet());
+                    goalsAfterCases.addAll(executeCase(aCase.getBody(), matchedGoals));
+                }
             }
 
         }
@@ -219,10 +223,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
      * @param aCase
      * @return
      */
-    private Map<GoalNode<T>, VariableAssignment> matchGoal(Set<GoalNode<T>> allGoalsBeforeCases, CaseStatement aCase) {
+    private Map<GoalNode<T>, VariableAssignment> matchGoal(Set<GoalNode<T>> allGoalsBeforeCases, SimpleCaseStatement aCase) {
 
         HashMap<GoalNode<T>, VariableAssignment> matchedGoals = new HashMap<>();
         Expression matchExpression = aCase.getGuard();
+
 
         for (GoalNode<T> goal : allGoalsBeforeCases) {
             VariableAssignment va = evaluateMatchInGoal(matchExpression, goal);

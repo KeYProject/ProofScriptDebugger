@@ -53,7 +53,7 @@ public interface Visitor<T> {
 
     T visit(CasesStatement cases);
 
-    T visit(CaseStatement case_);
+    //T visit(CaseStatement case_);
 
     T visit(CallStatement call);
 
@@ -70,4 +70,9 @@ public interface Visitor<T> {
     T visit(UnaryExpression e);
 
 
+    T visit(IsClosableCase isClosableCase);
+
+    T visit(SimpleCaseStatement simpleCaseStatement);
+
+    T visit(CaseStatement caseStatement);
 }

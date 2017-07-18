@@ -104,8 +104,8 @@ public interface ASTTraversal<T> extends Visitor<T> {
 
     @Override
     default T visit(CaseStatement caseStatement) {
-        caseStatement.getGuard().accept(this);
-        caseStatement.getBody().accept(this);
+        //caseStatement.getBody().accept(this);
+        caseStatement.accept(this);
         return null;
     }
 
@@ -156,6 +156,19 @@ public interface ASTTraversal<T> extends Visitor<T> {
     @Override
     default T visit(UnaryExpression e) {
         e.getExpression().accept(this);
+        return null;
+    }
+
+    @Override
+    default T visit(IsClosableCase isClosableCase) {
+        isClosableCase.getBody().accept(this);
+        return null;
+    }
+
+    @Override
+    default T visit(SimpleCaseStatement simpleCaseStatement) {
+        simpleCaseStatement.getGuard().accept(this);
+        simpleCaseStatement.getBody().accept(this);
         return null;
     }
 }

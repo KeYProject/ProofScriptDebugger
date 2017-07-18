@@ -128,5 +128,15 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
     public T visit(UnaryExpression unaryExpression) {
         return defaultVisit(unaryExpression);
     }
+
+    @Override
+    public T visit(IsClosableCase isClosableCase) {
+        return defaultVisit(isClosableCase);
+    }
+
+    @Override
+    public T visit(SimpleCaseStatement simpleCaseStatement) {
+        return defaultVisit(simpleCaseStatement);
+    }
 }
 

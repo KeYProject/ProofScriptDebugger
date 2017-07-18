@@ -13,4 +13,5 @@ import java.util.List;
 public interface MatcherApi<T> {
     List<VariableAssignment> matchLabel(GoalNode<T> currentState, String label);
     List<VariableAssignment> matchSeq(GoalNode<T> currentState, String data, Signature sig);
+
 }

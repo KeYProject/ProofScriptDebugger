@@ -76,8 +76,11 @@ literals :
 
      </pre>*/
 matchPattern
-    :   MATCH (pattern=expression
-        (USING LBRACKET argList RBRACKET)?) | DERIVABLE TERM_LITERAL | IFCLOSED
+    :
+       MATCH (
+         derivable=DERIVABLE derivableExpression=expression
+       | (pattern=expression (USING LBRACKET argList RBRACKET)?)
+       )
     ;
 
 scriptVar
@@ -98,9 +101,17 @@ casesStmt
     ;
 
 casesList
-    :   CASE expression COLON? INDENT stmtList DEDENT
+  //  : simpleCase
+   // | closableCase
+    :   CASE (MATCH ISCLOSED | expression) COLON? INDENT stmtList DEDENT
     ;
-
+/*simpleCase
+    : CASE expression COLON? INDENT stmtList DEDENT
+    ;
+closableCase
+    : CASE MATCH ISCLOSED COLON? INDENT stmtList DEDENT
+    ;
+*/
 forEachStmt
     :   FOREACH INDENT stmtList DEDENT
     ;
@@ -131,6 +142,8 @@ MULTI_LINE_COMMENT  : '/*' (MULTI_LINE_COMMENT|.)*? '*/' -> channel(HIDDEN);
 
 CASES: 'cases';
 CASE: 'case';
+ISCLOSED: 'isCloseable';
+DERIVABLE : 'derivable';
 DEFAULT: 'default';
 ASSIGN : ':=';
 LBRACKET: '[';
@@ -147,8 +160,6 @@ BOOL: 'bool' ;
 TERMTYPE : 'term' ;*/
 FOREACH : 'foreach' ;
 THEONLY : 'theonly' ;
-ISCLOSED: 'isClosable';
-DERIVABLE : 'derivable';
 INDENT : '{' ;
 DEDENT : '}' ;
 SEMICOLON : ';' ;

@@ -111,10 +111,25 @@ public class ASTChanger extends DefaultASTVisitor<ASTNode> {
     }
 
     @Override
+    public IsClosableCase visit(IsClosableCase isClosableCase) {
+        isClosableCase.getBody().accept(this);
+        return isClosableCase;
+    }
+
+    @Override
+    public SimpleCaseStatement visit(SimpleCaseStatement simpleCaseStatement) {
+        simpleCaseStatement.getGuard().accept(this);
+        simpleCaseStatement.getBody().accept(this);
+        return simpleCaseStatement;
+    }
+
+    @Override
     public CaseStatement visit(CaseStatement caseStatement) {
-        caseStatement.getGuard().accept(this);
-        caseStatement.getBody().accept(this);
+        //caseStatement.getGuard().accept(this);
+        //caseStatement.getBody().accept(this);
+        caseStatement.accept(this);
         return caseStatement;
+
     }
 
     @Override

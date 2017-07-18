@@ -38,15 +38,13 @@ import java.util.Map;
  */
 public class PrettyPrinter extends DefaultASTVisitor<Void> {
 
+    private final StringBuilder s = new StringBuilder();
     @Getter
     @Setter
     private int maxWidth = 80;
-
     @Getter
     @Setter
     private boolean unicode = true;
-
-    private final StringBuilder s = new StringBuilder();
     private int indentation = 0;
 
     @Override
@@ -168,7 +166,7 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
     }
 
     @Override
-    public Void visit(CaseStatement caseStatement) {
+    public Void visit(SimpleCaseStatement caseStatement) {
         s.append("case ");
         caseStatement.getGuard().accept(this);
         s.append(" {");
