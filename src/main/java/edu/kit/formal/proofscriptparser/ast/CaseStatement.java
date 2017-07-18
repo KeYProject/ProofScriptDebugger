@@ -52,6 +52,6 @@ public class CaseStatement extends Statement<ScriptLanguageParser.CasesListConte
      * {@inheritDoc}
      */
     @Override public CaseStatement copy() {
-        return new CaseStatement(body.copy(), isClosedStmt);
+        return new CaseStatement(isClosedStmt, body.copy());
     }
 }
