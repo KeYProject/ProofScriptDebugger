@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  *
  * @author S.Grebing
  */
-public class Interpreter<T> extends DefaultASTVisitor<Void>
+public class Interpreter<T> extends DefaultASTVisitor<Object>
         implements ScopeObservable {
     private static final int MAX_ITERATIONS = 5;
     @Getter
@@ -79,7 +79,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
      * @return
      */
     @Override
-    public Void visit(ProofScript proofScript) {
+    public Object visit(ProofScript proofScript) {
         enterScope(proofScript);
         //add vars
         visit(proofScript.getSignature());
@@ -95,7 +95,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
      * @return
      */
     @Override
-    public Void visit(AssignmentStatement assignmentStatement) {
+    public Object visit(AssignmentStatement assignmentStatement) {
         enterScope(assignmentStatement);
 
         GoalNode<T> node = getSelectedNode();
@@ -152,15 +152,61 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
         return null;
     }
 
+    @Override
+    public Object visit(IsClosableCase isClosableCase) {
+        State<T> currentStateToMatch = peekState();
+        GoalNode<T> selectedGoal = currentStateToMatch.getSelectedGoalNode();
+        enterScope(isClosableCase);
+        //executebody
+
+        exitScope(isClosableCase);
+        return false;
+    }
+
+    @Override
+    public Object visit(SimpleCaseStatement simpleCaseStatement) {
+        Expression matchExpression = simpleCaseStatement.getGuard();
+        State<T> currentStateToMatch = peekState();
+        GoalNode<T> selectedGoal = currentStateToMatch.getSelectedGoalNode();
+        VariableAssignment va = evaluateMatchInGoal(matchExpression, selectedGoal);
+        if (va != null) {
+            enterScope(simpleCaseStatement);
+            executeBody(simpleCaseStatement.getBody(), selectedGoal, va);
+            //  executeCase(simpleCaseStatement.getBody(), )
+            exitScope(simpleCaseStatement);
+            return true;
+        } else {
+            return false;
+        }
+       /* Map<GoalNode<T>, VariableAssignment> matchedGoals =
+                matchGoal(remainingGoalsSet, (SimpleCaseStatement) aCase);
+        if (matchedGoals != null) {
+            remainingGoalsSet.removeAll(matchedGoals.keySet());
+            goalsAfterCases.addAll(executeCase(aCase.getBody(), matchedGoals));
+        }
+
+        HashMap<GoalNode<T>, VariableAssignment> matchedGoals = new HashMap<>();
+        Expression matchExpression = aCase.getGuard();
+        for (GoalNode<T> goal : allGoalsBeforeCases) {
+            VariableAssignment va = evaluateMatchInGoal(matchExpression, goal);
+            if (va != null) {
+                matchedGoals.put(goal, va);
+            }
+        }
+        return matchedGoals;
+
+        */
+
+    }
+
     /**
      * @param casesStatement
      * @return
      */
     @Override
-    public Void visit(CasesStatement casesStatement) {
+    public Object visit(CasesStatement casesStatement) {
         enterScope(casesStatement);
         State<T> beforeCases = peekState();
-
 
         List<GoalNode<T>> allGoalsBeforeCases = beforeCases.getGoals();
 
@@ -168,10 +214,30 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
         List<GoalNode<T>> goalsAfterCases = new ArrayList<>();
         //copy the list of goal nodes for keeping track of goals
         Set<GoalNode<T>> remainingGoalsSet = new HashSet<>(allGoalsBeforeCases);
-        //TODO
         //handle cases
         List<CaseStatement> cases = casesStatement.getCases();
-        for (CaseStatement aCase : cases) {
+
+        for (GoalNode<T> goalBeforeCase : allGoalsBeforeCases) {
+            State<T> createdState = newState(goalBeforeCase);//to allow the case to retrieve goal
+            for (CaseStatement aCase : cases) {
+                boolean result = (boolean) aCase.accept(this);
+                if (result) {
+                    //remove goal from set for default
+                    remainingGoalsSet.remove(goalBeforeCase);
+                    //case statement matched and was executed
+                    break;
+                }
+            }
+            //remove state from stack
+            State<T> stateAfterCase = popState();
+            if (stateAfterCase.getGoals() != null) {
+                goalsAfterCases.addAll(stateAfterCase.getGoals());
+            }
+
+        }
+
+        //===========================================================================================//
+       /* for (CaseStatement aCase : cases) {
             if (aCase.isClosedStmt) {
                 System.out.println("IsClosableStmt not implemented yet");
             } else {
@@ -183,7 +249,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
                 }
             }
 
-        }
+        }*/
 
         //for all remaining goals execute default
         if (!remainingGoalsSet.isEmpty()) {
@@ -227,14 +293,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
 
         HashMap<GoalNode<T>, VariableAssignment> matchedGoals = new HashMap<>();
         Expression matchExpression = aCase.getGuard();
-
-
         for (GoalNode<T> goal : allGoalsBeforeCases) {
             VariableAssignment va = evaluateMatchInGoal(matchExpression, goal);
             if (va != null) {
                 matchedGoals.put(goal, va);
             }
-
         }
         return matchedGoals;
     }
@@ -244,7 +307,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
      *
      * @param matchExpression
      * @param goal
-     * @return null, if match was false, return teh first Assignment when match was true
+     * @return null, if match was false, return the first Assignment when match was true
      */
     private VariableAssignment evaluateMatchInGoal(Expression matchExpression, GoalNode<T> goal) {
         enterScope(matchExpression);
@@ -308,16 +371,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
         return s;
     }
 
-    /**
-     * @param caseStatement
-     * @return
-     */
-  /*  @Override
-    public Void visit(CaseStatement caseStatement) {
-        enterScope(caseStatement);
-        exitScope(caseStatement);
-        return null;
-    }*/
 
     /**
      * Visiting a call statement results in:
@@ -332,7 +385,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
      * @return
      */
     @Override
-    public Void visit(CallStatement call) {
+    public Object visit(CallStatement call) {
         enterScope(call);
         //neuer VarScope
         //enter new variable scope
@@ -357,7 +410,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
     }
 
     @Override
-    public Void visit(TheOnlyStatement theOnly) {
+    public Object visit(TheOnlyStatement theOnly) {
         List<GoalNode<T>> goals = getCurrentState().getGoals();
         if (goals.size() > 1) {
             throw new IllegalArgumentException(
@@ -381,7 +434,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
      * @return
      */
     @Override
-    public Void visit(ForeachStatement foreach) {
+    public Object visit(ForeachStatement foreach) {
         enterScope(foreach);
         List<GoalNode<T>> allGoals = getCurrentGoals();
         List<GoalNode<T>> goalsAfterForeach = new ArrayList<>();
@@ -399,7 +452,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
     }
 
     @Override
-    public Void visit(RepeatStatement repeatStatement) {
+    public Object visit(RepeatStatement repeatStatement) {
         enterScope(repeatStatement);
         int counter = 0;
         boolean b = false;
@@ -419,7 +472,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Void>
     }
 
     @Override
-    public Void visit(Signature signature) {
+    public Object visit(Signature signature) {
         exitScope(signature);
         GoalNode<T> node = getSelectedNode();
         node.enterScope();
