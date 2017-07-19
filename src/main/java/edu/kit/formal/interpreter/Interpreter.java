@@ -219,8 +219,9 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
         for (GoalNode<T> goalBeforeCase : allGoalsBeforeCases) {
             State<T> createdState = newState(goalBeforeCase);//to allow the case to retrieve goal
+            boolean result = false;
             for (CaseStatement aCase : cases) {
-                boolean result = (boolean) aCase.accept(this);
+                result = (boolean) aCase.accept(this);
                 if (result) {
                     //remove goal from set for default
                     remainingGoalsSet.remove(goalBeforeCase);
@@ -230,9 +231,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             }
             //remove state from stack
             State<T> stateAfterCase = popState();
-            if (stateAfterCase.getGoals() != null) {
+            System.out.println("State after Case " + stateAfterCase.getSelectedGoalNode().toCellTextForKeYData());
+            if (result && stateAfterCase.getGoals() != null) {
                 goalsAfterCases.addAll(stateAfterCase.getGoals());
             }
+
 
         }
 
@@ -363,11 +366,12 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     }
 
     private State<T> executeBody(Statements caseStmts, GoalNode<T> goalNode, VariableAssignment va) {
-
+        enterScope(caseStmts);
         goalNode.enterScope(va);
         State<T> s = newState(goalNode);
         caseStmts.accept(this);
         popState(s);
+        exitScope(caseStmts);
         return s;
     }
 
