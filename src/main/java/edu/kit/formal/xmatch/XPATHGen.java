@@ -1,4 +1,4 @@
-package edu.kit.formal;
+package edu.kit.formal.xmatch;
 
 import de.uka.ilkd.key.api.KeYApi;
 import de.uka.ilkd.key.api.ProofApi;
