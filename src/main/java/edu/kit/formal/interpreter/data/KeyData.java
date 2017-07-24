@@ -10,7 +10,8 @@ import java.util.function.Function;
 
 /**
  * @author Alexander Weigl
- * @version 1 (28.05.17)
+ * @author S. Grebing
+ * @version 2 (24.07.17)
  */
 @Data
 @AllArgsConstructor
@@ -54,6 +55,11 @@ public class KeyData {
         this(node, kd.getEnv(),  kd.getProof());
     }
 
+    /**
+     * Return rule name of rule applied to this node
+     *
+     * @return String representation of applied rule name
+     */
     public String getRuleLabel() {
         if (ruleLabel == null) {
             ruleLabel = constructLabel((Node n) -> n.getAppliedRuleApp().rule().name().toString());
@@ -61,15 +67,30 @@ public class KeyData {
         return ruleLabel;
     }
 
+    /**
+     * Create Label for goalview according to function that is passed.
+     * The following fucntions can be given:
+     * <ul>
+     *     <li>@see  #Method getRuleLabel()</li>
+     *     <li>@see  #Method getBranchingLabel()</li>
+     *     <li>@see  #Method getNameLabel()</li>
+     *     <li>@see  #Method getProgramLinesLabel()</li>
+     *     <li>@see  #Method getProgramStatementsLabel()</li>
+     * </ul>
+     * @param projection function determining which kind of label to construct
+     * @return Label from this node to parent
+     */
     private String constructLabel(Function<Node, String> projection) {
         StringBuilder sb = new StringBuilder();
         Node cur = getNode();
         do {
             try {
                 String section = projection.apply(cur);
-                if (section != null) {
+                //filter null elements and -1 elements
+                if (section != null && !(section.equals(Integer.toString(-1)))) {
                     sb.append(section);
                     sb.append(SEPARATOR);
+
                 }
             } catch (Exception e) {
             }
@@ -79,6 +100,10 @@ public class KeyData {
         return sb.toString();
     }
 
+    /**
+     * Get branching label of node from KeY
+     * @return label of this node determining the branching labels in KeY
+     */
     public String getBranchingLabel() {
         if (branchingLabel == null) {
             branchingLabel = constructLabel(n -> n.getNodeInfo().getBranchLabel());
@@ -86,6 +111,10 @@ public class KeyData {
         return branchingLabel;
     }
 
+    /**
+     * Get label with node name from KeY (often applied rulename)
+     * @return name of this node
+     */
     public String getNameLabel() {
         if (nameLabel == null) {
             nameLabel = constructLabel(Node::name);
@@ -93,20 +122,26 @@ public class KeyData {
         return nameLabel;
     }
 
-
+    /**
+     * Get lines of active statement
+     * @return line of active satetment in orginal file (-1 if rewritten by KeY or not applicable)
+     */
     public String getProgramLinesLabel() {
         if (programLinesLabel == null) {
             programLinesLabel = constructLabel(n ->
-                    Integer.toString(n.getNodeInfo().getExecStatementPosition().getLine())
+                    Integer.toString(n.getNodeInfo().getActiveStatement().getPositionInfo().getStartPosition().getLine())
             );
         }
         return programLinesLabel;
     }
 
+    /**
+     * Get first activestatement for node
+     * @return
+     */
     public String getProgramStatementsLabel() {
         if (programStatementsLabel == null) {
             programStatementsLabel = constructLabel(n ->
-                    // n.getNodeInfo().getActiveStatement().toString());
                     n.getNodeInfo().getFirstStatementString());
         }
 
