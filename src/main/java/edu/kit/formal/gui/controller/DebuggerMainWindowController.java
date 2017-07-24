@@ -1,6 +1,5 @@
 package edu.kit.formal.gui.controller;
 
-import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.proof.init.ProofInputException;
@@ -147,10 +146,12 @@ public class DebuggerMainWindowController implements Initializable {
             }
         });
 
+
         proofTreeController.currentSelectedGoalProperty().addListener((observable, oldValue, newValue) -> {
             imodel.setCurrentInterpreterGoal(newValue);
             //also update the selected to be shown
             imodel.setSelectedGoalNodeToShow(newValue);
+            //System.out.println("Pos: "+newValue.getData().getNode().getNodeInfo().getActiveStatement().getPositionInfo());
         });
 
         proofTreeController.currentHighlightNodeProperty().addListener((observable, oldValue, newValue) -> {
@@ -175,6 +176,7 @@ public class DebuggerMainWindowController implements Initializable {
 
         chosenContract.addListener(o -> {
             javaCode.set(Utils.getJavaCode(chosenContract.get()));
+
             showCodeDock(null);
         });
 

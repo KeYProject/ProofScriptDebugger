@@ -152,10 +152,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         return createBinaryExpression(ctx, ctx.expression(), findOperator(ctx.op.getText()));
     }
 
-    @Override
-    public Object visitExprSubs(ScriptLanguageParser.ExprSubsContext ctx) {
-        return null;
-    }
+
 
     private Operator findOperator(String n) {
         return findOperator(n, 2);
@@ -221,8 +218,15 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     //TODO implement
+
+
     @Override
-    public Object visitSubstExpression(ScriptLanguageParser.SubstExpressionContext ctx) {
+    public Object visitExprSubst(ScriptLanguageParser.ExprSubstContext ctx) {
+        return null;
+    }
+
+    @Override
+    public Object visitSubstExpressionList(ScriptLanguageParser.SubstExpressionListContext ctx) {
         return null;
     }
 

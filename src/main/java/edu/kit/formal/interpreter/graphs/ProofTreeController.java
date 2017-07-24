@@ -11,6 +11,7 @@ import edu.kit.formal.proofscriptparser.ast.ProofScript;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Worker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -230,6 +231,9 @@ public class ProofTreeController {
         }
 
         //create interpreter service and start
+        if (interpreterService.getState() == Worker.State.SUCCEEDED) {
+            interpreterService.reset();
+        }
         interpreterService.interpreterProperty().set(currentInterpreter);
         interpreterService.mainScriptProperty().set(mainScript);
         interpreterService.start();
@@ -306,11 +310,11 @@ public class ProofTreeController {
         return currentHighlightNode.get();
     }
 
-    public ObjectProperty<ASTNode> currentHighlightNodeProperty() {
-        return currentHighlightNode;
-    }
-
     public void setCurrentHighlightNode(ASTNode currentHighlightNode) {
         this.currentHighlightNode.set(currentHighlightNode);
+    }
+
+    public ObjectProperty<ASTNode> currentHighlightNodeProperty() {
+        return currentHighlightNode;
     }
 }

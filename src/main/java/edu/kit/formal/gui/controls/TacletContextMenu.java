@@ -9,12 +9,15 @@ import de.uka.ilkd.key.pp.AbbrevMap;
 import de.uka.ilkd.key.pp.NotationInfo;
 import de.uka.ilkd.key.pp.PosInSequent;
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.*;
+import de.uka.ilkd.key.rule.BuiltInRule;
+import de.uka.ilkd.key.rule.RuleSet;
+import de.uka.ilkd.key.rule.Taclet;
+import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.formal.gui.controller.DebuggerMainWindowController;
+import edu.kit.formal.gui.controller.Events;
 import edu.kit.formal.interpreter.KeYProofFacade;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -40,6 +43,7 @@ import java.util.stream.Collectors;
 public class TacletContextMenu extends ContextMenu {
 
     private static final Set<Name> CLUTTER_RULESETS = new LinkedHashSet<Name>();
+    private static final Set<Name> CLUTTER_RULES = new LinkedHashSet<Name>();
 
     static {
         CLUTTER_RULESETS.add(new Name("notHumanReadable"));
@@ -47,8 +51,6 @@ public class TacletContextMenu extends ContextMenu {
         CLUTTER_RULESETS.add(new Name("pullOutQuantifierAll"));
         CLUTTER_RULESETS.add(new Name("pullOutQuantifierEx"));
     }
-
-    private static final Set<Name> CLUTTER_RULES = new LinkedHashSet<Name>();
 
     static {
         CLUTTER_RULES.add(new Name("cut_direct_r"));
@@ -132,6 +134,8 @@ public class TacletContextMenu extends ContextMenu {
      */
     private static ImmutableList<TacletApp> removeRewrites(
             ImmutableList<TacletApp> list) {
+        return list;
+        /*
         ImmutableList<TacletApp> result = ImmutableSLList.<TacletApp>nil();
         Iterator<TacletApp> it = list.iterator();
 
@@ -141,6 +145,32 @@ public class TacletContextMenu extends ContextMenu {
             result = (taclet instanceof RewriteTaclet ? result
                     : result.prepend(tacletApp));
         }
+        return result;*/
+    }
+
+    /**
+     * Sorts the TacletApps with the given TacletAppComparator.
+     *
+     * @param finds the list to sort (will not be changed)
+     * @param comp  the comparator
+     * @return the sorted list
+     */
+    public static ImmutableList<TacletApp> sort(ImmutableList<TacletApp> finds,
+                                                TacletAppComparator comp) {
+        ImmutableList<TacletApp> result = ImmutableSLList.<TacletApp>nil();
+
+        List<TacletApp> list = new ArrayList<TacletApp>(finds.size());
+
+        for (final TacletApp app : finds) {
+            list.add(app);
+        }
+
+        Collections.sort(list, comp);
+
+        for (final TacletApp app : list) {
+            result = result.prepend(app);
+        }
+
         return result;
     }
 
@@ -179,6 +209,29 @@ public class TacletContextMenu extends ContextMenu {
             createAbbrevSection(pos.getPosInOccurrence().subTerm());
 
     }
+
+    /**
+     public TacletFilter getFilterForInteractiveProving() {
+     if(this.filterForInteractiveProving == null) {
+     this.filterForInteractiveProving = new TacletFilter() {
+     protected boolean filter(Taclet taclet) {
+     String[] var2 = JoinProcessor.SIMPLIFY_UPDATE;
+     int var3 = var2.length;
+
+     for(int var4 = 0; var4 < var3; ++var4) {
+     String name = var2[var4];
+     if(name.equals(taclet.name().toString())) {
+     return false;
+     }
+     }
+
+     return true;
+     }
+     };
+     }
+
+     return this.filterForInteractiveProving;
+     }*/
 
     /**
      * Creates menu items for all given taclets. A submenu for insertion of
@@ -233,29 +286,6 @@ public class TacletContextMenu extends ContextMenu {
     }
 
     /**
-     public TacletFilter getFilterForInteractiveProving() {
-     if(this.filterForInteractiveProving == null) {
-     this.filterForInteractiveProving = new TacletFilter() {
-     protected boolean filter(Taclet taclet) {
-     String[] var2 = JoinProcessor.SIMPLIFY_UPDATE;
-     int var3 = var2.length;
-
-     for(int var4 = 0; var4 < var3; ++var4) {
-     String name = var2[var4];
-     if(name.equals(taclet.name().toString())) {
-     return false;
-     }
-     }
-
-     return true;
-     }
-     };
-     }
-
-     return this.filterForInteractiveProving;
-     }*/
-
-    /**
      * Manages the visibility of all menu items dealing with abbreviations based
      * on if the given term already is abbreviated and if the abbreviation is
      * enabled.
@@ -288,6 +318,9 @@ public class TacletContextMenu extends ContextMenu {
         mediator.getUI().getProofControl().selectedTaclet(
                 ((TacletMenuItem) event.getSource()).getTaclet(), goal,
                 pos.getPosInOccurrence());*/
+
+        System.out.println("event = [" + event + "]");
+        Events.fire(new Events.TacletApplicationEvent(event));
     }
 
     /**
@@ -438,31 +471,5 @@ public class TacletContextMenu extends ContextMenu {
             notationInfo.getAbbrevMap().setEnabled(occ.subTerm(), false);
             //  parentController.forceRefresh();
         }
-    }
-
-    /**
-     * Sorts the TacletApps with the given TacletAppComparator.
-     *
-     * @param finds the list to sort (will not be changed)
-     * @param comp  the comparator
-     * @return the sorted list
-     */
-    public static ImmutableList<TacletApp> sort(ImmutableList<TacletApp> finds,
-                                                TacletAppComparator comp) {
-        ImmutableList<TacletApp> result = ImmutableSLList.<TacletApp>nil();
-
-        List<TacletApp> list = new ArrayList<TacletApp>(finds.size());
-
-        for (final TacletApp app : finds) {
-            list.add(app);
-        }
-
-        Collections.sort(list, comp);
-
-        for (final TacletApp app : list) {
-            result = result.prepend(app);
-        }
-
-        return result;
     }
 }

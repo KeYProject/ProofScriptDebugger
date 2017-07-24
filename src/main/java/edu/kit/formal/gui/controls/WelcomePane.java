@@ -33,10 +33,10 @@ public class WelcomePane extends AnchorPane {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
         proofScriptDebugger.openScript(
-                new File("src/test/resources/edu/kit/formal/interpreter/dbg.kps")
+                new File("src/test/resources/edu/kit/formal/interpreter/javaExample/test.kps")
         );
         proofScriptDebugger.openJavaFile(
-                new File("src/test/resources/edu/kit/formal/interpreter/javaExample/TwoWaySwap.java"));
+                new File("src/test/resources/edu/kit/formal/interpreter/javaExample/Test.java"));
     }
 
     public void loadHelpPage(ActionEvent event) {

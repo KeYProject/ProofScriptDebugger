@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 
 /**
  * Main Class for interpreter
+ * Interpreter keeps a stack of states
  *
  * @author S.Grebing
  */
@@ -155,10 +156,14 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     @Override
     public Object visit(IsClosableCase isClosableCase) {
         State<T> currentStateToMatch = peekState();
-        GoalNode<T> selectedGoal = currentStateToMatch.getSelectedGoalNode();
-        enterScope(isClosableCase);
-        //executebody
+        State<T> currentStateToMatchCopy = peekState().copy(); //deepcopy
+        GoalNode<T> selectedGoalNode = currentStateToMatch.getSelectedGoalNode();
+        GoalNode<T> selectedGoalCopy = currentStateToMatch.getSelectedGoalNode().deepCopy(); //deepcopy
 
+        enterScope(isClosableCase);
+        executeBody(isClosableCase.getBody(), selectedGoalNode, new VariableAssignment(selectedGoalNode.getAssignments()));
+        State<T> stateafterIsClosable = peekState();
+        //check if state is closed
         exitScope(isClosableCase);
         return false;
     }
@@ -498,7 +503,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         }
     }
 
-
+    /**
+     * Peek current state
+     *
+     * @return state on top of state stack
+     */
     public State<T> getCurrentState() {
         try {
             return stateStack.peek();
@@ -508,6 +517,12 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         }
     }
 
+    /**
+     * Create new state containing goals and selected goal node an push to stack
+     * @param goals
+     * @param selected
+     * @return state that is pushed to stack
+     */
     public State<T> newState(List<GoalNode<T>> goals, GoalNode<T> selected) {
         if (selected != null && !goals.contains(selected)) {
             throw new IllegalStateException("selected goal not in list of goals");
@@ -515,14 +530,29 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return pushState(new State<>(goals, selected));
     }
 
+    /**
+     * Cretae a ew state conatining the goals but without selected goal node and push to stack
+     * @param goals
+     * @return
+     */
     public State<T> newState(List<GoalNode<T>> goals) {
         return newState(goals, null);
     }
 
+    /**
+     * Cretae a new state containing only the selected goal node and push to stack
+     * @param selected
+     * @return reference to state on stack
+     */
     public State<T> newState(GoalNode<T> selected) {
         return newState(Collections.singletonList(selected), selected);
     }
 
+    /**
+     * Push state to stack and return reference to this state
+     * @param state
+     * @return
+     */
     public State<T> pushState(State<T> state) {
         if (stateStack.contains(state)) {
             throw new IllegalStateException("State is already on the stack!");
@@ -531,6 +561,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return state;
     }
 
+    /**
+     * Remove top level state from stack and throw an Exception if state does not equal expected state
+     * @param expected
+     * @return
+     */
     public State<T> popState(State<T> expected) {
         State<T> actual = stateStack.pop();
         if (!expected.equals(actual)) {
@@ -539,15 +574,26 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return actual;
     }
 
+    /**
+     * Remove top level state from stack
+     * @return
+     */
     private State<T> popState() {
         return stateStack.pop();
     }
 
-
+    /**
+     * Lookup state on the stack but do not remove it
+     * @return
+     */
     public State<T> peekState() {
         return stateStack.peek();
     }
 
+    /**
+     * Get goalnodes from current state
+     * @return
+     */
     public List<GoalNode<T>> getCurrentGoals() {
         return getCurrentState().getGoals();
     }

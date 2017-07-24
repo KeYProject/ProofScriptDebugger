@@ -66,7 +66,7 @@ public class KeyData {
         Node cur = getNode();
         do {
             try {
-                String section = projection.apply(getNode());
+                String section = projection.apply(cur);
                 if (section != null) {
                     sb.append(section);
                     sb.append(SEPARATOR);
@@ -97,7 +97,8 @@ public class KeyData {
     public String getProgramLinesLabel() {
         if (programLinesLabel == null) {
             programLinesLabel = constructLabel(n ->
-                    Integer.toString(n.getNodeInfo().getExecStatementPosition().getLine()));
+                    Integer.toString(n.getNodeInfo().getExecStatementPosition().getLine())
+            );
         }
         return programLinesLabel;
     }
@@ -105,8 +106,10 @@ public class KeyData {
     public String getProgramStatementsLabel() {
         if (programStatementsLabel == null) {
             programStatementsLabel = constructLabel(n ->
+                    // n.getNodeInfo().getActiveStatement().toString());
                     n.getNodeInfo().getFirstStatementString());
         }
+
         return programStatementsLabel;
     }
 

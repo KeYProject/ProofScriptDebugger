@@ -36,6 +36,7 @@ public class InspectionView extends BorderPane {
         });
         goalView.getSelectionModel().selectedItemProperty().addListener((o, a, b) -> {
             model.get().setSelectedGoalNodeToShow(b);
+            model.get().setCurrentInterpreterGoal(b);
         });
 
         model.get().currentInterpreterGoalProperty().addListener(
@@ -47,6 +48,7 @@ public class InspectionView extends BorderPane {
                         // TODO weigl: get marked lines of the program, and set it
                         model.get().highlightedJavaLinesProperty().get()
                                 .clear();
+
                     }
                 });
 

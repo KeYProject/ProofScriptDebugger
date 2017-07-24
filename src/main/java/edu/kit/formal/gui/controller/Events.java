@@ -1,8 +1,10 @@
 package edu.kit.formal.gui.controller;
 
 import com.google.common.eventbus.EventBus;
+import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.formal.gui.controls.ScriptArea;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 /**
  * See http://codingjunkie.net/guava-eventbus/ for an introduction.
@@ -25,11 +27,15 @@ public class Events {
     }
 
     @Data
+    @RequiredArgsConstructor
     public static class FocusScriptArea {
         private final ScriptArea scriptArea;
 
-        public FocusScriptArea(ScriptArea area) {
-            this.scriptArea = area;
-        }
+    }
+
+    @Data
+    @RequiredArgsConstructor
+    public static class TacletApplicationEvent {
+        private final TacletApp app;
     }
 }
