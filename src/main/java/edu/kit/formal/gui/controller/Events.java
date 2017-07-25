@@ -1,6 +1,7 @@
 package edu.kit.formal.gui.controller;
 
 import com.google.common.eventbus.EventBus;
+import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.formal.gui.controls.ScriptArea;
 import lombok.Data;
@@ -37,5 +38,6 @@ public class Events {
     @RequiredArgsConstructor
     public static class TacletApplicationEvent {
         private final TacletApp app;
+        private final PosInOccurrence pio;
     }
 }

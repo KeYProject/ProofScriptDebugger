@@ -6,6 +6,7 @@ import edu.kit.formal.interpreter.data.KeyData;
 import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ListCell;
@@ -45,19 +46,26 @@ public class InspectionView extends BorderPane {
                     if (newValue != null && newValue.getData() != null) {
                         getSequentView().setNode(newValue.getData().getNode());
                         getSequentView().setGoal(newValue.getData().getGoal());
+
                         // TODO weigl: get marked lines of the program, and set it
-                        model.get().highlightedJavaLinesProperty().get()
-                                .clear();
+                        /*model.get().highlightedJavaLinesProperty().get()
+                                .clear();*/
+                        model.get().setHighlightedJavaLines(FXCollections.observableSet(newValue.getData().constructLinesSet()));
+
+                        System.out.println(newValue.getData().constructLinesSet());
 
                     }
                 });
 
         model.get().goalsProperty().bindBidirectional(goalView.itemsProperty());
+
+
         getGoalView().setCellFactory(GoalNodeListCell::new);
 
         Utils.addDebugListener(model.get().goalsProperty());
         Utils.addDebugListener(model.get().selectedGoalNodeToShowProperty());
         Utils.addDebugListener(model.get().currentInterpreterGoalProperty());
+        Utils.addDebugListener(model.get().highlightedJavaLinesProperty());
 
         /*TODO redefine CSS bases on selected mode
         mode.addListener(o -> {
@@ -70,6 +78,7 @@ public class InspectionView extends BorderPane {
         });
          */
     }
+
 
     public SequentView getSequentView() {
         return sequentView;

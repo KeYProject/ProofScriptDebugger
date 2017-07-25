@@ -158,6 +158,10 @@ public class DebuggerMainWindowController implements Initializable {
             scriptController.getDebugPositionHighlighter().highlight(newValue);
         });
 
+        imodel.highlightedJavaLinesProperty().addListener((observable, oldValue, newValue) -> {
+            javaArea.enableCurrentLineHighlightingProperty();
+        });
+
         Utils.addDebugListener(proofTreeController.currentGoalsProperty(), Utils::reprKeyDataList);
         Utils.addDebugListener(proofTreeController.currentSelectedGoalProperty(), Utils::reprKeyData);
         Utils.addDebugListener(proofTreeController.currentHighlightNodeProperty());
@@ -175,8 +179,14 @@ public class DebuggerMainWindowController implements Initializable {
         });*/
 
         chosenContract.addListener(o -> {
-            javaCode.set(Utils.getJavaCode(chosenContract.get()));
-
+            //javaCode.set(Utils.getJavaCode(chosenContract.get()));
+            try {
+                System.out.println(chosenContract.get().getHTMLText(getFacade().getService()));
+                String encoding = null; //encoding Plattform default
+                javaCode.set(FileUtils.readFileToString(javaFile.get(), encoding));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             showCodeDock(null);
         });
 
@@ -186,11 +196,13 @@ public class DebuggerMainWindowController implements Initializable {
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 try {
                     javaArea.setText(newValue);
+                    javaArea.enableLineHighlightingProperty();
                 } catch (Exception e) {
                     LOGGER.catching(e);
                 }
             }
         });
+
 
     }
 
@@ -306,7 +318,7 @@ public class DebuggerMainWindowController implements Initializable {
 
     @FXML
     protected void loadKeYFile() {
-        File keyFile = openFileChooserOpenDialog("Select KeY File", "KeY Files", "key", "script");
+        File keyFile = openFileChooserOpenDialog("Select KeY File", "KeY Files", "key", "kps");
         openKeyFile(keyFile);
     }
 

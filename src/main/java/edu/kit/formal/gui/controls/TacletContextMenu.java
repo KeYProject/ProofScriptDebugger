@@ -9,10 +9,7 @@ import de.uka.ilkd.key.pp.AbbrevMap;
 import de.uka.ilkd.key.pp.NotationInfo;
 import de.uka.ilkd.key.pp.PosInSequent;
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.BuiltInRule;
-import de.uka.ilkd.key.rule.RuleSet;
-import de.uka.ilkd.key.rule.Taclet;
-import de.uka.ilkd.key.rule.TacletApp;
+import de.uka.ilkd.key.rule.*;
 import edu.kit.formal.gui.controller.DebuggerMainWindowController;
 import edu.kit.formal.gui.controller.Events;
 import edu.kit.formal.interpreter.KeYProofFacade;
@@ -134,8 +131,8 @@ public class TacletContextMenu extends ContextMenu {
      */
     private static ImmutableList<TacletApp> removeRewrites(
             ImmutableList<TacletApp> list) {
-        return list;
-        /*
+        // return list;
+
         ImmutableList<TacletApp> result = ImmutableSLList.<TacletApp>nil();
         Iterator<TacletApp> it = list.iterator();
 
@@ -145,7 +142,7 @@ public class TacletContextMenu extends ContextMenu {
             result = (taclet instanceof RewriteTaclet ? result
                     : result.prepend(tacletApp));
         }
-        return result;*/
+        return result;
     }
 
     /**
@@ -319,8 +316,8 @@ public class TacletContextMenu extends ContextMenu {
                 ((TacletMenuItem) event.getSource()).getTaclet(), goal,
                 pos.getPosInOccurrence());*/
 
-        System.out.println("event = [" + event + "]");
-        Events.fire(new Events.TacletApplicationEvent(event));
+        //System.out.println("event = [" + event + "]");
+        Events.fire(new Events.TacletApplicationEvent(event, pos.getPosInOccurrence()));
     }
 
     /**

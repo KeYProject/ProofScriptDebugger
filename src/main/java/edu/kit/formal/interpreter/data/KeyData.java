@@ -1,11 +1,14 @@
 package edu.kit.formal.interpreter.data;
 
 import de.uka.ilkd.key.control.KeYEnvironment;
+import de.uka.ilkd.key.java.SourceElement;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -20,6 +23,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class KeyData {
     private static final String SEPARATOR = " // ";
+    private static final String RANGE_SEPARATOR = " -- ";
     private final KeYEnvironment env;
     private final Proof proof;
     private Node node;
@@ -38,6 +42,7 @@ public class KeyData {
         this.proof = data.proof;
         this.goal = node;
         this.node = goal.node();
+
     }
 
     public KeyData(Goal g, KeYEnvironment environment, Proof proof) {
@@ -124,13 +129,21 @@ public class KeyData {
 
     /**
      * Get lines of active statement
-     * @return line of active satetment in orginal file (-1 if rewritten by KeY or not applicable)
+     * @return line of active satetment in original file (-1 if rewritten by KeY or not applicable)
      */
     public String getProgramLinesLabel() {
         if (programLinesLabel == null) {
-            programLinesLabel = constructLabel(n ->
-                    Integer.toString(n.getNodeInfo().getActiveStatement().getPositionInfo().getStartPosition().getLine())
-            );
+            programLinesLabel = constructLabel(n -> {
+                int startPos = n.getNodeInfo().getActiveStatement().getPositionInfo().getStartPosition().getLine();
+                int endPos = n.getNodeInfo().getActiveStatement().getPositionInfo().getEndPosition().getLine();
+                if (startPos == endPos) {
+                    return Integer.toString(startPos);
+                } else {
+                    String start = Integer.toString(startPos);
+                    String end = Integer.toString(endPos);
+                    return start + RANGE_SEPARATOR + end;
+                }
+            });
         }
         return programLinesLabel;
     }
@@ -157,4 +170,32 @@ public class KeyData {
         return node;
         //return getGoal().node();
     }
+
+    public Set<Integer> constructLinesSet() {
+        Set<Integer> set = new HashSet<>();
+
+        Node cur = getNode();
+        do {
+
+            SourceElement activeStatement = cur.getNodeInfo().getActiveStatement();
+            if (activeStatement != null) {
+                int startPos = activeStatement.getPositionInfo().getStartPosition().getLine();
+                int endPos = activeStatement.getPositionInfo().getEndPosition().getLine();
+                if (startPos != -1) {
+                    if (startPos == endPos) {
+                        set.add(startPos);
+                    } else {
+                        set.add(startPos);
+                        set.add(endPos);
+                    }
+                }
+            }
+            cur = cur.parent();
+
+        } while (cur != null);
+        return set;
+    }
+
+
+
 }

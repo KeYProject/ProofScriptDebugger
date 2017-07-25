@@ -1,7 +1,10 @@
 package edu.kit.formal.gui.controls;
 
+import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import de.uka.ilkd.key.logic.SequentFormula;
+import edu.kit.formal.gui.controller.Events;
 import edu.kit.formal.gui.model.Breakpoint;
 import edu.kit.formal.gui.model.MainScriptIdentifier;
 import edu.kit.formal.proofscriptparser.Facade;
@@ -378,6 +381,7 @@ public class ScriptArea extends CodeArea {
 
     public void removeExecutionMarker() {
         setText(getTextWithoutMarker());
+        //Events.unregister(this);
     }
 
     private String getTextWithoutMarker() {
@@ -386,9 +390,32 @@ public class ScriptArea extends CodeArea {
 
     public void insertExecutionMarker(int pos) {
         LOGGER.debug("ScriptArea.insertExecutionMarker");
+        Events.register(this);
         String text = getText();
         setText(text.substring(0, pos) + EXECUTION_MARKER + text.substring(pos));
+
+
     }
+
+    @Subscribe
+    public void handle(Events.TacletApplicationEvent tap) {
+
+        String tapName = tap.getApp().taclet().displayName();
+
+        SequentFormula seqForm = tap.getPio().sequentFormula();
+
+        System.out.println(tap.getPio().sequentFormula());
+        //String on = tap.getApp().ifFormulaInstantiations().toString();
+        String text = getText();
+        System.out.println(text);
+        int posExecMarker = this.getExecutionMarkerPosition();
+        setText(text.substring(0, posExecMarker) + "\n" + tapName + " on=\"" + seqForm + "\";\n" + text.substring(posExecMarker + 1));
+        Events.unregister(this);
+        //this.getMainScript().getScriptArea().insertText(this.getExecutionMarkerPosition(), tapName+" "+on+ ";");
+
+    }
+
+
 
     public int getExecutionMarkerPosition() {
         return getText().lastIndexOf(EXECUTION_MARKER);

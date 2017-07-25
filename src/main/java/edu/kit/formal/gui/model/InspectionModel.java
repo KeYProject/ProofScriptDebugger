@@ -23,8 +23,8 @@ public class InspectionModel {
     private final ObjectProperty<GoalNode<KeyData>> currentInterpreterGoal = new SimpleObjectProperty<>(this, "currentInterpreterGoal");
     private final MapProperty<GoalNode, Color> colorofEachGoalNodeinListView = new SimpleMapProperty<>(FXCollections.observableHashMap());
     //private final StringProperty javaString = new SimpleStringProperty();
-    private final SetProperty<Integer> highlightedJavaLines = new SimpleSetProperty<>(FXCollections.observableSet());
-    private final BooleanProperty closable = new SimpleBooleanProperty();
+    private final SetProperty<Integer> highlightedJavaLines = new SimpleSetProperty<>(FXCollections.observableSet(), "highlightedJavaLines");
+    private final BooleanProperty closable = new SimpleBooleanProperty(this, "INspectionViewClosableProperty");
     private final BooleanProperty isInterpreterTab = new SimpleBooleanProperty();
     private ObjectProperty<Mode> mode = new SimpleObjectProperty<>();
 
