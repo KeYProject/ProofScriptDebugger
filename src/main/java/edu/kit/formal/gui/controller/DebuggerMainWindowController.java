@@ -158,10 +158,6 @@ public class DebuggerMainWindowController implements Initializable {
             scriptController.getDebugPositionHighlighter().highlight(newValue);
         });
 
-        imodel.highlightedJavaLinesProperty().addListener((observable, oldValue, newValue) -> {
-            javaArea.enableCurrentLineHighlightingProperty();
-        });
-
         Utils.addDebugListener(proofTreeController.currentGoalsProperty(), Utils::reprKeyDataList);
         Utils.addDebugListener(proofTreeController.currentSelectedGoalProperty(), Utils::reprKeyData);
         Utils.addDebugListener(proofTreeController.currentHighlightNodeProperty());
@@ -190,19 +186,26 @@ public class DebuggerMainWindowController implements Initializable {
             showCodeDock(null);
         });
 
+        //add listener for linehighlighting when changing selection in inspectionview
+        getInspectionViewsController().getActiveInspectionViewTab().getModel().highlightedJavaLinesProperty().
+                addListener((observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        javaArea.linesToHighlightProperty().set(newValue);
+                    } else {
+                        javaArea.linesToHighlightProperty().set(FXCollections.emptyObservableSet());
+                    }
+                });
 
         javaCode.addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 try {
                     javaArea.setText(newValue);
-                    javaArea.enableLineHighlightingProperty();
                 } catch (Exception e) {
                     LOGGER.catching(e);
                 }
             }
         });
-
 
     }
 

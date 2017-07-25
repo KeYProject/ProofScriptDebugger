@@ -2,15 +2,9 @@ package edu.kit.formal.gui.controls;
 
 import antlrgrammars.Java8Lexer;
 import javafx.beans.property.SimpleSetProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
-import javafx.collections.SetChangeListener;
 import org.antlr.v4.runtime.CharStreams;
-import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * @author Alexander Weigl
@@ -18,7 +12,8 @@ import java.util.Set;
  */
 public class JavaArea extends BaseCodeArea {
     private ANTLR4LexerHighlighter highlighter = new ANTLR4LexerHighlighter((s) -> new Java8Lexer(CharStreams.fromString(s)));
-
+    //set with current lines to highlight
+    private SimpleSetProperty<Integer> linesToHighlight = new SimpleSetProperty<>(this, "JavaLinesToHighlight");
     public JavaArea() {
         init();
     }
@@ -35,6 +30,36 @@ public class JavaArea extends BaseCodeArea {
         getStyleClass().add("java-area");
         textProperty().addListener(
                 (a, b, c) -> updateView());
+        linesToHighlightProperty().addListener((observable, oldValue, newValue) -> {
+            setEnableLineHighlighting(true);
+            unHighlightOldSet(oldValue);
+            highlightLineSet();
+        });
+
+    }
+
+    /**
+     * Remove old highlights
+     *
+     * @param oldValue
+     */
+    private void unHighlightOldSet(ObservableSet<Integer> oldValue) {
+        if (oldValue != null) {
+            oldValue.forEach(integer -> {
+                lineToClass.put(integer - 1, "un-highlight-line");
+                highlightLines();
+            });
+        }
+    }
+
+    /**
+     * highlight new lines
+     */
+    private void highlightLineSet() {
+        linesToHighlightProperty().get().forEach(integer -> {
+            lineToClassProperty().get().put(integer - 1, "line-highlight");
+        });
+        highlightLines();
     }
 
     private void updateView() {
@@ -42,4 +67,20 @@ public class JavaArea extends BaseCodeArea {
         setStyleSpans(0, highlighter.highlight(textProperty().getValue()));
         highlightLines();
     }
+
+
+    public ObservableSet<Integer> getLinesToHighlight() {
+        return linesToHighlight.get();
+    }
+
+    public void setLinesToHighlight(ObservableSet<Integer> linesToHighlight) {
+        this.linesToHighlight.set(linesToHighlight);
+    }
+
+    public SimpleSetProperty<Integer> linesToHighlightProperty() {
+        return linesToHighlight;
+    }
+
+
+
 }

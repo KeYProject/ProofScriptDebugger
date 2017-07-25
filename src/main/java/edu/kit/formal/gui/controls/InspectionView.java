@@ -46,14 +46,8 @@ public class InspectionView extends BorderPane {
                     if (newValue != null && newValue.getData() != null) {
                         getSequentView().setNode(newValue.getData().getNode());
                         getSequentView().setGoal(newValue.getData().getGoal());
-
-                        // TODO weigl: get marked lines of the program, and set it
-                        /*model.get().highlightedJavaLinesProperty().get()
-                                .clear();*/
+                        //set Java lines to highlight in model
                         model.get().setHighlightedJavaLines(FXCollections.observableSet(newValue.getData().constructLinesSet()));
-
-                        System.out.println(newValue.getData().constructLinesSet());
-
                     }
                 });
 
