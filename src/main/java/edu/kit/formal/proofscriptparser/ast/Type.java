@@ -35,7 +35,7 @@ import java.util.Arrays;
 public enum Type {
     STRING("string"), TERM("term"), ANY("any"),
     INT("int"), BOOL("bool"), INT_ARRAY("int[]"), OBJECT("object"),
-    HEAP("heap"), FIELD("field"), LOCSET("locset"), NULL("null"), FORMULA("formula");
+    HEAP("heap"), FIELD("field"), LOCSET("locset"), NULL("null"), FORMULA("formula"), SEQ("Seq");
 
     private final String symbol;
 

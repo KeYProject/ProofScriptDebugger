@@ -38,6 +38,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
                     .put(Type.INT, VariableAssignments.VarType.INT)
                     .put(Type.STRING, VariableAssignments.VarType.OBJECT)
                     .put(Type.INT_ARRAY, VariableAssignments.VarType.INT_ARRAY)
+                    .put(Type.SEQ, VariableAssignments.VarType.SEQ)
                     .build();
     private static Logger logger = Logger.getLogger("interpreter");
     //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
@@ -236,7 +237,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             }
             //remove state from stack
             State<T> stateAfterCase = popState();
-            System.out.println("State after Case " + stateAfterCase.getSelectedGoalNode().toCellTextForKeYData());
+            //  System.out.println("State after Case " + stateAfterCase.getSelectedGoalNode().toCellTextForKeYData());
             if (result && stateAfterCase.getGoals() != null) {
                 goalsAfterCases.addAll(stateAfterCase.getGoals());
             }
@@ -280,6 +281,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             if (goalsAfterCases.size() == 1) {
                 newStateAfterCases = new State<T>(goalsAfterCases, 0);
             } else {
+                //TODO check for closed goals?
                 newStateAfterCases = new State<T>(goalsAfterCases, null);
             }
             stateStack.push(newStateAfterCases);
@@ -319,6 +321,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
      */
     private VariableAssignment evaluateMatchInGoal(Expression matchExpression, GoalNode<T> goal) {
         enterScope(matchExpression);
+        System.out.println("Goal to match " + goal.toCellTextForKeYData());
         MatchEvaluator mEval = new MatchEvaluator(goal.getAssignments(), goal, matcherApi);
         mEval.getEntryListeners().addAll(entryListeners);
         mEval.getExitListeners().addAll(exitListeners);

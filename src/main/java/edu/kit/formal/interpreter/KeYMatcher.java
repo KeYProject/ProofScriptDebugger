@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Interface to KeY Matcher Api
@@ -36,6 +39,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
     private static final Name CUT_TACLET_NAME = new Name("cut");
     private ScriptApi scrapi;
     private Interpreter<KeyData> interpreter;
+    private List<MatchResult> resultsFromLabelMatch;
 
     public KeYMatcher(ScriptApi scrapi, Interpreter<KeyData> interpreter) {
         this.scrapi = scrapi;
@@ -79,13 +83,84 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         }
     }
 
+    /**
+     * If teh label matcher was successful the list contains all match results
+     *
+     * @return
+     */
+    public List<MatchResult> getResultsFromLabelMatch() {
+        return resultsFromLabelMatch;
+    }
+
+    /**
+     * Match the label of a goal node
+     *
+     * @param currentState goal node as possible match cancidate
+     * @param label        String representation for regualr expression for label to match
+     * @return List of matches if match was sucessful, empty list otherwise
+     */
     @Override
     public List<VariableAssignment> matchLabel(GoalNode<KeyData> currentState,
                                                String label) {
+        List<VariableAssignment> assignments = new ArrayList<>();
+        resultsFromLabelMatch = new ArrayList<>();
+        //compile pattern
+        Pattern regexpForLabel = Pattern.compile(label);
 
-        return null;
+
+        String branchLabel = currentState.getData().getBranchingLabel();
+        Matcher branchLabelMatcher = regexpForLabel.matcher(branchLabel);
+
+        if (branchLabelMatcher.matches()) {
+            VariableAssignment va = new VariableAssignment(null);
+            va.declare("$$branchLabel_", Type.STRING);
+            va.assign("$$branchLabel_", Value.from(branchLabelMatcher.group()));
+            assignments.add(va);
+            resultsFromLabelMatch.add(branchLabelMatcher.toMatchResult());
+        }
+
+        String controlFlowLines = currentState.getData().getProgramLinesLabel();
+        Matcher linesMatcher = regexpForLabel.matcher(controlFlowLines);
+        if (linesMatcher.matches()) {
+            VariableAssignment va = new VariableAssignment(null);
+            va.declare("$$CtrlLinesLabel_", Type.STRING);
+            va.assign("$$CtrlLinesLabel_", Value.from(linesMatcher.group()));
+            assignments.add(va);
+            resultsFromLabelMatch.add(linesMatcher.toMatchResult());
+        }
+
+        String controlFlowStmts = currentState.getData().getProgramStatementsLabel();
+        Matcher flowStmtsMatcher = regexpForLabel.matcher(controlFlowLines);
+        if (flowStmtsMatcher.matches()) {
+            VariableAssignment va = new VariableAssignment(null);
+            va.declare("$$FlowStmtsLabel_", Type.STRING);
+            va.assign("$$FlowStmtsLabel_", Value.from(flowStmtsMatcher.group()));
+            assignments.add(va);
+            resultsFromLabelMatch.add(flowStmtsMatcher.toMatchResult());
+        }
+
+        String ruleLabel = currentState.getData().getRuleLabel();
+        Matcher ruleMatcher = regexpForLabel.matcher(ruleLabel);
+        if (ruleMatcher.matches()) {
+            VariableAssignment va = new VariableAssignment(null);
+            va.declare("$$RuleLabel_", Type.STRING);
+            va.assign("$$RuleLabel_", Value.from(ruleMatcher.group()));
+            assignments.add(va);
+            resultsFromLabelMatch.add(ruleMatcher.toMatchResult());
+        }
+
+
+        assignments.forEach(variableAssignment -> System.out.println(variableAssignment));
+        return assignments.isEmpty()? null: assignments;
     }
 
+    /**
+     * Match against a sequent of a goal node
+     * @param currentState
+     * @param term
+     * @param signature
+     * @return
+     */
     @Override
     public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState,
                                              String term,
@@ -110,10 +185,10 @@ public class KeYMatcher implements MatcherApi<KeyData> {
             }
         });
 
-
+        //   System.out.println("Matching: "+term.toString()+"\n================\n"+currentState.getData().getNode().sequent()+"\n================\n");
         List<VariableAssignments> keyMatchResult = scrapi.matchPattern(term, currentState.getData().getNode().sequent(), keyAssignments);
-        //empty keyassigmnments
-        System.out.println("Matched " + keyMatchResult.size() + " goals from " + currentState.toString() + " with pattern " + term);
+        //empty keyassignments
+        // System.out.println("Matched " + keyMatchResult.size() + " goals from " + currentState.toString() + " with pattern " + term);
         List<VariableAssignment> transformedMatchResults = new ArrayList<>();
         for (VariableAssignments mResult : keyMatchResult) {
             transformedMatchResults.add(from(mResult));

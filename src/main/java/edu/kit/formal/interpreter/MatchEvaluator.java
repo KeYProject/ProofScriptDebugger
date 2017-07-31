@@ -144,6 +144,7 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
 
 
     /**
+     * Visit a match expression and decide which matcher to use. currently working is a matcher for sequents and a matcher for labels.
      * @param match
      * @return
      */
@@ -157,6 +158,7 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
         List<VariableAssignment> va = null;
         if (pattern.getType() == Type.STRING) {
             va = getMatcher().matchLabel(goal, (String) pattern.getData());
+            //TODO extract the results form the matcher in order to retrieve the selection results
         } else if (pattern.getType() == Type.TERM) {
             va = getMatcher().matchSeq(goal, (String) pattern.getData(), sig);
         }
