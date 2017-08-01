@@ -5,10 +5,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.api.VariableAssignments;
-import edu.kit.formal.interpreter.data.GoalNode;
-import edu.kit.formal.interpreter.data.State;
-import edu.kit.formal.interpreter.data.Value;
-import edu.kit.formal.interpreter.data.VariableAssignment;
+import de.uka.ilkd.key.proof.Goal;
+import de.uka.ilkd.key.proof.Proof;
+import edu.kit.formal.interpreter.data.*;
 import edu.kit.formal.interpreter.exceptions.InterpreterRuntimeException;
 import edu.kit.formal.interpreter.funchdl.CommandLookup;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
@@ -16,9 +15,12 @@ import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.key_project.util.collection.ImmutableList;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Main Class for interpreter
@@ -164,6 +166,28 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         enterScope(isClosableCase);
         executeBody(isClosableCase.getBody(), selectedGoalNode, new VariableAssignment(selectedGoalNode.getAssignments()));
         State<T> stateafterIsClosable = peekState();
+        List<GoalNode<T>> goals = stateafterIsClosable.getGoals();
+        boolean allClosed = true;
+        for (GoalNode<T> goal : goals) {
+            KeyData data = (KeyData) goal.getData();
+            if (!data.getNode().isClosed()) {
+                allClosed = false;
+                break;
+            }
+        }
+        if (!allClosed) {
+            System.out.println("IsClosable was not successful, rolling back proof");
+            Proof currentKeYproof = ((KeyData) selectedGoalNode.getData()).getProof();
+            ImmutableList<Goal> subtreeGoals = currentKeYproof.getSubtreeGoals(((KeyData) selectedGoalNode.getData()).getNode());
+            //subtreeGoals.forEach(goal -> System.out.println(goal.node().serialNr()));
+            //System.out.println(subtreeGoals);
+            currentKeYproof.pruneProof(((KeyData) selectedGoalCopy.getData()).getNode());
+            //ImmutableList<Goal> subtreeGoals1 = currentKeYproof.getSubtreeGoals(((KeyData) selectedGoalNode.getData()).getNode());
+            //subtreeGoals1.forEach(goal -> System.out.println(goal.node().serialNr()));
+
+            popState();
+            pushState(currentStateToMatchCopy);
+        }
         //check if state is closed
         exitScope(isClosableCase);
         return false;
@@ -277,12 +301,17 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         State<T> newStateAfterCases;
         if (!goalsAfterCases.isEmpty()) {
             //goalsAfterCases.forEach(node -> node.exitScope());
-
-            if (goalsAfterCases.size() == 1) {
+            Stream<GoalNode<T>> goalNodeStream = goalsAfterCases.stream().filter(tGoalNode -> !((KeyData) tGoalNode.getData()).getNode().isClosed());
+            List<GoalNode<T>> openGoalListAfterCases = goalNodeStream.collect(Collectors.toList());
+            /*if (goalsAfterCases.size() == 1) {
                 newStateAfterCases = new State<T>(goalsAfterCases, 0);
             } else {
-                //TODO check for closed goals?
-                newStateAfterCases = new State<T>(goalsAfterCases, null);
+                // newStateAfterCases = new State<T>(goalsAfterCases, null);
+            }*/
+            if (openGoalListAfterCases.size() == 1) {
+                newStateAfterCases = new State<T>(openGoalListAfterCases, 0);
+            } else {
+                newStateAfterCases = new State<T>(openGoalListAfterCases, null);
             }
             stateStack.push(newStateAfterCases);
         }
