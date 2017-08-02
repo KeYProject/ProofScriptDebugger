@@ -1,8 +1,9 @@
 script t1(){
-    symbex;
+    impRight;
+    impLeft;
     cases{
         case match isCloseable:{
-            andRight; //should not close proof
+            impRight; //should not close proof
         }
 
     }
