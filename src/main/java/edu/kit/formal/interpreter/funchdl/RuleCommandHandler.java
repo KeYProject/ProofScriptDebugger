@@ -4,6 +4,7 @@ import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.RuleCommand;
+import de.uka.ilkd.key.macros.scripts.ScriptException;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.Rule;
 import edu.kit.formal.interpreter.Interpreter;
@@ -11,6 +12,7 @@ import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.interpreter.data.VariableAssignment;
+import edu.kit.formal.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.formal.proofscriptparser.ast.CallStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +42,7 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
     @Override
     public void evaluate(Interpreter<KeyData> interpreter,
                          CallStatement call,
-                         VariableAssignment params) {
+                         VariableAssignment params) throws IllegalStateException, RuntimeException, ScriptCommandNotApplicableException {
         if (!rules.containsKey(call.getCommand())) {
             throw new IllegalStateException();
         }
@@ -67,7 +69,12 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
                 state.getGoals().add(new GoalNode<>(expandedNode, kdn));
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            if (e.getClass().equals(ScriptException.class)) {
+                throw new ScriptCommandNotApplicableException(e, c, map);
+
+            } else {
+                throw new RuntimeException(e);
+            }
         }
     }
 

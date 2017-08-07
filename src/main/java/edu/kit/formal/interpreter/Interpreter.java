@@ -9,6 +9,7 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.formal.interpreter.data.*;
 import edu.kit.formal.interpreter.exceptions.InterpreterRuntimeException;
+import edu.kit.formal.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.formal.interpreter.funchdl.CommandLookup;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.Visitor;
@@ -179,12 +180,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             System.out.println("IsClosable was not successful, rolling back proof");
             Proof currentKeYproof = ((KeyData) selectedGoalNode.getData()).getProof();
             ImmutableList<Goal> subtreeGoals = currentKeYproof.getSubtreeGoals(((KeyData) selectedGoalNode.getData()).getNode());
-            //subtreeGoals.forEach(goal -> System.out.println(goal.node().serialNr()));
-            //System.out.println(subtreeGoals);
             currentKeYproof.pruneProof(((KeyData) selectedGoalCopy.getData()).getNode());
-            //ImmutableList<Goal> subtreeGoals1 = currentKeYproof.getSubtreeGoals(((KeyData) selectedGoalNode.getData()).getNode());
-            //subtreeGoals1.forEach(goal -> System.out.println(goal.node().serialNr()));
-
             popState();
             pushState(currentStateToMatchCopy);
         }
@@ -433,7 +429,14 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         VariableAssignment params = evaluateParameters(call.getParameters());
         GoalNode<T> g = getSelectedNode();
         g.enterScope();
-        functionLookup.callCommand(this, call, params);
+        try {
+            functionLookup.callCommand(this, call, params);
+        } catch (ScriptCommandNotApplicableException e) {
+            //TODO handling of error state for each visit
+            State<T> newErrorState = newState(null, null);
+            newErrorState.setErrorState(true);
+            pushState(newErrorState);
+        }
         g.exitScope();
         exitScope(call);
         return null;

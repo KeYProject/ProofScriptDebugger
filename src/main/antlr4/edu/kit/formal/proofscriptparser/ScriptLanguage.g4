@@ -8,7 +8,11 @@ start
     :   (script)*
     ;
 
-script: SCRIPT name=ID '(' signature=argList? ')' INDENT body=stmtList DEDENT;
+script
+    : SCRIPT name=ID '(' signature=argList? ')' INDENT body=stmtList DEDENT
+    ;
+
+
 argList
     :   varDecl (',' varDecl)*
     ;
@@ -110,7 +114,7 @@ casesStmt
 casesList
   //  : simpleCase
    // | closableCase
-    :   CASE (MATCH ISCLOSED | expression) COLON? INDENT stmtList DEDENT
+    :   CASE  (ISCLOSED | expression) COLON? INDENT stmtList DEDENT
     ;
 /*simpleCase
     : CASE expression COLON? INDENT stmtList DEDENT

@@ -6,130 +6,80 @@
 </head>
 <body>
 <h1>Language Constructs</h1>
+This description is an adapted version of the README for script commands in KeY by Mattias Ulbrich.
+<br>
+Proof scripts are textual representations of rule applications,
+settings changes and macro invocations.
+
 <h2>Proof Commands</h2>
+
+Proof commands start with an identifier followed by optional
+arguments:
+<br>
+command argName="argument" "argument without name" ;
+<br>
+Every command is terminated with a semicolon. There are named
+arguments in the form argName="argument" and unnamed argument without
+name. Single '...'and double quotes "..." can both be used.
+<br>
+Single-line comments are start with //.
+
 <h3>KeY Rules</h3>
 All KeY rules can be used as proof command.
-The following command structure is used to apply single KeY rules onto a selected goal node.
+The following command structure is used to apply single KeY rules onto the sequent of a selected goal node.
+If no argument is following the proof command the taclet corresponding to this command has to match at most once on the
+sequent.
+If more terms or formulas to which a proof command is applicable exist, arguments have to be
+given that indicate the where to apply the rule to.
 <br>
-RULENAME
+A rule command has the following syntax:<br>
+RULENAME (on="TERM")? (formula="TOP_LEVEL_FORMULA")? (occ="OCCURENCE_IN_SEQUENT")? (inst_="TERM")? (maxSteps=INT)
+<br>with:
+<ul>
+    <li>TERM: specific sub-term</li>
+    <li>TOP_LEVEL_FORMULA: specific top level formula</li>
+    <li>OCCURENCE_IN_SEQUENT: Number of occurence in the sequent</li>
+    <li>maxSteps: the number of steps KEY should at most use until it terminateds teh proof search</li>
+</ul>
 
-<!--Apply a single rule onto the current sequent. As unnamed argument add
-the name of the taclet to be applied. If the taclet matches only once
-on the entire sequent, the rule is applied. If it matches more than
-once you need to specify more. In that case you can first specify the
-sequence formula and then the number of the occurrence in the formula
-or the specific subterm via the 'on' keyword.
 If a rule has schema variables which must be instantiated manually,
 such instantiations can be provided as arguments. A schema variable
 named sv can be instantiated by setting the argument sv="..." or by
 setting inst_sv="..." (the latter works also for conflict cases like
 inst_occ="...").
 
-Examples:
-rule andRight;
-# if there is only one matching spot on the sequent
 
-rule eqSymm formula="a=b";
-# changes sequent "a=b ==> c=d" to "b=a ==> c=d"
-# "rule eqSymm;" alone would have been ambiguous.
-
-rule eqSymm formula="a=b->c=d" occ=2;
-# changes sequent "a=b->c=d ==>" to "a=b->d=c ==>".
-# occurrence number needed since there are
-# two possible applications on the formula
-
-rule eqSymm formula="a=b->c=d" on="c=d";
-# changes sequent "a=b->c=d ==>" to "a=b->d=c ==>".
-# same as above, but using the option to specify a
-# subterm instead of an occurrence number.
-
-rule cut cutFormula="x > y";
-# almost the same as 'cut "x>y"'
--->
-<!--A rule command has the following syntax:<br>
-RULENAME (on="TERM")? (formula="TOP_LEVEL_FORMULA")? (occ="OCCURENCE_IN_SEQUENT")? (inst_="TERM")?
-<br>with:
+<h4>Examples</h4>
 <ul>
-    <li>TERM</li>
-    <li>TOP_LEVEL_FORMULA</li>
+    <li>andRight;</li>
+    <br>
+    Applicable iff there is only one matching spot on the sequent
+
+    <li>eqSymm formula="a=b";</li>
+    <br>
+    This command changes the sequent "a=b ==> c=d" to "b=a ==> c=d"
+    Using only "eqSymm;" alone would have been ambiguous.
+
+    <li>eqSymm formula="a=b->c=d" occ=2;</li>
+    <br>
+    This command changes sequent "a=b->c=d ==>" to "a=b->d=c ==>".
+    The occurrence number is needed since there are two possible applications on the formula
+
+    <li>eqSymm formula="a=b->c=d" on="c=d";</li>
+    <br>
+    This command changes the sequent "a=b->c=d ==>" to "a=b->d=c ==>".
+    It is simialr to the example above, but here the option to specify a
+    subterm instead of an occurrence number is used.
+
+    <li>cut cutFormula="x > y";</li>
+    <br>
+    This command is almost the same as 'cut "x>y"'
+
 </ul>
+<h3>Macro-Commands</h3>
 
-FROM MATTIAS:
-Making interactive persistent using proof scripts
-=================================================
-Mattias Ulbrich <ulbrich@kit.edu>, 2015
+<!--
 
-
-Experimental feature: Proof scripts are currently only visible in the
-GUI if KeY is launched with the --experimental option. Concrete syntax
-is subject to change.
-
-Every KeY user knows the pain of manually redoing an interactive proof
-over and over again even though only a tiny bit of the program or
-specification have changed. NOW you can use proof scripts which will
-alleviate your worries with repeating proofs.
-
-Proof scripts are textual representations of rule applications,
-settings changes and macro invocations. They are notated in linear
-order. The target of a script command is usually the first open goal
-in the proof tree, i.e., the first reached when traversing the proof
-tree (not necessarily the first in the "Goal" pane in the GUI).
-
-
-Syntax of proof scripts
------------------------
-
-Proof commands start with an identifier followed by optional
-arguments:
-
-command argName="argument" "argument without name" ;
-
-Every command is terminated with a semicolon. There are named
-arguments in the form argName="argument" and unnamed argument without
-name. Single '...'and double quotes "..." can both be used. If
-"argument" is an identifier itself, the quotes can optionally be
-dropped, like in
-
-rule andRight ;
-
-The character # begins a comment which extends to the end of the
-line. Currently, there are no multi-line comments in proof scripts.
-Proof scripts are case sensitive.
-
-
-How can scripts be loaded
--------------------------
-
-1. In the GUI:
-
-Open a proof obligation. Currently proof scripts work only reliably if
-applied to the root of a fresh proof obligation (no rule applications,
-prune steps). The open the context menu (sequent or proof tree),
-choose "Strategy macros" and then "Run proof script ...". In the file
-dialog that appears, choose the script file to load. The script is
-automatically applied. You can follow the process in a logging window.
-
-2. From within key input files:
-
-At the very end of key files *INSTEAD* of a \proof object, you can now
-attach a proof script directly in double quotes following the keyword
-\proofScript. An very simple example reads:
-
-----------8<----------
-\predicates {a; b;}
-\problem { a & b -> a }
-
-\proofScript "
-rule 'impRight';
-rule 'andLeft';
-rule 'close';"
-----------8<----------
-
-Since the script is no enclosed in "...", only single quotes '...' can
-be used in the script. You can also load a script from an external
-file by writing
-
-\proofScript "script 'some_filename.script';"
 
 
 Commands in scripts

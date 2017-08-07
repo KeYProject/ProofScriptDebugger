@@ -2,7 +2,7 @@ script t1(){
     impRight;
     impLeft;
     cases{
-        case match isCloseable:{
+        case isCloseable:{
             impRight; //should not close proof
         }
 

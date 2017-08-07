@@ -31,6 +31,7 @@ public class State<T> {
     private GoalNode<T> selectedGoalNode;
 
     @Getter
+    @Setter
     private boolean errorState;
 
 
