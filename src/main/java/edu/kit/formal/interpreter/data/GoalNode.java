@@ -21,13 +21,16 @@ public class GoalNode<T> {
     @Getter
     private T data;
 
+    @Getter
+    private boolean isClosed;
+
     /**
      * This conctructur will be replaced with concrete one that uses projectedNode
      *
      * @param parent
      * @param data
      */
-    public GoalNode(GoalNode<T> parent, T data) {
+    public GoalNode(GoalNode<T> parent, T data, boolean isClosed) {
         //BUG: Hier muesste deepcopy der assignments passieren
         this.assignments = new VariableAssignment(parent == null ? null : parent.deepCopyAssignments());
         this.parent = parent;
@@ -105,7 +108,7 @@ public class GoalNode<T> {
 
     public GoalNode<T> deepCopy() {
         //TODO method does nothing helpful atm
-        return new GoalNode<T>(parent, data);
+        return new GoalNode<T>(parent, data, isClosed);
     }
 
     public VariableAssignment enterScope(VariableAssignment va) {

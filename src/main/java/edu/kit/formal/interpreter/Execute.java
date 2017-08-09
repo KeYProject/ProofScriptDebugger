@@ -33,6 +33,15 @@ public class Execute {
         execute.run();
     }
 
+    public static Options argparse() {
+        Options options = new Options();
+        options.addOption("h", "--help", false, "print help text");
+        options.addOption("p", "--script-path", true, "include folder for scripts");
+        options.addOption("l", "--linter", false, "run linter before execute");
+        options.addOption("s", "--script", true, "script sourceName");
+        return options;
+    }
+
     public Interpreter<KeyData> run() {
         try {
             ProofManagementApi pma = KeYApi.loadFromKeyFile(new File(keyFiles.get(0)));
@@ -49,7 +58,7 @@ public class Execute {
 
             Interpreter<KeyData> inter = interpreterBuilder.build();
             KeyData keyData = new KeyData(root.getProofNode(), pa.getEnv(), pa.getProof());
-            inter.newState(new GoalNode<>(null, keyData));
+            inter.newState(new GoalNode<>(null, keyData, keyData.isClosedNode()));
             inter.interpret(ast.get(0));
             return inter;
         } catch (ProblemLoaderException | IOException e) {
@@ -66,15 +75,5 @@ public class Execute {
         scriptFile = new File(cli.getOptionValue("s"));
         if (cli.getOptionValue('p') != null)
             interpreterBuilder.scriptSearchPath(new File(cli.getOptionValue('p')));
-    }
-
-
-    public static Options argparse() {
-        Options options = new Options();
-        options.addOption("h", "--help", false, "print help text");
-        options.addOption("p", "--script-path", true, "include folder for scripts");
-        options.addOption("l", "--linter", false, "run linter before execute");
-        options.addOption("s", "--script", true, "script sourceName");
-        return options;
     }
 }

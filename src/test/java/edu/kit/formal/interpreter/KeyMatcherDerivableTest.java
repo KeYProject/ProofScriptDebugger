@@ -22,7 +22,8 @@ public class KeyMatcherDerivableTest {
         Proof proof = f.getProof();
 
         Goal g = proof.getGoal(proof.root());
-        GoalNode<KeyData> gn = new GoalNode<>(null, new KeyData(g, f.getEnvironment(), proof));
+        KeyData newKeYData = new KeyData(g, f.getEnvironment(), proof);
+        GoalNode<KeyData> gn = new GoalNode<>(null, newKeYData, newKeYData.isClosedNode());
         Term termQ = new TermBuilder(f.getEnvironment().getServices().getTermFactory(),
                 f.getEnvironment().getServices()).parseTerm("q");
         System.out.println(termQ);

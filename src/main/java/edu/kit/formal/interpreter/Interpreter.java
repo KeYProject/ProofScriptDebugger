@@ -198,30 +198,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         if (va != null) {
             enterScope(simpleCaseStatement);
             executeBody(simpleCaseStatement.getBody(), selectedGoal, va);
-            //  executeCase(simpleCaseStatement.getBody(), )
             exitScope(simpleCaseStatement);
             return true;
         } else {
             return false;
         }
-       /* Map<GoalNode<T>, VariableAssignment> matchedGoals =
-                matchGoal(remainingGoalsSet, (SimpleCaseStatement) aCase);
-        if (matchedGoals != null) {
-            remainingGoalsSet.removeAll(matchedGoals.keySet());
-            goalsAfterCases.addAll(executeCase(aCase.getBody(), matchedGoals));
-        }
-
-        HashMap<GoalNode<T>, VariableAssignment> matchedGoals = new HashMap<>();
-        Expression matchExpression = aCase.getGuard();
-        for (GoalNode<T> goal : allGoalsBeforeCases) {
-            VariableAssignment va = evaluateMatchInGoal(matchExpression, goal);
-            if (va != null) {
-                matchedGoals.put(goal, va);
-            }
-        }
-        return matchedGoals;
-
-        */
 
     }
 
@@ -265,20 +246,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
         }
 
-        //===========================================================================================//
-       /* for (CaseStatement aCase : cases) {
-            if (aCase.isClosedStmt) {
-                System.out.println("IsClosableStmt not implemented yet");
-            } else {
-                Map<GoalNode<T>, VariableAssignment> matchedGoals =
-                        matchGoal(remainingGoalsSet, (SimpleCaseStatement) aCase);
-                if (matchedGoals != null) {
-                    remainingGoalsSet.removeAll(matchedGoals.keySet());
-                    goalsAfterCases.addAll(executeCase(aCase.getBody(), matchedGoals));
-                }
-            }
-
-        }*/
 
         //for all remaining goals execute default
         if (!remainingGoalsSet.isEmpty()) {
@@ -297,13 +264,9 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         State<T> newStateAfterCases;
         if (!goalsAfterCases.isEmpty()) {
             //goalsAfterCases.forEach(node -> node.exitScope());
-            Stream<GoalNode<T>> goalNodeStream = goalsAfterCases.stream().filter(tGoalNode -> !((KeyData) tGoalNode.getData()).getNode().isClosed());
+            Stream<GoalNode<T>> goalNodeStream = goalsAfterCases.stream().filter(tGoalNode -> !(tGoalNode.isClosed()));
             List<GoalNode<T>> openGoalListAfterCases = goalNodeStream.collect(Collectors.toList());
-            /*if (goalsAfterCases.size() == 1) {
-                newStateAfterCases = new State<T>(goalsAfterCases, 0);
-            } else {
-                // newStateAfterCases = new State<T>(goalsAfterCases, null);
-            }*/
+
             if (openGoalListAfterCases.size() == 1) {
                 newStateAfterCases = new State<T>(openGoalListAfterCases, 0);
             } else {

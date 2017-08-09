@@ -66,7 +66,7 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
             state.getGoals().remove(expandedNode);
             for (Goal g : ngoals) {
                 KeyData kdn = new KeyData(kd, g.node());
-                state.getGoals().add(new GoalNode<>(expandedNode, kdn));
+                state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
             }
         } catch (Exception e) {
             if (e.getClass().equals(ScriptException.class)) {

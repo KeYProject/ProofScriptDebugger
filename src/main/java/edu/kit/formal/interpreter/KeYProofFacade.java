@@ -153,7 +153,7 @@ public class KeYProofFacade {
 
     public Collection<GoalNode<KeyData>> getPseudoGoals() {
         KeyData data = new KeyData(proof.get().root(), getEnvironment(), getProof());
-        return Collections.singleton(new GoalNode<>(null, data));
+        return Collections.singleton(new GoalNode<>(null, data, data.getNode().isClosed()));
     }
     //endregion
 }

@@ -34,6 +34,7 @@ public class KeyData {
             programStatementsLabel,
             nameLabel;
     private Goal goal;
+    private boolean closedNode;
 
     public KeyData(KeyData data, Goal node) {
         env = data.env;
@@ -42,6 +43,7 @@ public class KeyData {
         this.proof = data.proof;
         this.goal = node;
         this.node = goal.node();
+        closedNode = this.node.isClosed();
 
     }
 
@@ -49,11 +51,13 @@ public class KeyData {
         goal = g;
         env = environment;
         this.proof = proof;
+        closedNode = proof.closed();
     }
 
     public KeyData(Node root, KeYEnvironment environment, Proof proof) {
         this(proof.getGoal(root), environment, proof);
         node = root;
+        closedNode = root.isClosed();
     }
 
     public KeyData(KeyData kd, Node node) {
@@ -74,7 +78,7 @@ public class KeyData {
 
     /**
      * Create Label for goalview according to function that is passed.
-     * The following fucntions can be given:
+     * The following functions can be given:
      * <ul>
      *     <li>@see  #Method getRuleLabel()</li>
      *     <li>@see  #Method getBranchingLabel()</li>

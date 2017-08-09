@@ -75,7 +75,8 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         boolean isDerivable = proof.getSubtreeGoals(toShow.node()).size() == 0;
 
         if (isDerivable) {
-            GoalNode<KeyData> newGoalNode = new GoalNode<KeyData>(kd, new KeyData(kd.getData(), goalList.head()));
+            KeyData kdataNew = new KeyData(kd.getData(), goalList.head());
+            GoalNode<KeyData> newGoalNode = new GoalNode<KeyData>(kd, kdataNew, kdataNew.isClosedNode());
             return newGoalNode;
         } else {
             proof.pruneProof(kd.getData().getNode(), false);

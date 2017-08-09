@@ -191,7 +191,7 @@ public class InterpreterBuilder {
         final ProofApi pa = new ProofApi(proof, keyEnvironment);
         final ProjectedNode root = pa.getFirstOpenGoal();
         final KeyData keyData = new KeyData(root.getProofNode(), pa.getEnv(), pa.getProof());
-        final GoalNode<KeyData> startGoal = new GoalNode<>(null, keyData);
+        final GoalNode<KeyData> startGoal = new GoalNode<>(null, keyData, keyData.isClosedNode());
         return startState(startGoal);
     }
 

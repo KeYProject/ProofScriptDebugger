@@ -60,7 +60,7 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
             state.getGoals().remove(expandedNode);
             for (Goal g : ngoals) {
                 KeyData kdn = new KeyData(kd, g.node());
-                state.getGoals().add(new GoalNode<>(expandedNode, kdn));
+                state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.isClosedNode()));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

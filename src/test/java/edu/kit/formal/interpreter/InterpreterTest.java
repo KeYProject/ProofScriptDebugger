@@ -28,12 +28,21 @@ import java.util.Map;
  */
 public class InterpreterTest {
 
+    private static <T> T get(Map<Variable, T> m, String... keys) {
+        for (String k : keys) {
+            if (m.containsKey(new Variable(k))) {
+                return m.get(new Variable(k));
+            }
+        }
+        return null;
+    }
+
     public Interpreter<String> execute(InputStream is) throws IOException {
         List<ProofScript> scripts = Facade.getAST(CharStreams.fromStream(is));
         Interpreter<String> i = new Interpreter<>(createTestLookup(scripts));
         i.setMatcherApi(new PseudoMatcher());
         //i.getEntryListeners().add(new ScopeLogger("scope:"));
-        i.newState(new GoalNode<>(null, "abc"));
+        i.newState(new GoalNode<>(null, "abc", false));
         i.interpret(scripts.get(0));
         return i;
     }
@@ -49,7 +58,6 @@ public class InterpreterTest {
         defaultLookup.getBuilders().add(scriptHandler);
         return defaultLookup;
     }
-
 
     @Test
     public void testSimple() throws IOException {
@@ -87,7 +95,6 @@ public class InterpreterTest {
         }
     }
 
-
     private class AssertionCommand extends BuiltinCommands.BuiltinCommand {
 
         public AssertionCommand() {
@@ -104,14 +111,5 @@ public class InterpreterTest {
             else
                 Assert.assertTrue(msg.getData(), exp.getData());
         }
-    }
-
-    private static <T> T get(Map<Variable, T> m, String... keys) {
-        for (String k : keys) {
-            if (m.containsKey(new Variable(k))) {
-                return m.get(new Variable(k));
-            }
-        }
-        return null;
     }
 }

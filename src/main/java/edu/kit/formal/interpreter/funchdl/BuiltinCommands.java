@@ -61,7 +61,7 @@ public abstract class BuiltinCommands {
             State<String> state = new State<>(s.getGoals(), null);
             state.getGoals().remove(s.getSelectedGoalNode());
             for (char i = 0; i < num; i++) {
-                state.getGoals().add(new GoalNode<>(g, g.getData() + "." + (char) ('a' + i)));
+                state.getGoals().add(new GoalNode<>(g, g.getData() + "." + (char) ('a' + i), g.isClosed()));
             }
             interpreter.pushState(state);
         }
