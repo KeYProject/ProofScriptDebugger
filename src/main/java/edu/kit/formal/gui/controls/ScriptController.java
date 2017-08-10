@@ -18,7 +18,6 @@ import javafx.collections.ObservableMap;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dockfx.DockNode;
@@ -71,6 +70,13 @@ public class ScriptController {
         return openScripts.get(editor);
     }
 
+    /**
+     * Create a new Tab in the ScriptTabPane containing the contents of the file given as argument
+     *
+     * @param filePath to file that should be loaded to new tab
+     * @return refernce to new scriptArea in new tab
+     * @throws IOException if an Exception occurs while loading file
+     */
     public ScriptArea createNewTab(File filePath) throws IOException {
         filePath = filePath.getAbsoluteFile();
         if (findEditor(filePath) == null) {
@@ -129,6 +135,10 @@ public class ScriptController {
         return dockNode;
     }
 
+    /**
+     * Get all breakpoints in the current area
+     * @return set of all breakpoints in tab
+     */
     public Set<Breakpoint> getBreakpoints() {
         HashSet<Breakpoint> breakpoints = new HashSet<>();
         openScripts.keySet().forEach(tab ->
@@ -137,6 +147,11 @@ public class ScriptController {
         return breakpoints;
     }
 
+    /**
+     * Find the scriptarea for the requested file
+     * @param filePath
+     * @return
+     */
     public ScriptArea findEditor(File filePath) {
         return openScripts.keySet().stream()
                 .filter(scriptArea ->
@@ -146,9 +161,17 @@ public class ScriptController {
                 .orElse(null);
     }
 
+    /**
+     * Save the script currently in focus to the specified file
+     * @param scriptFile
+     * @throws IOException
+     */
     public void saveCurrentScriptAs(File scriptFile) throws IOException {
+
         for (ScriptArea area : openScripts.keySet()) {
-            if (area.isFocused()) {
+
+            if (openScripts.size() == 1 || area.isFocused()) {
+                System.out.println(area.getText());
                 FileUtils.write(scriptFile, area.getText(), Charset.defaultCharset());
                 area.setFilePath(scriptFile);
                 area.setDirty(false);
@@ -166,6 +189,10 @@ public class ScriptController {
         return all;
     }
 
+    /**
+     *  Open a new script with a random file name and load it into scriptarea
+     * @return reference to ScriptArea for new script
+     */
     public ScriptArea newScript() {
         ScriptArea area = new ScriptArea();
         area.setFilePath(new File(Utils.getRandomName()));
@@ -177,8 +204,17 @@ public class ScriptController {
         return postMortemHighlighter;
     }
 
-    public void saveCurrentScript() {
-        throw new NotImplementedException();
+    /**
+     * Save the current content of the script area
+     */
+    public void saveCurrentScript() throws IOException {
+        for (ScriptArea scriptArea : openScripts.keySet()) {
+            if (scriptArea.isFocused()) {
+                saveCurrentScriptAs(scriptArea.getFilePath());
+            }
+        }
+
+        // throw new NotImplementedException();
     }
 
     public MainScriptIdentifier getMainScript() {

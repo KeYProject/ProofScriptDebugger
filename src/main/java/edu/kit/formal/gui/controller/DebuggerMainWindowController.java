@@ -300,9 +300,12 @@ public class DebuggerMainWindowController implements Initializable {
     }
 
     @FXML
-    public void saveAsScript() {
-        File f = openFileChooserSaveDialog("Save script", "", "kps");
+    public void saveAsScript() throws IOException {
+        File f = openFileChooserSaveDialog("Save script", "Save Script files", "kps");
         if (f != null) {
+           /* if(!f.exists()){
+                f.createNewFile();
+            }*/
             saveScript(f);
         }
     }
