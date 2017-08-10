@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.formal.gui.controls.ScriptArea;
+import edu.kit.formal.proofscriptparser.ast.CallStatement;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -39,5 +40,12 @@ public class Events {
     public static class TacletApplicationEvent {
         private final TacletApp app;
         private final PosInOccurrence pio;
+    }
+
+    @Data
+    @RequiredArgsConstructor
+    public static class ScriptModificationEvent {
+        private final int line;
+        private final CallStatement cs;
     }
 }

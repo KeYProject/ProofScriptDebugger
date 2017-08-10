@@ -1,5 +1,7 @@
 package edu.kit.formal.interpreter.graphs;
 
+import com.google.common.eventbus.Subscribe;
+import edu.kit.formal.gui.controller.Events;
 import edu.kit.formal.gui.controller.PuppetMaster;
 import edu.kit.formal.interpreter.Interpreter;
 import edu.kit.formal.interpreter.InterpretingService;
@@ -213,6 +215,7 @@ public class ProofTreeController {
      * @param debugMode
      */
     public void executeScript(boolean debugMode) {
+        Events.register(this);
         blocker.deinstall();
         blocker.install(currentInterpreter);
         if (!debugMode) {
@@ -254,6 +257,16 @@ public class ProofTreeController {
                 this.statePointer.getScriptstmt().getNodeName(),
                 this.statePointer.getScriptstmt().getStartPosition());
     }
+
+    @Subscribe
+    public void handle(Events.ScriptModificationEvent mod) {
+        LOGGER.debug("ProofTreeController.handleScriptModificationEvent");
+        System.out.println("Handling ScriptCommand");
+        currentInterpreter.visit(mod.getCs());
+        this.setCurrentSelectedGoal(currentInterpreter.getSelectedNode());
+        this.setCurrentGoals(currentInterpreter.getCurrentGoals());
+    }
+
 
     /**************************************************************************************************************
      *

@@ -9,7 +9,7 @@ import edu.kit.formal.gui.model.Breakpoint;
 import edu.kit.formal.gui.model.MainScriptIdentifier;
 import edu.kit.formal.proofscriptparser.Facade;
 import edu.kit.formal.proofscriptparser.ScriptLanguageLexer;
-import edu.kit.formal.proofscriptparser.ast.ProofScript;
+import edu.kit.formal.proofscriptparser.ast.*;
 import edu.kit.formal.proofscriptparser.lint.LintProblem;
 import edu.kit.formal.proofscriptparser.lint.LinterStrategy;
 import javafx.beans.InvalidationListener;
@@ -399,17 +399,31 @@ public class ScriptArea extends CodeArea {
 
     @Subscribe
     public void handle(Events.TacletApplicationEvent tap) {
-
+        LOGGER.debug("ScriptArea.handleTacletApplication");
         String tapName = tap.getApp().taclet().displayName();
 
         SequentFormula seqForm = tap.getPio().sequentFormula();
+        //transofrm term to parsable string representation
+        String term = Utils.toPrettyTerm(seqForm.formula());
 
-        System.out.println(tap.getPio().sequentFormula());
-        //String on = tap.getApp().ifFormulaInstantiations().toString();
+
         String text = getText();
-        System.out.println(text);
+
+        //set new Command on position of execution marker
         int posExecMarker = this.getExecutionMarkerPosition();
-        setText(text.substring(0, posExecMarker) + "\n" + tapName + " on=\"" + seqForm + "\";\n" + text.substring(posExecMarker + 1));
+        setText(text.substring(0, posExecMarker) + "\n" + tapName + " formula=`" + term + "`;\n" + text.substring(posExecMarker + 1));
+
+        LineMapping lm = new LineMapping(text);
+        int line = lm.getLine(getCaretPosition());
+        //System.out.println(line);
+
+        setDirty(true);
+
+        //create Call Statement
+        Parameters params = new Parameters();
+        params.put(new Variable("formula"), new TermLiteral(term));
+        CallStatement call = new CallStatement(tapName, params);
+        Events.fire(new Events.ScriptModificationEvent(posExecMarker, call));
         Events.unregister(this);
         //this.getMainScript().getScriptArea().insertText(this.getExecutionMarkerPosition(), tapName+" "+on+ ";");
 

@@ -230,14 +230,13 @@ public class DebuggerMainWindowController implements Initializable {
     @FXML
     public void executeScriptFromCursor() {
         InterpreterBuilder ib = FACADE.buildInterpreter();
-//        ib.inheritState(interpreterService.interpreterProperty().get());
-///*
-//        LineMapping lm = new LineMapping(scriptArea.getText());
-//        int line = lm.getLine(scriptArea.getCaretPosition());
-//        int inLine = lm.getCharInLine(scriptArea.getCaretPosition());
-//*/
-//        ib.ignoreLinesUntil(scriptController.getSelectedScriptArea().getCaretPosition());
-//        executeScript(ib, true);
+        //  ib.inheritState(interpreterService.interpreterProperty().get());
+        /*LineMapping lm = new LineMapping(scriptArea.getText());
+        int line = lm.getLine(scriptArea.getCaretPosition());
+        int inLine = lm.getCharInLine(scriptArea.getCaretPosition());
+
+        ib.ignoreLinesUntil(scriptController.getSelectedScriptArea().getCaretPosition());
+        executeScript(ib, true);*/
     }
 
     @FXML
@@ -270,6 +269,7 @@ public class DebuggerMainWindowController implements Initializable {
             Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
     }
+
 
     //region Actions: Menu
     @FXML
