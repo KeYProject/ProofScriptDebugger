@@ -82,8 +82,6 @@ public class KeYProofFacade {
     /**
      * Build the KeYInterpreter that handles the execution of the loaded key problem sourceName
      *
-     * @param keYFile
-     * @param scriptText
      */
     public InterpreterBuilder buildInterpreter() {
         assert readyToExecute.getValue();
@@ -100,6 +98,18 @@ public class KeYProofFacade {
         return interpreterBuilder;
     }
 
+
+    /**
+     * Reload all KeY structure if proof should be reloaded
+     *
+     * @param fileToLoad
+     */
+    public void reloadEnvironment() {
+        setProof(null);
+        setEnvironment(null);
+        setContract(null);
+        pma = null;
+    }
 
     //region Getter and Setters
     public Services getService() {

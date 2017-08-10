@@ -224,8 +224,54 @@ public class DebuggerMainWindowController implements Initializable {
     //region Actions: Execution
     @FXML
     public void executeScript() {
-        executeScript(FACADE.buildInterpreter(), false);
+        if (proofTreeController.isAlreadyExecuted()) {
+            File file;
+            boolean isKeyfile = false;
+            if (getJavaFile() != null) {
+                file = getJavaFile();
+            } else {
+                isKeyfile = true;
+                file = getKeyFile();
+            }
+
+            Task<Void> reloading = reloadEnvironment(file, isKeyfile);
+            reloading.setOnSucceeded(event -> {
+                statusBar.publishMessage("Cleared and Reloaded Environment");
+                executeScript(FACADE.buildInterpreter(), false);
+            });
+
+            reloading.setOnFailed(event -> {
+                event.getSource().exceptionProperty().get();
+                Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment",
+                        (Throwable) event.getSource().exceptionProperty().get()
+                );
+            });
+
+            ProgressBar bar = new ProgressBar();
+            bar.progressProperty().bind(reloading.progressProperty());
+            executorService.execute(reloading);
+        } else {
+
+            executeScript(FACADE.buildInterpreter(), false);
+        }
     }
+
+    public Task<Void> reloadEnvironment(File file, boolean keyfile) {
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                FACADE.reloadEnvironment();
+                if (keyfile) {
+                    openKeyFile(file);
+                } else {
+                    openJavaFile(file);
+                }
+                return null;
+            }
+        };
+        return task;
+    }
+
 
     @FXML
     public void executeScriptFromCursor() {
@@ -252,9 +298,11 @@ public class DebuggerMainWindowController implements Initializable {
      * @param debugMode
      */
     private void executeScript(InterpreterBuilder ib, boolean debugMode) {
+
         this.debugMode.set(debugMode);
         statusBar.publishMessage("Parse ...");
         try {
+
             List<ProofScript> scripts = scriptController.getCombinedAST();
             statusBar.publishMessage("Creating new Interpreter instance ...");
             ib.setScripts(scripts);
@@ -288,14 +336,19 @@ public class DebuggerMainWindowController implements Initializable {
 
     @FXML
     public void saveScript() {
-        scriptController.saveCurrentScript();
+        try {
+            scriptController.saveCurrentScript();
+        } catch (IOException e) {
+            Utils.showExceptionDialog("Could not save file", "Saving File Error", "Could not save current script", e);
+
+        }
     }
 
     private void saveScript(File scriptFile) {
         try {
             scriptController.saveCurrentScriptAs(scriptFile);
         } catch (IOException e) {
-            Utils.showExceptionDialog("Could not save sourceName", "blubb", "...fsfsfsf fsa", e);
+            Utils.showExceptionDialog("Could not save file", "Saving File Error", "Could not save to file " + scriptFile.getName(), e);
         }
     }
 
@@ -351,9 +404,18 @@ public class DebuggerMainWindowController implements Initializable {
         }
     }
 
+    /**
+     * Save KeY proof as proof file
+     *
+     * @param actionEvent
+     */
     public void saveProof(ActionEvent actionEvent) {
+
         LOGGER.error("saveProof not implemented!!!");
     }
+
+
+
     //endregion
 
     //region Santa's Little Helper

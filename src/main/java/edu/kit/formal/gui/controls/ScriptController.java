@@ -103,6 +103,12 @@ public class ScriptController {
         }
     }
 
+    /**
+     * Create new DockNode for ScriptArea Tab
+     *
+     * @param area ScriptAreaTab
+     * @return
+     */
     private DockNode createDockNode(ScriptArea area) {
         DockNode dockNode = new DockNode(area, area.getFilePath().getName(), new MaterialDesignIconView(MaterialDesignIcon.FILE_DOCUMENT));
         dockNode.closedProperty().addListener(o -> {

@@ -5,6 +5,7 @@ import edu.kit.formal.gui.controls.Utils;
 import edu.kit.formal.interpreter.data.KeyData;
 import edu.kit.formal.interpreter.data.State;
 import edu.kit.formal.proofscriptparser.ast.ProofScript;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -30,15 +31,23 @@ public class InterpretingService extends Service<State<KeyData>> {
      * The blocker, necessary for controlling how far the script should be interpreted
      */
     private PuppetMaster blocker;
+    /**
+     * Property that is set if this service has run successfully
+     */
+    private SimpleBooleanProperty hasRunSucessfully = new SimpleBooleanProperty(false);
 
     public InterpretingService(PuppetMaster blocker) {
         this.blocker = blocker;
     }
 
+    public SimpleBooleanProperty hasRunSucessfullyProperty() {
+        return hasRunSucessfully;
+    }
 
     @Override
     protected void succeeded() {
         System.out.println("Finished executing");
+        hasRunSucessfully.setValue(true);
         updateView();
     }
 

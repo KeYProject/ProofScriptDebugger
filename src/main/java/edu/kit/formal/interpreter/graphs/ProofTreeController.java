@@ -47,6 +47,10 @@ public class ProofTreeController {
      */
     private InterpretingService interpreterService = new InterpretingService(blocker);
 
+
+    private ReadOnlyBooleanProperty alreadyExecuted = interpreterService.hasRunSucessfullyProperty();
+
+
     /**
      * To identify when interpreterservice is running
      */
@@ -216,6 +220,7 @@ public class ProofTreeController {
      */
     public void executeScript(boolean debugMode) {
         Events.register(this);
+
         blocker.deinstall();
         blocker.install(currentInterpreter);
         if (!debugMode) {
@@ -234,7 +239,7 @@ public class ProofTreeController {
         }
 
         //create interpreter service and start
-        if (interpreterService.getState() == Worker.State.SUCCEEDED) {
+        if (interpreterService.getState() == Worker.State.SUCCEEDED || interpreterService.getState() == Worker.State.CANCELLED) {
             interpreterService.reset();
         }
         interpreterService.interpreterProperty().set(currentInterpreter);
@@ -330,4 +335,10 @@ public class ProofTreeController {
     public ObjectProperty<ASTNode> currentHighlightNodeProperty() {
         return currentHighlightNode;
     }
+
+
+    public boolean isAlreadyExecuted() {
+        return alreadyExecuted.get();
+    }
+
 }
