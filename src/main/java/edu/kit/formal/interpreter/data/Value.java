@@ -1,6 +1,9 @@
 package edu.kit.formal.interpreter.data;
 
 import edu.kit.formal.proofscriptparser.ast.*;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
+import edu.kit.formal.proofscriptparser.types.Type;
+import edu.kit.formal.proofscriptparser.types.TypeFacade;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -15,8 +18,8 @@ import java.math.BigInteger;
  */
 @RequiredArgsConstructor
 public class Value<T> {
-    public static final Value TRUE = new Value<>(Type.BOOL, true);
-    public static final Value FALSE = new Value<>(Type.BOOL, false);
+    public static final Value TRUE = new Value<>(SimpleType.BOOL, true);
+    public static final Value FALSE = new Value<>(SimpleType.BOOL, false);
 
     @Getter
     private final Type type;
@@ -25,35 +28,35 @@ public class Value<T> {
 
 
     public static Value<BigInteger> from(IntegerLiteral i) {
-        return new Value<>(Type.INT, i.getValue());
+        return new Value<>(SimpleType.INT, i.getValue());
     }
 
     public static Value<BigInteger> from(Integer i) {
-        return new Value<>(Type.INT, BigInteger.valueOf(i));
+        return new Value<>(SimpleType.INT, BigInteger.valueOf(i));
     }
 
     public static Value<String> from(StringLiteral s) {
-        return new Value<>(Type.STRING, s.getText());
+        return new Value<>(SimpleType.STRING, s.getText());
     }
 
     public static Value<Boolean> from(BooleanLiteral b) {
-        return new Value(Type.BOOL, b.isValue());
+        return new Value<>(SimpleType.BOOL, b.isValue());
     }
 
     public static Value<Boolean> from(boolean equals) {
-        return new Value(Type.BOOL, equals);
+        return new Value<>(SimpleType.BOOL, equals);
     }
 
     public static Value<BigInteger> from(BigInteger apply) {
-        return new Value<>(Type.INT, apply);
+        return new Value<>(SimpleType.INT, apply);
     }
 
     public static Value<String> from(String s) {
-        return new Value<>(Type.STRING, s);
+        return new Value<>(SimpleType.STRING, s);
     }
 
     public static Value<String> from(TermLiteral term) {
-        return new Value<>(Type.TERM, term.getText());
+        return new Value<>(TypeFacade.ANY_TERM, term.getText());
     }
 
     @Override

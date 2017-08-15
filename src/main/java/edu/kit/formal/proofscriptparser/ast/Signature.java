@@ -26,6 +26,8 @@ package edu.kit.formal.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formal.proofscriptparser.Visitor;
+import edu.kit.formal.proofscriptparser.types.Type;
+import edu.kit.formal.proofscriptparser.types.Type;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -142,17 +144,17 @@ public class Signature extends ASTNode<ScriptLanguageParser.ArgListContext> impl
     }
 
     public Type computeIfPresent(Variable key,
-            BiFunction<? super Variable, ? super Type, ? extends Type> remappingFunction) {
+                                       BiFunction<? super Variable, ? super Type, ? extends Type> remappingFunction) {
         return sig.computeIfPresent(key, remappingFunction);
     }
 
     public Type compute(Variable key,
-            BiFunction<? super Variable, ? super Type, ? extends Type> remappingFunction) {
+                              BiFunction<? super Variable, ? super Type, ? extends Type> remappingFunction) {
         return sig.compute(key, remappingFunction);
     }
 
     public Type merge(Variable key, Type value,
-            BiFunction<? super Type, ? super Type, ? extends Type> remappingFunction) {
+                            BiFunction<? super Type, ? super Type, ? extends Type> remappingFunction) {
         return sig.merge(key, value, remappingFunction);
     }
 }

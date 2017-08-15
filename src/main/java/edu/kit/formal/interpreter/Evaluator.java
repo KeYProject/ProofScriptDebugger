@@ -6,11 +6,16 @@ import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
+import edu.kit.formal.proofscriptparser.types.TermType;
+import edu.kit.formal.proofscriptparser.types.TypeFacade;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class handling evaluation of expressions (visitor for expressions)
@@ -68,9 +73,9 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
         Value pattern = (Value) match.getPattern().accept(this);
         if (match.isDerivable()) {
         } else {
-            if (pattern.getType() == Type.STRING) {
+            if (pattern.getType() == SimpleType.STRING) {
                 va = matcher.matchLabel(goal, (String) pattern.getData());
-            } else if (pattern.getType() == Type.TERM) {
+            } else if (TypeFacade.isTerm(pattern.getType())) {
                 va = matcher.matchSeq(goal, (String) pattern.getData(), match.getSignature());
             }
         }
@@ -127,5 +132,29 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
         return op.evaluate(exValue);
     }
 
+    public Value visit(SubstituteExpression expr) {
+        Value term = (Value) expr.getSub().accept(this);
+        if (term.getType() instanceof TermType) {
+            Pattern pattern = Pattern.compile("\\?[a-zA-Z_]+");
+            String termstr = term.getData().toString();
+            Matcher m = pattern.matcher(termstr);
+            StringBuffer newTerm = new StringBuffer();
+            while (m.find()) {
+                String name = m.group().substring(1); // remove trailing '?'
+                Expression t = expr.getSubstitution().get(m.group());
 
+                //either evalute the substitent or find ?X in the
+                String newVal = "";
+                if (t != null)
+                    newVal = ((Value) t.accept(this)).getData().toString();
+                else
+                    newVal = state.getValue(new Variable(name)).getData().toString();
+                m.appendReplacement(newTerm, newVal);
+            }
+            m.appendTail(newTerm);
+            return new Value<>(TypeFacade.ANY_TERM, newTerm.toString());
+        } else {
+            throw new IllegalStateException("Try to apply substitute on a non-term value.");
+        }
+    }
 }

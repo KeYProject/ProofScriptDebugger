@@ -75,4 +75,6 @@ public interface Visitor<T> {
     T visit(SimpleCaseStatement simpleCaseStatement);
 
     T visit(CaseStatement caseStatement);
+
+    T visit(SubstituteExpression subst);
 }

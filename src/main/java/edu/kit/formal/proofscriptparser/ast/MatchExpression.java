@@ -26,6 +26,9 @@ package edu.kit.formal.proofscriptparser.ast;
 import edu.kit.formal.proofscriptparser.NotWelldefinedException;
 import edu.kit.formal.proofscriptparser.ScriptLanguageParser;
 import edu.kit.formal.proofscriptparser.Visitor;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
+import edu.kit.formal.proofscriptparser.types.TermType;
+import edu.kit.formal.proofscriptparser.types.Type;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -73,15 +76,10 @@ public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatter
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
         Type patternType = pattern.getType(signature);
-        switch (patternType) {
-            case TERM:
-            case STRING:
-                break;
-            default:
-                throw new NotWelldefinedException("Missing parameter", this);
+        if (!(patternType instanceof TermType || patternType == SimpleType.STRING)) {
+            throw new NotWelldefinedException("Missing parameter", this);
         }
-
-        return Type.BOOL;
+        return SimpleType.BOOL;
     }
 
     @Override

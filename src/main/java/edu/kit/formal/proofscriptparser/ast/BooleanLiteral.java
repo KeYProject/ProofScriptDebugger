@@ -26,6 +26,7 @@ package edu.kit.formal.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.NotWelldefinedException;
 import edu.kit.formal.proofscriptparser.Visitor;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -82,7 +83,7 @@ public class BooleanLiteral extends Literal {
      * {@inheritDoc}
      */
     @Override
-    public Type getType(Signature signature) throws NotWelldefinedException {
-        return Type.BOOL;
+    public SimpleType getType(Signature signature) throws NotWelldefinedException {
+        return SimpleType.BOOL;
     }
 }

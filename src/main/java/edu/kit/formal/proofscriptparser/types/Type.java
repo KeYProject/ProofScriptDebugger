@@ -1,0 +1,9 @@
+package edu.kit.formal.proofscriptparser.types;
+
+/**
+ * @author Alexander Weigl
+ * @version 1 (15.08.17)
+ */
+public interface Type {
+    String symbol();
+}

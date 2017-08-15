@@ -1,7 +1,8 @@
 package edu.kit.formal.interpreter.data;
 
-import edu.kit.formal.proofscriptparser.ast.Type;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
 import edu.kit.formal.proofscriptparser.ast.Variable;
+import edu.kit.formal.proofscriptparser.types.Type;
 import lombok.Getter;
 import lombok.ToString;
 

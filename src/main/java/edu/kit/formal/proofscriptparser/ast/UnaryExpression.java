@@ -26,6 +26,8 @@ package edu.kit.formal.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.NotWelldefinedException;
 import edu.kit.formal.proofscriptparser.Visitor;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
+import edu.kit.formal.proofscriptparser.types.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

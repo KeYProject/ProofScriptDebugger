@@ -25,6 +25,8 @@ package edu.kit.formal.proofscriptparser.ast;
 
 
 import edu.kit.formal.proofscriptparser.NotWelldefinedException;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
+import edu.kit.formal.proofscriptparser.types.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**

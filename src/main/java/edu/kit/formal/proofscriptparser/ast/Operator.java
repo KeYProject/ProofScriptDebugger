@@ -23,14 +23,18 @@ package edu.kit.formal.proofscriptparser.ast;
  */
 
 
+import de.uka.ilkd.key.logic.TermFactory;
 import edu.kit.formal.interpreter.data.Value;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
+import edu.kit.formal.proofscriptparser.types.Type;
+import edu.kit.formal.proofscriptparser.types.TypeFacade;
 
 import java.math.BigInteger;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 
-import static edu.kit.formal.proofscriptparser.ast.Type.BOOL;
-import static edu.kit.formal.proofscriptparser.ast.Type.INT;
+import static edu.kit.formal.proofscriptparser.types.SimpleType.BOOL;
+import static edu.kit.formal.proofscriptparser.types.SimpleType.INT;
 
 /**
  * An enum which contains meta-data to all operators.
@@ -51,6 +55,15 @@ public enum Operator {
         public Value evaluate(Value... v) {
             //return Value.from(v[0].getData().equals(v[1]));
             return null;
+        }
+    },
+    /**
+     *
+     */
+    SUBST("<subst>", "[]", 10, TypeFacade.ANY_TERM, TypeFacade.ANY_TERM) {
+        @Override
+        public Value evaluate(Value[] v) {
+            return null;// see SubstituteExpression for handling
         }
     },
     /**
@@ -174,6 +187,7 @@ public enum Operator {
             return Value.from((!(Boolean) v[0].getData() | (Boolean) v[1].getData()) & ((Boolean) v[0].getData() | !(Boolean) v[1].getData()));
         }
     };
+
 
 
     private final String symbol;

@@ -24,6 +24,7 @@ package edu.kit.formal.proofscriptparser;
 
 
 import edu.kit.formal.proofscriptparser.ast.*;
+import edu.kit.formal.proofscriptparser.types.Type;
 
 import java.util.Map;
 
@@ -146,7 +147,7 @@ public interface ASTTraversal<T> extends Visitor<T> {
     @Override
     default T visit(Parameters parameters) {
         for (Map.Entry<Variable, Expression> e :
-             parameters.entrySet()) {
+                parameters.entrySet()) {
             e.getKey().accept(this);
             e.getValue().accept(this);
         }
@@ -169,6 +170,15 @@ public interface ASTTraversal<T> extends Visitor<T> {
     default T visit(SimpleCaseStatement simpleCaseStatement) {
         simpleCaseStatement.getGuard().accept(this);
         simpleCaseStatement.getBody().accept(this);
+        return null;
+    }
+
+    @Override
+    default T visit(SubstituteExpression subst) {
+        subst.getSub().accept(this);
+        for (Expression e : subst.getSubstitution().values()) {
+            e.accept(this);
+        }
         return null;
     }
 }

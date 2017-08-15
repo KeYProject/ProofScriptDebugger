@@ -23,11 +23,14 @@ package edu.kit.formal.proofscriptparser;
  */
 
 
-
+import edu.kit.formal.interpreter.Evaluator;
+import edu.kit.formal.interpreter.data.GoalNode;
+import edu.kit.formal.interpreter.data.Value;
+import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.ast.Expression;
 import edu.kit.formal.proofscriptparser.ast.Signature;
-import edu.kit.formal.proofscriptparser.types.SimpleType;
 import edu.kit.formal.proofscriptparser.ast.Variable;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,36 +39,47 @@ import org.junit.runners.Parameterized;
 import java.io.IOException;
 
 @RunWith(Parameterized.class)
-public class GoodExpressionTest {
+public class EvalTest {
     @Parameterized.Parameters(name = "{0}")
     public static Iterable<Object[]> getGoodExpressions() throws IOException {
-        return TestHelper.loadLines("goodexpr.txt", 1);
+        return TestHelper.loadLines("eval.txt", 2);
     }
 
-    @Parameterized.Parameter
+    @Parameterized.Parameter(0)
     public String testExpression;
+
+    @Parameterized.Parameter(1)
+    public String expResult;
 
 
     @Test
     public void test() throws IOException, NotWelldefinedException {
-        ScriptLanguageParser slp = TestHelper.getParser(testExpression);
-        ScriptLanguageParser.ExpressionContext e = slp.expression();
-        Assert.assertEquals(0, slp.getNumberOfSyntaxErrors());
+        Expression e_is = TestHelper.toExpr(testExpression);
+        Expression e_exp = TestHelper.toExpr(expResult);
 
-        Expression expr = (Expression) e.accept(new TransformAst());
-        Signature s = createSignature();
-        System.out.println(expr.getType(s));
+        VariableAssignment s = createAssignments();
+        Evaluator evaluator = new Evaluator(s, new GoalNode(null, null, true));
+
+        Value is = evaluator.eval(e_is);
+        Value exp = evaluator.eval(e_exp);
+
+        Assert.assertEquals(exp,is);
     }
 
-    public static Signature createSignature() {
-        Signature s = new Signature();
-        s.put(new Variable("a"), SimpleType.BOOL);
-        s.put(new Variable("b"), SimpleType.BOOL);
-        s.put(new Variable("c"), SimpleType.BOOL);
-        s.put(new Variable("i"), SimpleType.INT);
-        s.put(new Variable("j"), SimpleType.INT);
-        s.put(new Variable("k"), SimpleType.INT);
-        return s;
+    public static VariableAssignment createAssignments() {
+        VariableAssignment va = new VariableAssignment();
+        va.declare("a",  SimpleType.INT);
+        va.assign("a", Value.from(10));
+        va.declare("b",  SimpleType.INT);
+        va.assign("b", Value.from(2));
+
+        va.declare("c",  SimpleType.INT);
+        va.assign("c", Value.from(10));
+
+        va.declare("d",  SimpleType.INT);
+        va.assign("d", Value.from(10));
+
+        return va;
     }
 
 }

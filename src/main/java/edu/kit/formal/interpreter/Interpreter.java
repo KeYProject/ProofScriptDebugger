@@ -14,6 +14,8 @@ import edu.kit.formal.interpreter.funchdl.CommandLookup;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
+import edu.kit.formal.proofscriptparser.types.Type;
 import lombok.Getter;
 import lombok.Setter;
 import org.key_project.util.collection.ImmutableList;
@@ -33,15 +35,15 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         implements ScopeObservable {
     private static final int MAX_ITERATIONS = 5;
     @Getter
-    private static final BiMap<Type, VariableAssignments.VarType> typeConversionBiMap =
-            new ImmutableBiMap.Builder<Type, VariableAssignments.VarType>()
-                    .put(Type.ANY, VariableAssignments.VarType.ANY)
-                    .put(Type.BOOL, VariableAssignments.VarType.BOOL)
-                    .put(Type.TERM, VariableAssignments.VarType.FORMULA) //TODO: parametrisierte Terms
-                    .put(Type.INT, VariableAssignments.VarType.INT)
-                    .put(Type.STRING, VariableAssignments.VarType.OBJECT)
-                    .put(Type.INT_ARRAY, VariableAssignments.VarType.INT_ARRAY)
-                    .put(Type.SEQ, VariableAssignments.VarType.SEQ)
+    private static final BiMap<SimpleType, VariableAssignments.VarType> typeConversionBiMap =
+            new ImmutableBiMap.Builder<SimpleType, VariableAssignments.VarType>()
+                    .put(SimpleType.ANY, VariableAssignments.VarType.ANY)
+                    .put(SimpleType.BOOL, VariableAssignments.VarType.BOOL)
+                    //.put(SimpleType.TERM, VariableAssignments.VarType.FORMULA) //TODO: parametrisierte Terms
+                    .put(SimpleType.INT, VariableAssignments.VarType.INT)
+                    .put(SimpleType.STRING, VariableAssignments.VarType.OBJECT)
+                    .put(SimpleType.INT_ARRAY, VariableAssignments.VarType.INT_ARRAY)
+                    .put(SimpleType.SEQ, VariableAssignments.VarType.SEQ)
                     .build();
     private static Logger logger = Logger.getLogger("interpreter");
     //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
@@ -114,7 +116,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         if (expr != null) {
             Type type = node.getVariableType(var);
             if (type == null) {
-                throw new RuntimeException("Type of Variable " + var + " is not declared yet");
+                throw new RuntimeException("SimpleType of Variable " + var + " is not declared yet");
             } else {
                 Value v = evaluate(expr);
                 node.setVariableValue(var, v);

@@ -18,8 +18,9 @@ import edu.kit.formal.interpreter.data.Value;
 import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.ast.Signature;
 import edu.kit.formal.proofscriptparser.ast.TermLiteral;
-import edu.kit.formal.proofscriptparser.ast.Type;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
 import edu.kit.formal.proofscriptparser.ast.Variable;
+import edu.kit.formal.proofscriptparser.types.Type;
 import org.key_project.util.collection.ImmutableList;
 
 import java.util.ArrayList;
@@ -114,7 +115,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
 
         if (branchLabelMatcher.matches()) {
             VariableAssignment va = new VariableAssignment(null);
-            va.declare("$$branchLabel_", Type.STRING);
+            va.declare("$$branchLabel_", SimpleType.STRING);
             va.assign("$$branchLabel_", Value.from(branchLabelMatcher.group()));
             assignments.add(va);
             resultsFromLabelMatch.add(branchLabelMatcher.toMatchResult());
@@ -124,7 +125,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         Matcher linesMatcher = regexpForLabel.matcher(controlFlowLines);
         if (linesMatcher.matches()) {
             VariableAssignment va = new VariableAssignment(null);
-            va.declare("$$CtrlLinesLabel_", Type.STRING);
+            va.declare("$$CtrlLinesLabel_", SimpleType.STRING);
             va.assign("$$CtrlLinesLabel_", Value.from(linesMatcher.group()));
             assignments.add(va);
             resultsFromLabelMatch.add(linesMatcher.toMatchResult());
@@ -134,7 +135,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         Matcher flowStmtsMatcher = regexpForLabel.matcher(controlFlowLines);
         if (flowStmtsMatcher.matches()) {
             VariableAssignment va = new VariableAssignment(null);
-            va.declare("$$FlowStmtsLabel_", Type.STRING);
+            va.declare("$$FlowStmtsLabel_", SimpleType.STRING);
             va.assign("$$FlowStmtsLabel_", Value.from(flowStmtsMatcher.group()));
             assignments.add(va);
             resultsFromLabelMatch.add(flowStmtsMatcher.toMatchResult());
@@ -144,7 +145,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         Matcher ruleMatcher = regexpForLabel.matcher(ruleLabel);
         if (ruleMatcher.matches()) {
             VariableAssignment va = new VariableAssignment(null);
-            va.declare("$$RuleLabel_", Type.STRING);
+            va.declare("$$RuleLabel_", SimpleType.STRING);
             va.assign("$$RuleLabel_", Value.from(ruleMatcher.group()));
             assignments.add(va);
             resultsFromLabelMatch.add(ruleMatcher.toMatchResult());

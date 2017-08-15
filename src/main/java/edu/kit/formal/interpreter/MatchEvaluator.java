@@ -6,6 +6,8 @@ import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.DefaultASTVisitor;
 import edu.kit.formal.proofscriptparser.Visitor;
 import edu.kit.formal.proofscriptparser.ast.*;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
+import edu.kit.formal.proofscriptparser.types.TypeFacade;
 import lombok.Getter;
 import org.apache.commons.lang.NotImplementedException;
 
@@ -156,10 +158,10 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
         // Value pattern = (Value) match.getPattern().accept(this);
 
         List<VariableAssignment> va = null;
-        if (pattern.getType() == Type.STRING) {
+        if (pattern.getType() == SimpleType.STRING) {
             va = getMatcher().matchLabel(goal, (String) pattern.getData());
             //TODO extract the results form the matcher in order to retrieve the selection results
-        } else if (pattern.getType() == Type.TERM) {
+        } else if (TypeFacade.isTerm(pattern.getType())) {
             va = getMatcher().matchSeq(goal, (String) pattern.getData(), sig);
         }
         return va != null ? va : Collections.emptyList();
@@ -203,7 +205,7 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
      */
     public List<VariableAssignment> transformTruthValue(Value v) {
 
-        if (v.getType().equals(Type.BOOL)) {
+        if (v.getType().equals(SimpleType.BOOL)) {
             List<VariableAssignment> transformedValue = new ArrayList<>();
             if (v.getData().equals(Value.TRUE)) {
                 transformedValue.add(new VariableAssignment(null));

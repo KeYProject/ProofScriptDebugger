@@ -5,8 +5,9 @@ import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.Value;
 import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.ast.Signature;
-import edu.kit.formal.proofscriptparser.ast.Type;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
 import edu.kit.formal.proofscriptparser.ast.Variable;
+import edu.kit.formal.proofscriptparser.types.Type;
 
 import java.util.Collections;
 import java.util.List;

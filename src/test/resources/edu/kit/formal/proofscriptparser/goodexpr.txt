@@ -3,6 +3,7 @@ true
 false
 (true | false) & true <=> a | b
 `f(x)`
+`f(x)`[X/2,y/x]
 'abc\'abc'
 'blubber'
 1+1

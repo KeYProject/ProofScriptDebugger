@@ -5,6 +5,7 @@ import edu.kit.formal.interpreter.Interpreter;
 import edu.kit.formal.interpreter.data.Value;
 import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.ast.*;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -39,7 +40,7 @@ public class MacroCommandHandler implements CommandHandler {
         CallStatement macroCall = new CallStatement("macro", p);
         macroCall.setRuleContext(call.getRuleContext());
         VariableAssignment newParam = new VariableAssignment(null);
-        newParam.declare("#2", Type.STRING);
+        newParam.declare("#2", SimpleType.STRING);
         newParam.assign("#2", Value.from(call.getCommand()));
         //macro proofscript command
         interpreter.getFunctionLookup().callCommand(interpreter, macroCall, newParam);

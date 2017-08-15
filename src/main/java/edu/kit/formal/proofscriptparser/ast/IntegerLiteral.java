@@ -26,6 +26,8 @@ package edu.kit.formal.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.NotWelldefinedException;
 import edu.kit.formal.proofscriptparser.Visitor;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
+import edu.kit.formal.proofscriptparser.types.Type;
 import lombok.Data;
 import org.antlr.v4.runtime.Token;
 
@@ -78,7 +80,7 @@ public class IntegerLiteral extends Literal {
      */
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
-        return Type.INT;
+        return SimpleType.INT;
     }
 
 

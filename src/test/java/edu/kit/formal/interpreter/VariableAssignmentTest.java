@@ -2,7 +2,7 @@ package edu.kit.formal.interpreter;
 
 import edu.kit.formal.interpreter.data.Value;
 import edu.kit.formal.interpreter.data.VariableAssignment;
-import edu.kit.formal.proofscriptparser.ast.Type;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,25 +18,25 @@ public class VariableAssignmentTest {
     @Before
     public void setup() {
         va1 = new VariableAssignment(null);
-        va1.declare("a", Type.INT);
-        va1.declare("b", Type.INT);
-        va1.declare("c", Type.INT);
+        va1.declare("a", SimpleType.INT);
+        va1.declare("b", SimpleType.INT);
+        va1.declare("c", SimpleType.INT);
         va1.assign("a", Value.from(1));
         va1.assign("b", Value.from(2));
         va1.assign("c", Value.from(3));
 
         va2 = new VariableAssignment(null);
-        va2.declare("d", Type.INT);
-        va2.declare("e", Type.INT);
-        va2.declare("f", Type.INT);
+        va2.declare("d", SimpleType.INT);
+        va2.declare("e", SimpleType.INT);
+        va2.declare("f", SimpleType.INT);
         va2.assign("d", Value.from(1));
         va2.assign("e", Value.from(2));
         va2.assign("f", Value.from(3));
 
         va3 = new VariableAssignment(null);
-        va3.declare("a", Type.INT);
-        va3.declare("b", Type.INT);
-        va3.declare("c", Type.INT);
+        va3.declare("a", SimpleType.INT);
+        va3.declare("b", SimpleType.INT);
+        va3.declare("c", SimpleType.INT);
         va3.assign("a", Value.from(1));
         va3.assign("b", Value.from(3));
         va3.assign("c", Value.from(3));

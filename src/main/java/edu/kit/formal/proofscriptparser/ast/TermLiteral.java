@@ -26,6 +26,9 @@ package edu.kit.formal.proofscriptparser.ast;
 
 import edu.kit.formal.proofscriptparser.NotWelldefinedException;
 import edu.kit.formal.proofscriptparser.Visitor;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
+import edu.kit.formal.proofscriptparser.types.Type;
+import edu.kit.formal.proofscriptparser.types.TypeFacade;
 import lombok.Data;
 
 /**
@@ -73,6 +76,7 @@ public class TermLiteral extends Literal {
      */
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
-        return Type.TERM;
+        return TypeFacade.ANY_TERM;
     }
+
 }

@@ -5,7 +5,7 @@ import edu.kit.formal.interpreter.data.Value;
 import edu.kit.formal.interpreter.dbg.PseudoMatcher;
 import edu.kit.formal.proofscriptparser.TestHelper;
 import edu.kit.formal.proofscriptparser.ast.Expression;
-import edu.kit.formal.proofscriptparser.ast.Type;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,8 +37,8 @@ public class EvaluatorTest {
     public void setup() {
         GoalNode<String> parent = new GoalNode<>(null, "pa", false);
         parent.getAssignments()
-                .declare("a", Type.INT)
-                .declare("b", Type.INT)
+                .declare("a", SimpleType.INT)
+                .declare("b", SimpleType.INT)
                 .assign("a", Value.from(1))
                 .assign("b", Value.from(1));
         GoalNode<String> selected = new GoalNode<>(parent, "selg", false);

@@ -24,6 +24,8 @@ package edu.kit.formal.proofscriptparser;
 
 
 import edu.kit.formal.proofscriptparser.ast.*;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
+import edu.kit.formal.proofscriptparser.types.Type;
 import lombok.Getter;
 import lombok.Setter;
 

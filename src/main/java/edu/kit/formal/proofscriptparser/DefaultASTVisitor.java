@@ -95,6 +95,11 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
     }
 
     @Override
+    public T visit(SubstituteExpression subst) {
+        return defaultVisit(subst);
+    }
+
+    @Override
     public T visit(CallStatement call) {
         return defaultVisit(call);
     }
@@ -138,5 +143,6 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
     public T visit(SimpleCaseStatement simpleCaseStatement) {
         return defaultVisit(simpleCaseStatement);
     }
+
 }
 

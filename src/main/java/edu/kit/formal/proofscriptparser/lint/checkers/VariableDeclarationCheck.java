@@ -4,6 +4,8 @@ import edu.kit.formal.interpreter.data.VariableAssignment;
 import edu.kit.formal.proofscriptparser.ast.*;
 import edu.kit.formal.proofscriptparser.lint.Issue;
 import edu.kit.formal.proofscriptparser.lint.IssuesRepository;
+import edu.kit.formal.proofscriptparser.types.SimpleType;
+import edu.kit.formal.proofscriptparser.types.Type;
 import org.antlr.v4.runtime.Token;
 
 import java.util.HashMap;
@@ -56,6 +58,11 @@ public class VariableDeclarationCheck extends AbstractLintRule {
             current = current.push();
             super.visit(caseStatement);
             current = current.pop();
+            return null;
+        }
+
+        @Override
+        public Void visit(SubstituteExpression subst) {
             return null;
         }
 

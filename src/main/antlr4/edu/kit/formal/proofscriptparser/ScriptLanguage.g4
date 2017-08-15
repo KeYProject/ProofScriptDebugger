@@ -49,19 +49,19 @@ assignment
 
 expression
     :
-        MINUS expression   #exprNegate
-    |   NOT expression  #exprNot
-    |   expression '[' substExpressionList ']'  #exprSubst
-    |   expression MUL expression #exprMultiplication
-    |   <assoc=right> expression DIV expression #exprDivision
-    |   expression op=(PLUS|MINUS) expression #exprLineOperators
-    |   expression op=(LE|GE|LEQ|GEQ) expression #exprComparison
-    |   expression op=(NEQ|EQ) expression  #exprEquality
-    |   expression AND expression   #exprAnd
-    |   expression OR expression    #exprOr
-    |   expression IMP expression   #exprIMP
+      expression MUL expression #exprMultiplication
+    | <assoc=right> expression DIV expression #exprDivision
+    | expression op=(PLUS|MINUS) expression #exprLineOperators
+    | expression op=(LE|GE|LEQ|GEQ) expression #exprComparison
+    | expression op=(NEQ|EQ) expression  #exprEquality
+    | expression AND expression   #exprAnd
+    | expression OR expression    #exprOr
+    | expression IMP expression   #exprIMP
     //|   expression EQUIV expression already covered by EQ/NEQ
-    |   '(' expression ')' #exprParen
+    | expression LBRACKET substExpressionList RBRACKET #exprSubst
+    | MINUS expression   #exprNegate
+    | NOT expression  #exprNot
+    | '(' expression ')' #exprParen
     | literals             #exprLiterals
     | matchPattern         #exprMatch
 ;
@@ -69,7 +69,9 @@ expression
 
 substExpressionList
     :
-    scriptVar '/' expression (',' substExpressionList)*
+    (scriptVar '/' expression
+        (',' scriptVar '/' expression)*
+    )?
     ;
 
 literals :
@@ -205,4 +207,4 @@ EXE_MARKER: '\u2316' -> channel(HIDDEN);
 
 DIGITS : DIGIT+ ;
 fragment DIGIT : [0-9] ;
-ID : [a-zA-Z] ([_a-zA-Z0-9] | '.' | '\\' | '[]' | '-')* ;
+ID : [a-zA-Z] ([_a-zA-Z0-9] | '.' | '\\')*;
