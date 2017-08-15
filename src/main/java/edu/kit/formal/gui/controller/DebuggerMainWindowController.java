@@ -310,7 +310,8 @@ public class DebuggerMainWindowController implements Initializable {
 
             proofTreeController.setCurrentInterpreter(currentInterpreter);
             proofTreeController.setMainScript(scripts.get(0));
-            proofTreeController.executeScript(this.debugMode.get());
+            statusBar.publishMessage("Executing script " + scripts.get(0).getName());
+            proofTreeController.executeScript(this.debugMode.get(), statusBar);
             //highlight signature of main script
             //scriptController.setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
         } catch (RecognitionException e) {
@@ -388,10 +389,12 @@ public class DebuggerMainWindowController implements Initializable {
             Task<Void> task = FACADE.loadKeyFileTask(keyFile);
             task.setOnSucceeded(event -> {
                 statusBar.publishMessage("Loaded key sourceName: %s", keyFile);
+                statusBar.stopProgress();
                 getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(FACADE.getPseudoGoals());
             });
 
             task.setOnFailed(event -> {
+                statusBar.stopProgress();
                 event.getSource().exceptionProperty().get();
                 Utils.showExceptionDialog("Could not load sourceName", "Key sourceName loading error", "",
                         (Throwable) event.getSource().exceptionProperty().get()

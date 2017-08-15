@@ -1,7 +1,7 @@
 script t1(){
     symbex;
     cases{
-        case match isCloseable:{
+        case isCloseable:{
             andRight; //should not close proof
         }
 

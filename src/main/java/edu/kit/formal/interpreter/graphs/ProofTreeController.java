@@ -3,6 +3,7 @@ package edu.kit.formal.interpreter.graphs;
 import com.google.common.eventbus.Subscribe;
 import edu.kit.formal.gui.controller.Events;
 import edu.kit.formal.gui.controller.PuppetMaster;
+import edu.kit.formal.gui.controls.DebuggerStatusBar;
 import edu.kit.formal.interpreter.Interpreter;
 import edu.kit.formal.interpreter.InterpretingService;
 import edu.kit.formal.interpreter.data.GoalNode;
@@ -108,7 +109,8 @@ public class ProofTreeController {
     };
 
     /**
-     *
+     *  Create a new ProofTreeController
+     *  and bind properties
      */
     public ProofTreeController() {
 
@@ -217,15 +219,21 @@ public class ProofTreeController {
      * If this method is executed with debug mode true, it executes only statements after invoking the methods stepOver() and stepInto()
      *
      * @param debugMode
+     * @param statusBar
      */
-    public void executeScript(boolean debugMode) {
+    public void executeScript(boolean debugMode, DebuggerStatusBar statusBar) {
         Events.register(this);
 
         blocker.deinstall();
         blocker.install(currentInterpreter);
+
         if (!debugMode) {
+            statusBar.setText("Starting in execution mode for script " + mainScript.getName());
+            statusBar.indicateProgress();
             blocker.getStepUntilBlock().set(-1);
         } else {
+            statusBar.setText("Starting in debug mode for script " + mainScript.getName());
+            statusBar.indicateProgress();
             setCurrentHighlightNode(mainScript.getSignature());
 
             //build CFG
@@ -245,7 +253,14 @@ public class ProofTreeController {
         interpreterService.interpreterProperty().set(currentInterpreter);
         interpreterService.mainScriptProperty().set(mainScript);
         interpreterService.start();
-
+        interpreterService.setOnSucceeded(event -> {
+            statusBar.setText("Executed script until end of script.");
+            statusBar.stopProgress();
+        });
+        interpreterService.setOnFailed(event -> {
+            statusBar.setText("Failed to execute script");
+            statusBar.stopProgress();
+        });
 
     }
 

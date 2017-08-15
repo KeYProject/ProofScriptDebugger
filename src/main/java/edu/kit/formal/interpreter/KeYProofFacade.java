@@ -14,6 +14,8 @@ import edu.kit.formal.interpreter.data.KeyData;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.Collection;
@@ -26,11 +28,26 @@ import java.util.List;
  * @author A. Weigl
  */
 public class KeYProofFacade {
+    private static final Logger LOGGER = LogManager.getLogger(KeYProofFacade.class);
+
+    /**
+     * Current Proof
+     */
     private SimpleObjectProperty<Proof> proof = new SimpleObjectProperty<>();
+
+    /**
+     * Current KeYEnvironment
+     */
     private SimpleObjectProperty<KeYEnvironment> environment = new SimpleObjectProperty<>();
 
+    /**
+     * Chosen Contract; Null if only key file was loaded
+     */
     private SimpleObjectProperty<Contract> contract = new SimpleObjectProperty<>();
 
+    /**
+     * BooleanProperty inidcating whether KeY finished loading
+     */
     private BooleanBinding readyToExecute = proof.isNotNull();
     //Workaround until api is relaxed
     private ProofManagementApi pma;
