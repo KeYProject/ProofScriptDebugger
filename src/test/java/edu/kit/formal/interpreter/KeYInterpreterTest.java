@@ -36,7 +36,7 @@ public class KeYInterpreterTest {
 
     @Test
     public void testIsClosable() throws IOException, ProblemLoaderException {
-        facade.loadKeyFile(new File("src/test/resources/edu/kit/formal/interpreter/contraposition/contraposition.key"));
+        facade.loadKeyFileSync(new File("src/test/resources/edu/kit/formal/interpreter/contraposition/contraposition.key"));
         Interpreter<KeyData> i = execute(getClass().getResourceAsStream("contraposition/testIsClosable.kps"));
         List<GoalNode<KeyData>> goals = i.getCurrentState().getGoals();
         Assert.assertEquals(2, goals.size());

@@ -2,6 +2,7 @@ package edu.kit.formal.gui.controller;
 
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.gui.ProofScriptDebugger;
@@ -84,6 +85,8 @@ public class DebuggerMainWindowController implements Initializable {
 
 
     //-----------------------------------------------------------------------------------------------------------------
+    private ProofTree proofTree = new ProofTree();
+    private DockNode proofTreeDock = new DockNode(proofTree, "Proof Tree");
     private WelcomePane welcomePane = new WelcomePane(this);
     private DockNode welcomePaneDock = new DockNode(welcomePane, "Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
     private DockNode activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
@@ -122,6 +125,17 @@ public class DebuggerMainWindowController implements Initializable {
         //statusBar.publishMessage("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
         marriageJavaCode();
 
+        //marriage key proof facade to proof tree
+        getFacade().proofProperty().addListener(
+                (prop, o, n) -> {
+                    proofTree.setRoot(n.root());
+                    proofTree.setProof(n);
+                    getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(FACADE.getPseudoGoals());
+                }
+        );
+
+
+
         //Debugging
         Utils.addDebugListener(javaCode);
         Utils.addDebugListener(executeNotPossible, "executeNotPossible");
@@ -133,6 +147,7 @@ public class DebuggerMainWindowController implements Initializable {
     /**
      * Connects the proof tree controller with the model of the active inspection view model.
      */
+
     private void marriageProofTreeControllerWithActiveInspectionView() {
         InspectionModel imodel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
 
@@ -386,11 +401,10 @@ public class DebuggerMainWindowController implements Initializable {
         if (keyFile != null) {
             setKeyFile(keyFile);
             setInitialDirectory(keyFile.getParentFile());
-            Task<Void> task = FACADE.loadKeyFileTask(keyFile);
+            Task<ProofApi> task = FACADE.loadKeyFileTask(keyFile);
             task.setOnSucceeded(event -> {
                 statusBar.publishMessage("Loaded key sourceName: %s", keyFile);
                 statusBar.stopProgress();
-                getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(FACADE.getPseudoGoals());
             });
 
             task.setOnFailed(event -> {
@@ -416,7 +430,6 @@ public class DebuggerMainWindowController implements Initializable {
 
         LOGGER.error("saveProof not implemented!!!");
     }
-
 
 
     //endregion
@@ -548,6 +561,13 @@ public class DebuggerMainWindowController implements Initializable {
         }
     }
 
+    @FXML
+    public void showProofTree(ActionEvent actionEvent) {
+        if (!proofTreeDock.isDocked() && !proofTreeDock.isFloating()) {
+            proofTreeDock.dock(dockStation, DockPos.CENTER);
+        }
+    }
+
     public DockNode getJavaAreaDock() {
         return javaAreaDock;
     }
@@ -655,6 +675,7 @@ public class DebuggerMainWindowController implements Initializable {
     public ObjectProperty<File> initialDirectoryProperty() {
         return initialDirectory;
     }
+
 
     public class ContractLoaderService extends Service<List<Contract>> {
         @Override

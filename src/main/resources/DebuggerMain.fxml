@@ -61,6 +61,7 @@
                                 <MenuItem onAction="#showCodeDock" text="Show Java Code window"/>
                                 <MenuItem onAction="#showWelcomeDock" text="Show Welcome window"/>
                                 <MenuItem onAction="#showActiveInspector" text="Show Active Inspector window"/>
+                                <MenuItem onAction="#showProofTree" text="Show Proof Tree"/>
                             </items>
                         </Menu>
                         <Menu text="Help">

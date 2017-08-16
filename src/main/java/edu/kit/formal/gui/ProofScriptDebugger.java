@@ -58,8 +58,9 @@ public class ProofScriptDebugger extends Application {
             //logger.error("sfklsajflksajfsdajfsdalfjsdaf", new IllegalAccessError("dlfsdalfjsadflj"));
 
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            System.exit(1);
         }
     }
 

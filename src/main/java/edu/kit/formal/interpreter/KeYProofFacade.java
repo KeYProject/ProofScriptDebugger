@@ -11,6 +11,7 @@ import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.formal.interpreter.data.GoalNode;
 import edu.kit.formal.interpreter.data.KeyData;
+import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
@@ -24,6 +25,7 @@ import java.util.List;
 
 /**
  * Facade to KeY. Build part of the interpreter
+ *
  * @author S. Grebing
  * @author A. Weigl
  */
@@ -53,23 +55,45 @@ public class KeYProofFacade {
     private ProofManagementApi pma;
 
     //region loading
-    public Task<Void> loadKeyFileTask(File keYFile) {
-        Task<Void> task = new Task<Void>() {
+    public Task<ProofApi> loadKeyFileTask(File keYFile) {
+        Task<ProofApi> task = new Task<ProofApi>() {
             @Override
-            protected Void call() throws Exception {
-                loadKeyFile(keYFile);
-                return null;
+            protected ProofApi call() throws Exception {
+                ProofApi pa = loadKeyFile(keYFile);
+                return pa;
+            }
+
+            @Override
+            protected void succeeded() {
+                System.out.println("KeYProofFacade.succeeded");
+                environment.set(getValue().getEnv());
+                proof.set(getValue().getProof());
+                contract.set(null);
             }
         };
+
         return task;
     }
 
-    public void loadKeyFile(File keYFile) throws ProblemLoaderException {
+    /**
+     * This method does not set the environment or proof property, because of threading reason
+     *
+     * @param keYFile
+     * @return
+     * @throws ProblemLoaderException
+     */
+    ProofApi loadKeyFile(File keYFile) throws ProblemLoaderException {
         ProofManagementApi pma = KeYApi.loadFromKeyFile(keYFile);
         ProofApi pa = pma.getLoadedProof();
+        return pa;
+    }
+
+    public ProofApi loadKeyFileSync(File keyFile) throws ProblemLoaderException {
+        ProofApi pa = loadKeyFile(keyFile);
         environment.set(pa.getEnv());
         proof.set(pa.getProof());
         contract.set(null);
+        return pa;
     }
 
     public Task<List<Contract>> getContractsForJavaFileTask(File javaFile) {
@@ -98,7 +122,6 @@ public class KeYProofFacade {
 
     /**
      * Build the KeYInterpreter that handles the execution of the loaded key problem sourceName
-     *
      */
     public InterpreterBuilder buildInterpreter() {
         assert readyToExecute.getValue();
@@ -118,8 +141,6 @@ public class KeYProofFacade {
 
     /**
      * Reload all KeY structure if proof should be reloaded
-     *
-     * @param fileToLoad
      */
     public void reloadEnvironment() {
         setProof(null);
