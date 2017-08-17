@@ -36,12 +36,14 @@
                         <RowConstraints maxHeight="1.7976931348623157E308" minHeight="50.0" prefHeight="30.0" valignment="CENTER" vgrow="ALWAYS" />
                     </rowConstraints>
                     <children>
-                        <Button contentDisplay="TOP" maxWidth="1.7976931348623157E308" text="Open Script..." GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Button contentDisplay="TOP" maxWidth="1.7976931348623157E308" text="Open Script..."
+                                onAction="#openScript" GridPane.columnIndex="0" GridPane.rowIndex="0">
                             <graphic>
                                 <MaterialDesignIconView glyphName="BOOK_OPEN_VARIANT" size="24" />
                             </graphic>
                         </Button>
-                        <Button contentDisplay="TOP" maxWidth="1.7976931348623157E308" text="New Script" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Button contentDisplay="TOP" maxWidth="1.7976931348623157E308" onAction="#loadNewScript"
+                                text="New Script" GridPane.columnIndex="1" GridPane.rowIndex="0">
                             <graphic>
                                 <MaterialDesignIconView glyphName="NEW_BOX" size="24" />
                             </graphic>

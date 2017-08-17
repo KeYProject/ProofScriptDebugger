@@ -2,19 +2,16 @@ package edu.kit.formal.psdb.termmatcher;
 
 import de.uka.ilkd.key.logic.Term;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Spliterator;
 import java.util.Stack;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
+ * Matchpattern visitor visits the matchpatterns of case-statements
  * @author Alexander Weigl
+ * @author S. Grebing
  */
 class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     static final Matchings NO_MATCH = new Matchings();
@@ -22,6 +19,13 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
 
     private Stack<Term> termStack = new Stack<>();
 
+    /**
+     * Visit '_'
+     *
+     * @param ctx
+     * @param peek
+     * @return
+     */
     @Override
     public Matchings visitDontCare(MatchPatternParser.DontCareContext ctx, Term peek) {
         if (peek != null) {
@@ -40,6 +44,13 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         }
     }*/
 
+    /**
+     * Visit a Schema Variable
+     *
+     * @param ctx
+     * @param peek
+     * @return
+     */
     @Override
     protected Matchings visitSchemaVar(MatchPatternParser.SchemaVarContext ctx, Term peek) {
         if (peek != null) {
@@ -49,6 +60,12 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         }
     }
 
+    /**
+     * Visit a '...'Term'...' structure
+     * @param ctx
+     * @param peek
+     * @return
+     */
     @Override
     protected Matchings visitAnywhere(MatchPatternParser.AnywhereContext ctx, Term peek) {
         Matchings m = new Matchings();
@@ -60,10 +77,15 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     }
 
 
+    /**
+     * Visit a function and predicate symbol without a sequent arrow
+     * @param ctx
+     * @param peek
+     * @return
+     */
     @Override
     protected Matchings visitFunction(MatchPatternParser.FunctionContext ctx, Term peek) {
         String expectedFunction = ctx.func.getText();
-
         if (peek.op().name().toString().equals(expectedFunction)  // same name
                 && ctx.termPattern().size() == peek.arity()       // same arity
                 ) {
@@ -75,12 +97,23 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return NO_MATCH;
     }
 
-
+    /**
+     * Visit a semisequent pattern f(x), f(y)
+     * @param ctx
+     * @param peek
+     * @return
+     */
     @Override
     protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, Term peek) {
         return null;
     }
 
+    /**
+     * Visit a sequent pattern 'f(x) ==> f(x)', 'f(x) ==>' or '==> f(x)'
+     * @param ctx
+     * @param peek
+     * @return
+     */
     @Override
     protected Matchings visitSequentPattern(MatchPatternParser.SequentPatternContext ctx, Term peek) {
         return null;
@@ -101,6 +134,9 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     }
 
     /**
+     * Reduce the matchings by eliminating non-compatible matchings.
+     * For example:
+     * m1: <X, f(y)>, <Y,g> and m2: <X, g> <Y, f(x)>
      * @param m1
      * @param m2
      * @return
@@ -134,7 +170,9 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     }
 }
 
-
+/**
+ * Class Matching contains a hashmap of string to term
+ */
 class Matchings extends ArrayList<HashMap<String, Term>> {
     public static Matchings singleton(String name, Term peek) {
         Matchings matchings = new Matchings();

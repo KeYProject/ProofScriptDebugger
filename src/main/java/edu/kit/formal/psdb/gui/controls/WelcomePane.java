@@ -7,6 +7,7 @@ import javafx.scene.layout.AnchorPane;
 import java.io.File;
 
 /**
+ * Welcome pane that allows for a more usable entry point
  * Created by weigl on 7/7/17.
  */
 public class WelcomePane extends AnchorPane {
@@ -21,11 +22,11 @@ public class WelcomePane extends AnchorPane {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
         proofScriptDebugger.openScript(
-                new File("src/test/resources/edu/kit/formal/interpreter/contraposition/w_branching.kps")
+                new File("src/test/resources/edu/kit/formal/psdb/interpreter/contraposition/w_branching.kps")
         );
 
         proofScriptDebugger.openKeyFile(
-                new File("src/test/resources/edu/kit/formal/interpreter/contraposition/contraposition.key"));
+                new File("src/test/resources/edu/kit/formal/psdb/interpreter/contraposition/contraposition.key"));
 
     }
 
@@ -33,10 +34,10 @@ public class WelcomePane extends AnchorPane {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
         proofScriptDebugger.openScript(
-                new File("src/test/resources/edu/kit/formal/interpreter/javaExample/test.kps")
+                new File("src/test/resources/edu/kit/formal/psdb/interpreter/javaExample/test.kps")
         );
         proofScriptDebugger.openJavaFile(
-                new File("src/test/resources/edu/kit/formal/interpreter/javaExample/Test.java"));
+                new File("src/test/resources/edu/kit/formal/psdb/interpreter/javaExample/Test.java"));
     }
 
     public void loadHelpPage(ActionEvent event) {
@@ -53,6 +54,21 @@ public class WelcomePane extends AnchorPane {
         proofScriptDebugger.openJavaFile();
         proofScriptDebugger.openScript();
 
+    }
+
+    public void loadNewScript(ActionEvent event) {
+        proofScriptDebugger.getWelcomePaneDock().close();
+        proofScriptDebugger.showActiveInspector(null);
+
+        proofScriptDebugger.getScriptController().newScript();
+    }
+
+
+    public void openScript(ActionEvent event) {
+        proofScriptDebugger.getWelcomePaneDock().close();
+        proofScriptDebugger.showActiveInspector(null);
+
+        proofScriptDebugger.openScript();
     }
 }
 

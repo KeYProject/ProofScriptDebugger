@@ -93,11 +93,22 @@ public class ProofTree extends BorderPane {
         init();
     }
 
+    private void init() {
+        if (root.get() != null)
+            treeProof.setRoot(new TreeItemNode(root.get()));
+        treeProof.refresh();
+    }
+
     private TreeCell<Node> cellFactory(TreeView<Node> nodeTreeView) {
         TextFieldTreeCell<Node> tftc = new TextFieldTreeCell<>();
         tftc.setConverter(new StringConverter<Node>() {
             @Override
             public String toString(Node object) {
+               /* if (object.getAppliedRuleApp() != null) {
+                    return object.getAppliedRuleApp().rule().displayName();
+                } else {
+                   return object.name();
+                }*/
                 return object.sequent().toString();
             }
 
@@ -122,12 +133,6 @@ public class ProofTree extends BorderPane {
                 tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
             }
         }
-    }
-
-    private void init() {
-        if (root.get() != null)
-            treeProof.setRoot(new TreeItemNode(root.get()));
-        treeProof.refresh();
     }
 
     public Object getColorOfNodes() {
@@ -173,15 +178,15 @@ class TreeItemNode extends TreeItem<Node> {
     }
 
     @Override
+    public boolean isLeaf() {
+        return getValue().leaf();
+    }
+
+    @Override
     public ObservableList<TreeItem<Node>> getChildren() {
         if (super.getChildren().size() != getValue().children().size())
             super.getChildren().setAll(
                     getValue().children().stream().map(TreeItemNode::new).collect(Collectors.toList()));
         return super.getChildren();
-    }
-
-    @Override
-    public boolean isLeaf() {
-        return getValue().leaf();
     }
 }

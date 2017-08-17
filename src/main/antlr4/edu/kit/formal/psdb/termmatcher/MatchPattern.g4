@@ -26,7 +26,7 @@ termPattern :
 f(x), f(x,y,g(y)), X, ?Y, _, ..., f(... ?X ...), f(..., ?X), f(..., ...?X...), f(..., ... g(x) ...), f(_, x, _, y, ... y ...)
 */
 semiSeqPattern : termPattern (',' termPattern)*;
-sequentPattern : semiSeqPattern? ARROW semiSeqPattern?;
+sequentPattern : antec=semiSeqPattern? ARROW succ=semiSeqPattern?;
 
 ARROW : '⇒' | '==>';
 DONTCARE: '?' | '_' | '█';

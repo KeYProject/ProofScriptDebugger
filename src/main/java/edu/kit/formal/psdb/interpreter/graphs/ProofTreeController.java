@@ -1,9 +1,11 @@
 package edu.kit.formal.psdb.interpreter.graphs;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.common.graph.MutableValueGraph;
 import edu.kit.formal.psdb.gui.controller.Events;
 import edu.kit.formal.psdb.gui.controller.PuppetMaster;
 import edu.kit.formal.psdb.gui.controls.DebuggerStatusBar;
+import edu.kit.formal.psdb.gui.model.Breakpoint;
 import edu.kit.formal.psdb.interpreter.Interpreter;
 import edu.kit.formal.psdb.interpreter.InterpretingService;
 import edu.kit.formal.psdb.interpreter.data.GoalNode;
@@ -155,6 +157,18 @@ public class ProofTreeController {
 
     //TODO handle endpoint
 
+    private static boolean compareCtrlFlowNodes(ControlFlowNode newNode, ControlFlowNode oldNode) {
+        return newNode.getScriptstmt().getNodeName().equals(oldNode.getScriptstmt().getNodeName());
+
+    }
+
+    //TODO handle endpoint of graph
+
+    private static boolean comparePTreeNodes(PTreeNode newTreeNode, PTreeNode oldTreeNode) {
+
+        return false;
+    }
+
     /**
      * StepOver and return the node to which the state pointer is pointing to
      *
@@ -185,8 +199,6 @@ public class ProofTreeController {
         }
         return statePointer;
     }
-
-    //TODO handle endpoint of graph
 
     /**
      * Step Back one Node in the stategraph
@@ -310,17 +322,6 @@ public class ProofTreeController {
     public void saveGraphs() {
         MutableValueGraph stateGraph = stateGraphWrapper.getStateGraph();
         MutableValueGraph ctrlFlow = controlFlowGraphVisitor.getGraph();
-    }
-
-
-    private boolean compareCtrlFlowNodes(ControlFlowNode newNode, ControlFlowNode oldNode) {
-        return newNode.getScriptstmt().getNodeName().equals(oldNode.getScriptstmt().getNodeName());
-
-    }
-
-    private boolean comparePTreeNodes(PTreeNode newTreeNode, PTreeNode oldTreeNode) {
-
-        return false;
     }
 
     /**************************************************************************************************************

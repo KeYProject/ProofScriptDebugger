@@ -32,6 +32,35 @@ public class MatcherFacadeTest {
         abbrev = new AbbrevMap();
     }
 
+    @Test
+    public void matches() throws Exception {
+        shouldMatch("f(a)", "_");
+        shouldMatch("f(a)", "?X", "[{?X=f(a)}]");
+        shouldMatch("h(a,a)", "h(?X,?X)", "[{?X=a}]");
+        shouldMatch("h(a,b)", "h(?X,?X)", "[]");
+
+        //shouldMatch("f(a) ==> f(a), f(b)" , "==> f(?X)", [{?X=a}]);
+        //shouldMatch("f(a) ==> f(a), f(b)" , "f(a) ==> f(?X)", [{?X=a}]);
+        //shouldNotMatch("f(a) ==> f(a), f(b)" , "f(?X) ==> f(?X), f(a)");
+        //shouldMatch("f(a) ==> f(a), f(b)" , "==>");
+        //shouldMatch("f(a) ==> f(a), f(b)" , "_ ==> _");
+        //shouldMatch("f(a) ==> f(a), f(b)" , " ==> _");
+        //shouldMatch("f(a) ==> f(a), f(b)" , "_ ==> ");
+
+    }
+
+    private void shouldMatch(String key, String pattern) throws ParserException {
+        Term term = parseKeyTerm(key);
+        Matchings m = MatcherFacade.matches(pattern, term);
+        System.out.println(m);
+    }
+
+    private void shouldMatch(String key, String pattern, String exp) throws ParserException {
+        Term term = parseKeyTerm(key);
+        Matchings m = MatcherFacade.matches(pattern, term);
+        System.out.println(m);
+        Assert.assertEquals(exp, m.toString());
+    }
 
     public Term parseKeyTerm(String term) throws ParserException {
         Reader in = new StringReader(term);
@@ -56,27 +85,5 @@ public class MatcherFacadeTest {
     */
 
         return dtp.parse(in, sort, services, namespace, abbrev);
-    }
-
-
-    @Test
-    public void matches() throws Exception {
-        shouldMatch("f(a)", "_");
-        shouldMatch("f(a)", "?X", "[{?X=f(a)}]");
-        shouldMatch("h(a,a)", "h(?X,?X)", "[{?X=a}]");
-        shouldMatch("h(a,b)", "h(?X,?X)", "[]");
-    }
-
-    private void shouldMatch(String key, String pattern, String exp) throws ParserException {
-        Term term = parseKeyTerm(key);
-        Matchings m = MatcherFacade.matches(pattern, term);
-        System.out.println(m);
-        Assert.assertEquals(exp, m.toString());
-    }
-
-    private void shouldMatch(String key, String pattern) throws ParserException {
-        Term term = parseKeyTerm(key);
-        Matchings m = MatcherFacade.matches(pattern, term);
-        System.out.println(m);
     }
 }

@@ -51,10 +51,6 @@ public class PTreeNode {
         this.scriptstmt = scriptstmt;
     }
 
-    public boolean hasState() {
-        return state != null;
-    }
-
     public LinkedList<ASTNode> getContext() {
         return context;
     }
@@ -79,6 +75,12 @@ public class PTreeNode {
         sb.append("}");
         return sb.toString();
     }
+
+    public boolean hasState() {
+        return state != null;
+    }
+
+
 
 
 }
