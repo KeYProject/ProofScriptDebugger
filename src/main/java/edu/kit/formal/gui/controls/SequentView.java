@@ -59,6 +59,18 @@ public class SequentView extends CodeArea {
         mouseEvent.consume();
     }
 
+    private void hightlightRange(int start, int end) {
+        try {
+            clearHighlight();
+            setStyleClass(start, end, "sequent-highlight");
+        } catch (IllegalStateException e) {
+        }
+    }
+
+    private void clearHighlight() {
+        clearStyle(0, getLength());
+    }
+
     public void onMouseClick(MouseEvent e) {
         if (menu != null && menu.isShowing()) {
             menu.hide();
@@ -94,18 +106,6 @@ public class SequentView extends CodeArea {
 
     }
 
-    private void hightlightRange(int start, int end) {
-        try {
-            clearHighlight();
-            setStyleClass(start, end, "sequent-highlight");
-        } catch (IllegalStateException e) {
-        }
-    }
-
-    private void clearHighlight() {
-        clearStyle(0, getLength());
-    }
-
     public void update(Observable o) {
         Services services = node.get().proof().getEnv().getServicesForEnvironment();
         NamespaceSet nss = services.getNamespaces();
@@ -130,8 +130,15 @@ public class SequentView extends CodeArea {
         clear();
         insertText(0, backend.getString());
         if (node.get().isClosed()) {
+            System.out.println("Closed " + node.get().sequent());
             this.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
             this.getStyleClass().add("closed-sequent-view");
+        } else {
+
+            this.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+            this.getStyleClass().remove("closed-sequent-view");
+            this.getStyleClass().add("sequent-view");
+
         }
     }
 

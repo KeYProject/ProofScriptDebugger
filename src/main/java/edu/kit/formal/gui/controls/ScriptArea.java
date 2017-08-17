@@ -149,45 +149,24 @@ public class ScriptArea extends CodeArea {
 
     }
 
-    private void highlightNonExecutionArea() {
-        if (hasExecutionMarker()) {
-            getStyleSpans(0, getExecutionMarkerPosition()).forEach(span -> {
-                span.getStyle().add("NON_EXE_AREA");
-            });
-            //setStyle(0, getExecutionMarkerPosition(), Collections.singleton("NON_EXE_AREA"));
-        }
-    }
+    private void installPopup() {
+        javafx.stage.Popup popup = new javafx.stage.Popup();
+        setMouseOverTextDelay(Duration.ofSeconds(1));
+        addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
+            int chIdx = e.getCharacterIndex();
+            popup.getContent().setAll(
+                    createPopupInformation(chIdx)
+            );
 
-    private boolean hasExecutionMarker() {
-        return getText().contains(EXECUTION_MARKER);
-    }
-
-    public void showContextMenu(MouseEvent mouseEvent) {
-        if (contextMenu.isShowing())
-            contextMenu.hide();
-
-        if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-            contextMenu.setAutoHide(true);
-            contextMenu.show(this, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-            mouseEvent.consume();
-        } else {
-
-        }
-    }
-
-    private void updateHighlight() {
-        String newValue = getText();
-        if (newValue.length() != 0) {
-            clearStyle(0, newValue.length());
-            StyleSpans<? extends Collection<String>> spans = highlighter.highlight(newValue);
-            if (spans != null) setStyleSpans(0, spans);
-        }
-
-        markedRegions.forEach(reg -> {
-            Collection<String> list = new HashSet<>();
-            list.add(reg.clazzName);
-            setStyle(reg.start, reg.stop, list);
+            Point2D pos = e.getScreenPosition();
+            popup.show(this, pos.getX(), pos.getY() + 10);
         });
+/*
+        addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
+            popup.hide();
+        });*/
+
+        popup.setAutoHide(true);
     }
 
     private void updateMainScriptMarker() {
@@ -210,39 +189,19 @@ public class ScriptArea extends CodeArea {
         }
     }
 
-    private void installPopup() {
-        javafx.stage.Popup popup = new javafx.stage.Popup();
-        setMouseOverTextDelay(Duration.ofSeconds(1));
-        addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
-            int chIdx = e.getCharacterIndex();
-            popup.getContent().setAll(
-                    createPopupInformation(chIdx)
-            );
-
-            Point2D pos = e.getScreenPosition();
-            popup.show(this, pos.getX(), pos.getY() + 10);
-        });
-/*
-        addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
-            popup.hide();
-        });*/
-
-        popup.setAutoHide(true);
-    }
-
-    private Node createPopupInformation(int chIdx) {
-        VBox box = new VBox();
-        box.getStyleClass().add("problem-popup");
-        for (LintProblem p : problems) {
-            if (p.includeTextPosition(chIdx)) {
-                Label lbl = new Label(p.getMessage());
-                lbl.getStyleClass().addAll("problem-popup-label",
-                        "problem-popup-label-" + p.getIssue().getRulename(),
-                        "problem-popup-label-" + p.getIssue().getSeverity());
-                box.getChildren().add(lbl);
-            }
+    private void updateHighlight() {
+        String newValue = getText();
+        if (newValue.length() != 0) {
+            clearStyle(0, newValue.length());
+            StyleSpans<? extends Collection<String>> spans = highlighter.highlight(newValue);
+            if (spans != null) setStyleSpans(0, spans);
         }
-        return box;
+
+        markedRegions.forEach(reg -> {
+            Collection<String> list = new HashSet<>();
+            list.add(reg.clazzName);
+            setStyle(reg.start, reg.stop, list);
+        });
     }
 
     private void highlightProblems() {
@@ -262,6 +221,57 @@ public class ScriptArea extends CodeArea {
         }
     }
 
+    private void highlightNonExecutionArea() {
+        if (hasExecutionMarker()) {
+            getStyleSpans(0, getExecutionMarkerPosition()).forEach(span -> {
+                span.getStyle().add("NON_EXE_AREA");
+            });
+            //setStyle(0, getExecutionMarkerPosition(), Collections.singleton("NON_EXE_AREA"));
+        }
+    }
+
+    private Node createPopupInformation(int chIdx) {
+        VBox box = new VBox();
+        box.getStyleClass().add("problem-popup");
+        for (LintProblem p : problems) {
+            if (p.includeTextPosition(chIdx)) {
+                Label lbl = new Label(p.getMessage());
+                lbl.getStyleClass().addAll("problem-popup-label",
+                        "problem-popup-label-" + p.getIssue().getRulename(),
+                        "problem-popup-label-" + p.getIssue().getSeverity());
+                box.getChildren().add(lbl);
+            }
+        }
+        return box;
+    }
+
+    public void setMainMarker(int lineNumber) {
+        gutter.lineAnnotations.forEach(a -> a.setMainScript(false));
+        if (lineNumber > 0)
+            gutter.getLineAnnotation(lineNumber - 1).setMainScript(true);
+    }
+
+    private boolean hasExecutionMarker() {
+        return getText().contains(EXECUTION_MARKER);
+    }
+
+    public int getExecutionMarkerPosition() {
+        return getText().lastIndexOf(EXECUTION_MARKER);
+    }
+
+    public void showContextMenu(MouseEvent mouseEvent) {
+        if (contextMenu.isShowing())
+            contextMenu.hide();
+
+        if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+            contextMenu.setAutoHide(true);
+            contextMenu.show(this, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+            mouseEvent.consume();
+        } else {
+
+        }
+    }
+
     public MainScriptIdentifier getMainScript() {
         return mainScript.get();
     }
@@ -272,11 +282,6 @@ public class ScriptArea extends CodeArea {
 
     public ObjectProperty<MainScriptIdentifier> mainScriptProperty() {
         return mainScript;
-    }
-
-    public void setText(String text) {
-        clear();
-        insertText(0, text);
     }
 
     private void toggleBreakpoint(int idx) {
@@ -294,12 +299,6 @@ public class ScriptArea extends CodeArea {
 
     public ObjectProperty<File> filePathProperty() {
         return filePath;
-    }
-
-    public void setMainMarker(int lineNumber) {
-        gutter.lineAnnotations.forEach(a -> a.setMainScript(false));
-        if (lineNumber > 0)
-            gutter.getLineAnnotation(lineNumber - 1).setMainScript(true);
     }
 
     public Collection<? extends Breakpoint> getBreakpoints() {
@@ -384,6 +383,11 @@ public class ScriptArea extends CodeArea {
         //Events.unregister(this);
     }
 
+    public void setText(String text) {
+        clear();
+        insertText(0, text);
+    }
+
     private String getTextWithoutMarker() {
         return getText().replace("" + EXECUTION_MARKER, "");
     }
@@ -403,7 +407,7 @@ public class ScriptArea extends CodeArea {
         String tapName = tap.getApp().taclet().displayName();
 
         SequentFormula seqForm = tap.getPio().sequentFormula();
-        //transofrm term to parsable string representation
+        //transform term to parsable string representation
         String term = Utils.toPrettyTerm(seqForm.formula());
 
 
@@ -427,12 +431,6 @@ public class ScriptArea extends CodeArea {
         Events.unregister(this);
         //this.getMainScript().getScriptArea().insertText(this.getExecutionMarkerPosition(), tapName+" "+on+ ";");
 
-    }
-
-
-
-    public int getExecutionMarkerPosition() {
-        return getText().lastIndexOf(EXECUTION_MARKER);
     }
 
     private static class GutterView extends HBox {
@@ -484,16 +482,15 @@ public class ScriptArea extends CodeArea {
                 addPlaceholder();
         }
 
+        public GutterAnnotation getAnnotation() {
+            return annotation.get();
+        }
+
         private void addPlaceholder() {
             Label lbl = new Label();
             lbl.setMinWidth(12);
             lbl.setMinHeight(12);
             getChildren().add(lbl);
-        }
-
-
-        public GutterAnnotation getAnnotation() {
-            return annotation.get();
         }
 
         public void setAnnotation(GutterAnnotation annotation) {

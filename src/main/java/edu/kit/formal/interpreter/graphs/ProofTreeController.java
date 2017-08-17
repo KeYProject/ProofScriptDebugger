@@ -1,9 +1,11 @@
 package edu.kit.formal.interpreter.graphs;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.common.graph.MutableValueGraph;
 import edu.kit.formal.gui.controller.Events;
 import edu.kit.formal.gui.controller.PuppetMaster;
 import edu.kit.formal.gui.controls.DebuggerStatusBar;
+import edu.kit.formal.gui.model.Breakpoint;
 import edu.kit.formal.interpreter.Interpreter;
 import edu.kit.formal.interpreter.InterpretingService;
 import edu.kit.formal.interpreter.data.GoalNode;
@@ -19,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Class controlling and maintaining proof tree structure for debugger and handling step functions for the debugger
@@ -138,17 +141,18 @@ public class ProofTreeController {
 
     }
 
-
     /**
-     * Build the control flow graph for looking up step-edges for the given script inligning called script commands
+     * Sets the properties that may notify GUI about statechanges with new state values
      *
-     * @param mainScript
+     * @param state
      */
-    private void buildControlFlowGraph(ProofScript mainScript) {
-        this.controlFlowGraphVisitor = new ControlFlowVisitor(currentInterpreter.getFunctionLookup());
-        mainScript.accept(controlFlowGraphVisitor);
-        System.out.println("CFG\n" + controlFlowGraphVisitor.asdot());
-
+    private void setNewState(State<KeyData> state) {
+        setCurrentGoals(state == null ? null : state.getGoals());
+        setCurrentSelectedGoal(state == null ? null : state.getSelectedGoalNode());
+        setCurrentHighlightNode(statePointer.getScriptstmt());
+        LOGGER.debug("New State from this command: {}@{}",
+                this.statePointer.getScriptstmt().getNodeName(),
+                this.statePointer.getScriptstmt().getStartPosition());
     }
 
     //TODO handle endpoint
@@ -189,7 +193,7 @@ public class ProofTreeController {
     /**
      * Step Back one Node in the stategraph
      *
-     * @return
+     * @return PTreeNode of current pointer
      */
     public PTreeNode stepBack() {
         PTreeNode current = this.statePointer;
@@ -212,6 +216,17 @@ public class ProofTreeController {
 
     public PTreeNode stepReturn() {
         return null;
+    }
+
+    /**
+     * Execute script with breakpoints
+     * @param debugMode
+     * @param statusBar
+     * @param breakpoints
+     */
+    public void executeScript(boolean debugMode, DebuggerStatusBar statusBar, Set<Breakpoint> breakpoints) {
+        breakpoints.forEach(breakpoint -> blocker.addBreakpoint(breakpoint.getLineNumber()));
+        executeScript(debugMode, statusBar);
     }
 
     /**
@@ -243,6 +258,7 @@ public class ProofTreeController {
 
             this.stateGraphWrapper.install(currentInterpreter);
             this.stateGraphWrapper.addChangeListener(graphChangedListener);
+
             blocker.getStepUntilBlock().set(1);
         }
 
@@ -265,19 +281,22 @@ public class ProofTreeController {
     }
 
     /**
-     * Sets the properties that may notify GUI about statechanges with new state values
+     * Build the control flow graph for looking up step-edges for the given script inligning called script commands
      *
-     * @param state
+     * @param mainScript
      */
-    private void setNewState(State<KeyData> state) {
-        setCurrentGoals(state==null? null : state.getGoals());
-        setCurrentSelectedGoal(state==null?null:state.getSelectedGoalNode());
-        setCurrentHighlightNode(statePointer.getScriptstmt());
-        LOGGER.debug("New State from this command: {}@{}",
-                this.statePointer.getScriptstmt().getNodeName(),
-                this.statePointer.getScriptstmt().getStartPosition());
+    private void buildControlFlowGraph(ProofScript mainScript) {
+        this.controlFlowGraphVisitor = new ControlFlowVisitor(currentInterpreter.getFunctionLookup());
+        mainScript.accept(controlFlowGraphVisitor);
+        System.out.println("CFG\n" + controlFlowGraphVisitor.asdot());
+
     }
 
+    /**
+     * Handle the event that the script was modified
+     *
+     * @param mod
+     */
     @Subscribe
     public void handle(Events.ScriptModificationEvent mod) {
         LOGGER.debug("ProofTreeController.handleScriptModificationEvent");
@@ -287,6 +306,24 @@ public class ProofTreeController {
         this.setCurrentGoals(currentInterpreter.getCurrentGoals());
     }
 
+    /**
+     * Save all data structures to compare before reexecution
+     */
+    public void saveGraphs() {
+        MutableValueGraph stateGraph = stateGraphWrapper.getStateGraph();
+        MutableValueGraph ctrlFlow = controlFlowGraphVisitor.getGraph();
+    }
+
+
+    private boolean compareCtrlFlowNodes(ControlFlowNode newNode, ControlFlowNode oldNode) {
+        return newNode.getScriptstmt().getNodeName().equals(oldNode.getScriptstmt().getNodeName());
+
+    }
+
+    private boolean comparePTreeNodes(PTreeNode newTreeNode, PTreeNode oldTreeNode) {
+
+        return false;
+    }
 
     /**************************************************************************************************************
      *

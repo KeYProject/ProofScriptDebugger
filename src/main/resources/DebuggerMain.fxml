@@ -4,7 +4,6 @@
 <?import de.jensd.fx.glyphs.materialdesignicons.*?>
 <?import edu.kit.formal.gui.controls.DebuggerStatusBar?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.dockfx.DockPane?>
@@ -92,11 +91,19 @@
                                 </MenuItem>
 
                                 <MenuItem
-                                        text="Run in debug mode"
+                                        text="Execute Script Stepwise"
                                         onAction="#executeInDebugMode"
                                         disable="${controller.executeNotPossible}">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="PLAY_PAUSE" size="24.0"/>
+                                    </graphic>
+                                </MenuItem>
+                                <MenuItem
+                                        text="Run to Breakpoint"
+                                        onAction="#executeToBreakpoint"
+                                        disable="${controller.executeNotPossible}">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="FAST_FORWARD" size="24.0"/>
                                     </graphic>
                                 </MenuItem>
                             </items>

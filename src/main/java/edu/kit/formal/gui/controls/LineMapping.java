@@ -8,6 +8,9 @@ import java.util.List;
  * @version 1 (04.06.17)
  */
 public class LineMapping {
+    /**
+     * Position of new lines in the given string value.
+     */
     private List<Integer> marks = new ArrayList<>();
 
     public LineMapping(String value) {
@@ -29,12 +32,12 @@ public class LineMapping {
         return marks.size();
     }
 
-    public int getLineStart(int line) {
-        return marks.get(line);
-    }
-
     public int getLineEnd(int line) {
         return getLineStart(line + 1) - 1;
+    }
+
+    public int getLineStart(int line) {
+        return marks.get(line);
     }
 
     public int getCharInLine(int caretPosition) {
