@@ -1,10 +1,5 @@
 package edu.kit.formal.psdb.gui;
 
-/**
- * Main Entry for Debugger GUI
- *
- * @author S. Grebing
- */
 
 import de.uka.ilkd.key.util.KeYConstants;
 import javafx.application.Application;
@@ -19,6 +14,15 @@ import org.dockfx.DockNode;
 
 import java.util.Locale;
 
+/**
+ * Entry class for the {@link ProofScriptDebugger} (JavaFX Application).
+ * <p>
+ * For a command line interface see {@link edu.kit.formal.psdb.interpreter.Execute}
+ * <p>
+ *
+ * @author S. Grebing
+ * @author Alexander Weigl
+ */
 public class ProofScriptDebugger extends Application {
     public static final String NAME = "Proof Script Debugger";
     public static final String VERSION = "0.1";

@@ -20,6 +20,12 @@ public class MatcherFacade {
         return matcher.accept(ctx, keyTerm);
     }
 
+    /**
+     * Returns a {@link MatchPatternParser} for the given input pattern.
+     *
+     * @param pattern
+     * @return
+     */
     public static MatchPatternParser getParser(String pattern) {
         return getParser(CharStreams.fromString(pattern));
     }

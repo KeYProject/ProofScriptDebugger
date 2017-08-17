@@ -1,0 +1,19 @@
+// Please select one of the following scripts.
+//
+
+script main() {}
+
+
+script cpauto () {
+    auto;
+}
+
+script cpwob () {
+    impRight;
+    impRight;
+    notLeft;
+    notRight;
+    replace_known_left occ='2';
+    concrete_impl_1;
+    close;
+}

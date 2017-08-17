@@ -5,6 +5,7 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.speclang.Contract;
+import edu.kit.formal.psdb.examples.Examples;
 import edu.kit.formal.psdb.gui.ProofScriptDebugger;
 import edu.kit.formal.psdb.gui.controls.*;
 import edu.kit.formal.psdb.gui.model.Breakpoint;
@@ -26,6 +27,8 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -111,7 +114,8 @@ public class DebuggerMain implements Initializable {
 
 
     //-----------------------------------------------------------------------------------------------------------------
-
+    @FXML
+    private Menu examplesMenu;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -137,14 +141,25 @@ public class DebuggerMain implements Initializable {
         );
 
 
-
         //Debugging
         Utils.addDebugListener(javaCode);
         Utils.addDebugListener(executeNotPossible, "executeNotPossible");
 
         scriptController.mainScriptProperty().bindBidirectional(statusBar.mainScriptIdentifierProperty());
 
+        initializeExamples();
 
+    }
+
+    private void initializeExamples() {
+        examplesMenu.getItems().clear();
+        Examples.loadExamples().forEach(example -> {
+            MenuItem item = new MenuItem(example.getName());
+            item.setOnAction(event -> {
+                example.open(this);
+            });
+            examplesMenu.getItems().add(item);
+        });
     }
 
     /**
@@ -364,6 +379,10 @@ public class DebuggerMain implements Initializable {
         return keyFile.get();
     }
 
+    public void setKeyFile(File keyFile) {
+        this.keyFile.set(keyFile);
+    }
+
     /**
      * Reload the KeY environment, to execute the script again
      * TODO: reload views
@@ -450,21 +469,17 @@ public class DebuggerMain implements Initializable {
         }
     }
 
+
+    //endregion
+
+    //region Santa's Little Helper
+
     public void openJavaFile(File javaFile) {
         if (javaFile != null) {
             setJavaFile(javaFile);
             initialDirectory.set(javaFile.getParentFile());
             contractLoaderService.start();
         }
-    }
-
-
-    //endregion
-
-    //region Santa's Little Helper
-
-    public void setKeyFile(File keyFile) {
-        this.keyFile.set(keyFile);
     }
 
     @FXML
@@ -496,7 +511,6 @@ public class DebuggerMain implements Initializable {
     //endregion
 
     //region Santa's Little Helper
-
     @FXML
     protected void loadJavaFile() {
         File javaFile = openFileChooserOpenDialog("Select Java File", "Java Files", "java");
@@ -742,15 +756,25 @@ public class DebuggerMain implements Initializable {
     }
 
     public void showHelpText() {
+        String url = ProofScriptDebugger.class.getResource("intro.html").toExternalForm();
+        showHelpText(url);
+    }
 
+    public void showHelpText(String url) {
         WebView browser = new WebView();
         WebEngine webEngine = browser.getEngine();
-        String url = ProofScriptDebugger.class.getResource("intro.html").toExternalForm();
         webEngine.load(url);
         DockNode dn = new DockNode(browser);
+        //this.dockStation.getChildren().add(dn);
+        dn.dock(dockStation, DockPos.LEFT);
+    }
 
-        this.dockStation.getChildren().add(dn);
-
+    public void openNewHelpDock(String title, String content) {
+        WebView browser = new WebView();
+        WebEngine webEngine = browser.getEngine();
+        webEngine.loadContent(content);
+        DockNode dn = new DockNode(browser, title);
+        dn.dock(dockStation, DockPos.LEFT);
     }
 
     public ScriptController getScriptController() {

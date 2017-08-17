@@ -63,6 +63,11 @@
                                 <MenuItem onAction="#showProofTree" text="Show Proof Tree"/>
                             </items>
                         </Menu>
+                        <Menu fx:id="examplesMenu" text="Examples">
+                            <items>
+                                <MenuItem text="Examples not loaded" disable="true"/>
+                            </items>
+                        </Menu>
                         <Menu text="Help">
                             <items>
                                 <MenuItem text="About"/>
