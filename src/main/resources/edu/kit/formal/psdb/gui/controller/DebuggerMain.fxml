@@ -61,6 +61,7 @@
                                 <MenuItem onAction="#showWelcomeDock" text="Show Welcome window"/>
                                 <MenuItem onAction="#showActiveInspector" text="Show Active Inspector window"/>
                                 <MenuItem onAction="#showProofTree" text="Show Proof Tree"/>
+                                <MenuItem onAction="#showCommandHelp" text="Show Command Help"/>
                             </items>
                         </Menu>
                         <Menu fx:id="examplesMenu" text="Examples">

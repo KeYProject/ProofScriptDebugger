@@ -52,15 +52,18 @@ public class DefaultLookup implements CommandLookup {
                 if (found == null) {
                     found = b;
                 } else {
-                    throw new IllegalStateException("Call on line"
-                            + callStatement.getStartPosition().getLineNumber()
-                            + " is ambigue.");
+                    throw new IllegalStateException("Call on line" + callStatement + " is ambigue.");
                 }
             }
         }
 
         if (found != null) return found;
         throw new NoCallHandlerException(callStatement);
+    }
+
+    @Override
+    public String getHelp(CallStatement call) {
+        return getBuilder(call).getHelp(call);
     }
 
 }

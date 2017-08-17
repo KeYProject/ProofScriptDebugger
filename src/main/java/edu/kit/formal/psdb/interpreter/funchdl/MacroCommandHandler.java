@@ -9,6 +9,7 @@ import edu.kit.formal.psdb.parser.types.SimpleType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,11 @@ public class MacroCommandHandler implements CommandHandler {
 
     public MacroCommandHandler() {
         macros = new HashMap<>();
+    }
+
+    public MacroCommandHandler(Collection<ProofMacro> macros) {
+        this();
+        macros.forEach(m -> this.macros.put(m.getScriptCommandName(), m));
     }
 
 

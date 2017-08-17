@@ -30,4 +30,15 @@ public interface CommandHandler<T> {
     default boolean isAtomic() {
         return false;
     }
+
+    /**
+     * Return a html documentation message
+     *
+     * @param call
+     * @return
+     */
+    default String getHelp(CallStatement call) {
+        return "Help is not implemented for " + getClass().getCanonicalName();
+    }
+
 }

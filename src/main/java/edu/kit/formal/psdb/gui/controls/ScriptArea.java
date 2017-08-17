@@ -144,9 +144,6 @@ public class ScriptArea extends CodeArea {
         });
 
         mainScript.addListener((observable) -> updateMainScriptMarker());
-
-
-
     }
 
     private void installPopup() {

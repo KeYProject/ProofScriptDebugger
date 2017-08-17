@@ -97,6 +97,10 @@ public class DebuggerMain implements Initializable {
     private DockNode activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
     private BooleanProperty debugMode = new SimpleBooleanProperty(this, "debugMode", false);
 
+    private CommandHelp commandHelp = new CommandHelp();
+    private DockNode commandHelpDock = new DockNode(commandHelp, "Command Help");
+
+
     /**
      * True, iff the execution is not possible
      */
@@ -733,6 +737,13 @@ public class DebuggerMain implements Initializable {
         if (!activeInspectorDock.isDocked() &&
                 !activeInspectorDock.isFloating()) {
             activeInspectorDock.dock(dockStation, DockPos.CENTER);
+        }
+    }
+
+    @FXML
+    public void showCommandHelp(ActionEvent event) {
+        if (!commandHelpDock.isDocked() && !commandHelpDock.isFloating()) {
+            commandHelpDock.dock(dockStation, DockPos.LEFT);
         }
     }
 

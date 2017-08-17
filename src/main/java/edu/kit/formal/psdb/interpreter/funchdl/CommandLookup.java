@@ -14,4 +14,6 @@ public interface CommandLookup<T> {
     boolean isAtomic(CallStatement call);
 
     public CommandHandler getBuilder(CallStatement callStatement);
+
+    String getHelp(CallStatement call);
 }
