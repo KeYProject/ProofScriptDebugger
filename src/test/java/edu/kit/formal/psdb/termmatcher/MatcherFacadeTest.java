@@ -4,6 +4,7 @@ import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.NamespaceSet;
+import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.sort.Sort;
 import de.uka.ilkd.key.parser.DefaultTermParser;
@@ -38,6 +39,15 @@ public class MatcherFacadeTest {
         shouldMatch("f(a)", "?X", "[{?X=f(a)}]");
         shouldMatch("h(a,a)", "h(?X,?X)", "[{?X=a}]");
         shouldMatch("h(a,b)", "h(?X,?X)", "[]");
+        shouldMatch("f(a)", "f(a)");
+        shouldMatchForm("pred(a)", "_");
+        shouldMatchForm("pred(a)", "pred(?X)", "[{?X=a}]");
+        shouldMatchSemiSeq("pred(a), pred(b) ==>", "pred(?X), pred(?Y)");
+        shouldMatchSemiSeq("pred(a), pred(b) ==>", "pred(?X), pred(?X)", "[{?X=a}, {?X=b}]");
+        shouldMatchSemiSeq("pred(a), pred(f(a)) ==>", "pred(?X), pred(f(?X))", "[{?X=a}]");
+        shouldMatchSemiSeq("pred(b), pred(f(a)) ==>", "pred(?X), pred(f(?X))", "[]");
+        // shouldMatchSemiSeq("pred(a), pred(b) ==> qpred(a,b)", "pred(a), pred(b)");
+        //shouldMatchSemiSeq("pred(a), pred(b) ==> qpred(a,b)", "pred(?X), pred(?Y)", "[{?X=a}, {?Y:=b}]");
 
         //shouldMatch("f(a) ==> f(a), f(b)" , "==> f(?X)", [{?X=a}]);
         //shouldMatch("f(a) ==> f(a), f(b)" , "f(a) ==> f(?X)", [{?X=a}]);
@@ -58,6 +68,32 @@ public class MatcherFacadeTest {
     private void shouldMatch(String key, String pattern, String exp) throws ParserException {
         Term term = parseKeyTerm(key);
         Matchings m = MatcherFacade.matches(pattern, term);
+        System.out.println(m);
+        Assert.assertEquals(exp, m.toString());
+    }
+
+    private void shouldMatchForm(String form, String pattern) throws ParserException {
+        Term formula = parserFormula(form);
+        Matchings m = MatcherFacade.matches(pattern, formula);
+        System.out.println(m);
+    }
+
+    private void shouldMatchForm(String form, String pattern, String exp) throws ParserException {
+        Term formula = parserFormula(form);
+        Matchings m = MatcherFacade.matches(pattern, formula);
+        System.out.println(m);
+        Assert.assertEquals(exp, m.toString());
+    }
+
+    private void shouldMatchSemiSeq(String s, String s1) throws ParserException {
+        Sequent term = parseSeq(s);
+        Matchings m = MatcherFacade.matches(s1, term);
+        System.out.println(m);
+    }
+
+    private void shouldMatchSemiSeq(String s, String s1, String exp) throws ParserException {
+        Sequent term = parseSeq(s);
+        Matchings m = MatcherFacade.matches(s1, term);
         System.out.println(m);
         Assert.assertEquals(exp, m.toString());
     }
@@ -85,5 +121,16 @@ public class MatcherFacadeTest {
     */
 
         return dtp.parse(in, sort, services, namespace, abbrev);
+    }
+
+    public Term parserFormula(String form) throws ParserException {
+        Reader in = new StringReader(form);
+        Sort sort = Sort.FORMULA;
+        return dtp.parse(in, sort, services, namespace, abbrev);
+    }
+
+    private Sequent parseSeq(String s) throws ParserException {
+        Reader in = new StringReader(s);
+        return dtp.parseSeq(in, services, namespace, abbrev);
     }
 }

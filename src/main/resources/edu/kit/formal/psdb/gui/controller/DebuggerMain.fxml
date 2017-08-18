@@ -89,16 +89,16 @@
                             </tooltip>
 
                             <items>
-                                <MenuItem text="Execute from Cursor"
-                                          onAction="#executeScriptFromCursor"
-                                          disable="${controller.executeNotPossible}">
-                                    <graphic>
-                                        <MaterialDesignIconView glyphName="CURSOR_TEXT" size="24.0"/>
-                                    </graphic>
-                                </MenuItem>
+                                <!-- <MenuItem text="Execute from Cursor"
+                                           onAction="#executeScriptFromCursor"
+                                           disable="${controller.executeNotPossible}">
+                                     <graphic>
+                                         <MaterialDesignIconView glyphName="CURSOR_TEXT" size="24.0"/>
+                                     </graphic>
+                                 </MenuItem> -->
 
                                 <MenuItem
-                                        text="Execute Script Stepwise"
+                                        text="Execute Script Stepwise From Start"
                                         onAction="#executeInDebugMode"
                                         disable="${controller.executeNotPossible}">
                                     <graphic>
@@ -157,14 +157,14 @@
                             </tooltip>
                         </Button>
 
-                        <Button onAction="#stopDebugMode" disable="${! controller.debugMode}">
+                        <!--<Button onAction="#stopDebugMode" disable="${! controller.debugMode}">
                             <graphic>
                                 <MaterialDesignIconView glyphName="STOP" size="24.0"/>
                             </graphic>
                             <tooltip>
                                 <Tooltip text="Stop"/>
                             </tooltip>
-                        </Button>
+                        </Button>-->
                     </items>
                 </ToolBar>
             </children>

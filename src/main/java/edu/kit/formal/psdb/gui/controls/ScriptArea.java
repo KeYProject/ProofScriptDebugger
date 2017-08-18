@@ -7,11 +7,11 @@ import de.uka.ilkd.key.logic.SequentFormula;
 import edu.kit.formal.psdb.gui.controller.Events;
 import edu.kit.formal.psdb.gui.model.Breakpoint;
 import edu.kit.formal.psdb.gui.model.MainScriptIdentifier;
+import edu.kit.formal.psdb.lint.LintProblem;
+import edu.kit.formal.psdb.lint.LinterStrategy;
 import edu.kit.formal.psdb.parser.Facade;
 import edu.kit.formal.psdb.parser.ScriptLanguageLexer;
 import edu.kit.formal.psdb.parser.ast.*;
-import edu.kit.formal.psdb.lint.LintProblem;
-import edu.kit.formal.psdb.lint.LinterStrategy;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.binding.BooleanBinding;
@@ -389,14 +389,18 @@ public class ScriptArea extends CodeArea {
         return getText().replace("" + EXECUTION_MARKER, "");
     }
 
+    /**
+     * Insert Execution marker at absolute character position
+     *
+     * @param pos
+     */
     public void insertExecutionMarker(int pos) {
         LOGGER.debug("ScriptArea.insertExecutionMarker");
         Events.register(this);
         String text = getText();
         setText(text.substring(0, pos) + EXECUTION_MARKER + text.substring(pos));
-
-
     }
+
 
     @Subscribe
     public void handle(Events.TacletApplicationEvent tap) {
@@ -429,6 +433,7 @@ public class ScriptArea extends CodeArea {
         //this.getMainScript().getScriptArea().insertText(this.getExecutionMarkerPosition(), tapName+" "+on+ ";");
 
     }
+
 
     private static class GutterView extends HBox {
         private final SimpleObjectProperty<GutterAnnotation> annotation = new SimpleObjectProperty<>();

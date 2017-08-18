@@ -20,6 +20,51 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     private Stack<Term> termStack = new Stack<>();
 
     /**
+     * Reduce the matchings by eliminating non-compatible matchings.
+     * For example:
+     * m1: <X, f(y)>, <Y,g> and m2: <X, g> <Y, f(x)>
+     * @param m1
+     * @param m2
+     * @return
+     */
+    protected static Matchings reduceConform(Matchings m1, Matchings m2) {
+        if (m1 == NO_MATCH || m2 == NO_MATCH) return NO_MATCH;
+
+        Matchings m3 = new Matchings();
+        boolean oneMatch = false;
+        for (HashMap<String, Term> h1 : m1) {
+            for (HashMap<String, Term> h2 : m2) {
+                HashMap<String, Term> h3 = reduceConform(h1, h2);
+                if (h3 != null) {
+                    m3.add(h3);
+                    oneMatch = true;
+                }
+            }
+        }
+        return oneMatch ? m3 : NO_MATCH;
+    }
+
+    /*@Override
+    protected Matchings visitStartDontCare(MatchPatternParser.StarDontCareContext ctx, Term peek) {
+        if (peek != null) {
+            return EMPTY_MATCH;
+        } else {
+            return NO_MATCH;
+        }
+    }*/
+
+    private static HashMap<String, Term> reduceConform(HashMap<String, Term> h1, HashMap<String, Term> h2) {
+        HashMap<String, Term> h3 = new HashMap<>(h1);
+        for (String s1 : h3.keySet()) {
+            if (h2.containsKey(s1) && !h2.get(s1).equals(h1.get(s1))) {
+                return null;
+            }
+        }
+        h3.putAll(h2);
+        return h3;
+    }
+
+    /**
      * Visit '_'
      *
      * @param ctx
@@ -34,15 +79,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
             return NO_MATCH;
         }
     }
-
-    /*@Override
-    protected Matchings visitStartDontCare(MatchPatternParser.StarDontCareContext ctx, Term peek) {
-        if (peek != null) {
-            return EMPTY_MATCH;
-        } else {
-            return NO_MATCH;
-        }
-    }*/
 
     /**
      * Visit a Schema Variable
@@ -76,7 +112,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return m;
     }
 
-
     /**
      * Visit a function and predicate symbol without a sequent arrow
      * @param ctx
@@ -91,7 +126,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
                 ) {
             return IntStream.range(0, peek.arity())
                     .mapToObj(i -> (Matchings) accept(ctx.termPattern(i), peek.sub(i)))
-                    .reduce(this::reduceConform)
+                    .reduce(MatcherImpl::reduceConform)
                     .orElse(NO_MATCH);
         }
         return NO_MATCH;
@@ -105,6 +140,13 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
      */
     @Override
     protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, Term peek) {
+        /*Matchings m = new Matchings();
+        List<MatchPatternParser.TermPatternContext> termPatterns = ctx.termPattern();
+        for (MatchPatternParser.TermPatternContext termPattern : termPatterns) {
+            System.out.println("Searching for "+termPattern.getText()+" and "+peek.toString());
+            Matchings m1 = accept(termPattern,peek);
+
+        }*/
         return null;
     }
 
@@ -119,7 +161,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return null;
     }
 
-
     private Stream<Term> subTerms(Term peek) {
         ArrayList<Term> list = new ArrayList<>();
         subTerms(list, peek);
@@ -131,42 +172,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         for (Term s : peek.subs()) {
             subTerms(list, s);
         }
-    }
-
-    /**
-     * Reduce the matchings by eliminating non-compatible matchings.
-     * For example:
-     * m1: <X, f(y)>, <Y,g> and m2: <X, g> <Y, f(x)>
-     * @param m1
-     * @param m2
-     * @return
-     */
-    private Matchings reduceConform(Matchings m1, Matchings m2) {
-        if (m1 == NO_MATCH || m2 == NO_MATCH) return NO_MATCH;
-
-        Matchings m3 = new Matchings();
-        boolean oneMatch = false;
-        for (HashMap<String, Term> h1 : m1) {
-            for (HashMap<String, Term> h2 : m2) {
-                HashMap<String, Term> h3 = reduceConform(h1, h2);
-                if (h3 != null) {
-                    m3.add(h3);
-                    oneMatch = true;
-                }
-            }
-        }
-        return oneMatch ? m3 : NO_MATCH;
-    }
-
-    private HashMap<String, Term> reduceConform(HashMap<String, Term> h1, HashMap<String, Term> h2) {
-        HashMap<String, Term> h3 = new HashMap<>(h1);
-        for (String s1 : h3.keySet()) {
-            if (h2.containsKey(s1) && !h2.get(s1).equals(h1.get(s1))) {
-                return null;
-            }
-        }
-        h3.putAll(h2);
-        return h3;
     }
 }
 

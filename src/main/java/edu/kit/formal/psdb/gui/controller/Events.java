@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.formal.psdb.gui.controls.ScriptArea;
+import edu.kit.formal.psdb.parser.ast.ASTNode;
 import edu.kit.formal.psdb.parser.ast.CallStatement;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +48,14 @@ public class Events {
     public static class ScriptModificationEvent {
         private final int line;
         private final CallStatement cs;
+    }
+
+    @Data
+    @RequiredArgsConstructor
+    /**
+     * A new AST node of existing script was executed
+     */
+    public static class NewNodeExecuted {
+        private final ASTNode correspondingASTNode;
     }
 }

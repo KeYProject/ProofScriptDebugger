@@ -2,15 +2,21 @@ package edu.kit.formal.psdb.termmatcher;
 
 import de.uka.ilkd.key.logic.Semisequent;
 import de.uka.ilkd.key.logic.Sequent;
+import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.key_project.util.collection.ImmutableList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A facade for capturing everthing we want to do with matchers.
  *
  * @author Alexander Weigl
+ * @author S.Grebing
  */
 public class MatcherFacade {
     public static Matchings matches(String pattern, Term keyTerm) {
@@ -37,12 +43,12 @@ public class MatcherFacade {
     /**
      * Match a semisequent against a sequent
      *
-     * @param pattern Semiseqeuent pattern e.g. f(x), f(x)
+     * @param pattern Semisequent pattern e.g. f(x), f(x)
      * @param semiSeq Concrete KeY Semisequent
      * @return Matchings
      */
     public static Matchings matches(String pattern, Semisequent semiSeq) {
-        MatcherImpl matcher = new MatcherImpl();
+
         MatchPatternParser mpp = getParser(pattern);
         MatchPatternParser.SemiSeqPatternContext ctx = mpp.semiSeqPattern();
         return matches(ctx, semiSeq);
@@ -50,13 +56,57 @@ public class MatcherFacade {
     }
 
     public static Matchings matches(MatchPatternParser.SemiSeqPatternContext pattern, Semisequent semiSeq) {
-        //semiSeq.iterator()
-        // List<MatchPatternParser.TermPatternContext> termPatternContexts = ctx.termPattern();
-        // for (MatchPatternParser.TermPatternContext termpattern: termPatternContexts) {
-        //for all terms in seq
-        // Matchings s = accept(termpattern, peek);
-        // }
-        return null;
+        MatcherImpl matcher = new MatcherImpl();
+        ImmutableList<SequentFormula> allSequentFormulas = semiSeq.asList();
+
+        List<MatchPatternParser.TermPatternContext> termPatternContexts = pattern.termPattern();
+
+        List<Matchings> allMatches = new ArrayList<>();
+
+        for (MatchPatternParser.TermPatternContext termPatternContext : termPatternContexts) {
+            Matchings m = new Matchings();
+            for (SequentFormula form : allSequentFormulas) {
+                Matchings temp = matcher.accept(termPatternContext, form.formula());
+                m.addAll(temp);
+            }
+            allMatches.add(m);
+        }
+
+        Matchings res = reduceCompatibleMatches(allMatches);
+        System.out.println("res = " + res);
+        return res;
+    }
+
+    /**
+     * Reduce all matches to only comaptible matchings
+     * @param allMatches
+     * @return
+     */
+    private static Matchings reduceCompatibleMatches(List<Matchings> allMatches) {
+        if (allMatches.size() == 2) {
+            return MatcherImpl.reduceConform(allMatches.get(0), allMatches.get(1));
+        } else {
+            Matchings tmp = MatcherImpl.reduceConform(allMatches.get(0), allMatches.get(1));
+            List<Matchings> list = new ArrayList<>();
+            list.add(tmp);
+            list.addAll(allMatches.subList(2, allMatches.size()));
+            return reduceCompatibleMatches(list);
+        }
+    }
+
+    /**
+     * Filter matchings s.t. only those remain, that fit the pattern
+     *
+     * @param allCompatibelMatchings
+     * @param pattern
+     * @return
+     */
+    private static List<Matchings> filterMatchings(List<Matchings> allCompatibelMatchings, MatchPatternParser.SemiSeqPatternContext pattern) {
+        List<Matchings> ret = new ArrayList<>();
+        List<MatchPatternParser.TermPatternContext> termPatternContexts = pattern.termPattern();
+
+
+        return ret;
     }
 
     /**
@@ -70,8 +120,10 @@ public class MatcherFacade {
         MatcherImpl matcher = new MatcherImpl();
         MatchPatternParser mpp = getParser(pattern);
         MatchPatternParser.SequentPatternContext ctx = mpp.sequentPattern();
+        Semisequent antec = sequent.antecedent();
+        Semisequent succ = sequent.succedent();
 
 
-        return null;
+        return matches(pattern,antec);
     }
 }

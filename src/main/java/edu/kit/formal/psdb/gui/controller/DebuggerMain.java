@@ -155,17 +155,6 @@ public class DebuggerMain implements Initializable {
 
     }
 
-    private void initializeExamples() {
-        examplesMenu.getItems().clear();
-        Examples.loadExamples().forEach(example -> {
-            MenuItem item = new MenuItem(example.getName());
-            item.setOnAction(event -> {
-                example.open(this);
-            });
-            examplesMenu.getItems().add(item);
-        });
-    }
-
     /**
      * If the mouse moves other toolbar button, the help text should display in the status bar
      */
@@ -203,8 +192,16 @@ public class DebuggerMain implements Initializable {
 
         proofTreeController.currentHighlightNodeProperty().addListener((observable, oldValue, newValue) -> {
             scriptController.getDebugPositionHighlighter().highlight(newValue);
+
         });
 
+      /*proofTreeController.currentExecutionEndProperty().addListener((observable, oldValue, newValue) -> {
+                    scriptController.getMainScript().getScriptArea().removeExecutionMarker();
+                    LineMapping lm = new LineMapping(scriptController.getMainScript().getScriptArea().getText());
+                    int i = lm.getLineEnd(newValue.getEndPosition().getLineNumber() - 1);
+                    scriptController.getMainScript().getScriptArea().insertExecutionMarker(i);
+
+                });*/
         Utils.addDebugListener(proofTreeController.currentGoalsProperty(), Utils::reprKeyDataList);
         Utils.addDebugListener(proofTreeController.currentSelectedGoalProperty(), Utils::reprKeyData);
         Utils.addDebugListener(proofTreeController.currentHighlightNodeProperty());
@@ -264,6 +261,17 @@ public class DebuggerMain implements Initializable {
         return inspectionViewsController;
     }
 
+    private void initializeExamples() {
+        examplesMenu.getItems().clear();
+        Examples.loadExamples().forEach(example -> {
+            MenuItem item = new MenuItem(example.getName());
+            item.setOnAction(event -> {
+                example.open(this);
+            });
+            examplesMenu.getItems().add(item);
+        });
+    }
+
     public void showCodeDock(ActionEvent actionEvent) {
         if (!javaAreaDock.isDocked()) {
             javaAreaDock.dock(dockStation, DockPos.RIGHT);
@@ -285,29 +293,16 @@ public class DebuggerMain implements Initializable {
      }
  */
     //region Actions: Execution
-    @FXML
-    public void executeToBreakpoint() {
 
-    }
-
-
-    //region Actions: Menu
-   /* @FXML
-    public void closeProgram() {
-        System.exit(0);
-    }*/
-
- /*   @FXML
-    public void openScript() {
-        File scriptFile = openFileChooserOpenDialog("Select Script File",
-                "Proof Script File", "kps");
-        if (scriptFile != null) {
-            openScript(scriptFile);
-        }
-    }*/
-
+    /**
+     * When play button is used
+     */
     @FXML
     public void executeScript() {
+        executorHelper();
+    }
+
+    private void executorHelper() {
         if (proofTreeController.isAlreadyExecuted()) {
             File file;
             boolean isKeyfile = false;
@@ -317,6 +312,7 @@ public class DebuggerMain implements Initializable {
                 isKeyfile = true;
                 file = getKeyFile();
             }
+
 
             Task<Void> reloading = reloadEnvironment(file, isKeyfile);
             reloading.setOnSucceeded(event -> {
@@ -338,7 +334,28 @@ public class DebuggerMain implements Initializable {
 
             executeScript(FACADE.buildInterpreter(), false);
         }
+
     }
+
+    public File getJavaFile() {
+        return javaFile.get();
+    }
+
+    //region Actions: Menu
+   /* @FXML
+    public void closeProgram() {
+        System.exit(0);
+    }*/
+
+ /*   @FXML
+    public void openScript() {
+        File scriptFile = openFileChooserOpenDialog("Select Script File",
+                "Proof Script File", "kps");
+        if (scriptFile != null) {
+            openScript(scriptFile);
+        }
+    }*/
+
 
    /* private void saveScript(File scriptFile) {
         try {
@@ -370,10 +387,6 @@ public class DebuggerMain implements Initializable {
                     "Could not load sourceName " + scriptFile, e);
         }
     }*/
-
-    public File getJavaFile() {
-        return javaFile.get();
-    }
 
     public void setJavaFile(File javaFile) {
         this.javaFile.set(javaFile);
@@ -419,6 +432,7 @@ public class DebuggerMain implements Initializable {
      */
     private void executeScript(InterpreterBuilder ib, boolean debugMode) {
         Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
+
         if (proofTreeController.isAlreadyExecuted()) {
             proofTreeController.saveGraphs();
         }
@@ -442,12 +456,6 @@ public class DebuggerMain implements Initializable {
         }
     }
 
-    /*    @FXML
-        protected void loadKeYFile() {
-            File keyFile = openFileChooserOpenDialog("Select KeY File", "KeY Files", "key", "kps");
-            openKeyFile(keyFile);
-        }
-    */
     public void openKeyFile(File keyFile) {
         if (keyFile != null) {
             setKeyFile(keyFile);
@@ -456,7 +464,6 @@ public class DebuggerMain implements Initializable {
             task.setOnSucceeded(event -> {
                 statusBar.publishMessage("Loaded key sourceName: %s", keyFile);
                 statusBar.stopProgress();
-                // getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(FACADE.getPseudoGoals());
             });
 
             task.setOnFailed(event -> {
@@ -473,17 +480,38 @@ public class DebuggerMain implements Initializable {
         }
     }
 
-
-    //endregion
-
-    //region Santa's Little Helper
-
     public void openJavaFile(File javaFile) {
         if (javaFile != null) {
             setJavaFile(javaFile);
             initialDirectory.set(javaFile.getParentFile());
             contractLoaderService.start();
         }
+    }
+
+    /*    @FXML
+        protected void loadKeYFile() {
+            File keyFile = openFileChooserOpenDialog("Select KeY File", "KeY Files", "key", "kps");
+            openKeyFile(keyFile);
+        }
+    */
+
+    @FXML
+    public void executeToBreakpoint() {
+        Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
+        if (breakpoints.size() == 0) {
+            //we need to add breakpoint at end if no breakpoint exists
+        }
+        executorHelper();
+    }
+
+
+    //endregion
+
+    //region Santa's Little Helper
+
+    @FXML
+    public void executeInDebugMode() {
+        executeScript(FACADE.buildInterpreter(), true);
     }
 
     @FXML
@@ -500,17 +528,6 @@ public class DebuggerMain implements Initializable {
         loadJavaFile();
         showCodeDock(null);
     }
-
-    /**
-     * Save KeY proof as proof file
-     *
-     * @param
-     */
-    /*  public void saveProof(ActionEvent actionEvent) {
-
-        LOGGER.error("saveProof not implemented!!!");
-    }*/
-
 
     //endregion
 
@@ -554,29 +571,7 @@ public class DebuggerMain implements Initializable {
 
     }
 
-    //deprecated
-    @FXML
-    public void executeScriptFromCursor() {
-        InterpreterBuilder ib = FACADE.buildInterpreter();
-        //b.inheritState(interpreterService.interpreterProperty().get());
 
-        // Get State before cursor
-        // use goalnode to build new interpreter in proof tree controller.
-        //
-
-
-        //LineMapping lm = new LineMapping(scriptArea.getText());
-        //int line = lm.getLine(scriptArea.getCaretPosition());
-        //int inLine = lm.getCharInLine(scriptArea.getCaretPosition());
-
-        //ib.ignoreLinesUntil(scriptController.getSelectedScriptArea().getCaretPosition());
-        //executeScript(ib, true);
-    }
-
-    @FXML
-    public void executeInDebugMode() {
-        executeScript(FACADE.buildInterpreter(), true);
-    }
     //endregion
 
     //region Actions: Menu
@@ -883,3 +878,19 @@ public class DebuggerMain implements Initializable {
 
     //endregion
 }
+//deprecated
+   /* @FXML
+    public void executeScriptFromCursor() {
+        InterpreterBuilder ib = FACADE.buildInterpreter();
+        //b.inheritState(interpreterService.interpreterProperty().get());
+
+        // Get State before cursor
+        // use goalnode to build new interpreter in proof tree controller.
+        //
+        //LineMapping lm = new LineMapping(scriptArea.getText());
+        //int line = lm.getLine(scriptArea.getCaretPosition());
+        //int inLine = lm.getCharInLine(scriptArea.getCaretPosition());
+
+        //ib.ignoreLinesUntil(scriptController.getSelectedScriptArea().getCaretPosition());
+        //executeScript(ib, true);
+    }*/

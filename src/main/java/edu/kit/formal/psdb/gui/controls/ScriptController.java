@@ -55,6 +55,37 @@ public class ScriptController {
         fsa.getScriptArea().requestFocus();
     }
 
+    @Subscribe
+    public void handle(Events.NewNodeExecuted newNode) {
+        logger.debug("Handling new node added event!");
+        ASTNode scriptNode = newNode.getCorrespondingASTNode();
+        ScriptArea editor = findEditor(scriptNode);
+        editor.removeExecutionMarker();
+        LineMapping lm = new LineMapping(editor.getText());
+        int pos = lm.getLineEnd(scriptNode.getStartPosition().getLineNumber() - 1);
+        editor.insertExecutionMarker(pos);
+    }
+
+    private ScriptArea findEditor(ASTNode node) {
+        File f = new File(node.getRuleContext().getStart().getInputStream().getSourceName());
+        return findEditor(f);
+    }
+
+    /**
+     * Find the scriptarea for the requested file
+     *
+     * @param filePath
+     * @return
+     */
+    public ScriptArea findEditor(File filePath) {
+        return openScripts.keySet().stream()
+                .filter(scriptArea ->
+                        scriptArea.getFilePath().equals(filePath)
+                )
+                .findAny()
+                .orElse(null);
+    }
+
     public ObservableMap<ScriptArea, DockNode> getOpenScripts() {
         return openScripts;
     }
@@ -153,38 +184,6 @@ public class ScriptController {
         return breakpoints;
     }
 
-    /**
-     * Find the scriptarea for the requested file
-     * @param filePath
-     * @return
-     */
-    public ScriptArea findEditor(File filePath) {
-        return openScripts.keySet().stream()
-                .filter(scriptArea ->
-                        scriptArea.getFilePath().equals(filePath)
-                )
-                .findAny()
-                .orElse(null);
-    }
-
-    /**
-     * Save the script currently in focus to the specified file
-     * @param scriptFile
-     * @throws IOException
-     */
-    public void saveCurrentScriptAs(File scriptFile) throws IOException {
-
-        for (ScriptArea area : openScripts.keySet()) {
-
-            if (openScripts.size() == 1 || area.isFocused()) {
-                System.out.println(area.getText());
-                FileUtils.write(scriptFile, area.getText(), Charset.defaultCharset());
-                area.setFilePath(scriptFile);
-                area.setDirty(false);
-            }
-        }
-    }
-
     public List<ProofScript> getCombinedAST() {
         ArrayList<ProofScript> all = new ArrayList<>();
         for (ScriptArea area : openScripts.keySet()) {
@@ -223,6 +222,25 @@ public class ScriptController {
         // throw new NotImplementedException();
     }
 
+    /**
+     * Save the script currently in focus to the specified file
+     *
+     * @param scriptFile
+     * @throws IOException
+     */
+    public void saveCurrentScriptAs(File scriptFile) throws IOException {
+
+        for (ScriptArea area : openScripts.keySet()) {
+
+            if (openScripts.size() == 1 || area.isFocused()) {
+                System.out.println(area.getText());
+                FileUtils.write(scriptFile, area.getText(), Charset.defaultCharset());
+                area.setFilePath(scriptFile);
+                area.setDirty(false);
+            }
+        }
+    }
+
     public MainScriptIdentifier getMainScript() {
         return mainScript.get();
     }
@@ -235,11 +253,6 @@ public class ScriptController {
         return mainScript;
     }
 
-    private ScriptArea findEditor(ASTNode node) {
-        File f = new File(node.getRuleContext().getStart().getInputStream().getSourceName());
-        return findEditor(f);
-    }
-
     public class ASTNodeHighlighter {
         public final String clazzName;
         private ScriptArea.RegionStyle lastRegion;
@@ -247,14 +260,6 @@ public class ScriptController {
 
         private ASTNodeHighlighter(String clazzName) {
             this.clazzName = clazzName;
-        }
-
-        public void remove() {
-            logger.debug("remove highlight");
-            if (lastScriptArea != null) {
-                logger.debug("previous highlight on {} for {}", lastScriptArea, lastRegion);
-                lastScriptArea.getMarkedRegions().remove(lastRegion);
-            }
         }
 
         public void highlight(ASTNode node) {
@@ -272,6 +277,14 @@ public class ScriptController {
 
             lastScriptArea = area;
             lastRegion = r;
+        }
+
+        public void remove() {
+            logger.debug("remove highlight");
+            if (lastScriptArea != null) {
+                logger.debug("previous highlight on {} for {}", lastScriptArea, lastRegion);
+                lastScriptArea.getMarkedRegions().remove(lastRegion);
+            }
         }
 
         private ScriptArea.RegionStyle asRegion(ASTNode node) {

@@ -30,6 +30,12 @@ public class ContractChooser extends Dialog<Contract> {
     private final ListView<Contract> listOfContractsView = new ListView<>();
     private final Services services;
 
+    public ContractChooser(Services services,
+                           SimpleListProperty<Contract> contracts) {
+        this(services);
+        listOfContractsView.itemsProperty().bind(contracts);
+    }
+
     public ContractChooser(Services services) {
         super();
         this.services = services;
@@ -57,12 +63,6 @@ public class ContractChooser extends Dialog<Contract> {
         okButton.setDefaultButton(true);
 
         listOfContractsView.setOnKeyPressed(event -> okButton.fire());
-    }
-
-    public ContractChooser(Services services,
-                           SimpleListProperty<Contract> contracts) {
-        this(services);
-        listOfContractsView.itemsProperty().bind(contracts);
     }
 
     public ContractChooser(Services service, List<Contract> contracts) {
@@ -97,7 +97,10 @@ public class ContractChooser extends Dialog<Contract> {
 
         private void render() {
             if (getItem() != null) {
-                webView.getEngine().loadContent(getItem().getHTMLText(services));
+                String content = beautifyContractHTML(getItem().getHTMLText(services), getItem().getTarget().toString());
+                webView.getEngine().loadContent(content);
+
+                //webView.getEngine().loadContent(getItem().getHTMLText(services));
                 //int val = (int) webView.getEngine().executeScript("document.height");
                 webView.setPrefHeight(150);
                 webView.setDisable(true);
@@ -106,6 +109,10 @@ public class ContractChooser extends Dialog<Contract> {
                     webView.setStyle("-fx-background-color: lightblue");
                 }
             }
+        }
+
+        private String beautifyContractHTML(String html, String name) {
+            return "Contract for <b>" + name + "</b><br>" + html;
         }
     }
 }
