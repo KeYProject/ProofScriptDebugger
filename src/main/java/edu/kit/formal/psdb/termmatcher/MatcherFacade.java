@@ -107,6 +107,10 @@ public class MatcherFacade {
      * @return
      */
     private static List<MatchInfo> reduceCompatibleMatches(List<List<MatchInfo>> allMatches) {
+        if (allMatches.size() == 1) {
+            return allMatches.get(0);
+        }
+
         if (allMatches.size() == 2) {
             return MatcherImpl.reduceConform(allMatches.get(0), allMatches.get(1));
         } else {
@@ -131,10 +135,20 @@ public class MatcherFacade {
         MatcherImpl matcher = new MatcherImpl();
         MatchPatternParser mpp = getParser(pattern);
         SequentPatternContext ctx = mpp.sequentPattern();
+
         Semisequent antec = sequent.antecedent();
         Semisequent succ = sequent.succedent();
 
+        SemiSeqPatternContext antecPattern = ctx.antec;
+        SemiSeqPatternContext succPattern = ctx.succ;
+        System.out.println("SuccPattern " + succPattern);
 
-        return matches(pattern,antec);
+        Matchings mAntec = matches(antecPattern, antec);
+        Matchings mSucc = matches(succPattern, succ);
+
+        Matchings newMatching = MatcherImpl.reduceConform(mAntec, mSucc);
+        //return MatcherImpl.NO_MATCH;
+
+        return newMatching;
     }
 }
