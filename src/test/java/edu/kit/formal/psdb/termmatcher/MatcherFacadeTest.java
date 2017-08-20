@@ -43,17 +43,6 @@ public class MatcherFacadeTest {
         shouldMatchForm("pred(a)", "_");
         shouldMatchForm("pred(a)", "pred(?X)", "[{?X=a}]");
 
-        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?Y)");
-        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?X)");
-
-        shouldMatchSemiSeq("pred(a), pred(b) ==>", "pred(?X), pred(?Y)", "[{?X=a, ?Y=b}, {?X=b, ?Y=a}]");
-        // shouldMatchSemiSeq("pred(a), pred(b) ==>", "pred(?X), pred(?X)", "[]");
-        // shouldMatchSemiSeq("pred(a), pred(f(a)) ==>", "pred(?X), pred(f(?X))", "[{?X=a}]");
-        // shouldMatchSemiSeq("pred(b), pred(f(a)) ==>", "pred(?X), pred(f(?X))", "[]");
-
-
-        // shouldMatchSemiSeq("pred(a), pred(b) ==> qpred(a,b)", "pred(a), pred(b)");
-        //shouldMatchSemiSeq("pred(a), pred(b) ==> qpred(a,b)", "pred(?X), pred(?Y)", "[{?X=a}, {?Y:=b}]");
 
         //shouldMatch("f(a) ==> f(a), f(b)" , "==> f(?X)", [{?X=a}]);
         //shouldMatch("f(a) ==> f(a), f(b)" , "f(a) ==> f(?X)", [{?X=a}]);
@@ -91,19 +80,6 @@ public class MatcherFacadeTest {
         Assert.assertEquals(exp, m.toString());
     }
 
-    private void shouldMatchSeq(String seq, String seqPattern) throws ParserException {
-        Sequent sequent = parseSeq(seq);
-        Matchings m = MatcherFacade.matches(seqPattern, sequent);
-        System.out.println(m);
-    }
-
-    private void shouldMatchSemiSeq(String s, String s1, String exp) throws ParserException {
-        Sequent term = parseSeq(s);
-        Matchings m = MatcherFacade.matches(s1, term);
-        System.out.println(m);
-        Assert.assertEquals(exp, m.toString());
-    }
-
     public Term parseKeyTerm(String term) throws ParserException {
         Reader in = new StringReader(term);
         Sort sort = Sort.ANY;
@@ -135,14 +111,58 @@ public class MatcherFacadeTest {
         return dtp.parse(in, sort, services, namespace, abbrev);
     }
 
-    private Sequent parseSeq(String s) throws ParserException {
-        Reader in = new StringReader(s);
-        return dtp.parseSeq(in, services, namespace, abbrev);
+    @Test
+    public void semiSeqTest() throws Exception {
+        shouldMatchSemiSeq("pred(a), pred(b) ==>", "pred(?X), pred(?Y)", "[{?X=a, ?Y=b}, {?X=b, ?Y=a}]");
+        shouldMatchSemiSeq("pred(a), pred(b) ==>", "pred(?X), pred(?X)", "[]");
+        shouldMatchSemiSeq("pred(a), pred(f(a)) ==>", "pred(?X), pred(f(?X))", "[{?X=a}]");
+        shouldMatchSemiSeq("pred(b), pred(f(a)) ==>", "pred(?X), pred(f(?X))", "[]");
+
+
+        shouldMatchSemiSeq("pred(a), pred(b) ==> qpred(a,b)", "pred(a), pred(b)");
+        shouldMatchSemiSeq("pred(a), pred(b) ==> qpred(a,b)", "pred(?X), pred(?Y)", "[{?X=a, ?Y=b}, {?X=b, ?Y=a}]");
+
+    }
+
+    private void shouldMatchSemiSeq(String s, String s1, String exp) throws ParserException {
+        Sequent term = parseSeq(s);
+        Matchings m = MatcherFacade.matches(s1, term);
+        System.out.println(m);
+        Assert.assertEquals(exp, m.toString());
     }
 
     private void shouldMatchSemiSeq(String s, String s1) throws ParserException {
         Sequent term = parseSeq(s);
         Matchings m = MatcherFacade.matches(s1, term);
+        System.out.println(m);
+    }
+
+    private Sequent parseSeq(String s) throws ParserException {
+        Reader in = new StringReader(s);
+        return dtp.parseSeq(in, services, namespace, abbrev);
+    }
+
+    @Test
+    public void seqTest() throws Exception {
+
+        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?Y)", "[{?X=a, ?Y=b, ?Z=b}, {?X=b, ?Y=b, ?Z=a}]");
+        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?X)", "[{?X=b, ?Z=a}]");
+        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==>", "[{?X=a, ?Z=b}, {?X=b, ?Z=a}]");
+        shouldMatchSeq("pred(f(a)), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==>", "[{?X=f(a), ?Z=b}, {?X=b, ?Z=f(a)}]");
+
+
+    }
+
+    private void shouldMatchSeq(String seq, String seqPattern, String exp) throws ParserException {
+        Sequent sequent = parseSeq(seq);
+        Matchings m = MatcherFacade.matches(seqPattern, sequent);
+        System.out.println(m);
+        Assert.assertEquals(exp, m.toString());
+    }
+
+    private void shouldMatchSeq(String seq, String seqPattern) throws ParserException {
+        Sequent sequent = parseSeq(seq);
+        Matchings m = MatcherFacade.matches(seqPattern, sequent);
         System.out.println(m);
     }
 }

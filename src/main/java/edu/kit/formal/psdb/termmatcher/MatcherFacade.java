@@ -87,7 +87,6 @@ public class MatcherFacade {
         }
 
         List<MatchInfo> res = reduceCompatibleMatches(allMatches);
-        System.out.println("res = " + res);
 
         if (res == null)
             return NO_MATCH;
@@ -141,13 +140,11 @@ public class MatcherFacade {
 
         SemiSeqPatternContext antecPattern = ctx.antec;
         SemiSeqPatternContext succPattern = ctx.succ;
-        System.out.println("SuccPattern " + succPattern);
 
-        Matchings mAntec = matches(antecPattern, antec);
-        Matchings mSucc = matches(succPattern, succ);
+        Matchings mAntec = antecPattern == null ? MatcherImpl.EMPTY_MATCH : matches(antecPattern, antec);
+        Matchings mSucc = succPattern == null ? MatcherImpl.EMPTY_MATCH : matches(succPattern, succ);
 
         Matchings newMatching = MatcherImpl.reduceConform(mAntec, mSucc);
-        //return MatcherImpl.NO_MATCH;
 
         return newMatching;
     }

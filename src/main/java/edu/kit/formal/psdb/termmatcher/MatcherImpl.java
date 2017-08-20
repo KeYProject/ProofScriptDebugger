@@ -62,7 +62,10 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
      * @return
      */
     protected static Matchings reduceConform(Matchings m1, Matchings m2) {
+        //shortcuts
         if (m1 == NO_MATCH || m2 == NO_MATCH) return NO_MATCH;
+        if (m1 == EMPTY_MATCH) return m2;
+        if (m2 == EMPTY_MATCH) return m1;
 
         Matchings m3 = new Matchings();
         boolean oneMatch = false;
@@ -163,13 +166,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
      */
     @Override
     protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, Term peek) {
-        /*Matchings m = new Matchings();
-        List<MatchPatternParser.TermPatternContext> termPatterns = ctx.termPattern();
-        for (MatchPatternParser.TermPatternContext termPattern : termPatterns) {
-            System.out.println("Searching for "+termPattern.getText()+" and "+peek.toString());
-            Matchings m1 = accept(termPattern,peek);
-
-        }*/
         return null;
     }
 
