@@ -4,13 +4,22 @@ import de.uka.ilkd.key.logic.Semisequent;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
+import edu.kit.formal.psdb.termmatcher.MatchPatternParser.SemiSeqPatternContext;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.key_project.util.collection.ImmutableList;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static edu.kit.formal.psdb.termmatcher.MatchPatternParser.SequentPatternContext;
+import static edu.kit.formal.psdb.termmatcher.MatchPatternParser.TermPatternContext;
+import static edu.kit.formal.psdb.termmatcher.MatcherImpl.MatchInfo;
+import static edu.kit.formal.psdb.termmatcher.MatcherImpl.NO_MATCH;
 
 /**
  * A facade for capturing everthing we want to do with matchers.
@@ -22,7 +31,7 @@ public class MatcherFacade {
     public static Matchings matches(String pattern, Term keyTerm) {
         MatcherImpl matcher = new MatcherImpl();
         MatchPatternParser mpp = getParser(pattern);
-        MatchPatternParser.TermPatternContext ctx = mpp.termPattern();
+        TermPatternContext ctx = mpp.termPattern();
         return matcher.accept(ctx, keyTerm);
     }
 
@@ -50,64 +59,66 @@ public class MatcherFacade {
     public static Matchings matches(String pattern, Semisequent semiSeq) {
 
         MatchPatternParser mpp = getParser(pattern);
-        MatchPatternParser.SemiSeqPatternContext ctx = mpp.semiSeqPattern();
+        SemiSeqPatternContext ctx = mpp.semiSeqPattern();
         return matches(ctx, semiSeq);
 
     }
 
-    public static Matchings matches(MatchPatternParser.SemiSeqPatternContext pattern, Semisequent semiSeq) {
+
+    public static Matchings matches(SemiSeqPatternContext pattern, Semisequent semiSeq) {
         MatcherImpl matcher = new MatcherImpl();
         ImmutableList<SequentFormula> allSequentFormulas = semiSeq.asList();
 
-        List<MatchPatternParser.TermPatternContext> termPatternContexts = pattern.termPattern();
+        List<TermPatternContext> termPatternContexts = pattern.termPattern();
 
-        List<Matchings> allMatches = new ArrayList<>();
+        List<List<MatcherImpl.MatchInfo>> allMatches = new ArrayList<>();
 
-        for (MatchPatternParser.TermPatternContext termPatternContext : termPatternContexts) {
-            Matchings m = new Matchings();
+        for (TermPatternContext termPatternContext : termPatternContexts) {
+            List<MatchInfo> m = new ArrayList<>();
             for (SequentFormula form : allSequentFormulas) {
                 Matchings temp = matcher.accept(termPatternContext, form.formula());
-                m.addAll(temp);
+
+                for (HashMap<String, Term> match : temp) {
+                    m.add(new MatchInfo(match, Collections.singleton(form)));
+                }
             }
+
             allMatches.add(m);
         }
 
-        Matchings res = reduceCompatibleMatches(allMatches);
+        List<MatchInfo> res = reduceCompatibleMatches(allMatches);
         System.out.println("res = " + res);
-        return res;
+
+        if (res == null)
+            return NO_MATCH;
+
+        List<HashMap<String, Term>> resMap = res.stream().map(el -> el.matching).collect(Collectors.toList());
+        Matchings resMatchings = new Matchings();
+        resMatchings.addAll(resMap);
+
+        return resMatchings;
     }
+
+    //BiMap<Pair<SequentFormula, MatchPatternParser.TermPatternContext>, Matchings> formulaToMatchingInfo,
 
     /**
      * Reduce all matches to only comaptible matchings
      * @param allMatches
      * @return
      */
-    private static Matchings reduceCompatibleMatches(List<Matchings> allMatches) {
+    private static List<MatchInfo> reduceCompatibleMatches(List<List<MatchInfo>> allMatches) {
         if (allMatches.size() == 2) {
             return MatcherImpl.reduceConform(allMatches.get(0), allMatches.get(1));
         } else {
-            Matchings tmp = MatcherImpl.reduceConform(allMatches.get(0), allMatches.get(1));
-            List<Matchings> list = new ArrayList<>();
+            List<MatchInfo> tmp = MatcherImpl.reduceConform(allMatches.get(0), allMatches.get(1));
+            List<List<MatchInfo>> list = new ArrayList<>();
             list.add(tmp);
             list.addAll(allMatches.subList(2, allMatches.size()));
             return reduceCompatibleMatches(list);
         }
     }
 
-    /**
-     * Filter matchings s.t. only those remain, that fit the pattern
-     *
-     * @param allCompatibelMatchings
-     * @param pattern
-     * @return
-     */
-    private static List<Matchings> filterMatchings(List<Matchings> allCompatibelMatchings, MatchPatternParser.SemiSeqPatternContext pattern) {
-        List<Matchings> ret = new ArrayList<>();
-        List<MatchPatternParser.TermPatternContext> termPatternContexts = pattern.termPattern();
 
-
-        return ret;
-    }
 
     /**
      * Match a sequent pattern against a concrete sequent
@@ -119,7 +130,7 @@ public class MatcherFacade {
     public static Matchings matches(String pattern, Sequent sequent) {
         MatcherImpl matcher = new MatcherImpl();
         MatchPatternParser mpp = getParser(pattern);
-        MatchPatternParser.SequentPatternContext ctx = mpp.sequentPattern();
+        SequentPatternContext ctx = mpp.sequentPattern();
         Semisequent antec = sequent.antecedent();
         Semisequent succ = sequent.succedent();
 
