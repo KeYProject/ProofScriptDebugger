@@ -9,7 +9,8 @@ cache:
 
 variables:
   MAVEN_OPTS: -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2
-  
+  GIT_SUBMODULE_STRATEGY: recursive
+
   
 
 build:
