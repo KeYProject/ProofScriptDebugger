@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 
 import static edu.kit.formal.psdb.termmatcher.MatchPatternParser.SequentPatternContext;
 import static edu.kit.formal.psdb.termmatcher.MatchPatternParser.TermPatternContext;
-import static edu.kit.formal.psdb.termmatcher.MatcherImpl.MatchInfo;
-import static edu.kit.formal.psdb.termmatcher.MatcherImpl.NO_MATCH;
+import static edu.kit.formal.psdb.termmatcher.MatcherImpl.*;
 
 /**
  * A facade for capturing everthing we want to do with matchers.
@@ -101,7 +100,7 @@ public class MatcherFacade {
     //BiMap<Pair<SequentFormula, MatchPatternParser.TermPatternContext>, Matchings> formulaToMatchingInfo,
 
     /**
-     * Reduce all matches to only comaptible matchings
+     * Reduce all matches to only compatible matchings
      * @param allMatches
      * @return
      */
@@ -132,20 +131,60 @@ public class MatcherFacade {
      */
     public static Matchings matches(String pattern, Sequent sequent) {
         MatcherImpl matcher = new MatcherImpl();
+
         MatchPatternParser mpp = getParser(pattern);
+
         SequentPatternContext ctx = mpp.sequentPattern();
 
         Semisequent antec = sequent.antecedent();
         Semisequent succ = sequent.succedent();
 
-        SemiSeqPatternContext antecPattern = ctx.antec;
-        SemiSeqPatternContext succPattern = ctx.succ;
+        Matchings newMatching;
 
-        Matchings mAntec = antecPattern == null ? MatcherImpl.EMPTY_MATCH : matches(antecPattern, antec);
-        Matchings mSucc = succPattern == null ? MatcherImpl.EMPTY_MATCH : matches(succPattern, succ);
+        if (ctx.anywhere != null) {
+            //in this case we have a pattern without "==>"
+            SemiSeqPatternContext patternCtx = ctx.anywhere;
 
-        Matchings newMatching = MatcherImpl.reduceConform(mAntec, mSucc);
+            if (antec.isEmpty() & succ.isEmpty()) {
+                //Sonderbehandlung, falls beide EmptyMatch-> kein thema aber ansonsten bevorzugung von Varzuweisungen
+                Matchings antecMatches = matches(patternCtx, antec);
+                Matchings succMatches = matches(patternCtx, succ);
+                Matchings ret = compareMatchings(antecMatches, succMatches);
+                newMatching = ret;
+            } else {
+                if (antec.isEmpty()) {
+                    newMatching = matches(patternCtx, succ);
+                } else {
+                    newMatching = matches(patternCtx, antec);
+                }
 
+            }
+        } else {
+
+            SemiSeqPatternContext antecPattern = ctx.antec;
+            SemiSeqPatternContext succPattern = ctx.succ;
+
+            Matchings mAntec = antecPattern == null ? MatcherImpl.EMPTY_MATCH : matches(antecPattern, antec);
+            Matchings mSucc = succPattern == null ? MatcherImpl.EMPTY_MATCH : matches(succPattern, succ);
+
+            newMatching = MatcherImpl.reduceConform(mAntec, mSucc);
+        }
         return newMatching;
+    }
+
+    private static Matchings compareMatchings(Matchings antecMatches, Matchings succMatches) {
+        if (antecMatches.equals(EMPTY_MATCH) && succMatches.equals(EMPTY_MATCH)) {
+            return MatcherImpl.EMPTY_MATCH;
+        }
+        if (antecMatches.equals(NO_MATCH)) return succMatches;
+        if (succMatches.equals(NO_MATCH)) return antecMatches;
+
+
+        //bevorzuge antecmatch atm
+        if (!antecMatches.equals(EMPTY_MATCH)) {
+            return antecMatches;
+        } else {
+            return succMatches;
+        }
     }
 }

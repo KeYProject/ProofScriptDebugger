@@ -2,6 +2,7 @@ package edu.kit.formal.psdb.termmatcher;
 
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
+import org.antlr.v4.runtime.Token;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -31,6 +32,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
                 if (!intersection.isEmpty()) continue;
 
                 HashMap<String, Term> h3 = reduceConform(minfo1.matching, minfo2.matching);
+
                 if (h3 != null) {
                     Set<SequentFormula> union = new HashSet<>(minfo1.matchedForms);
                     union.addAll(minfo2.matchedForms);
@@ -45,50 +47,14 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     private static HashMap<String, Term> reduceConform(HashMap<String, Term> h1, HashMap<String, Term> h2) {
         HashMap<String, Term> h3 = new HashMap<>(h1);
         for (String s1 : h3.keySet()) {
-            if (h2.containsKey(s1) && !h2.get(s1).equals(h1.get(s1))) {
+            if (!s1.equals("EMPTY_MATCH") && (h2.containsKey(s1) && !h2.get(s1).equals(h1.get(s1)))) {
                 return null;
             }
         }
+
         h3.putAll(h2);
         return h3;
     }
-
-    /**
-     * Reduce the matchings by eliminating non-compatible matchings.
-     * For example:
-     * m1: <X, f(y)>, <Y,g> and m2: <X, g> <Y, f(x)>
-     * @param m1
-     * @param m2
-     * @return
-     */
-    protected static Matchings reduceConform(Matchings m1, Matchings m2) {
-        //shortcuts
-        if (m1 == NO_MATCH || m2 == NO_MATCH) return NO_MATCH;
-        if (m1 == EMPTY_MATCH) return m2;
-        if (m2 == EMPTY_MATCH) return m1;
-
-        Matchings m3 = new Matchings();
-        boolean oneMatch = false;
-        for (HashMap<String, Term> h1 : m1) {
-            for (HashMap<String, Term> h2 : m2) {
-                HashMap<String, Term> h3 = reduceConform(h1, h2);
-                if (h3 != null) {
-                    m3.add(h3);
-                    oneMatch = true;
-                }
-            }
-        }
-        return oneMatch ? m3 : NO_MATCH;
-    }
-
-    /*@Override
-    protected Matchings visitStartDontCare(MatchPatternParser.StarDontCareContext ctx, Term peek) {
-        if (peek != null) {
-            return EMPTY_MATCH;
-        } else {
-            return NO_MATCH;
-        }
-    }*/
 
     /**
      * Visit '_'
@@ -105,6 +71,15 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
             return NO_MATCH;
         }
     }
+
+    /*@Override
+    protected Matchings visitStartDontCare(MatchPatternParser.StarDontCareContext ctx, Term peek) {
+        if (peek != null) {
+            return EMPTY_MATCH;
+        } else {
+            return NO_MATCH;
+        }
+    }*/
 
     /**
      * Visit a Schema Variable
@@ -138,6 +113,112 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return m;
     }
 
+    @Override
+    protected Matchings visitBinaryOperation(MatchPatternParser.BinaryOperationContext ctx, Term peek) {
+        Token op = ctx.op;
+        String opToKeYName = convert(op.getType());
+
+        MatchPatternParser.TermPatternContext left = ctx.left;
+        MatchPatternParser.TermPatternContext right = ctx.right;
+
+        if (peek.op().name().toString().equals(opToKeYName)  // same name
+                && peek.arity() == 2   // we know that we are in binary term
+                ) {
+            Matchings lM = accept(left, peek.sub(0));
+            Matchings rM = accept(right, peek.sub(1));
+            Matchings ret = reduceConform(lM, rM);
+            return ret;
+            /*return IntStream.range(0, peek.arity())
+                    .mapToObj(i -> (Matchings) accept(ctx.termPattern(i), peek.sub(i)))
+                    .reduce(MatcherImpl::reduceConform)
+                    .orElse(NO_MATCH);*/
+        }
+        return NO_MATCH;
+
+
+    }
+
+    private String convert(int op) {
+
+        switch (op) {
+
+            case MatchPatternParser.PLUS:
+                return "add";
+
+            case MatchPatternParser.MINUS:
+                return "sub";
+
+            case MatchPatternParser.MUL:
+                return "mul";
+
+
+            case MatchPatternParser.DIV:
+                return "div";
+
+
+            case MatchPatternParser.LE:
+                return "lt";
+
+
+            case MatchPatternParser.LEQ:
+                return "leq";
+
+
+            case MatchPatternParser.EQ:
+                return "equals";
+
+            case MatchPatternParser.GE:
+                return "gt";
+
+            case MatchPatternParser.GEQ:
+                return "geq";
+
+            case MatchPatternParser.IMP:
+                return "imp";
+
+
+            case MatchPatternParser.AND:
+                return "and";
+
+            case MatchPatternParser.OR:
+                return "or";
+
+            default:
+                throw new UnsupportedOperationException("The operator " + op + "is not known");
+        }
+
+
+    }
+
+    /**
+     * Reduce the matchings by eliminating non-compatible matchings.
+     * For example:
+     * m1: <X, f(y)>, <Y,g> and m2: <X, g> <Y, f(x)>
+     *
+     * @param m1
+     * @param m2
+     * @return
+     */
+    protected static Matchings reduceConform(Matchings m1, Matchings m2) {
+        //shortcuts
+        if (m1 == NO_MATCH || m2 == NO_MATCH) return NO_MATCH;
+        if (m1 == EMPTY_MATCH) return m2;
+        if (m2 == EMPTY_MATCH) return m1;
+
+        Matchings m3 = new Matchings();
+        boolean oneMatch = false;
+        for (HashMap<String, Term> h1 : m1) {
+            for (HashMap<String, Term> h2 : m2) {
+                HashMap<String, Term> h3 = reduceConform(h1, h2);
+                if (h3 != null) {
+                    m3.add(h3);
+                    oneMatch = true;
+                }
+            }
+        }
+        return oneMatch ? m3 : NO_MATCH;
+    }
+
     /**
      * Visit a function and predicate symbol without a sequent arrow
      * @param ctx
@@ -153,7 +234,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
             return IntStream.range(0, peek.arity())
                     .mapToObj(i -> (Matchings) accept(ctx.termPattern(i), peek.sub(i)))
                     .reduce(MatcherImpl::reduceConform)
-                    .orElse(NO_MATCH);
+                    .orElse(EMPTY_MATCH);
         }
         return NO_MATCH;
     }
@@ -166,6 +247,11 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
      */
     @Override
     protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, Term peek) {
+        return null;
+    }
+
+    @Override
+    protected Matchings visitNumber(MatchPatternParser.NumberContext ctx, Term peek) {
         return null;
     }
 

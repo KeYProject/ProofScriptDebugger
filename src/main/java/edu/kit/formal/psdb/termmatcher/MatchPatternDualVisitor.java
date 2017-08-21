@@ -13,6 +13,23 @@ public abstract class MatchPatternDualVisitor<T, S> extends MatchPatternBaseVisi
     }
 
     @Override
+    public final T visitSequentPattern(MatchPatternParser.SequentPatternContext ctx) {
+        return visitSequentPattern(ctx, stack.peek());
+    }
+
+    @Override
+    public final T visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx) {
+        return visitSemiSeqPattern(ctx, stack.peek());
+    }
+
+    protected abstract T visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, S peek);
+
+    @Override
+    public T visitNumber(MatchPatternParser.NumberContext ctx) {
+        return visitNumber(ctx, stack.peek());
+    }
+
+    @Override
     public final T visitDontCare(MatchPatternParser.DontCareContext ctx) {
         return visitDontCare(ctx, stack.peek());
     }
@@ -34,30 +51,27 @@ public abstract class MatchPatternDualVisitor<T, S> extends MatchPatternBaseVisi
     protected abstract T visitSchemaVar(MatchPatternParser.SchemaVarContext ctx, S peek);
 
     @Override
+    public final T visitFunction(MatchPatternParser.FunctionContext ctx) {
+        return visitFunction(ctx, stack.peek());
+    }
+
+    @Override
+    public T visitBinaryOperation(MatchPatternParser.BinaryOperationContext ctx) {
+        return visitBinaryOperation(ctx, stack.peek());
+    }
+
+    @Override
     public final T visitAnywhere(MatchPatternParser.AnywhereContext ctx) {
         return visitAnywhere(ctx, stack.peek());
     }
 
     protected abstract T visitAnywhere(MatchPatternParser.AnywhereContext ctx, S peek);
 
-    @Override
-    public final T visitFunction(MatchPatternParser.FunctionContext ctx) {
-        return visitFunction(ctx, stack.peek());
-    }
+    protected abstract T visitBinaryOperation(MatchPatternParser.BinaryOperationContext ctx, S peek);
 
     protected abstract T visitFunction(MatchPatternParser.FunctionContext ctx, S peek);
 
-    @Override
-    public final T visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx) {
-        return visitSemiSeqPattern(ctx, stack.peek());
-    }
-
-    protected abstract T visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, S peek);
-
-    @Override
-    public final T visitSequentPattern(MatchPatternParser.SequentPatternContext ctx) {
-        return visitSequentPattern(ctx, stack.peek());
-    }
+    protected abstract T visitNumber(MatchPatternParser.NumberContext ctx, S peek);
 
     protected abstract T visitSequentPattern(MatchPatternParser.SequentPatternContext ctx, S peek);
 }
