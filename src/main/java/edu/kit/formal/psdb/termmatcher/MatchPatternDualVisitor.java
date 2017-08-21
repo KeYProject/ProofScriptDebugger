@@ -56,22 +56,100 @@ public abstract class MatchPatternDualVisitor<T, S> extends MatchPatternBaseVisi
     }
 
     @Override
-    public T visitBinaryOperation(MatchPatternParser.BinaryOperationContext ctx) {
-        return visitBinaryOperation(ctx, stack.peek());
-    }
-
-    @Override
     public final T visitAnywhere(MatchPatternParser.AnywhereContext ctx) {
         return visitAnywhere(ctx, stack.peek());
     }
 
     protected abstract T visitAnywhere(MatchPatternParser.AnywhereContext ctx, S peek);
 
-    protected abstract T visitBinaryOperation(MatchPatternParser.BinaryOperationContext ctx, S peek);
-
     protected abstract T visitFunction(MatchPatternParser.FunctionContext ctx, S peek);
 
     protected abstract T visitNumber(MatchPatternParser.NumberContext ctx, S peek);
 
     protected abstract T visitSequentPattern(MatchPatternParser.SequentPatternContext ctx, S peek);
+
+    @Override
+    public T visitPlusMinus(MatchPatternParser.PlusMinusContext ctx) {
+        return visitPlusMinus(ctx, stack.peek());
+    }
+
+    protected abstract T visitPlusMinus(MatchPatternParser.PlusMinusContext ctx, S peek);
+
+    @Override
+    public T visitMult(MatchPatternParser.MultContext ctx) {
+        return visitMult(ctx, stack.peek());
+    }
+
+    protected abstract T visitMult(MatchPatternParser.MultContext ctx, S peek);
+
+    @Override
+    public T visitComparison(MatchPatternParser.ComparisonContext ctx) {
+        return visitComparison(ctx, stack.peek());
+    }
+
+    protected abstract T visitComparison(MatchPatternParser.ComparisonContext ctx, S peek);
+
+    @Override
+    public T visitOr(MatchPatternParser.OrContext ctx) {
+        return visitOr(ctx, stack.peek());
+    }
+
+    protected abstract T visitOr(MatchPatternParser.OrContext ctx, S peek);
+
+    @Override
+    public T visitExprNot(MatchPatternParser.ExprNotContext ctx) {
+        return visitExprNot(ctx, stack.peek());
+    }
+
+    public abstract T visitExprNot(MatchPatternParser.ExprNotContext ctx, S peek);
+
+    @Override
+    public T visitExprNegate(MatchPatternParser.ExprNegateContext ctx) {
+        return visitExprNegate(ctx, stack.peek());
+    }
+
+    public abstract T visitExprNegate(MatchPatternParser.ExprNegateContext ctx, S peek);
+
+    @Override
+    public T visitExprParen(MatchPatternParser.ExprParenContext ctx) {
+        return accept(ctx.termPattern(), stack.peek());
+    }
+
+    @Override
+    public T visitImpl(MatchPatternParser.ImplContext ctx) {
+        return visitImpl(ctx, stack.peek());
+    }
+
+    protected abstract T visitImpl(MatchPatternParser.ImplContext ctx, S peek);
+
+    @Override
+    public T visitDivMod(MatchPatternParser.DivModContext ctx) {
+        return visitDivMod(ctx, stack.peek());
+    }
+
+    protected abstract T visitDivMod(MatchPatternParser.DivModContext ctx, S peek);
+
+    @Override
+    public T visitAnd(MatchPatternParser.AndContext ctx) {
+        return visitAnd(ctx, stack.peek());
+    }
+
+    protected abstract T visitAnd(MatchPatternParser.AndContext ctx, S peek);
+
+    @Override
+    public T visitXor(MatchPatternParser.XorContext ctx) {
+        return visitXor(ctx, stack.peek());
+    }
+
+    protected abstract T visitXor(MatchPatternParser.XorContext ctx, S peek);
+
+    @Override
+    public T visitEquality(MatchPatternParser.EqualityContext ctx) {
+        return visitEquality(ctx, stack.peek());
+    }
+
+    protected abstract T visitEquality(MatchPatternParser.EqualityContext ctx, S peek);
 }
+    
+
+
