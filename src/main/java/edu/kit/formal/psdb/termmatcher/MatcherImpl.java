@@ -2,10 +2,9 @@ package edu.kit.formal.psdb.termmatcher;
 
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
-import org.antlr.v4.runtime.Token;
-import org.key_project.util.collection.ImmutableArray;
 import org.antlr.v4.runtime.CommonToken;
 import org.apache.commons.lang.NotImplementedException;
+import org.key_project.util.collection.ImmutableArray;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -60,16 +59,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return h3;
     }
 
-    /**
-     * Visit a semisequent pattern f(x), f(y)
-     * @param ctx
-     * @param peek
-     * @return
-     */
-    @Override
-    protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, Term peek) {
-        return null;
-    }
+
 
     /*@Override
     protected Matchings visitStartDontCare(MatchPatternParser.StarDontCareContext ctx, Term peek) {
@@ -79,6 +69,47 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
             return NO_MATCH;
         }
     }*/
+
+    /**
+     * Reduce the matchings by eliminating non-compatible matchings.
+     * For example:
+     * m1: <X, f(y)>, <Y,g> and m2: <X, g> <Y, f(x)>
+     *
+     * @param m1
+     * @param m2
+     * @return
+     */
+    protected static Matchings reduceConform(Matchings m1, Matchings m2) {
+        //shortcuts
+        if (m1 == NO_MATCH || m2 == NO_MATCH) return NO_MATCH;
+        if (m1 == EMPTY_MATCH) return m2;
+        if (m2 == EMPTY_MATCH) return m1;
+
+        Matchings m3 = new Matchings();
+        boolean oneMatch = false;
+        for (HashMap<String, Term> h1 : m1) {
+            for (HashMap<String, Term> h2 : m2) {
+                HashMap<String, Term> h3 = reduceConform(h1, h2);
+                if (h3 != null) {
+                    m3.add(h3);
+                    oneMatch = true;
+                }
+            }
+        }
+        return oneMatch ? m3 : NO_MATCH;
+    }
+
+    /**
+     * Visit a semisequent pattern f(x), f(y)
+     *
+     * @param ctx
+     * @param peek
+     * @return
+     */
+    @Override
+    protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, Term peek) {
+        return null;
+    }
 
     /**
      * Visit '_'
@@ -127,6 +158,67 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
             m.addAll(s);
         });
         return m;
+    }
+
+    /**
+     * Visit a function and predicate symbol without a sequent arrow
+     *
+     * @param ctx
+     * @param peek
+     * @return
+     */
+    @Override
+    protected Matchings visitFunction(MatchPatternParser.FunctionContext ctx, Term peek) {
+        String expectedFunction = ctx.func.getText();
+        if (peek.op().name().toString().equals(expectedFunction)  // same name
+                && ctx.termPattern().size() == peek.arity()       // same arity
+                ) {
+            return IntStream.range(0, peek.arity())
+                    .mapToObj(i -> (Matchings) accept(ctx.termPattern(i), peek.sub(i)))
+                    .reduce(MatcherImpl::reduceConform)
+                    .orElse(EMPTY_MATCH);
+        }
+        return NO_MATCH;
+    }
+
+    @Override
+    protected Matchings visitNumber(MatchPatternParser.NumberContext ctx, Term peek) {
+        //we are at a natural number
+        if (peek.op().name().toString().equals("Z")) {
+            ImmutableArray<Term> subs = peek.subs();
+            int transformedString = transformToNumber(peek.sub(0));
+
+            return EMPTY_MATCH;
+        } else {
+            return NO_MATCH;
+        }
+
+
+    }
+
+    private int transformToNumber(Term sub) {
+        int number = 0;
+
+        return 0;
+    }
+
+    /**
+     * Visit a sequent pattern 'f(x) ==> f(x)', 'f(x) ==>' or '==> f(x)'
+     *
+     * @param ctx
+     * @param peek
+     * @return
+     */
+    @Override
+    protected Matchings visitSequentPattern(MatchPatternParser.SequentPatternContext ctx, Term peek) {
+        throw new NotImplementedException("use the facade!");
+
+    }
+
+    @Override
+    protected Matchings visitPlusMinus(MatchPatternParser.PlusMinusContext ctx, Term peek) {
+        return visitBinaryOperation(convert(ctx.op.getType()),
+                ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     protected Matchings visitBinaryOperation(String keyOpName, MatchPatternParser.TermPatternContext right, MatchPatternParser.TermPatternContext left, Term peek) {
@@ -187,107 +279,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         }
 
 
-    }
-
-    /**
-     * Reduce the matchings by eliminating non-compatible matchings.
-     * For example:
-     * m1: <X, f(y)>, <Y,g> and m2: <X, g> <Y, f(x)>
-     *
-     * @param m1
-     * @param m2
-     * @return
-     */
-    protected static Matchings reduceConform(Matchings m1, Matchings m2) {
-        //shortcuts
-        if (m1 == NO_MATCH || m2 == NO_MATCH) return NO_MATCH;
-        if (m1 == EMPTY_MATCH) return m2;
-        if (m2 == EMPTY_MATCH) return m1;
-
-        Matchings m3 = new Matchings();
-        boolean oneMatch = false;
-        for (HashMap<String, Term> h1 : m1) {
-            for (HashMap<String, Term> h2 : m2) {
-                HashMap<String, Term> h3 = reduceConform(h1, h2);
-                if (h3 != null) {
-                    m3.add(h3);
-                    oneMatch = true;
-                }
-            }
-        }
-        return oneMatch ? m3 : NO_MATCH;
-    }
-
-    /**
-     * Visit a function and predicate symbol without a sequent arrow
-     *
-     * @param ctx
-     * @param peek
-     * @return
-     */
-    @Override
-    protected Matchings visitFunction(MatchPatternParser.FunctionContext ctx, Term peek) {
-        String expectedFunction = ctx.func.getText();
-        if (peek.op().name().toString().equals(expectedFunction)  // same name
-                && ctx.termPattern().size() == peek.arity()       // same arity
-                ) {
-            return IntStream.range(0, peek.arity())
-                    .mapToObj(i -> (Matchings) accept(ctx.termPattern(i), peek.sub(i)))
-                    .reduce(MatcherImpl::reduceConform)
-                    .orElse(EMPTY_MATCH);
-        }
-        return NO_MATCH;
-    }
-
-    /**
-     * Visit a semisequent pattern f(x), f(y)
-     * @param ctx
-     * @param peek
-     * @return
-     */
-    @Override
-    protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, Term peek) {
-        return null;
-    }
-
-    @Override
-    protected Matchings visitNumber(MatchPatternParser.NumberContext ctx, Term peek) {
-        //we are at a natural number
-        if (peek.op().name().toString().equals("Z")) {
-            ImmutableArray<Term> subs = peek.subs();
-            int transformedString = transformToNumber(peek.sub(0));
-
-            return EMPTY_MATCH;
-        } else {
-            return NO_MATCH;
-        }
-
-
-    }
-
-    private int transformToNumber(Term sub) {
-        int number = 0;
-
-        return 0;
-    }
-
-    /**
-     * Visit a sequent pattern 'f(x) ==> f(x)', 'f(x) ==>' or '==> f(x)'
-     *
-     * @param ctx
-     * @param peek
-     * @return
-     */
-    @Override
-    protected Matchings visitSequentPattern(MatchPatternParser.SequentPatternContext ctx, Term peek) {
-        throw new NotImplementedException("use the facade!");
-
-    }
-
-    @Override
-    protected Matchings visitPlusMinus(MatchPatternParser.PlusMinusContext ctx, Term peek) {
-        return visitBinaryOperation(convert(ctx.op.getType()),
-                ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     @Override
