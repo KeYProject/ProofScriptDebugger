@@ -3,6 +3,7 @@ package edu.kit.formal.psdb.interpreter.data;
 import edu.kit.formal.psdb.parser.ast.Variable;
 import edu.kit.formal.psdb.parser.types.Type;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -13,6 +14,8 @@ import lombok.ToString;
  */
 @ToString
 public class GoalNode<T> {
+    @Getter
+    @Setter
     private VariableAssignment assignments;
 
     @Getter
@@ -31,18 +34,11 @@ public class GoalNode<T> {
      * @param data
      */
     public GoalNode(GoalNode<T> parent, T data, boolean isClosed) {
-        //BUG: Hier muesste deepcopy der assignments passieren
-        this.assignments = new VariableAssignment(parent == null ? null : parent.deepCopyAssignments());
+        this.assignments = new VariableAssignment(parent == null ? null :
+                parent.getAssignments().deepCopy());
         this.parent = parent;
         this.data = data;
-    }
-
-    private VariableAssignment deepCopyAssignments() {
-        return assignments.deepCopy();
-    }
-
-    public VariableAssignment getAssignments() {
-        return assignments;
+        this.isClosed = isClosed;
     }
 
     /**

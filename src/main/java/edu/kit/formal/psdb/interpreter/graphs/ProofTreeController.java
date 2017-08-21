@@ -273,7 +273,8 @@ public class ProofTreeController {
         }
 
         //create interpreter service and start
-        if (interpreterService.getState() == Worker.State.SUCCEEDED || interpreterService.getState() == Worker.State.CANCELLED) {
+        if (interpreterService.getState() == Worker.State.SUCCEEDED
+                || interpreterService.getState() == Worker.State.CANCELLED) {
             interpreterService.reset();
         }
         interpreterService.interpreterProperty().set(currentInterpreter);

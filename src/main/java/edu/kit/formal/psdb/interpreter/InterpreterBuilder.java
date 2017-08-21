@@ -8,6 +8,7 @@ import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
 import de.uka.ilkd.key.proof.Proof;
+import edu.kit.formal.psdb.interpreter.assignhook.KeyAssignmentHook;
 import edu.kit.formal.psdb.interpreter.data.GoalNode;
 import edu.kit.formal.psdb.interpreter.data.KeyData;
 import edu.kit.formal.psdb.interpreter.data.VariableAssignment;
@@ -53,6 +54,9 @@ public class InterpreterBuilder {
     private DefaultLookup lookup = new DefaultLookup(psh, pmh, pmr, pmc);
     private Interpreter<KeyData> interpreter = new Interpreter<>(lookup);
 
+    @Getter
+    private KeyAssignmentHook variableHook = new KeyAssignmentHook();
+
     public InterpreterBuilder addProofScripts(File file) throws IOException {
         return addProofScripts(Facade.getAST(file));
     }
@@ -68,6 +72,7 @@ public class InterpreterBuilder {
     }
 
     public Interpreter<KeyData> build() {
+        interpreter.setVariableAssignmentHook(variableHook);
         return interpreter;
     }
 

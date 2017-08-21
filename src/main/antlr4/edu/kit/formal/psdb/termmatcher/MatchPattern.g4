@@ -65,6 +65,8 @@ OR: '|' ;
 IMP: '->';
 MOD:'%';
 XOR:'^';
+FORALL: '\forall' | '∀';
+EXISTS: '\exists';
 
 DIGITS : DIGIT+ ;
 fragment DIGIT : [0-9] ;

@@ -7,6 +7,7 @@ import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.api.VariableAssignments;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
+import edu.kit.formal.psdb.interpreter.assignhook.VariableAssignmentHook;
 import edu.kit.formal.psdb.interpreter.data.*;
 import edu.kit.formal.psdb.interpreter.exceptions.InterpreterRuntimeException;
 import edu.kit.formal.psdb.interpreter.exceptions.ScriptCommandNotApplicableException;
@@ -62,6 +63,10 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     @Getter
     private ScriptApi scriptApi;
 
+    @Getter
+    @Setter
+    private VariableAssignmentHook<T> variableAssignmentHook = null;
+
     public Interpreter(CommandLookup lookup) {
         functionLookup = lookup;
     }
@@ -73,6 +78,14 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         if (stateStack.empty()) {
             throw new InterpreterRuntimeException("no state on stack. call newState before interpret");
         }
+
+        //initialize environment variables
+        if (variableAssignmentHook != null) {
+            VariableAssignment va = variableAssignmentHook.getStartAssignment(getSelectedNode().getData());
+            getSelectedNode().setAssignments(
+                    getSelectedNode().getAssignments().push(va));
+        }
+
         script.accept(this);
     }
 
@@ -119,12 +132,21 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
                 throw new RuntimeException("SimpleType of Variable " + var + " is not declared yet");
             } else {
                 Value v = evaluate(expr);
-                node.setVariableValue(var, v);
+                if (fireVariableAssignmentHook(node, var.getIdentifier(), v)) {
+                    node.setVariableValue(var, v);
+                }
             }
         }
         exitScope(assignmentStatement);
 
         return null;
+    }
+
+    protected boolean fireVariableAssignmentHook(GoalNode<T> node, String identifier, Value v) {
+        if (variableAssignmentHook != null) {
+            return variableAssignmentHook.handleAssignment(node.getData(), identifier, v);
+        }
+        return true;
     }
 
 
@@ -519,6 +541,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     /**
      * Create new state containing goals and selected goal node an push to stack
+     *
      * @param goals
      * @param selected
      * @return state that is pushed to stack
@@ -532,6 +555,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     /**
      * Cretae a ew state conatining the goals but without selected goal node and push to stack
+     *
      * @param goals
      * @return
      */
@@ -541,6 +565,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     /**
      * Cretae a new state containing only the selected goal node and push to stack
+     *
      * @param selected
      * @return reference to state on stack
      */
@@ -550,6 +575,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     /**
      * Push state to stack and return reference to this state
+     *
      * @param state
      * @return
      */
@@ -563,6 +589,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     /**
      * Remove top level state from stack and throw an Exception if state does not equal expected state
+     *
      * @param expected
      * @return
      */
@@ -576,6 +603,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     /**
      * Remove top level state from stack
+     *
      * @return
      */
     private State<T> popState() {
@@ -584,6 +612,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     /**
      * Lookup state on the stack but do not remove it
+     *
      * @return
      */
     public State<T> peekState() {
@@ -592,6 +621,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     /**
      * Get goalnodes from current state
+     *
      * @return
      */
     public List<GoalNode<T>> getCurrentGoals() {
