@@ -3,6 +3,7 @@ package edu.kit.formal.psdb.termmatcher;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import org.antlr.v4.runtime.Token;
+import org.key_project.util.collection.ImmutableArray;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -57,6 +58,26 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     }
 
     /**
+     * Visit a semisequent pattern f(x), f(y)
+     * @param ctx
+     * @param peek
+     * @return
+     */
+    @Override
+    protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, Term peek) {
+        return null;
+    }
+
+    /*@Override
+    protected Matchings visitStartDontCare(MatchPatternParser.StarDontCareContext ctx, Term peek) {
+        if (peek != null) {
+            return EMPTY_MATCH;
+        } else {
+            return NO_MATCH;
+        }
+    }*/
+
+    /**
      * Visit '_'
      *
      * @param ctx
@@ -71,15 +92,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
             return NO_MATCH;
         }
     }
-
-    /*@Override
-    protected Matchings visitStartDontCare(MatchPatternParser.StarDontCareContext ctx, Term peek) {
-        if (peek != null) {
-            return EMPTY_MATCH;
-        } else {
-            return NO_MATCH;
-        }
-    }*/
 
     /**
      * Visit a Schema Variable
@@ -239,20 +251,25 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return NO_MATCH;
     }
 
-    /**
-     * Visit a semisequent pattern f(x), f(y)
-     * @param ctx
-     * @param peek
-     * @return
-     */
-    @Override
-    protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, Term peek) {
-        return null;
-    }
-
     @Override
     protected Matchings visitNumber(MatchPatternParser.NumberContext ctx, Term peek) {
-        return null;
+        //we are at a natural number
+        if (peek.op().name().toString().equals("Z")) {
+            ImmutableArray<Term> subs = peek.subs();
+            int transformedString = transformToNumber(peek.sub(0));
+
+            return EMPTY_MATCH;
+        } else {
+            return NO_MATCH;
+        }
+
+
+    }
+
+    private int transformToNumber(Term sub) {
+        int number = 0;
+
+        return 0;
     }
 
     /**
