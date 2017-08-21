@@ -42,6 +42,7 @@ public class WelcomePane extends AnchorPane {
 
     public void loadHelpPage(ActionEvent event) {
         proofScriptDebugger.getWelcomePaneDock().close();
+        proofScriptDebugger.showCommandHelp(event);
         proofScriptDebugger.showHelpText();
 
 

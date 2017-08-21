@@ -34,6 +34,21 @@ STARDONTCARE: '...' | '…';
 DIGITS : DIGIT+ ;
 fragment DIGIT : [0-9] ;
 SID: '?' [_a-zA-Z0-9\\]+ ;
-ID : [a-zA-Z\\_] ([_a-zA-Z0-9\\])* ;
+ID : [a-zA-Z\\_] ([_a-zA-Z0-9\\])*;
+
+
+PLUS : '+' ;
+MINUS : '-' ;
+MUL : '*' ;
+DIV : '/' ;
+EQ : '=' ;
+NEQ : '!=' ;
+GEQ : '>=' ;
+LEQ : '<=' ;
+GE : '>' ;
+LE : '<' ;
+AND : '&' ;
+OR: '|' ;
+
 COMMENT: '//' ~[\n\r]* -> channel(HIDDEN);
 WS: [\n\f\r\t ] -> channel(HIDDEN);

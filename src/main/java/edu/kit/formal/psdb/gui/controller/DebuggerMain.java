@@ -771,6 +771,7 @@ public class DebuggerMain implements Initializable {
         WebEngine webEngine = browser.getEngine();
         webEngine.load(url);
         DockNode dn = new DockNode(browser);
+        dn.setTitle("ScriptLanguage Description");
         //this.dockStation.getChildren().add(dn);
         dn.dock(dockStation, DockPos.LEFT);
     }
