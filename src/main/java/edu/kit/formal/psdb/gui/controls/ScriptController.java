@@ -289,9 +289,10 @@ public class ScriptController {
 
         private ScriptArea.RegionStyle asRegion(ASTNode node) {
             assert node != null;
+            if (node.getRuleContext() != null)
             return new ScriptArea.RegionStyle(node.getRuleContext().getStart().getStartIndex(),
                     node.getRuleContext().getStop().getStopIndex(), clazzName);
-
+            else return new ScriptArea.RegionStyle(0, 1, "");
         }
     }
 }
