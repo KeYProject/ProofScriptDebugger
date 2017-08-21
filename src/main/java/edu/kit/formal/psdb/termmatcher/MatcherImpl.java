@@ -3,9 +3,7 @@ package edu.kit.formal.psdb.termmatcher;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import org.antlr.v4.runtime.CommonToken;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -116,10 +114,11 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return m;
     }
 
-    protected Matchings visitBinaryOperation(String keyOpName, MatchPatternParser.TermPatternContext ctx, Term peek) {
-        MatchPatternParser.FunctionContext func = new MatchPatternParser.FunctionContext(ctx);
+    protected Matchings visitBinaryOperation(String keyOpName, MatchPatternParser.TermPatternContext right, MatchPatternParser.TermPatternContext left, Term peek) {
+        MatchPatternParser.FunctionContext func = new MatchPatternParser.FunctionContext(left);
         func.func = new CommonToken(MatchPatternLexer.ID, keyOpName);
-
+        func.termPattern().add(left);
+        func.termPattern().add(right);
         return accept(func, peek);
     }
 
@@ -218,6 +217,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
 
     @Override
     protected Matchings visitNumber(MatchPatternParser.NumberContext ctx, Term peek) {
+
         return null;
     }
 
@@ -230,62 +230,73 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
      */
     @Override
     protected Matchings visitSequentPattern(MatchPatternParser.SequentPatternContext ctx, Term peek) {
-        return null;
+        throw new NotImplementedException("use the facade!");
+
     }
 
     @Override
     protected Matchings visitPlusMinus(MatchPatternParser.PlusMinusContext ctx, Term peek) {
-        return null;
+        return visitBinaryOperation(convert(ctx.op.getType()),
+                ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     @Override
     protected Matchings visitMult(MatchPatternParser.MultContext ctx, Term peek) {
-        return visitBinaryOperation("mul", ctx, peek);
+        return visitBinaryOperation("mul", ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     @Override
     protected Matchings visitComparison(MatchPatternParser.ComparisonContext ctx, Term peek) {
-        return visitBinaryOperation(convert(ctx.op),ctx, peek);
+        return visitBinaryOperation(convert(ctx.op.getType()), ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     @Override
     protected Matchings visitOr(MatchPatternParser.OrContext ctx, Term peek) {
-        return visitBinaryOperation(convert(ctx.op),ctx, peek);
+        return visitBinaryOperation("or", ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     @Override
     public Matchings visitExprNot(MatchPatternParser.ExprNotContext ctx, Term peek) {
-        return visitBinaryOperation("not",ctx, peek);
+        return visitBinaryOperation("not", ctx.termPattern(), ctx, peek);
     }
 
     @Override
     public Matchings visitExprNegate(MatchPatternParser.ExprNegateContext ctx, Term peek) {
-        return visitBinaryOperation("sub",ctx, peek);
+        return visitUnaryOperation("sub", ctx.termPattern(), peek);
+    }
+
+    private Matchings visitUnaryOperation(String unaryOp,
+                                          MatchPatternParser.TermPatternContext ctx,
+                                          Term peek) {
+        MatchPatternParser.FunctionContext func = new MatchPatternParser.FunctionContext(ctx);
+        func.termPattern().add(ctx);;
+        func.func = new CommonToken(MatchPatternLexer.ID, unaryOp);
+        return accept(func, peek);
     }
 
     @Override
     protected Matchings visitImpl(MatchPatternParser.ImplContext ctx, Term peek) {
-        return visitBinaryOperation("imp",ctx, peek);
+        return visitBinaryOperation("imp", ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     @Override
     protected Matchings visitDivMod(MatchPatternParser.DivModContext ctx, Term peek) {
-        return visitBinaryOperation(convert(ctx.op), peek);
+        return visitBinaryOperation(convert(ctx.op.getType()), ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     @Override
     protected Matchings visitAnd(MatchPatternParser.AndContext ctx, Term peek) {
-        return visitBinaryOperation("and", peek);
+        return visitBinaryOperation("and", ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     @Override
     protected Matchings visitXor(MatchPatternParser.XorContext ctx, Term peek) {
-        return visitBinaryOperation("xor", peek);
+        return visitBinaryOperation("xor", ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     @Override
     protected Matchings visitEquality(MatchPatternParser.EqualityContext ctx, Term peek) {
-        return visitBinaryOperation("eq", peek);
+        return visitBinaryOperation("eq", ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     private Stream<Term> subTerms(Term peek) {
