@@ -4,6 +4,8 @@ import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import org.antlr.v4.runtime.Token;
 import org.key_project.util.collection.ImmutableArray;
+import org.antlr.v4.runtime.CommonToken;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -11,6 +13,7 @@ import java.util.stream.Stream;
 
 /**
  * Matchpattern visitor visits the matchpatterns of case-statements
+ *
  * @author Alexander Weigl
  * @author S. Grebing
  */
@@ -111,6 +114,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
 
     /**
      * Visit a '...'Term'...' structure
+     *
      * @param ctx
      * @param peek
      * @return
@@ -125,29 +129,12 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return m;
     }
 
-    @Override
-    protected Matchings visitBinaryOperation(MatchPatternParser.BinaryOperationContext ctx, Term peek) {
-        Token op = ctx.op;
-        String opToKeYName = convert(op.getType());
-
-        MatchPatternParser.TermPatternContext left = ctx.left;
-        MatchPatternParser.TermPatternContext right = ctx.right;
-
-        if (peek.op().name().toString().equals(opToKeYName)  // same name
-                && peek.arity() == 2   // we know that we are in binary term
-                ) {
-            Matchings lM = accept(left, peek.sub(0));
-            Matchings rM = accept(right, peek.sub(1));
-            Matchings ret = reduceConform(lM, rM);
-            return ret;
-            /*return IntStream.range(0, peek.arity())
-                    .mapToObj(i -> (Matchings) accept(ctx.termPattern(i), peek.sub(i)))
-                    .reduce(MatcherImpl::reduceConform)
-                    .orElse(NO_MATCH);*/
-        }
-        return NO_MATCH;
-
-
+    protected Matchings visitBinaryOperation(String keyOpName, MatchPatternParser.TermPatternContext right, MatchPatternParser.TermPatternContext left, Term peek) {
+        MatchPatternParser.FunctionContext func = new MatchPatternParser.FunctionContext(left);
+        func.func = new CommonToken(MatchPatternLexer.ID, keyOpName);
+        func.termPattern().add(left);
+        func.termPattern().add(right);
+        return accept(func, peek);
     }
 
     private String convert(int op) {
@@ -233,6 +220,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
 
     /**
      * Visit a function and predicate symbol without a sequent arrow
+     *
      * @param ctx
      * @param peek
      * @return
@@ -249,6 +237,17 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
                     .orElse(EMPTY_MATCH);
         }
         return NO_MATCH;
+    }
+
+    /**
+     * Visit a semisequent pattern f(x), f(y)
+     * @param ctx
+     * @param peek
+     * @return
+     */
+    @Override
+    protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, Term peek) {
+        return null;
     }
 
     @Override
@@ -274,13 +273,80 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
 
     /**
      * Visit a sequent pattern 'f(x) ==> f(x)', 'f(x) ==>' or '==> f(x)'
+     *
      * @param ctx
      * @param peek
      * @return
      */
     @Override
     protected Matchings visitSequentPattern(MatchPatternParser.SequentPatternContext ctx, Term peek) {
-        return null;
+        throw new NotImplementedException("use the facade!");
+
+    }
+
+    @Override
+    protected Matchings visitPlusMinus(MatchPatternParser.PlusMinusContext ctx, Term peek) {
+        return visitBinaryOperation(convert(ctx.op.getType()),
+                ctx.termPattern(0), ctx.termPattern(1), peek);
+    }
+
+    @Override
+    protected Matchings visitMult(MatchPatternParser.MultContext ctx, Term peek) {
+        return visitBinaryOperation("mul", ctx.termPattern(0), ctx.termPattern(1), peek);
+    }
+
+    @Override
+    protected Matchings visitComparison(MatchPatternParser.ComparisonContext ctx, Term peek) {
+        return visitBinaryOperation(convert(ctx.op.getType()), ctx.termPattern(0), ctx.termPattern(1), peek);
+    }
+
+    @Override
+    protected Matchings visitOr(MatchPatternParser.OrContext ctx, Term peek) {
+        return visitBinaryOperation("or", ctx.termPattern(0), ctx.termPattern(1), peek);
+    }
+
+    @Override
+    public Matchings visitExprNot(MatchPatternParser.ExprNotContext ctx, Term peek) {
+        return visitBinaryOperation("not", ctx.termPattern(), ctx, peek);
+    }
+
+    @Override
+    public Matchings visitExprNegate(MatchPatternParser.ExprNegateContext ctx, Term peek) {
+        return visitUnaryOperation("sub", ctx.termPattern(), peek);
+    }
+
+    private Matchings visitUnaryOperation(String unaryOp,
+                                          MatchPatternParser.TermPatternContext ctx,
+                                          Term peek) {
+        MatchPatternParser.FunctionContext func = new MatchPatternParser.FunctionContext(ctx);
+        func.termPattern().add(ctx);;
+        func.func = new CommonToken(MatchPatternLexer.ID, unaryOp);
+        return accept(func, peek);
+    }
+
+    @Override
+    protected Matchings visitImpl(MatchPatternParser.ImplContext ctx, Term peek) {
+        return visitBinaryOperation("imp", ctx.termPattern(0), ctx.termPattern(1), peek);
+    }
+
+    @Override
+    protected Matchings visitDivMod(MatchPatternParser.DivModContext ctx, Term peek) {
+        return visitBinaryOperation(convert(ctx.op.getType()), ctx.termPattern(0), ctx.termPattern(1), peek);
+    }
+
+    @Override
+    protected Matchings visitAnd(MatchPatternParser.AndContext ctx, Term peek) {
+        return visitBinaryOperation("and", ctx.termPattern(0), ctx.termPattern(1), peek);
+    }
+
+    @Override
+    protected Matchings visitXor(MatchPatternParser.XorContext ctx, Term peek) {
+        return visitBinaryOperation("xor", ctx.termPattern(0), ctx.termPattern(1), peek);
+    }
+
+    @Override
+    protected Matchings visitEquality(MatchPatternParser.EqualityContext ctx, Term peek) {
+        return visitBinaryOperation("eq", ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     private Stream<Term> subTerms(Term peek) {

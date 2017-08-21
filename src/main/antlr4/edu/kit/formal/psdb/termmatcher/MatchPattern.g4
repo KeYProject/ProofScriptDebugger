@@ -20,30 +20,28 @@ sequentPattern : antec=semiSeqPattern? ARROW succ=semiSeqPattern? | anywhere=sem
 semiSeqPattern : termPattern (',' termPattern)*;
 
 termPattern :
-	   DONTCARE      #dontCare
-	 //| STARDONTCARE  #starDontCare
-	 | SID           #schemaVar
-	 | STARDONTCARE termPattern STARDONTCARE #anywhere
-	 | DIGITS #number
-	 | func=ID ( '(' termPattern (',' termPattern)* ')')? #function
-	 | left=termPattern op=(PLUS|MINUS|MUL|LE|GE|LEQ|GEQ|NEQ|EQ| AND|OR|IMP) right=termPattern #binaryOperation
-	 ;
+      termPattern MUL termPattern                               #mult
+    | <assoc=right> termPattern op=(DIV|MOD) termPattern        #divMod
+    | termPattern op=(PLUS|MINUS) termPattern                   #plusMinus
+    | termPattern op=(LE|GE|LEQ|GEQ) termPattern                #comparison
+    | termPattern op=(NEQ|EQ) termPattern                       #equality
+    | termPattern AND termPattern                               #and
+    | termPattern OR termPattern                                #or
+    | termPattern IMP termPattern                               #impl
+    | termPattern XOR termPattern                               #xor
+    //|   termPattern EQUIV termPattern already covered by EQ/NEQ
+    | MINUS termPattern                                         #exprNegate
+    | NOT termPattern                                           #exprNot
+    | '(' termPattern ')'                                       #exprParen
+    | func=ID ( '(' termPattern (',' termPattern)* ')')?        #function
+    |  DONTCARE                                                 #dontCare
+    //| STARDONTCARE  #starDontCare
+    | SID                                                       #schemaVar
+    | STARDONTCARE termPattern STARDONTCARE                     #anywhere
+    | DIGITS                                                    #number
+    // not working because of ambigue | left=termPattern op=(PLUS|MINUS|MUL|LE|GE|LEQ|GEQ|NEQ|EQ| AND|OR|IMP) right=termPattern #binaryOperation
+    ;
 
-	 /*
-	       expression MUL expression #exprMultiplication
-         | <assoc=right> expression DIV expression #exprDivision
-         | expression op=(PLUS|MINUS) expression #exprLineOperators
-         | expression op=(LE|GE|LEQ|GEQ) expression #exprComparison
-         | expression op=(NEQ|EQ) expression  #exprEquality
-         | expression AND expression   #exprAnd
-         | expression OR expression    #exprOr
-         | expression IMP expression   #exprIMP
-         //|   expression EQUIV expression already covered by EQ/NEQ
-         | expression LBRACKET substExpressionList RBRACKET #exprSubst
-         | MINUS expression   #exprNegate
-         | NOT expression  #exprNot
-         | '(' expression ')' #exprParen
-	 */
 /*
 f(x), f(x,y,g(y)), X, ?Y, _, ..., f(... ?X ...), f(..., ?X), f(..., ...?X...), f(..., ... g(x) ...), f(_, x, _, y, ... y ...)
 */
@@ -52,12 +50,6 @@ f(x), f(x,y,g(y)), X, ?Y, _, ..., f(... ?X ...), f(..., ?X), f(..., ...?X...), f
 ARROW : '⇒' | '==>';
 DONTCARE: '?' | '_' | '█';
 STARDONTCARE: '...' | '…';
-DIGITS : DIGIT+ ;
-fragment DIGIT : [0-9] ;
-SID: '?' [_a-zA-Z0-9\\]+ ;
-ID : [a-zA-Z\\_] ([_a-zA-Z0-9\\])*;
-
-
 PLUS : '+' ;
 MINUS : '-' ;
 MUL : '*' ;
@@ -71,6 +63,13 @@ LE : '<' ;
 AND : '&' ;
 OR: '|' ;
 IMP: '->';
+MOD:'%';
+XOR:'^';
+
+DIGITS : DIGIT+ ;
+fragment DIGIT : [0-9] ;
+SID: '?' [_a-zA-Z0-9\\]+ ;
+ID : [a-zA-Z\\_] ([_a-zA-Z0-9\\])*;
 
 COMMENT: '//' ~[\n\r]* -> channel(HIDDEN);
 WS: [\n\f\r\t ] -> channel(HIDDEN);
