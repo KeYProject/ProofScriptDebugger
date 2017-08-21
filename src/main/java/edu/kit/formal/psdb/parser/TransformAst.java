@@ -48,6 +48,13 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override
+    public List<ProofScript> visitStart(ScriptLanguageParser.StartContext ctx) {
+        ctx.script().forEach(s ->
+                scripts.add((ProofScript) s.accept(this)));
+        return scripts;
+    }
+
+    @Override
     public ProofScript visitScript(ScriptLanguageParser.ScriptContext ctx) {
         ProofScript s = new ProofScript();
         s.setName(ctx.name.getText());
@@ -59,19 +66,13 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override
-    public List<ProofScript> visitStart(ScriptLanguageParser.StartContext ctx) {
-        ctx.script().forEach(s ->
-                scripts.add((ProofScript) s.accept(this)));
-        return scripts;
-    }
-
-    @Override
     public Signature visitArgList(ScriptLanguageParser.ArgListContext ctx) {
         Signature signature = new Signature();
         for (ScriptLanguageParser.VarDeclContext decl : ctx.varDecl()) {
             signature.put(new Variable(decl.name),
                     TypeFacade.findType(decl.type.getText()));
         }
+        signature.setRuleContext(ctx);
         return signature;
     }
 
@@ -133,12 +134,9 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         return be;
     }
 
-    private UnaryExpression createUnaryExpression(ParserRuleContext ctx, ScriptLanguageParser.ExpressionContext expression, Operator op) {
-        UnaryExpression ue = new UnaryExpression();
-        ue.setRuleContext(ctx);
-        ue.setExpression((Expression<ParserRuleContext>) expression.accept(this));
-        ue.setOperator(op);
-        return ue;
+    @Override
+    public Object visitExprNot(ScriptLanguageParser.ExprNotContext ctx) {
+        return createUnaryExpression(ctx, ctx.expression(), Operator.NOT);
     }
 
     @Override
@@ -146,9 +144,12 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         return createUnaryExpression(ctx, ctx.expression(), Operator.NEGATE);
     }
 
-    @Override
-    public Object visitExprNot(ScriptLanguageParser.ExprNotContext ctx) {
-        return createUnaryExpression(ctx, ctx.expression(), Operator.NOT);
+    private UnaryExpression createUnaryExpression(ParserRuleContext ctx, ScriptLanguageParser.ExpressionContext expression, Operator op) {
+        UnaryExpression ue = new UnaryExpression();
+        ue.setRuleContext(ctx);
+        ue.setExpression((Expression<ParserRuleContext>) expression.accept(this));
+        ue.setOperator(op);
+        return ue;
     }
 
     @Override
@@ -215,21 +216,20 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override
-    public Object visitExprDivision(ScriptLanguageParser.ExprDivisionContext ctx) {
-        return createBinaryExpression(ctx, ctx.expression(), Operator.DIVISION);
-
-    }
-
-    //TODO implement
-
-
-    @Override
     public Object visitExprSubst(ScriptLanguageParser.ExprSubstContext ctx) {
         SubstituteExpression se = new SubstituteExpression();
         se.setSub((Expression) ctx.expression().accept(this));
         se.setSubstitution(
                 (Map<String, Expression>) ctx.substExpressionList().accept(this));
         return se;
+    }
+
+    //TODO implement
+
+    @Override
+    public Object visitExprDivision(ScriptLanguageParser.ExprDivisionContext ctx) {
+        return createBinaryExpression(ctx, ctx.expression(), Operator.DIVISION);
+
     }
 
     @Override

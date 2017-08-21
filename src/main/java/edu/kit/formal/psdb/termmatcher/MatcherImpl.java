@@ -4,6 +4,7 @@ import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import org.antlr.v4.runtime.CommonToken;
 import org.apache.commons.lang.NotImplementedException;
+import org.key_project.util.collection.ImmutableArray;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -18,6 +19,8 @@ import java.util.stream.Stream;
 class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     static final Matchings NO_MATCH = new Matchings();
     static final Matchings EMPTY_MATCH = Matchings.singleton("EMPTY_MATCH", null);
+
+    private Stack<Term> termStack = new Stack<>();
 
     protected static List<MatchInfo> reduceConform(List<MatchInfo> m1, List<MatchInfo> m2) {
         if (m1 == null || m2 == null) return null; //"null" is equivalent to NO_MATCH
@@ -56,6 +59,58 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return h3;
     }
 
+
+
+    /*@Override
+    protected Matchings visitStartDontCare(MatchPatternParser.StarDontCareContext ctx, Term peek) {
+        if (peek != null) {
+            return EMPTY_MATCH;
+        } else {
+            return NO_MATCH;
+        }
+    }*/
+
+    /**
+     * Reduce the matchings by eliminating non-compatible matchings.
+     * For example:
+     * m1: <X, f(y)>, <Y,g> and m2: <X, g> <Y, f(x)>
+     *
+     * @param m1
+     * @param m2
+     * @return
+     */
+    protected static Matchings reduceConform(Matchings m1, Matchings m2) {
+        //shortcuts
+        if (m1 == NO_MATCH || m2 == NO_MATCH) return NO_MATCH;
+        if (m1 == EMPTY_MATCH) return m2;
+        if (m2 == EMPTY_MATCH) return m1;
+
+        Matchings m3 = new Matchings();
+        boolean oneMatch = false;
+        for (HashMap<String, Term> h1 : m1) {
+            for (HashMap<String, Term> h2 : m2) {
+                HashMap<String, Term> h3 = reduceConform(h1, h2);
+                if (h3 != null) {
+                    m3.add(h3);
+                    oneMatch = true;
+                }
+            }
+        }
+        return oneMatch ? m3 : NO_MATCH;
+    }
+
+    /**
+     * Visit a semisequent pattern f(x), f(y)
+     *
+     * @param ctx
+     * @param peek
+     * @return
+     */
+    @Override
+    protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, Term peek) {
+        return null;
+    }
+
     /**
      * Visit '_'
      *
@@ -71,15 +126,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
             return NO_MATCH;
         }
     }
-
-    /*@Override
-    protected Matchings visitStartDontCare(MatchPatternParser.StarDontCareContext ctx, Term peek) {
-        if (peek != null) {
-            return EMPTY_MATCH;
-        } else {
-            return NO_MATCH;
-        }
-    }*/
 
     /**
      * Visit a Schema Variable
@@ -114,74 +160,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return m;
     }
 
-    protected Matchings visitBinaryOperation(String keyOpName, MatchPatternParser.TermPatternContext right, MatchPatternParser.TermPatternContext left, Term peek) {
-        MatchPatternParser.FunctionContext func = new MatchPatternParser.FunctionContext(left);
-        func.func = new CommonToken(MatchPatternLexer.ID, keyOpName);
-        func.termPattern().add(left);
-        func.termPattern().add(right);
-        return accept(func, peek);
-    }
-
-    private String convert(int op) {
-        switch (op) {
-            case MatchPatternParser.PLUS:
-                return "add";
-            case MatchPatternParser.MINUS:
-                return "sub";
-            case MatchPatternParser.MUL:
-                return "mul";
-            case MatchPatternParser.DIV:
-                return "div";
-            case MatchPatternParser.LE:
-                return "lt";
-            case MatchPatternParser.LEQ:
-                return "leq";
-            case MatchPatternParser.EQ:
-                return "equals";
-            case MatchPatternParser.GE:
-                return "gt";
-            case MatchPatternParser.GEQ:
-                return "geq";
-            case MatchPatternParser.IMP:
-                return "imp";
-            case MatchPatternParser.AND:
-                return "and";
-            case MatchPatternParser.OR:
-                return "or";
-            default:
-                throw new UnsupportedOperationException("The operator " + op + "is not known");
-        }
-    }
-
-    /**
-     * Reduce the matchings by eliminating non-compatible matchings.
-     * For example:
-     * m1: <X, f(y)>, <Y,g> and m2: <X, g> <Y, f(x)>
-     *
-     * @param m1
-     * @param m2
-     * @return
-     */
-    protected static Matchings reduceConform(Matchings m1, Matchings m2) {
-        //shortcuts
-        if (m1 == NO_MATCH || m2 == NO_MATCH) return NO_MATCH;
-        if (m1 == EMPTY_MATCH) return m2;
-        if (m2 == EMPTY_MATCH) return m1;
-
-        Matchings m3 = new Matchings();
-        boolean oneMatch = false;
-        for (HashMap<String, Term> h1 : m1) {
-            for (HashMap<String, Term> h2 : m2) {
-                HashMap<String, Term> h3 = reduceConform(h1, h2);
-                if (h3 != null) {
-                    m3.add(h3);
-                    oneMatch = true;
-                }
-            }
-        }
-        return oneMatch ? m3 : NO_MATCH;
-    }
-
     /**
      * Visit a function and predicate symbol without a sequent arrow
      *
@@ -203,22 +181,25 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return NO_MATCH;
     }
 
-    /**
-     * Visit a semisequent pattern f(x), f(y)
-     *
-     * @param ctx
-     * @param peek
-     * @return
-     */
-    @Override
-    protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, Term peek) {
-        return null;
-    }
-
     @Override
     protected Matchings visitNumber(MatchPatternParser.NumberContext ctx, Term peek) {
+        //we are at a natural number
+        if (peek.op().name().toString().equals("Z")) {
+            ImmutableArray<Term> subs = peek.subs();
+            int transformedString = transformToNumber(peek.sub(0));
 
-        return null;
+            return EMPTY_MATCH;
+        } else {
+            return NO_MATCH;
+        }
+
+
+    }
+
+    private int transformToNumber(Term sub) {
+        int number = 0;
+
+        return 0;
     }
 
     /**
@@ -238,6 +219,66 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     protected Matchings visitPlusMinus(MatchPatternParser.PlusMinusContext ctx, Term peek) {
         return visitBinaryOperation(convert(ctx.op.getType()),
                 ctx.termPattern(0), ctx.termPattern(1), peek);
+    }
+
+    protected Matchings visitBinaryOperation(String keyOpName, MatchPatternParser.TermPatternContext right, MatchPatternParser.TermPatternContext left, Term peek) {
+        MatchPatternParser.FunctionContext func = new MatchPatternParser.FunctionContext(left);
+        func.func = new CommonToken(MatchPatternLexer.ID, keyOpName);
+        func.termPattern().add(left);
+        func.termPattern().add(right);
+        return accept(func, peek);
+    }
+
+    private String convert(int op) {
+
+        switch (op) {
+
+            case MatchPatternParser.PLUS:
+                return "add";
+
+            case MatchPatternParser.MINUS:
+                return "sub";
+
+            case MatchPatternParser.MUL:
+                return "mul";
+
+
+            case MatchPatternParser.DIV:
+                return "div";
+
+
+            case MatchPatternParser.LE:
+                return "lt";
+
+
+            case MatchPatternParser.LEQ:
+                return "leq";
+
+
+            case MatchPatternParser.EQ:
+                return "equals";
+
+            case MatchPatternParser.GE:
+                return "gt";
+
+            case MatchPatternParser.GEQ:
+                return "geq";
+
+            case MatchPatternParser.IMP:
+                return "imp";
+
+
+            case MatchPatternParser.AND:
+                return "and";
+
+            case MatchPatternParser.OR:
+                return "or";
+
+            default:
+                throw new UnsupportedOperationException("The operator " + op + "is not known");
+        }
+
+
     }
 
     @Override

@@ -112,10 +112,14 @@ public class ScriptArea extends CodeArea {
 
         textProperty().addListener((prop, oldValue, newValue) -> {
             dirty.set(true);
-            updateMainScriptMarker();
-            updateHighlight();
-            highlightProblems();
-            highlightNonExecutionArea();
+            if (newValue.isEmpty()) {
+                System.err.println("text cleared");
+            } else {
+                updateMainScriptMarker();
+                updateHighlight();
+                highlightProblems();
+                highlightNonExecutionArea();
+            }
         });
 
 
@@ -192,13 +196,14 @@ public class ScriptArea extends CodeArea {
             clearStyle(0, newValue.length());
             StyleSpans<? extends Collection<String>> spans = highlighter.highlight(newValue);
             if (spans != null) setStyleSpans(0, spans);
+
+            markedRegions.forEach(reg -> {
+                Collection<String> list = new HashSet<>();
+                list.add(reg.clazzName);
+                setStyle(reg.start, reg.stop, list);
+            });
         }
 
-        markedRegions.forEach(reg -> {
-            Collection<String> list = new HashSet<>();
-            list.add(reg.clazzName);
-            setStyle(reg.start, reg.stop, list);
-        });
     }
 
     private void highlightProblems() {

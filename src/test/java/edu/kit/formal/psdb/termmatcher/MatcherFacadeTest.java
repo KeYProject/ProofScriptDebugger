@@ -46,17 +46,16 @@ public class MatcherFacadeTest {
         shouldMatch("i+j", "add(?X,?Y)", "[{?X=i, ?Y=j}]");
         shouldMatch("i+j", "?X+?Y", "[{?X=i, ?Y=j}]");
         shouldMatchForm("p & q", "p & ?X", "[{?X=q}]");
-        //shouldMatchForm("p & q", "?X & q", "[{?X=p}]");
-        //shouldMatch("1*j", "add(1,?Y)", "[{?Y=j}]");
+        shouldMatchForm("p & q", "?X & q", "[{?X=p}]");
+        System.out.println(parseKeyTerm("12004"));
+        shouldMatch("1", "1");
+        // shouldMatch("1*j", "1 + ?Y", "[]");
 
 
         //shouldMatch("f(a) ==> f(a), f(b)" , "==> f(?X)", [{?X=a}]);
         //shouldMatch("f(a) ==> f(a), f(b)" , "f(a) ==> f(?X)", [{?X=a}]);
         //shouldNotMatch("f(a) ==> f(a), f(b)" , "f(?X) ==> f(?X), f(a)");
-        //shouldMatch("f(a) ==> f(a), f(b)" , "==>");
-        //shouldMatch("f(a) ==> f(a), f(b)" , "_ ==> _");
-        //shouldMatch("f(a) ==> f(a), f(b)" , " ==> _");
-        //shouldMatch("f(a) ==> f(a), f(b)" , "_ ==> ");
+
 
     }
 
@@ -162,6 +161,13 @@ public class MatcherFacadeTest {
         shouldMatchSeq("pred(f(a)), pred(b) ==> pred(b)", "pred(...?X...) ==>", "[{?X=f(a)}, {?X=a}, {?X=b}]");
         shouldMatchSeq("==> pred(a)", "==>", "[{EMPTY_MATCH=null}]");
         shouldMatchSeq("pred(a) ==> ", "==>", "[{EMPTY_MATCH=null}]");
+
+        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "==>", "[{EMPTY_MATCH=null}]");
+        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> ", "[{EMPTY_MATCH=null}]");
+
+        //these two need to be checked I think
+        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> _", "[{EMPTY_MATCH=null}, {EMPTY_MATCH=null}]");
+        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", " ==> _", "[{EMPTY_MATCH=null}, {EMPTY_MATCH=null}]");
 
     }
 

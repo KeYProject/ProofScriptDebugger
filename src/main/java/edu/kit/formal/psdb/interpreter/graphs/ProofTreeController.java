@@ -106,7 +106,7 @@ public class ProofTreeController {
             //set value of newly computed node
             nextComputedNode.setValue(nodeAddedEvent.getAddedNode());
             //setNewState(this.statePointer.getState());
-            //Events.fire(new Events.NewNodeExecuted(nodeAddedEvent.getAddedNode().getScriptstmt()));
+            Events.fire(new Events.NewNodeExecuted(nodeAddedEvent.getAddedNode().getScriptstmt()));
         }
 
     };
