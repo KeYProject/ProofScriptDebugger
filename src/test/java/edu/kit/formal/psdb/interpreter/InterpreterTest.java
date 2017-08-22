@@ -54,7 +54,7 @@ public class InterpreterTest {
         defaultLookup.getBuilders().add(new AssertionCommand());
         defaultLookup.getBuilders().add(new AssertionEqCommand());
         ProofScriptHandler scriptHandler = new ProofScriptHandler(scripts);
-        scriptHandler.getSearchPath().add(new File("src/test/resources/edu/kit/formal/interpreter/"));
+        scriptHandler.getSearchPath().add(new File("src/test/resources/edu/kit/formal/psdb/interpreter/"));
         defaultLookup.getBuilders().add(scriptHandler);
         return defaultLookup;
     }

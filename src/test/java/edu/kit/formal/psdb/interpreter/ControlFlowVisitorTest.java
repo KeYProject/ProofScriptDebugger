@@ -18,7 +18,7 @@ import java.util.List;
 public class ControlFlowVisitorTest {
     @Test
     public void test() throws IOException {
-        ScriptLanguageParser a = Facade.getParser(CharStreams.fromStream(getClass().getResourceAsStream("/edu/kit/formal/interpreter/simple1.txt")));
+        ScriptLanguageParser a = Facade.getParser(CharStreams.fromStream(getClass().getResourceAsStream("/edu/kit/formal/psdb/interpreter/simple1.txt")));
         List<ProofScript> scripts = (List<ProofScript>) a.start().accept(new TransformAst());
         ProofScript s = scripts.get(0);
         ControlFlowVisitor pfv = new ControlFlowVisitor(new DefaultLookup());

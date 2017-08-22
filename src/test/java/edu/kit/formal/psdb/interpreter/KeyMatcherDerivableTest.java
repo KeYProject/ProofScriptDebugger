@@ -18,7 +18,7 @@ public class KeyMatcherDerivableTest {
     @Test
     public void derivable_test_1() throws Exception {
         KeYProofFacade f = new KeYProofFacade();
-        f.loadKeyFile(new File("src/test/resources/edu/kit/formal/parser/derivable_test_1.key"));
+        f.loadKeyFileSync(new File("src/test/resources/edu/kit/formal/psdb/parser/derivable_test_1.key"));
         Proof proof = f.getProof();
 
         Goal g = proof.getGoal(proof.root());
