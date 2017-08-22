@@ -181,9 +181,39 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return NO_MATCH;
     }
 
+    /**
+     * Trasnform a term taht represent a number to int
+     *
+     * @param sub
+     * @return
+     */
+    public static int transformToNumber(Term sub) {
+        List<Integer> integ = MatcherImpl.transformHelper(new ArrayList<>(), sub);
+
+        int dec = 10;
+        int output = integ.get(0);
+        for (int i = 1; i < integ.size(); i++) {
+            Integer integer = integ.get(i);
+            output += integer * dec;
+            dec = dec * 10;
+        }
+
+        return output;
+
+    }
+
+    private static List<Integer> transformHelper(List<Integer> l, Term sub) {
+        if (sub.op().name().toString().equals("#")) {
+            return l;
+        } else {
+            l.add(Integer.parseUnsignedInt(sub.op().name().toString()));
+            return transformHelper(l, sub.sub(0));
+        }
+    }
+
     @Override
     protected Matchings visitNumber(MatchPatternParser.NumberContext ctx, Term peek) {
-        //we are at a natural number
+        //we are at a number
         if (peek.op().name().toString().equals("Z")) {
             ImmutableArray<Term> subs = peek.subs();
             int transformedString = transformToNumber(peek.sub(0));
@@ -197,31 +227,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         }
 
 
-    }
-
-    private int transformToNumber(Term sub) {
-        List<Integer> integ = transformHelper(new ArrayList<>(), sub);
-
-        int dec = 10;
-        int output = integ.get(0);
-        for (int i = 1; i < integ.size(); i++) {
-            Integer integer = integ.get(i);
-            output += integer * dec;
-            dec = dec * 10;
-        }
-
-        return output;
-
-
-    }
-
-    private List<Integer> transformHelper(List<Integer> l, Term sub) {
-        if (sub.op().name().toString().equals("#")) {
-            return l;
-        } else {
-            l.add(Integer.parseUnsignedInt(sub.op().name().toString()));
-            return transformHelper(l, sub.sub(0));
-        }
     }
 
     /**

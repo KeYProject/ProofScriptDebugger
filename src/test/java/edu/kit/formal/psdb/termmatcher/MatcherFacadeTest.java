@@ -169,6 +169,8 @@ public class MatcherFacadeTest {
         //these two need to be checked I think
         shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> _", "[{EMPTY_MATCH=null}, {EMPTY_MATCH=null}]");
         shouldMatchSeq("pred(a) ==> pred(a), pred(b)", " ==> _", "[{EMPTY_MATCH=null}, {EMPTY_MATCH=null}]");
+//        shouldMatchSeq("fint2(1,2), fint2(2,3), !p ==> pred(a), p", "fint2(1, ?X), fint2(?X, ?Y) ==> p" , "[{?X=2, ?Y=3}]");
+        shouldMatchSeq("fint2(1,2), fint2(2,3), !p ==> pred(a), p", "fint2(1, ?X), fint2(?X, ?Y) ==> p");
 
     }
 
