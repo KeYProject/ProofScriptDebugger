@@ -154,23 +154,23 @@ public class MatcherFacadeTest {
 
     @Test
     public void seqTest() throws Exception {
+        //testcases for empty matches
+        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", " ==> _", "[{EMPTY_MATCH=null}]");
+
+        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "==>", "[{EMPTY_MATCH=null}]");
+        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> ", "[{EMPTY_MATCH=null}]");
+        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> _", "[{EMPTY_MATCH=null}]");
+        shouldMatchSeq("==> pred(a)", "==>", "[{EMPTY_MATCH=null}]");
+        shouldMatchSeq("pred(a) ==> ", "==>", "[{EMPTY_MATCH=null}]");
+
 
         shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?Y)", "[{?X=a, ?Y=b, ?Z=b}, {?X=b, ?Y=b, ?Z=a}]");
         shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?X)", "[{?X=b, ?Z=a}]");
         shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==>", "[{?X=a, ?Z=b}, {?X=b, ?Z=a}]");
         shouldMatchSeq("pred(f(a)), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==>", "[{?X=f(a), ?Z=b}, {?X=b, ?Z=f(a)}]");
-        shouldMatchSeq("pred(f(a)), pred(b) ==> pred(b)", "pred(...?X...) ==>", "[{?X=f(a)}, {?X=a}, {?X=b}]");
-        shouldMatchSeq("==> pred(a)", "==>", "[{EMPTY_MATCH=null}]");
-        shouldMatchSeq("pred(a) ==> ", "==>", "[{EMPTY_MATCH=null}]");
+        shouldMatchSeq("pred(f(a)), pred(b) ==> pred(b)", "pred(...?X...) ==>", "[{?X=a}, {?X=f(a)}, {?X=b}]");
 
-        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "==>", "[{EMPTY_MATCH=null}]");
-        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> ", "[{EMPTY_MATCH=null}]");
-
-        //these two need to be checked I think
-        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> _", "[{EMPTY_MATCH=null}, {EMPTY_MATCH=null}]");
-        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", " ==> _", "[{EMPTY_MATCH=null}, {EMPTY_MATCH=null}]");
-//        shouldMatchSeq("fint2(1,2), fint2(2,3), !p ==> pred(a), p", "fint2(1, ?X), fint2(?X, ?Y) ==> p" , "[{?X=2, ?Y=3}]");
-        shouldMatchSeq("fint2(1,2), fint2(2,3), !p ==> pred(a), p", "fint2(1, ?X), fint2(?X, ?Y) ==> p");
+        shouldMatchSeq("fint2(1,2), fint2(2,3), !p ==> pred(a), p", "fint2(1, ?X), fint2(?X, ?Y) ==> p", "[{EMPTY_MATCH=null, ?X=Z(2(#)), ?Y=Z(3(#))}]");
 
     }
 

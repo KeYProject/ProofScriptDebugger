@@ -22,6 +22,13 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
 
     private Stack<Term> termStack = new Stack<>();
 
+    /**
+     * Reduce two matchinfos
+     *
+     * @param m1
+     * @param m2
+     * @return
+     */
     protected static List<MatchInfo> reduceConform(List<MatchInfo> m1, List<MatchInfo> m2) {
         if (m1 == null || m2 == null) return null; //"null" is equivalent to NO_MATCH
 
@@ -33,7 +40,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
                 Set<SequentFormula> intersection = new HashSet<>(minfo1.matchedForms);
                 intersection.retainAll(minfo2.matchedForms);
                 if (!intersection.isEmpty()) continue;
-
                 HashMap<String, Term> h3 = reduceConform(minfo1.matching, minfo2.matching);
 
                 if (h3 != null) {
@@ -48,27 +54,19 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     }
 
     private static HashMap<String, Term> reduceConform(HashMap<String, Term> h1, HashMap<String, Term> h2) {
+
         HashMap<String, Term> h3 = new HashMap<>(h1);
+
         for (String s1 : h3.keySet()) {
             if (!s1.equals("EMPTY_MATCH") && (h2.containsKey(s1) && !h2.get(s1).equals(h1.get(s1)))) {
                 return null;
             }
-        }
 
+        }
         h3.putAll(h2);
         return h3;
     }
 
-
-
-    /*@Override
-    protected Matchings visitStartDontCare(MatchPatternParser.StarDontCareContext ctx, Term peek) {
-        if (peek != null) {
-            return EMPTY_MATCH;
-        } else {
-            return NO_MATCH;
-        }
-    }*/
 
     /**
      * Reduce the matchings by eliminating non-compatible matchings.
@@ -91,7 +89,8 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
             for (HashMap<String, Term> h2 : m2) {
                 HashMap<String, Term> h3 = reduceConform(h1, h2);
                 if (h3 != null) {
-                    m3.add(h3);
+                    //m3.add(h3);
+                    if (!m3.contains(h3)) m3.add(h3);
                     oneMatch = true;
                 }
             }
@@ -182,7 +181,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     }
 
     /**
-     * Trasnform a term taht represent a number to int
+     * Trasnform a term that represent a number to int
      *
      * @param sub
      * @return
