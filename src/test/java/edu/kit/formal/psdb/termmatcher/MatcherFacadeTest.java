@@ -47,9 +47,10 @@ public class MatcherFacadeTest {
         shouldMatch("i+j", "?X+?Y", "[{?X=i, ?Y=j}]");
         shouldMatchForm("p & q", "p & ?X", "[{?X=q}]");
         shouldMatchForm("p & q", "?X & q", "[{?X=p}]");
-        System.out.println(parseKeyTerm("12004"));
-        shouldMatch("1", "1");
-        // shouldMatch("1*j", "1 + ?Y", "[]");
+        shouldMatch("123", "13", "[]");
+        shouldMatch("10203", "10203", "[{EMPTY_MATCH=null}]");
+        shouldMatch("1*j", "1 + ?Y", "[]");
+        shouldMatch("1*j", "1 * ?Y", "[{?Y=j}]");
 
 
         //shouldMatch("f(a) ==> f(a), f(b)" , "==> f(?X)", [{?X=a}]);

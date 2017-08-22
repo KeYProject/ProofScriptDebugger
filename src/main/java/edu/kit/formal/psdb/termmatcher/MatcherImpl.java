@@ -187,8 +187,11 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         if (peek.op().name().toString().equals("Z")) {
             ImmutableArray<Term> subs = peek.subs();
             int transformedString = transformToNumber(peek.sub(0));
-
-            return EMPTY_MATCH;
+            if (Integer.parseUnsignedInt(ctx.DIGITS().getText()) == transformedString) {
+                return EMPTY_MATCH;
+            } else {
+                return NO_MATCH;
+            }
         } else {
             return NO_MATCH;
         }
@@ -197,9 +200,28 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     }
 
     private int transformToNumber(Term sub) {
-        int number = 0;
+        List<Integer> integ = transformHelper(new ArrayList<>(), sub);
 
-        return 0;
+        int dec = 10;
+        int output = integ.get(0);
+        for (int i = 1; i < integ.size(); i++) {
+            Integer integer = integ.get(i);
+            output += integer * dec;
+            dec = dec * 10;
+        }
+
+        return output;
+
+
+    }
+
+    private List<Integer> transformHelper(List<Integer> l, Term sub) {
+        if (sub.op().name().toString().equals("#")) {
+            return l;
+        } else {
+            l.add(Integer.parseUnsignedInt(sub.op().name().toString()));
+            return transformHelper(l, sub.sub(0));
+        }
     }
 
     /**
@@ -222,10 +244,16 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     }
 
     protected Matchings visitBinaryOperation(String keyOpName, MatchPatternParser.TermPatternContext right, MatchPatternParser.TermPatternContext left, Term peek) {
-        MatchPatternParser.FunctionContext func = new MatchPatternParser.FunctionContext(left);
-        func.func = new CommonToken(MatchPatternLexer.ID, keyOpName);
-        func.termPattern().add(left);
+        //create new functioncontext object and set fields accodringsly
+        OwnFunctionContext func = new OwnFunctionContext(left);
+        //MatchPatternParser.FunctionContext func = new MatchPatternParser.FunctionContext(left);
+        //func.func = new CommonToken(MatchPatternLexer.ID, keyOpName);
+
+        func.setFunc(new CommonToken(MatchPatternLexer.ID, keyOpName));
+        //right is added as first argument, left as second
         func.termPattern().add(right);
+        func.termPattern().add(left);
+
         return accept(func, peek);
     }
 
@@ -280,6 +308,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
 
 
     }
+
 
     @Override
     protected Matchings visitMult(MatchPatternParser.MultContext ctx, Term peek) {
