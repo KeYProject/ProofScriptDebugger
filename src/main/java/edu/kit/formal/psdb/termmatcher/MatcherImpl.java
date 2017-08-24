@@ -53,7 +53,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return oneMatch ? res : null;
     }
 
-    private static HashMap<String, Term> reduceConform(HashMap<String, Term> h1, HashMap<String, Term> h2) {
+    private static HashMap<String, Term> reduceConform(Map<String, Term> h1, Map<String, Term> h2) {
 
         HashMap<String, Term> h3 = new HashMap<>(h1);
 
@@ -85,9 +85,9 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
 
         Matchings m3 = new Matchings();
         boolean oneMatch = false;
-        for (HashMap<String, Term> h1 : m1) {
-            for (HashMap<String, Term> h2 : m2) {
-                HashMap<String, Term> h3 = reduceConform(h1, h2);
+        for (Map<String, Term> h1 : m1) {
+            for (Map<String, Term> h2 : m2) {
+                Map<String, Term> h3 = reduceConform(h1, h2);
                 if (h3 != null) {
                     //m3.add(h3);
                     if (!m3.contains(h3)) m3.add(h3);
@@ -120,7 +120,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     @Override
     public Matchings visitDontCare(MatchPatternParser.DontCareContext ctx, Term peek) {
         if (peek != null) {
-            return EMPTY_MATCH;
+            return handleBindClause(ctx.bindClause(), peek, EMPTY_MATCH);
         } else {
             return NO_MATCH;
         }
@@ -168,16 +168,38 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
      */
     @Override
     protected Matchings visitFunction(MatchPatternParser.FunctionContext ctx, Term peek) {
+        //System.out.format("Match: %25s with %s %n", peek, ctx.toInfoString(new MatchPatternParser(null)));
         String expectedFunction = ctx.func.getText();
         if (peek.op().name().toString().equals(expectedFunction)  // same name
                 && ctx.termPattern().size() == peek.arity()       // same arity
                 ) {
-            return IntStream.range(0, peek.arity())
+            Matchings m = IntStream.range(0, peek.arity())
                     .mapToObj(i -> (Matchings) accept(ctx.termPattern(i), peek.sub(i)))
                     .reduce(MatcherImpl::reduceConform)
                     .orElse(EMPTY_MATCH);
+            return handleBindClause(ctx.bindClause(), peek, m);
         }
         return NO_MATCH;
+    }
+
+    /**
+     * @param ctx
+     * @param t
+     * @param m
+     * @return
+     */
+    private Matchings handleBindClause(MatchPatternParser.BindClauseContext ctx, Term t, Matchings m) {
+        if (ctx == null) {
+            return m;
+        }
+
+        if (m.equals(NO_MATCH)) {
+            return m;
+        }
+
+        final String name = ctx.SID().getText();
+        Matchings mNew = Matchings.singleton(name, t);
+        return this.reduceConform(m, mNew);
     }
 
     /**
@@ -339,11 +361,17 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
         return visitUnaryOperation("sub", ctx.termPattern(), peek);
     }
 
+    @Override
+    public Matchings visitExprParen(MatchPatternParser.ExprParenContext ctx, Term peek) {
+        return handleBindClause(ctx.bindClause(), peek, accept(ctx.termPattern(), peek));
+    }
+
     private Matchings visitUnaryOperation(String unaryOp,
                                           MatchPatternParser.TermPatternContext ctx,
                                           Term peek) {
         MatchPatternParser.FunctionContext func = new MatchPatternParser.FunctionContext(ctx);
-        func.termPattern().add(ctx);;
+        func.termPattern().add(ctx);
+        ;
         func.func = new CommonToken(MatchPatternLexer.ID, unaryOp);
         return accept(func, peek);
     }
@@ -387,10 +415,10 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
     }
 
     public static class MatchInfo {
-        public HashMap<String, Term> matching;
+        public Map<String, Term> matching;
         public Set<SequentFormula> matchedForms;
 
-        public MatchInfo(HashMap<String, Term> m, Set<SequentFormula> f) {
+        public MatchInfo(Map<String, Term> m, Set<SequentFormula> f) {
             matching = m;
             matchedForms = f;
         }
@@ -400,10 +428,10 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, Term> {
 /**
  * Class Matching contains a hashmap of string to term
  */
-class Matchings extends ArrayList<HashMap<String, Term>> {
+class Matchings extends ArrayList<Map<String, Term>> {
     public static Matchings singleton(String name, Term peek) {
         Matchings matchings = new Matchings();
-        HashMap<String, Term> va = new HashMap<>();
+        Map<String, Term> va = new TreeMap<>();
         va.put(name, peek);
         matchings.add(va);
         return matchings;

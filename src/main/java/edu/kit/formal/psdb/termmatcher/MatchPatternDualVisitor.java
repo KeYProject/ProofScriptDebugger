@@ -112,8 +112,11 @@ public abstract class MatchPatternDualVisitor<T, S> extends MatchPatternBaseVisi
 
     @Override
     public T visitExprParen(MatchPatternParser.ExprParenContext ctx) {
-        return accept(ctx.termPattern(), stack.peek());
+        return visitExprParen(ctx, stack.peek());
     }
+
+    public abstract T visitExprParen(MatchPatternParser.ExprParenContext ctx, S peek);
+
 
     @Override
     public T visitImpl(MatchPatternParser.ImplContext ctx) {

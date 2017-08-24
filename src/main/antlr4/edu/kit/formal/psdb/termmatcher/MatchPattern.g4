@@ -32,9 +32,9 @@ termPattern :
     //|   termPattern EQUIV termPattern already covered by EQ/NEQ
     | MINUS termPattern                                         #exprNegate
     | NOT termPattern                                           #exprNot
-    | '(' termPattern ')'                                       #exprParen
-    | func=ID ( '(' termPattern (',' termPattern)* ')')?        #function
-    |  DONTCARE                                                 #dontCare
+    | '(' termPattern ')' bindClause?                                      #exprParen
+    | func=ID ( '(' termPattern (',' termPattern)* ')')? bindClause?        #function
+    |  DONTCARE   bindClause?                                              #dontCare
     //| STARDONTCARE  #starDontCare
     | SID                                                       #schemaVar
     | STARDONTCARE termPattern STARDONTCARE                     #anywhere
@@ -46,6 +46,7 @@ termPattern :
 f(x), f(x,y,g(y)), X, ?Y, _, ..., f(... ?X ...), f(..., ?X), f(..., ...?X...), f(..., ... g(x) ...), f(_, x, _, y, ... y ...)
 */
 
+bindClause : ('\\as' | ':') SID;
 
 ARROW : '⇒' | '==>';
 DONTCARE: '?' | '_' | '█';

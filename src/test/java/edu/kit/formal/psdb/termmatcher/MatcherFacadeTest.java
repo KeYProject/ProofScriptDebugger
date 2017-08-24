@@ -52,13 +52,20 @@ public class MatcherFacadeTest {
         shouldMatch("1*j", "1 + ?Y", "[]");
         shouldMatch("1*j", "1 * ?Y", "[{?Y=j}]");
 
-
         //shouldMatch("f(a) ==> f(a), f(b)" , "==> f(?X)", [{?X=a}]);
         //shouldMatch("f(a) ==> f(a), f(b)" , "f(a) ==> f(?X)", [{?X=a}]);
         //shouldNotMatch("f(a) ==> f(a), f(b)" , "f(?X) ==> f(?X), f(a)");
 
-
     }
+
+    @Test public void testBindContext() throws ParserException {
+        //shouldMatch("f(a)", "f(a) : ?Y", "[{?Y=f(a)}]");
+        //shouldMatch("f(g(a))", "_ \\as ?Y", "[{?Y=f(g(a))}]");
+        //shouldMatch("i+i+j", "(?X + ?Y) : ?Z", "[{?X=add(i,i), ?Y=j, ?Z=add(add(i,i),j)}]");
+        shouldMatch("f(f(g(a)))", "f( (... g( (...a...):?Q ) ...) : ?R) : ?Y",
+                "[{?X=add(i,i), ?Y=j, ?Z=add(add(i,i),j)}]");
+    }
+
 
     private void shouldMatch(String key, String pattern) throws ParserException {
         Term term = parseKeyTerm(key);

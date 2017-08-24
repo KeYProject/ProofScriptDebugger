@@ -18,7 +18,6 @@ public class KeyAssignmentHook extends DefaultAssignmentHook<KeyData> {
         register("MAX_AUTO_STEPS", this::setMaxAutosteps, this::getMaxAutosteps);
     }
 
-
     public Value<BigInteger> getMaxAutosteps(KeyData data) {
         return Value.from(100);
     }
@@ -26,5 +25,4 @@ public class KeyAssignmentHook extends DefaultAssignmentHook<KeyData> {
     public boolean setMaxAutosteps(KeyData data, Value<BigInteger> val) {
         return true;
     }
-
 }

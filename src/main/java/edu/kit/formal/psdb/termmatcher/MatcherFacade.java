@@ -148,7 +148,7 @@ public class MatcherFacade {
             for (SequentFormula form : allSequentFormulas) {
                 Matchings temp = matcher.accept(termPatternContext, form.formula());
 
-                for (HashMap<String, Term> match : temp) {
+                for (Map<String, Term> match : temp) {
                     m.add(new MatchInfo(match, Collections.singleton(form)));
                 }
             }
@@ -161,7 +161,9 @@ public class MatcherFacade {
         if (res == null)
             return NO_MATCH;
 
-        Set<HashMap<String, Term>> resMap = res.stream().map(el -> el.matching).collect(Collectors.toSet());
+        Set<Map<String, Term>> resMap = res.stream()
+                .map(el -> el.matching)
+                .collect(Collectors.toSet());
 
         //remove dups?
         Matchings resMatchings = new Matchings();
