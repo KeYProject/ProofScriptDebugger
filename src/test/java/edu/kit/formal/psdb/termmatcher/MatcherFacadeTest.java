@@ -62,8 +62,12 @@ public class MatcherFacadeTest {
         //shouldMatch("f(a)", "f(a) : ?Y", "[{?Y=f(a)}]");
         //shouldMatch("f(g(a))", "_ \\as ?Y", "[{?Y=f(g(a))}]");
         //shouldMatch("i+i+j", "(?X + ?Y) : ?Z", "[{?X=add(i,i), ?Y=j, ?Z=add(add(i,i),j)}]");
+
+        shouldMatch("g(f(a))", "g( (...a...):?Q ): ?Y",
+                "[{EMPTY_MATCH=null, ?Q=f(a), ?Y=g(f(a))}]");
+
         shouldMatch("f(f(g(a)))", "f( (... g( (...a...):?Q ) ...) : ?R) : ?Y",
-                "[{?X=add(i,i), ?Y=j, ?Z=add(add(i,i),j)}]");
+                "[{EMPTY_MATCH=null, ?Q=a, ?Y=f(f(g(a))), ?R=f(g(a))}]");
     }
 
 
