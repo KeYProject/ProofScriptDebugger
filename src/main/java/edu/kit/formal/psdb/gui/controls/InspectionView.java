@@ -11,8 +11,13 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 
 /**
  * Right part of the splitpane that displays the different parts of a state
@@ -23,11 +28,20 @@ public class InspectionView extends BorderPane {
     private final ReadOnlyObjectProperty<InspectionModel> model = new SimpleObjectProperty<>(
             new InspectionModel()
     );
+
+    @FXML
+    private TextField txtSearchPattern;
+
     public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
+
     @FXML
     private SequentView sequentView;
+
     @FXML
     private ListView<GoalNode<KeyData>> goalView;
+
+    @FXML
+    private HBox searchBar;
 
     public InspectionView() {
         Utils.createWithFXML(this);
@@ -35,6 +49,7 @@ public class InspectionView extends BorderPane {
         model.get().selectedGoalNodeToShowProperty().addListener((o, a, b) -> {
             goalView.getSelectionModel().select(b);
         });
+
         goalView.getSelectionModel().selectedItemProperty().addListener((o, a, b) -> {
             model.get().setSelectedGoalNodeToShow(b);
             model.get().setCurrentInterpreterGoal(b);
@@ -53,8 +68,31 @@ public class InspectionView extends BorderPane {
 
         model.get().goalsProperty().bindBidirectional(goalView.itemsProperty());
 
-
         getGoalView().setCellFactory(GoalNodeListCell::new);
+
+        final KeyCombination kb = new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN);
+        sequentView.setOnKeyReleased(event -> {
+           // System.out.println(event);
+            if (kb.match(event)) {
+                event.consume();
+                //nice animation here
+                searchBar.setVisible(true);
+                txtSearchPattern.requestFocus();
+            }
+        });
+
+        KeyCombination esc = new KeyCodeCombination(KeyCode.ESCAPE);
+        txtSearchPattern.setOnKeyReleased(event -> {
+            if (esc.match(event)) {
+                event.consume();
+                searchBar.setVisible(false);
+                sequentView.removeSearchHighlights();
+            }
+        });
+
+        txtSearchPattern.textProperty().addListener((p, o, n) ->
+                sequentView.showSearchHighlights(n)
+        );
 
         Utils.addDebugListener(model.get().goalsProperty());
         Utils.addDebugListener(model.get().selectedGoalNodeToShowProperty());

@@ -8,6 +8,9 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import edu.kit.formal.psdb.interpreter.KeYProofFacade;
+import edu.kit.formal.psdb.termmatcher.MatchPath;
+import edu.kit.formal.psdb.termmatcher.MatcherFacade;
+import edu.kit.formal.psdb.termmatcher.Matchings;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -17,8 +20,11 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import org.fxmisc.richtext.CharacterHit;
 import org.fxmisc.richtext.CodeArea;
+import org.key_project.util.collection.ImmutableList;
 
 import java.io.StringWriter;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Alexander Weigl
@@ -134,11 +140,9 @@ public class SequentView extends CodeArea {
             this.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
             this.getStyleClass().add("closed-sequent-view");
         } else {
-
             this.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
             this.getStyleClass().remove("closed-sequent-view");
             this.getStyleClass().add("sequent-view");
-
         }
     }
 
@@ -175,4 +179,33 @@ public class SequentView extends CodeArea {
     }
 
 
+    public void removeSearchHighlights() {
+        clearHighlight();
+    }
+
+    public boolean showSearchHighlights(String pattern) {
+        clearHighlight();
+
+        if (pattern.trim().isEmpty())
+            return false;
+
+        pattern = "(..." + pattern + "...) : ?COMPLETE";
+        if (node.get().sequent() != null) {
+            Matchings m = MatcherFacade.matches(pattern, node.get().sequent());
+            if (m.size() == 0) return false;
+            for (Map<String, MatchPath> va : m) {
+                MatchPath<?> complete = va.get("?COMPLETE");
+                highlightTerm(complete.getPos());
+            }
+        }
+        return true;
+    }
+
+    private void highlightTerm(ImmutableList<Integer> complete) {
+        if (backend == null) {
+            return;
+        }
+        Range r = backend.getInitialPositionTable().rangeForPath(complete);
+        setStyle(r.start(), r.end(), Collections.singleton("search-highlight"));
+    }
 }

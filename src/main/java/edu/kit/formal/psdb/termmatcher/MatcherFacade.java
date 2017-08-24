@@ -28,7 +28,7 @@ public class MatcherFacade {
         MatcherImpl matcher = new MatcherImpl();
         MatchPatternParser mpp = getParser(pattern);
         TermPatternContext ctx = mpp.termPattern();
-        return matcher.accept(ctx, keyTerm);
+        return matcher.accept(ctx, MatchPath.createRoot(keyTerm));
     }
 
     /**
@@ -53,11 +53,9 @@ public class MatcherFacade {
      * @return Matchings
      */
     public static Matchings matches(String pattern, Semisequent semiSeq) {
-
         MatchPatternParser mpp = getParser(pattern);
         SemiSeqPatternContext ctx = mpp.semiSeqPattern();
         return matches(ctx, semiSeq);
-
     }
 
 
@@ -138,17 +136,16 @@ public class MatcherFacade {
     public static Matchings matches(SemiSeqPatternContext pattern, Semisequent semiSeq) {
         MatcherImpl matcher = new MatcherImpl();
         ImmutableList<SequentFormula> allSequentFormulas = semiSeq.asList();
-
         List<TermPatternContext> termPatternContexts = pattern.termPattern();
-
         List<List<MatcherImpl.MatchInfo>> allMatches = new ArrayList<>();
 
         for (TermPatternContext termPatternContext : termPatternContexts) {
             List<MatchInfo> m = new ArrayList<>();
             for (SequentFormula form : allSequentFormulas) {
-                Matchings temp = matcher.accept(termPatternContext, form.formula());
+                Matchings temp = matcher.accept(termPatternContext,
+                        MatchPath.createRoot(form.formula()));
 
-                for (Map<String, Term> match : temp) {
+                for (Map<String, MatchPath> match : temp) {
                     m.add(new MatchInfo(match, Collections.singleton(form)));
                 }
             }
@@ -161,7 +158,7 @@ public class MatcherFacade {
         if (res == null)
             return NO_MATCH;
 
-        Set<Map<String, Term>> resMap = res.stream()
+        Set<Map<String, MatchPath>> resMap = res.stream()
                 .map(el -> el.matching)
                 .collect(Collectors.toSet());
 

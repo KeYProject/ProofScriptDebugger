@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
-<?import edu.kit.formal.psdb.gui.controls.*?>
-<?import javafx.geometry.Insets?>
+<?import edu.kit.formal.psdb.gui.controls.SectionPane?>
+<?import edu.kit.formal.psdb.gui.controls.SequentView?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <fx:root xmlns:fx="http://javafx.com/fxml"
          xmlns="http://javafx.com/javafx"
-         type="javafx.scene.layout.BorderPane" styleClass="inspection-view-tab">
+         type="javafx.scene.layout.BorderPane"
+         styleClass="inspection-view-tab">
     <center>
         <SplitPane orientation="VERTICAL" dividerPositions="0.25,0.75">
             <items>
@@ -39,4 +41,10 @@
             </items>
         </SplitPane>
     </center>
+    <bottom>
+        <HBox fx:id="searchBar" visible="false">
+            <Label text="Search Pattern:"/>
+            <TextField fx:id="txtSearchPattern" HBox.hgrow="ALWAYS"/>
+        </HBox>
+    </bottom>
 </fx:root>
