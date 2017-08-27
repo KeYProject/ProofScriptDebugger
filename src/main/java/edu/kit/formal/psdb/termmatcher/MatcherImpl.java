@@ -2,19 +2,21 @@ package edu.kit.formal.psdb.termmatcher;
 
 import com.google.common.collect.Sets;
 import de.uka.ilkd.key.logic.Semisequent;
-import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import edu.kit.formal.psdb.gui.controls.Utils;
+import edu.kit.formal.psdb.termmatcher.mp.MatchPath;
 import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.CommonToken;
 import org.key_project.util.collection.ImmutableArray;
-import org.key_project.util.collection.ImmutableList;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static edu.kit.formal.psdb.termmatcher.mp.MatchPathFacade.*;
 
 /**
  * Matchpattern visitor visits the matchpatterns of case-statements
@@ -26,18 +28,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     static final Matchings NO_MATCH = new Matchings();
     static final Matchings EMPTY_MATCH = Matchings.singleton("EMPTY_MATCH", null);
     static final Map<String, MatchPath> EMPTY_VARIABLE_ASSIGNMENT = EMPTY_MATCH.first();
-
-    private List<Integer> currentPosition = new ArrayList<>();
-
-    /**
-     * If true, we assume every term in the pattern has a binder.
-     * The binding names are generated.
-     *
-     * @see #handleBindClause(MatchPatternParser.BindClauseContext, MatchPath, Matchings)
-     */
-    @Getter
-    @Setter
-    private boolean catchAll = false;
 
 
     /*
@@ -71,6 +61,16 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         return oneMatch ? res : null;
     }
     */
+    private List<Integer> currentPosition = new ArrayList<>();
+    /**
+     * If true, we assume every term in the pattern has a binder.
+     * The binding names are generated.
+     *
+     * @see #handleBindClause(MatchPatternParser.BindClauseContext, MatchPath, Matchings)
+     */
+    @Getter
+    @Setter
+    private boolean catchAll = false;
 
     private static HashMap<String, MatchPath> reduceConform(Map<String, MatchPath> h1, Map<String, MatchPath> h2) {
 
@@ -85,7 +85,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         h3.putAll(h2);
         return h3;
     }
-
 
     /**
      * Reduce the matchings by eliminating non-compatible matchings.
@@ -115,6 +114,35 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
             }
         }
         return oneMatch ? m3 : NO_MATCH;
+    }
+
+    /**
+     * Transform a number term into an int value.
+     * <p>
+     * i.e. Z(1(2(3(#)))) ==> 123
+     *
+     * @param zTerm
+     * @return
+     */
+    public static int transformToNumber(Term zTerm) {
+        List<Integer> integ = MatcherImpl.transformHelper(new ArrayList<>(), zTerm);
+        int dec = 10;
+        int output = integ.get(0);
+        for (int i = 1; i < integ.size(); i++) {
+            Integer integer = integ.get(i);
+            output += integer * dec;
+            dec = dec * 10;
+        }
+        return output;
+    }
+
+    private static List<Integer> transformHelper(List<Integer> l, Term sub) {
+        if (sub.op().name().toString().equals("#")) {
+            return l;
+        } else {
+            l.add(Integer.parseUnsignedInt(sub.op().name().toString()));
+            return transformHelper(l, sub.sub(0));
+        }
     }
 
     /**
@@ -159,13 +187,12 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     @Override
     protected Matchings visitAnywhere(MatchPatternParser.AnywhereContext ctx, MatchPath peek) {
         Matchings m = new Matchings();
-        subTerms(peek).forEach(sub -> {
+        subTerms((MatchPath.MPTerm) peek).forEach(sub -> {
             Matchings s = accept(ctx.termPattern(), sub);
             m.addAll(s);
         });
         return m;
     }
-
 
     /**
      * Visit a function and predicate symbol without a sequent arrow
@@ -178,14 +205,13 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     protected Matchings visitFunction(MatchPatternParser.FunctionContext ctx, MatchPath path) {
         //System.out.format("Match: %25s with %s %n", peek, ctx.toInfoString(new MatchPatternParser(null)));
         String expectedFunction = ctx.func.getText();
-        Term peek = ((MatchPath<Term>) path).getTerm();
+        Term peek = ((MatchPath.MPTerm) path).getUnit();
         if (peek.op().name().toString().equals(expectedFunction)  // same name
                 && ctx.termPattern().size() == peek.arity()       // same arity
                 ) {
             Matchings m = IntStream.range(0, peek.arity())
                     .mapToObj(i -> (Matchings)
-                            accept(ctx.termPattern(i),
-                                    MatchPath.createTermPath(path, i)))
+                            accept(ctx.termPattern(i), create(path, i)))
                     .reduce(MatcherImpl::reduceConform)
                     .orElse(EMPTY_MATCH);
             return handleBindClause(ctx.bindClause(), path, m);
@@ -217,39 +243,10 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         return this.reduceConform(m, mNew);
     }
 
-    /**
-     * Transform a number term into an int value.
-     * <p>
-     * i.e. Z(1(2(3(#)))) ==> 123
-     *
-     * @param zTerm
-     * @return
-     */
-    public static int transformToNumber(Term zTerm) {
-        List<Integer> integ = MatcherImpl.transformHelper(new ArrayList<>(), zTerm);
-        int dec = 10;
-        int output = integ.get(0);
-        for (int i = 1; i < integ.size(); i++) {
-            Integer integer = integ.get(i);
-            output += integer * dec;
-            dec = dec * 10;
-        }
-        return output;
-    }
-
-    private static List<Integer> transformHelper(List<Integer> l, Term sub) {
-        if (sub.op().name().toString().equals("#")) {
-            return l;
-        } else {
-            l.add(Integer.parseUnsignedInt(sub.op().name().toString()));
-            return transformHelper(l, sub.sub(0));
-        }
-    }
-
     @Override
     protected Matchings visitNumber(MatchPatternParser.NumberContext ctx, MatchPath path) {
         //we are at a number
-        Term peek = ((MatchPath<Term>) path).getTerm();
+        Term peek = ((MatchPath.MPTerm) path).getUnit();
         if (peek.op().name().toString().equals("Z")) {
             ImmutableArray<Term> subs = peek.subs();
             int transformedString = transformToNumber(peek.sub(0));
@@ -274,13 +271,12 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
      */
     @Override
     public Matchings visitSequentAnywhere(MatchPatternParser.SequentAnywhereContext ctx, MatchPath peek) {
-        MatchPath<Sequent> seq = peek;
-        Sequent sequent = seq.getTerm();
+        MatchPath.MPSequent seq = (MatchPath.MPSequent) peek;
         MatchPatternParser.SemiSeqPatternContext patternCtx = ctx.anywhere;
 
         Matchings ret = new Matchings();
-        Matchings antecMatches = accept(patternCtx, MatchPath.createAntecedent(sequent));
-        Matchings succMatches = accept(patternCtx, MatchPath.createSuccedent(sequent));
+        Matchings antecMatches = accept(patternCtx, createAntecedent(seq));
+        Matchings succMatches = accept(patternCtx, createSuccedent(seq));
 
         //if(!antecMatches.equals(EMPTY_MATCH))
         ret.addAll(antecMatches);
@@ -295,16 +291,15 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
 
     @Override
     public Matchings visitSequentArrow(MatchPatternParser.SequentArrowContext ctx, MatchPath peek) {
-        MatchPath<Sequent> seq = peek;
-        Sequent sequent = seq.getTerm();
+        MatchPath.MPSequent seq = (MatchPath.MPSequent) peek;
 
         //NPE
         Matchings mAntec = ctx.antec != null
-                ? accept(ctx.antec, MatchPath.createSemiSequent(sequent, true))
+                ? accept(ctx.antec, createAntecedent(seq))
                 : EMPTY_MATCH;
 
         Matchings mSucc = ctx.succ != null
-                ? accept(ctx.succ, MatchPath.createSemiSequent(sequent, false))
+                ? accept(ctx.succ, createSuccedent(seq))
                 : EMPTY_MATCH;
 
         return MatcherImpl.reduceConform(mAntec, mSucc);
@@ -319,14 +314,19 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
      */
     @Override
     protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, MatchPath peek) {
-        Semisequent ss = (Semisequent) peek.getTerm();
+        MatchPath.MPSemiSequent sseq = (MatchPath.MPSemiSequent) peek;
+        Semisequent ss = (Semisequent) peek.getUnit();
         if (ss.isEmpty()) {
             return ctx.termPattern().size() == 0
                     ? EMPTY_MATCH
                     : NO_MATCH;
         }
 
-        ImmutableList<SequentFormula> allSequentFormulas = ss.asList();
+        List<MatchPath.MPSequentFormula> sequentFormulas =
+                IntStream.range(0, ss.size())
+                        .mapToObj(pos -> create(sseq, pos))
+                        .collect(Collectors.toList());
+
         List<MatchPatternParser.TermPatternContext> patterns = ctx.termPattern();
 
         HashMap<MatchPatternParser.TermPatternContext, Map<SequentFormula, Matchings>>
@@ -334,22 +334,20 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
 
         //cartesic product of pattern and top-level terms
         for (MatchPatternParser.TermPatternContext tctx : patterns) {
-            int i = 0;
             map.put(tctx, new HashMap<>());
-            for (SequentFormula form : allSequentFormulas) {
-                Matchings temp = accept(tctx, new MatchPath.MatchPathTerm(peek, form.formula(), i++));
+            for (MatchPath.MPSequentFormula sf : sequentFormulas) {
+                Matchings temp = accept(tctx, create(sf));
                 if (!temp.equals(NO_MATCH))
-                    map.get(tctx).put(form, temp);
+                    map.get(tctx).put(sf.getUnit(), temp);
             }
         }
 
         List<Matchings> matchings = new ArrayList<>();
         reduceDisjoint(map, patterns, matchings);
         Matchings ret = new Matchings();
-        matchings.stream()//.filter(x -> !x.equals(EMPTY_MATCH))
-         .forEach(ret::addAll);
+        //.filter(x -> !x.equals(EMPTY_MATCH))
+        matchings.forEach(ret::addAll);
         return ret;
-
     }
 
     /**
@@ -524,17 +522,16 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         return visitBinaryOperation("eq", ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
-    private Stream<MatchPath<Term>> subTerms(MatchPath peek) {
-        ArrayList<MatchPath<Term>> list = new ArrayList<>();
+    private Stream<MatchPath.MPTerm> subTerms(MatchPath.MPTerm peek) {
+        ArrayList<MatchPath.MPTerm> list = new ArrayList<>();
         subTerms(list, peek);
         return list.stream();
     }
 
-    private void subTerms(ArrayList<MatchPath<Term>> list, MatchPath<Term> peek) {
+    private void subTerms(ArrayList<MatchPath.MPTerm> list, MatchPath.MPTerm peek) {
         list.add(peek);
-        for (int i = 0; i < peek.getTerm().arity(); i++) {
-            subTerms(list,
-                    MatchPath.createTermPath(peek, i));
+        for (int i = 0; i < peek.getUnit().arity(); i++) {
+            subTerms(list, create(peek, i));
         }
     }
 

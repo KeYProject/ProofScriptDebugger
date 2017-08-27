@@ -2,13 +2,14 @@ package edu.kit.formal.psdb.gui.controls;
 
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.NamespaceSet;
+import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.pp.*;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import edu.kit.formal.psdb.interpreter.KeYProofFacade;
-import edu.kit.formal.psdb.termmatcher.MatchPath;
+import edu.kit.formal.psdb.termmatcher.mp.MatchPath;
 import edu.kit.formal.psdb.termmatcher.MatcherFacade;
 import edu.kit.formal.psdb.termmatcher.Matchings;
 import javafx.beans.Observable;
@@ -21,6 +22,7 @@ import javafx.scene.paint.Color;
 import org.fxmisc.richtext.CharacterHit;
 import org.fxmisc.richtext.CodeArea;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
 
 import java.io.StringWriter;
 import java.util.Collections;
@@ -193,19 +195,22 @@ public class SequentView extends CodeArea {
         if (node.get().sequent() != null) {
             Matchings m = MatcherFacade.matches(pattern, node.get().sequent(), true);
             if (m.size() == 0) return false;
-            for (Map<String, MatchPath> va : m) {
-                MatchPath<?> complete = va.get("?COMPLETE");
-                highlightTerm(complete.getPos());
+             Map<String, MatchPath> va = m.first();
+            System.out.println(va);//TODO remove
+            for (MatchPath mp : va.values()) {
+                System.out.println(mp.pio());
+                highlightTerm(mp.pio());
             }
         }
         return true;
     }
 
-    private void highlightTerm(ImmutableList<Integer> complete) {
+    private void highlightTerm(PosInOccurrence complete) {
         if (backend == null) {
             return;
         }
-        Range r = backend.getInitialPositionTable().rangeForPath(complete);
+        ImmutableList<Integer> path = ImmutableSLList.singleton(1);
+        Range r = backend.getInitialPositionTable().rangeForPath(path);
         setStyle(r.start(), r.end(), Collections.singleton("search-highlight"));
     }
 }

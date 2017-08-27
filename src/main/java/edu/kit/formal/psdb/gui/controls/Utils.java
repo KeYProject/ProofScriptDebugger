@@ -122,10 +122,13 @@ public class Utils {
     private Utils() {
     }
 
+    public static String getRandomName(String suffx) {
+        return getRandomName() + suffx;
+    }
 
     public static String getRandomName() {
         Random r = new Random();
-        return (ADJECTIVES[r.nextInt(ADJECTIVES.length)] + "_" + ANIMALS[r.nextInt(ANIMALS.length)] + ".kps").toLowerCase();
+        return (ADJECTIVES[r.nextInt(ADJECTIVES.length)] + "_" + ANIMALS[r.nextInt(ANIMALS.length)]).toLowerCase();
     }
 
     public static void createWithFXML(Object node) {

@@ -1,6 +1,7 @@
 package edu.kit.formal.psdb.termmatcher;
 
 import com.google.common.collect.Sets;
+import edu.kit.formal.psdb.termmatcher.mp.MatchPath;
 
 import java.util.*;
 
