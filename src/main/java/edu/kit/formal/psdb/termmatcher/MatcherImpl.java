@@ -1,10 +1,16 @@
 package edu.kit.formal.psdb.termmatcher;
 
+import com.google.common.collect.Sets;
+import de.uka.ilkd.key.logic.Semisequent;
+import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
+import edu.kit.formal.psdb.gui.controls.Utils;
+import lombok.Getter;
+import lombok.Setter;
 import org.antlr.v4.runtime.CommonToken;
-import org.apache.commons.lang.NotImplementedException;
 import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -19,16 +25,28 @@ import java.util.stream.Stream;
 class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     static final Matchings NO_MATCH = new Matchings();
     static final Matchings EMPTY_MATCH = Matchings.singleton("EMPTY_MATCH", null);
+    static final Map<String, MatchPath> EMPTY_VARIABLE_ASSIGNMENT = EMPTY_MATCH.first();
 
     private List<Integer> currentPosition = new ArrayList<>();
 
     /**
+     * If true, we assume every term in the pattern has a binder.
+     * The binding names are generated.
+     *
+     * @see #handleBindClause(MatchPatternParser.BindClauseContext, MatchPath, Matchings)
+     */
+    @Getter
+    @Setter
+    private boolean catchAll = false;
+
+
+    /*
      * Reduce two matchinfos
      *
      * @param m1
      * @param m2
      * @return
-     */
+     *
     protected static List<MatchInfo> reduceConform(List<MatchInfo> m1, List<MatchInfo> m2) {
         if (m1 == null || m2 == null) return null; //"null" is equivalent to NO_MATCH
 
@@ -52,6 +70,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         }
         return oneMatch ? res : null;
     }
+    */
 
     private static HashMap<String, MatchPath> reduceConform(Map<String, MatchPath> h1, Map<String, MatchPath> h2) {
 
@@ -96,18 +115,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
             }
         }
         return oneMatch ? m3 : NO_MATCH;
-    }
-
-    /**
-     * Visit a semisequent pattern f(x), f(y)
-     *
-     * @param ctx
-     * @param peek
-     * @return
-     */
-    @Override
-    protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, MatchPath peek) {
-        return null;
     }
 
     /**
@@ -193,7 +200,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
      * @return
      */
     private Matchings handleBindClause(MatchPatternParser.BindClauseContext ctx, MatchPath t, Matchings m) {
-        if (ctx == null) {
+        if (!catchAll && ctx == null) {
             return m;
         }
 
@@ -201,7 +208,11 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
             return m;
         }
 
-        final String name = ctx.SID().getText();
+        // double ? for anonymous matchings
+        final String name = ctx != null
+                ? ctx.SID().getText()
+                : "??" + Utils.getRandomName();
+
         Matchings mNew = Matchings.singleton(name, t);
         return this.reduceConform(m, mNew);
     }
@@ -262,10 +273,138 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
      * @return
      */
     @Override
-    protected Matchings visitSequentPattern(MatchPatternParser.SequentPatternContext ctx, MatchPath peek) {
-        throw new NotImplementedException("use the facade!");
+    public Matchings visitSequentAnywhere(MatchPatternParser.SequentAnywhereContext ctx, MatchPath peek) {
+        MatchPath<Sequent> seq = peek;
+        Sequent sequent = seq.getTerm();
+        MatchPatternParser.SemiSeqPatternContext patternCtx = ctx.anywhere;
+
+        Matchings ret = new Matchings();
+        Matchings antecMatches = accept(patternCtx, MatchPath.createAntecedent(sequent));
+        Matchings succMatches = accept(patternCtx, MatchPath.createSuccedent(sequent));
+
+        //if(!antecMatches.equals(EMPTY_MATCH))
+        ret.addAll(antecMatches);
+        //if(!succMatches.equals(EMPTY_MATCH))
+        ret.addAll(succMatches);
+
+        //if (ret.contains(EMPTY_VARIABLE_ASSIGNMENT) && ret.size() > 1)
+        //    ret.remove(EMPTY_VARIABLE_ASSIGNMENT); // remove empty match if there is an other match
+
+        return ret;
+    }
+
+    @Override
+    public Matchings visitSequentArrow(MatchPatternParser.SequentArrowContext ctx, MatchPath peek) {
+        MatchPath<Sequent> seq = peek;
+        Sequent sequent = seq.getTerm();
+
+        //NPE
+        Matchings mAntec = ctx.antec != null
+                ? accept(ctx.antec, MatchPath.createSemiSequent(sequent, true))
+                : EMPTY_MATCH;
+
+        Matchings mSucc = ctx.succ != null
+                ? accept(ctx.succ, MatchPath.createSemiSequent(sequent, false))
+                : EMPTY_MATCH;
+
+        return MatcherImpl.reduceConform(mAntec, mSucc);
+    }
+
+    /**
+     * Visit a semisequent pattern f(x), f(y)
+     *
+     * @param ctx
+     * @param peek
+     * @return
+     */
+    @Override
+    protected Matchings visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx, MatchPath peek) {
+        Semisequent ss = (Semisequent) peek.getTerm();
+        if (ss.isEmpty()) {
+            return ctx.termPattern().size() == 0
+                    ? EMPTY_MATCH
+                    : NO_MATCH;
+        }
+
+        ImmutableList<SequentFormula> allSequentFormulas = ss.asList();
+        List<MatchPatternParser.TermPatternContext> patterns = ctx.termPattern();
+
+        HashMap<MatchPatternParser.TermPatternContext, Map<SequentFormula, Matchings>>
+                map = new HashMap<>();
+
+        //cartesic product of pattern and top-level terms
+        for (MatchPatternParser.TermPatternContext tctx : patterns) {
+            int i = 0;
+            map.put(tctx, new HashMap<>());
+            for (SequentFormula form : allSequentFormulas) {
+                Matchings temp = accept(tctx, new MatchPath.MatchPathTerm(peek, form.formula(), i++));
+                if (!temp.equals(NO_MATCH))
+                    map.get(tctx).put(form, temp);
+            }
+        }
+
+        List<Matchings> matchings = new ArrayList<>();
+        reduceDisjoint(map, patterns, matchings);
+        Matchings ret = new Matchings();
+        matchings.stream()//.filter(x -> !x.equals(EMPTY_MATCH))
+         .forEach(ret::addAll);
+        return ret;
 
     }
+
+    /**
+     * @param map
+     * @param patterns
+     * @param matchings
+     */
+    private void reduceDisjoint(HashMap<MatchPatternParser.TermPatternContext, Map<SequentFormula, Matchings>> map,
+                                List<MatchPatternParser.TermPatternContext> patterns,
+                                List<Matchings> matchings) {
+        reduceDisjoint(map, patterns, matchings, 0, EMPTY_MATCH, new HashSet<>());
+    }
+
+    /**
+     * @param map
+     * @param patterns
+     * @param matchings
+     * @param currentPatternPos
+     * @param ret
+     * @param chosenSequentFormulas
+     */
+    private void reduceDisjoint(HashMap<MatchPatternParser.TermPatternContext, Map<SequentFormula, Matchings>> map,
+                                List<MatchPatternParser.TermPatternContext> patterns,
+                                List<Matchings> matchings,
+                                int currentPatternPos,
+                                Matchings ret,
+                                Set<SequentFormula> chosenSequentFormulas) {
+        if (currentPatternPos >= patterns.size()) { // end of selection process is reached
+            matchings.add(ret);
+            return;
+        }
+
+        MatchPatternParser.TermPatternContext currentPattern = patterns.get(currentPatternPos);
+        Sets.SetView<SequentFormula> topLevelFormulas =
+                Sets.difference(map.get(currentPattern).keySet(), chosenSequentFormulas);
+
+        if (topLevelFormulas.size() == 0) {
+            return; // all top level formulas has been chosen, we have no matches left
+        }
+
+        for (SequentFormula formula : topLevelFormulas) { // chose a toplevel formula
+            // the matchings for current pattern against the toplevel
+            Matchings m = map.get(currentPattern).get(formula);
+            //join them with the current Matchings
+            Matchings mm = reduceConform(m, ret);
+            chosenSequentFormulas.add(formula); // adding the formula, so other matchings can not choose it
+
+            // recursion: choose the next matchings for the next pattern
+            reduceDisjoint(map, patterns, matchings,
+                    currentPatternPos + 1, mm, chosenSequentFormulas);
+
+            chosenSequentFormulas.remove(formula); // delete the formula, so it is free to choose, again
+        }
+    }
+
 
     @Override
     protected Matchings visitPlusMinus(MatchPatternParser.PlusMinusContext ctx, MatchPath peek) {
@@ -395,17 +534,8 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         list.add(peek);
         for (int i = 0; i < peek.getTerm().arity(); i++) {
             subTerms(list,
-                    new MatchPath<Term>(peek, peek.getTerm().sub(i), i));
+                    MatchPath.createTermPath(peek, i));
         }
     }
 
-    public static class MatchInfo {
-        public Map<String, MatchPath> matching;
-        public Set<SequentFormula> matchedForms;
-
-        public MatchInfo(Map<String, MatchPath> m, Set<SequentFormula> f) {
-            matching = m;
-            matchedForms = f;
-        }
-    }
 }

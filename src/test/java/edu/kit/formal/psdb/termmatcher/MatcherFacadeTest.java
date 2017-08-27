@@ -41,8 +41,8 @@ public class MatcherFacadeTest {
         shouldMatch("h(a,b)", "h(?X,?X)", "[]");
         shouldMatch("f(a)", "f(a)");
         shouldMatchForm("pred(a)", "_");
-        shouldMatchForm("pred(a)", "...?X...", "[{?X=pred(a)}, {?X=a}]");
-        shouldMatchForm("pred(f(a))", "pred(...?X...)", "[{?X=f(a)}, {?X=a}]");
+        shouldMatchForm("pred(a)", "...?X...", "[{?X=a}, {?X=pred(a)}]");
+        shouldMatchForm("pred(f(a))", "pred(...?X...)", "[{?X=a}, {?X=f(a)}]");
         shouldMatch("i+j", "add(?X,?Y)", "[{?X=i, ?Y=j}]");
         shouldMatch("i+j", "?X+?Y", "[{?X=i, ?Y=j}]");
         shouldMatchForm("p & q", "p & ?X", "[{?X=q}]");
@@ -139,7 +139,7 @@ public class MatcherFacadeTest {
         shouldMatchSemiSeq("pred(a), pred(b) ==> qpred(a,b)", "pred(?X), pred(?Y)", "[{?X=a, ?Y=b}, {?X=b, ?Y=a}]");
 
         shouldMatchSemiSeq("pred(b), pred(a) ==>", "pred(...?X...), pred(f(?X))", "[]");
-        shouldMatchSemiSeq("pred(b), pred(a) ==>", "pred(...?X...), pred(...?Y...)", "[{?X=b, ?Y=a}, {?X=a, ?Y=b}]");
+        shouldMatchSemiSeq("pred(b), pred(a) ==>", "pred(...?X...), pred(...?Y...)", "[{?X=a, ?Y=b}, {?X=b, ?Y=a}]");
 
         shouldMatchSemiSeq("intPred(fint(i+j)) ==>", "intPred(...add(?X, ?y)...)");
 
@@ -178,10 +178,21 @@ public class MatcherFacadeTest {
         shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?Y)", "[{?X=a, ?Y=b, ?Z=b}, {?X=b, ?Y=b, ?Z=a}]");
         shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?X)", "[{?X=b, ?Z=a}]");
         shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==>", "[{?X=a, ?Z=b}, {?X=b, ?Z=a}]");
-        shouldMatchSeq("pred(f(a)), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==>", "[{?X=f(a), ?Z=b}, {?X=b, ?Z=f(a)}]");
-        shouldMatchSeq("pred(f(a)), pred(b) ==> pred(b)", "pred(...?X...) ==>", "[{?X=a}, {?X=f(a)}, {?X=b}]");
 
-        shouldMatchSeq("fint2(1,2), fint2(2,3), !p ==> pred(a), p", "fint2(1, ?X), fint2(?X, ?Y) ==> p", "[{EMPTY_MATCH=null, ?X=Z(2(#)), ?Y=Z(3(#))}]");
+        shouldMatchSeq(
+                "pred(f(a)), pred(b) ==> pred(b)",
+                "pred(?X), pred(?Z) ==>",
+                "[{?X=b, ?Z=f(a)}, {?X=f(a), ?Z=b}]");
+
+        shouldMatchSeq(
+                "pred(f(a)), pred(b) ==> pred(b)",
+                "pred(...?X...) ==>",
+                "[{?X=a}, {?X=b}, {?X=f(a)}]");
+
+        shouldMatchSeq(
+                "fint2(1,2), fint2(2,3), !p ==> pred(a), p",
+                "fint2(1, ?X), fint2(?X, ?Y) ==> p",
+                "[{EMPTY_MATCH=null, ?X=Z(2(#)), ?Y=Z(3(#))}]");
 
     }
 

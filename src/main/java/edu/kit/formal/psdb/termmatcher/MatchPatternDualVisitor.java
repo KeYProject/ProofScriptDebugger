@@ -1,11 +1,13 @@
 package edu.kit.formal.psdb.termmatcher;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import java.util.Stack;
 
 public abstract class MatchPatternDualVisitor<T, S> extends MatchPatternBaseVisitor<T> {
     private Stack<S> stack = new Stack<>();
 
-    public final T accept(MatchPatternParser.TermPatternContext ctx, S arg) {
+    public final T accept(ParserRuleContext ctx, S arg) {
         stack.push(arg);
         T t = ctx.accept(this);
         stack.pop();
@@ -13,9 +15,19 @@ public abstract class MatchPatternDualVisitor<T, S> extends MatchPatternBaseVisi
     }
 
     @Override
-    public final T visitSequentPattern(MatchPatternParser.SequentPatternContext ctx) {
-        return visitSequentPattern(ctx, stack.peek());
+    public T visitSequentAnywhere(MatchPatternParser.SequentAnywhereContext ctx) {
+        return visitSequentAnywhere(ctx, stack.peek());
     }
+
+    public abstract T visitSequentAnywhere(MatchPatternParser.SequentAnywhereContext ctx, S peek);
+
+
+    @Override
+    public T visitSequentArrow(MatchPatternParser.SequentArrowContext ctx) {
+        return visitSequentArrow(ctx, stack.peek());
+    }
+
+    public abstract T visitSequentArrow(MatchPatternParser.SequentArrowContext ctx, S peek);
 
     @Override
     public final T visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx) {
@@ -65,8 +77,6 @@ public abstract class MatchPatternDualVisitor<T, S> extends MatchPatternBaseVisi
     protected abstract T visitFunction(MatchPatternParser.FunctionContext ctx, S peek);
 
     protected abstract T visitNumber(MatchPatternParser.NumberContext ctx, S peek);
-
-    protected abstract T visitSequentPattern(MatchPatternParser.SequentPatternContext ctx, S peek);
 
     @Override
     public T visitPlusMinus(MatchPatternParser.PlusMinusContext ctx) {

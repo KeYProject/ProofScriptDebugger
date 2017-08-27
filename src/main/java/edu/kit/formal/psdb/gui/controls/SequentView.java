@@ -186,12 +186,12 @@ public class SequentView extends CodeArea {
     public boolean showSearchHighlights(String pattern) {
         clearHighlight();
 
-        if (pattern.trim().isEmpty())
+        if (pattern.trim().isEmpty()) {
             return false;
+        }
 
-        pattern = "(..." + pattern + "...) : ?COMPLETE";
         if (node.get().sequent() != null) {
-            Matchings m = MatcherFacade.matches(pattern, node.get().sequent());
+            Matchings m = MatcherFacade.matches(pattern, node.get().sequent(), true);
             if (m.size() == 0) return false;
             for (Map<String, MatchPath> va : m) {
                 MatchPath<?> complete = va.get("?COMPLETE");

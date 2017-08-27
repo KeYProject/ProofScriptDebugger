@@ -15,7 +15,9 @@ f(..., ... g(x) ...)
 f(_, x, _, y, ... y ...)
 */
 
-sequentPattern : antec=semiSeqPattern? ARROW succ=semiSeqPattern? | anywhere=semiSeqPattern;
+sequentPattern : antec=semiSeqPattern? ARROW succ=semiSeqPattern? #sequentArrow
+               | anywhere=semiSeqPattern #sequentAnywhere
+               ;
 
 semiSeqPattern : termPattern (',' termPattern)*;
 
