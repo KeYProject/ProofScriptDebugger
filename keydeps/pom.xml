@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>psdbg</artifactId>
+        <groupId>edu.kit.iti.formal.psdbg</groupId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>keydeps</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0</version>
+
+    <repositories>
+        <repository>
+            <id>local-repo</id>
+            <name>local-repo</name>
+            <url>file:///${basedir}/local-repo</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>key-project-psdbg</groupId>
+            <artifactId>key.core</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>key-project-psdbg</groupId>
+            <artifactId>key.ui</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>key-project-psdbg</groupId>
+            <artifactId>key.util</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>3.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>2.7.7</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.javacc</groupId>
+            <artifactId>javacc</artifactId>
+            <version>4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>key-project-psdbg</groupId>
+            <artifactId>recoder</artifactId>
+            <version>2.7</version>
+        </dependency>
+    </dependencies>
+
+</project>

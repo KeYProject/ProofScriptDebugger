@@ -1,0 +1,24 @@
+script A (i:int, j:int, a:bool) {
+   k: int := i + j;
+   foreach {
+        j : int := 5*k+i;
+        j : int := j;
+   }
+
+    cases  {
+        case true {
+            c : bool;
+        }
+
+        case false  {
+            d : bool;
+        }
+
+        case match `f(x)` using [d:int, a:bool, Y:bool] {
+
+        }
+    }
+
+    a := a & d;
+
+}

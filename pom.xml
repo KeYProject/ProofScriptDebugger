@@ -1,16 +1,18 @@
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>edu.kit.formal</groupId>
-    <artifactId>proofscriptparser</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <groupId>edu.kit.iti.formal.psdbg</groupId>
+    <artifactId>psdbg</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <name>ProofScriptParser</name>
     <description>
         A parser and AST for the proof script language.
     </description>
+
     <url>https://git.scc.kit.edu/sarah.grebing/ProofScriptParser</url>
 
     <developers>
@@ -33,7 +35,7 @@
 
     <organization>
         <name>Application-oriented Formal Verification</name>
-        <url>http://formal.iti.kit.edu</url>
+        <url>https://formal.iti.kit.edu</url>
     </organization>
 
     <inceptionYear>2017</inceptionYear>
@@ -49,6 +51,18 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
     </properties>
+
+    <modules>
+        <module>lang</module>
+        <module>rt</module>
+        <module>rt-key</module>
+        <module>ui</module>
+        <module>DockFX</module>
+        <module>lint</module>
+        <module>keydeps</module>
+        <module>matcher</module>
+    </modules>
+
 
     <build>
         <pluginManagement>
@@ -72,6 +86,7 @@
         </pluginManagement>
 
         <plugins>
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -111,27 +126,10 @@
                             </resources>
                         </configuration>
                     </execution>
-
                 </executions>
             </plugin>
+            -->
 
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>2.3</version>
-                <executions>
-                    <execution>
-                        <id>xjc</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <!-- The package of your generated sources -->
-                    <packageName>edu.kit.formal.psdb.lint</packageName>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -143,173 +141,34 @@
             </plugin>
 
             <plugin>
-                <groupId>org.lesscss</groupId>
-                <artifactId>lesscss-maven-plugin</artifactId>
-                <version>1.7.0.1.1</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                            <sourceDirectory>${project.build.sourceDirectory}/../resources</sourceDirectory>
-                            <compress>false</compress>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-
-            <plugin>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-maven-plugin</artifactId>
-                <version>4.7</version>
-                <executions>
-                    <execution>
-                        <id>antlr</id>
-                        <goals>
-                            <goal>antlr4</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.2</version>
                 <configuration>
-                    <visitor>true</visitor>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <fork>true</fork>
+                    <showWarnings>true</showWarnings>
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>com.zenjava</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>8.8.3</version>
-                <configuration>
-                    <mainClass>ProofScriptDebugger.Main</mainClass>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
-                <configuration>
-                    <!-- put your configurations here -->
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <minimizeJar>true</minimizeJar>
-                            <finalName>${project.name}-${project.version}-exe</finalName>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>
-                                        edu.kit.formal.psdb.gui.ProofScriptDebugger
-                                    </mainClass>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
-
     </build>
 
-    <!-- for icons -->
-    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>bintray-jerady-maven</id>
-            <name>bintray</name>
-            <url>http://dl.bintray.com/jerady/maven</url>
-        </repository>
-    </repositories>
-
     <dependencies>
-        <dependency>
-            <groupId>de.jensd</groupId>
-            <artifactId>fontawesomefx-materialdesignfont</artifactId>
-            <version>1.7.22-4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>de.jensd</groupId>
-            <artifactId>fontawesomefx-commons</artifactId>
-            <version>8.15</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.fxmisc.richtext</groupId>
-            <artifactId>richtextfx</artifactId>
-            <version>0.7-M5</version>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4</artifactId>
-            <version>4.7</version>
-        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.16</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.key-project</groupId>
-            <artifactId>key.core</artifactId>
-            <version>2.7</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/components/key.core.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.key-project</groupId>
-            <artifactId>key.ui</artifactId>
-            <version>2.7</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/components/key.ui.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.key-project</groupId>
-            <artifactId>key.util</artifactId>
-            <version>2.7</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/components/key.util.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr</artifactId>
-            <version>3.5.2</version>
-        </dependency>
-        <dependency>
-            <groupId>antlr</groupId>
-            <artifactId>antlr</artifactId>
-            <version>2.7.7</version>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.javacc</groupId>
-            <artifactId>javacc</artifactId>
-            <version>4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.key-project</groupId>
-            <artifactId>recoderKey</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/recoderKey.jar</systemPath>
-        </dependency>
+
         <!-- https://mvnrepository.com/artifact/commons-cli/commons-cli -->
         <dependency>
             <groupId>commons-cli</groupId>
@@ -320,12 +179,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>22.0</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx -->
-        <dependency>
-            <groupId>org.controlsfx</groupId>
-            <artifactId>controlsfx</artifactId>
-            <version>8.40.12</version>
         </dependency>
 
         <dependency>
@@ -341,12 +194,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.spullara.mustache.java</groupId>
-            <artifactId>compiler</artifactId>
-            <version>0.9.2</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>2.8</version>
@@ -358,10 +205,7 @@
             <version>2.8</version>
         </dependency>
 
-
-
     </dependencies>
-
 
     <reporting>
         <plugins>

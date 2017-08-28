@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.web.WebView?>
+<fx:root xmlns="http://javafx.com/javafx" type="BorderPane"
+         xmlns:fx="http://javafx.com/fxml">
+    <top>
+        <ComboBox fx:id="comboBox" editable="false"/>
+        <!--
+            <HBox>
+                <children>
+                    <Label text="Help for:" labelFor=""/>
+                </children>
+            </HBox>
+        -->
+    </top>
+    <center>
+        <WebView fx:id="webView">
+
+        </WebView>
+    </center>
+</fx:root>
+

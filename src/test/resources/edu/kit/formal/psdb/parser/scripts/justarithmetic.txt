@@ -1,3 +1,0 @@
-script justArithm(x:int, y:int) {
-  z : int := x + y;
-}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         prefHeight="400.0" prefWidth="600.0" type="javafx.scene.control.ContextMenu">
+    <fx:define>
+        <ToggleGroup fx:id="toggleProjection"/>
+    </fx:define>
+    <items>
+        <RadioMenuItem fx:id="rmiShowSequent" text="Show _Sequent" toggleGroup="$toggleProjection"/>
+        <RadioMenuItem fx:id="rmiCFL" text="Show Control Flow _Lines" toggleGroup="$toggleProjection"/>
+        <RadioMenuItem fx:id="rmiCFS" text="Show _Control Flow Statements" toggleGroup="$toggleProjection"/>
+        <RadioMenuItem fx:id="rmiBranchLabels" text="Show _Branch Labels" toggleGroup="$toggleProjection"/>
+        <RadioMenuItem fx:id="rmiNodeNames" text="Show _Node Names " toggleGroup="$toggleProjection"/>
+        <RadioMenuItem fx:id="rmiRuleNames" text="Show _Rule Names " toggleGroup="$toggleProjection"/>
+
+        <Menu fx:id="a" text="Filter by...">
+            <MenuItem fx:id="removeFilter" text="Remove Filters"/>
+            <SeparatorMenuItem/>
+            <MenuItem fx:id="matchFilter" text="Add match filter"/>
+            <MenuItem fx:id="labelFilter" text="Add label filter"/>
+        </Menu>
+    </items>
+</fx:root>

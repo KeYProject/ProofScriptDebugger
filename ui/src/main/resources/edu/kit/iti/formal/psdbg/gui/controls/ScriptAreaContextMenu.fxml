@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import edu.kit.iti.formal.psdbg.gui.controls.*?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<fx:root type="ScriptArea.ScriptAreaContextMenu"
+         xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml" >
+<items>
+    <MenuItem text="Show post mortem" onAction="#showPostMortem"/>
+    <SeparatorMenuItem/>
+    <MenuItem text="Set Main Script" onAction="#setMainScript"/>
+    <MenuItem text="Set Execution Marker" onAction="#setExecutionMarker" accelerator="Ctrl+m"/>
+</items>
+
+</fx:root>

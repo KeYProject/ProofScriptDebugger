@@ -1,0 +1,5 @@
+psdbg.lint.checkers.EmptyBlocks
+psdbg.lint.checkers.SuccessiveGoalSelector
+psdbg.lint.checkers.NegatedMatchWithUsing
+psdbg.lint.checkers.EqualScriptNames
+psdbg.lint.checkers.VariableDeclarationCheck

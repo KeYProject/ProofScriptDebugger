@@ -1,5 +1,0 @@
-edu.kit.formal.psdb.lint.checkers.EmptyBlocks
-edu.kit.formal.psdb.lint.checkers.SuccessiveGoalSelector
-edu.kit.formal.psdb.lint.checkers.NegatedMatchWithUsing
-edu.kit.formal.psdb.lint.checkers.EqualScriptNames
-edu.kit.formal.psdb.lint.checkers.VariableDeclarationCheck
