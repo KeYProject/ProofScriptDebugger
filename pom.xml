@@ -64,20 +64,26 @@
     </modules>
 
     <distributionManagement>
+        <repository>
+            <id>bwcloud-ssh</id>
+            <url>scp://141.52.38.245:/var/www/html/psdbg/</url>
+        </repository>
+
         <snapshotRepository>
-            <id>key-repo</id>
-            <name>key-repo</name>
-            <url>dav:http://141.52.38.245/psdbg/</url>
+            <id>bwcloud-ssh</id>
+            <url>scp://141.52.38.245:/var/www/html/psdbg-devel/</url>
         </snapshotRepository>
     </distributionManagement>
+
+
 
 
     <build>
         <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-webdav-jackrabbit</artifactId>
-                <version>2.4</version>
+                <artifactId>wagon-ssh</artifactId>
+                <version>2.12</version>
             </extension>
         </extensions>
 
