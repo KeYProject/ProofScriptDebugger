@@ -1,4 +1,4 @@
-package edu.kit.iti.formal.psdbg;
+package edu.kit.iti.formal.psdbg.lint;
 
 import edu.kit.iti.formal.psdbg.lint.Issue;
 import edu.kit.iti.formal.psdbg.lint.LintProblem;
