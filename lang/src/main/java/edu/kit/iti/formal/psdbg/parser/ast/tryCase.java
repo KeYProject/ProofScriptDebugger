@@ -5,14 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Object representing  a "match isClosable{ Commands}" block
+ * Object representing  a "try { Commands}" block in a cases
  */
 @Data
 @NoArgsConstructor
-public class IsClosableCase extends CaseStatement {
+public class tryCase extends CaseStatement {
     private boolean isClosedStmt = true;
 
-    public IsClosableCase(Statements body) {
+    public tryCase(Statements body) {
         this.body = body;
     }
 
@@ -28,7 +28,7 @@ public class IsClosableCase extends CaseStatement {
      * {@inheritDoc}
      */
     @Override
-    public IsClosableCase copy() {
-        return new IsClosableCase(body.copy());
+    public tryCase copy() {
+        return new tryCase(body.copy());
     }
 }

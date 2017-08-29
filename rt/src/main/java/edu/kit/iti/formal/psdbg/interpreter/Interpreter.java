@@ -165,10 +165,10 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     }
 
     @Override
-    public Object visit(IsClosableCase isClosableCase) {
-        enterScope(isClosableCase);
+    public Object visit(tryCase tryCase) {
+        enterScope(tryCase);
 
-        exitScope(isClosableCase);
+        exitScope(tryCase);
         return false;
     }
 

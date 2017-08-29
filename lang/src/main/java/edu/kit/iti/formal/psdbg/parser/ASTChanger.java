@@ -23,8 +23,9 @@ package edu.kit.iti.formal.psdbg.parser;
  */
 
 
-import edu.kit.iti.formal.psdbg.parser.types.Type;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
+import edu.kit.iti.formal.psdbg.parser.types.Type;
+
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
@@ -111,9 +112,9 @@ public class ASTChanger extends DefaultASTVisitor<ASTNode> {
     }
 
     @Override
-    public IsClosableCase visit(IsClosableCase isClosableCase) {
-        isClosableCase.getBody().accept(this);
-        return isClosableCase;
+    public tryCase visit(tryCase tryCase) {
+        tryCase.getBody().accept(this);
+        return tryCase;
     }
 
     @Override
@@ -121,6 +122,13 @@ public class ASTChanger extends DefaultASTVisitor<ASTNode> {
         simpleCaseStatement.getGuard().accept(this);
         simpleCaseStatement.getBody().accept(this);
         return simpleCaseStatement;
+    }
+
+    @Override
+    public ASTNode visit(ClosesCase closesCase) {
+        closesCase.getClosesScript().accept(this);
+        closesCase.getBody().accept(this);
+        return closesCase;
     }
 
     @Override

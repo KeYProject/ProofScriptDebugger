@@ -114,17 +114,13 @@ casesStmt
     ;
 
 casesList
-  //  : simpleCase
-   // | closableCase
-    :   CASE  (ISCLOSED | expression) COLON? INDENT stmtList DEDENT
+    :   CASE  (TRY | expression | closesExpression) COLON? INDENT stmtList DEDENT
     ;
-/*simpleCase
-    : CASE expression COLON? INDENT stmtList DEDENT
+
+closesExpression
+    : CLOSES closesScript= scriptCommand
     ;
-closableCase
-    : CASE MATCH ISCLOSED COLON? INDENT stmtList DEDENT
-    ;
-*/
+
 forEachStmt
     :   FOREACH INDENT stmtList DEDENT
     ;
@@ -132,6 +128,7 @@ forEachStmt
 theOnlyStmt
     :   THEONLY INDENT stmtList DEDENT
     ;
+
 
 scriptCommand
     :   cmd=ID parameters? SEMICOLON
@@ -155,7 +152,8 @@ MULTI_LINE_COMMENT  : '/*' (MULTI_LINE_COMMENT|.)*? '*/' -> channel(HIDDEN);
 
 CASES: 'cases';
 CASE: 'case';
-ISCLOSED: 'isCloseable';
+TRY: 'try';
+CLOSES: 'closes';
 DERIVABLE : 'derivable';
 DEFAULT: 'default';
 ASSIGN : ':=';

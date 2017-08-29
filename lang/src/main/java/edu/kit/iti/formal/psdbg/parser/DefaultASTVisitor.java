@@ -133,8 +133,8 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
     }
 
     @Override
-    public T visit(IsClosableCase isClosableCase) {
-        return defaultVisit(isClosableCase);
+    public T visit(tryCase tryCase) {
+        return defaultVisit(tryCase);
     }
 
     @Override
@@ -142,5 +142,9 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
         return defaultVisit(simpleCaseStatement);
     }
 
+    @Override
+    public T visit(ClosesCase closesCase) {
+        return defaultVisit(closesCase);
+    }
 }
 

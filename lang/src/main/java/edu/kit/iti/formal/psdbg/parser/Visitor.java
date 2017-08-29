@@ -68,11 +68,13 @@ public interface Visitor<T> {
     T visit(UnaryExpression e);
 
 
-    T visit(IsClosableCase isClosableCase);
+    T visit(tryCase tryCase);
 
     T visit(SimpleCaseStatement simpleCaseStatement);
 
     T visit(CaseStatement caseStatement);
 
     T visit(SubstituteExpression subst);
+
+    T visit(ClosesCase colsesCase);
 }

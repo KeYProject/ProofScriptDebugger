@@ -23,6 +23,7 @@ package edu.kit.iti.formal.psdbg.parser;
  */
 
 
+import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -34,7 +35,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import edu.kit.iti.formal.psdbg.parser.ast.*;
 
 /**
  * @author Alexander Weigl
@@ -318,11 +318,20 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     @Override
     public Object visitCasesList(ScriptLanguageParser.CasesListContext ctx) {
 
-        if (ctx.ISCLOSED() != null) {
-            IsClosableCase isClosableCase = new IsClosableCase();
-            isClosableCase.setRuleContext(ctx);
-            isClosableCase.setBody((Statements) ctx.stmtList().accept(this));
-            return isClosableCase;
+        if (ctx.TRY() != null) {
+            tryCase tryCase = new tryCase();
+            tryCase.setRuleContext(ctx);
+            tryCase.setBody((Statements) ctx.stmtList().accept(this));
+            return tryCase;
+        }
+        if (ctx.closesExpression() != null) {
+            ClosesCase closesCase = new ClosesCase();
+            closesCase.setClosedStmt(true);
+            closesCase.setRuleContext(ctx);
+            closesCase.setClosesScript((CallStatement) ctx.closesExpression().closesScript.accept(this));
+            closesCase.setBody((Statements) ctx.stmtList().accept(this));
+            return closesCase;
+
         } else {
             SimpleCaseStatement caseStatement = new SimpleCaseStatement();
             caseStatement.setRuleContext(ctx);
@@ -336,6 +345,11 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         caseStatement.setBody((Statements) ctx.stmtList().accept(this));
         return caseStatement;*/
 
+    }
+
+    @Override
+    public Object visitClosesExpression(ScriptLanguageParser.ClosesExpressionContext ctx) {
+        return null;
     }
 
 /*

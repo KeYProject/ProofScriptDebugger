@@ -11,7 +11,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.CommandLookup;
-import edu.kit.iti.formal.psdbg.parser.ast.IsClosableCase;
+import edu.kit.iti.formal.psdbg.parser.ast.tryCase;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import lombok.Getter;
 import org.key_project.util.collection.ImmutableList;
@@ -43,14 +43,14 @@ public class KeyInterpreter extends Interpreter<KeyData> {
 
 
     @Override
-    public Object visit(IsClosableCase isClosableCase) {
+    public Object visit(tryCase tryCase) {
         State<KeyData> currentStateToMatch = peekState();
         State<KeyData> currentStateToMatchCopy = peekState().copy(); //deepcopy
         GoalNode<KeyData> selectedGoalNode = currentStateToMatch.getSelectedGoalNode();
         GoalNode<KeyData> selectedGoalCopy = currentStateToMatch.getSelectedGoalNode().deepCopy(); //deepcopy
 
-        enterScope(isClosableCase);
-        executeBody(isClosableCase.getBody(), selectedGoalNode, new VariableAssignment(selectedGoalNode.getAssignments()));
+        enterScope(tryCase);
+        executeBody(tryCase.getBody(), selectedGoalNode, new VariableAssignment(selectedGoalNode.getAssignments()));
         State<KeyData> stateafterIsClosable = peekState();
         List<GoalNode<KeyData>> goals = stateafterIsClosable.getGoals();
         boolean allClosed = true;
@@ -70,7 +70,7 @@ public class KeyInterpreter extends Interpreter<KeyData> {
             pushState(currentStateToMatchCopy);
         }
         //check if state is closed
-        exitScope(isClosableCase);
+        exitScope(tryCase);
         return false;
     }
 }
