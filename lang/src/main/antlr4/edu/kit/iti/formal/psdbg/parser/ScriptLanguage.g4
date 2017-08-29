@@ -62,6 +62,7 @@ expression
     | MINUS expression   #exprNegate
     | NOT expression  #exprNot
     | '(' expression ')' #exprParen
+    | ID '(' (expression (',' expression)*)? ')' #functionApp
     | literals             #exprLiterals
     | matchPattern         #exprMatch
 ;

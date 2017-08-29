@@ -75,4 +75,6 @@ public interface Visitor<T> {
     T visit(CaseStatement caseStatement);
 
     T visit(SubstituteExpression subst);
+
+    T visit(FunctionApplication functionApplication);
 }
