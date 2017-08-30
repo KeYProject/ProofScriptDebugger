@@ -39,8 +39,11 @@ public class ProofScriptDebugger extends Application {
         Locale.setDefault(Locale.ENGLISH);
 
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
-                            "controller/DebuggerMain.fxml"));
+
+//            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
+//                            "controller/DebuggerMain.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/edu/kit/iti/formal/psdbg/gui/controller/DebuggerMain.fxml"));
+            //"/edu/kit/formal/psdb/gui/controller/DebuggerMain.fxml"));
             Parent root = fxmlLoader.load();
             //DebuggerMain controller = fxmlLoader.<DebuggerMain>getController();
             Scene scene = new Scene(root);

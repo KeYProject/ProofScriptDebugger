@@ -17,3 +17,35 @@ script cpwob () {
     concrete_impl_1;
     close;
 }
+
+script cpwb () {
+    impRight;
+    impLeft;
+    cases{
+        case match `==> p`:{
+            auto;
+        }
+        default:{
+            auto;
+        }
+    }
+}
+
+
+script cpClosable(){
+    impRight;
+    impRight;
+    cases{
+        case try:{
+            notLeft;
+            notRight;
+            replace_known_left occ='2';
+            concrete_impl_1;
+            close;
+        }
+
+        default:{
+            auto;
+        }
+    }
+}

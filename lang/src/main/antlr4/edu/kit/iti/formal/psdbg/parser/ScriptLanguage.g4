@@ -107,18 +107,18 @@ repeatStmt
 casesStmt
     :   CASES INDENT
             casesList*
-        (DEFAULT  COLON? INDENT
+        (DEFAULT  COLON? INDENT?
             defList=stmtList
-          DEDENT)?
+          DEDENT?)?
         DEDENT
     ;
 
 casesList
-    :   CASE  (TRY | expression | closesExpression) COLON? INDENT stmtList DEDENT
+    :    (TRY | CASE  (expression | closesExpression)) COLON? INDENT? stmtList DEDENT?
     ;
 
 closesExpression
-    : CLOSES closesScript= scriptCommand
+    : CLOSES  INDENT closesScript=stmtList DEDENT
     ;
 
 forEachStmt

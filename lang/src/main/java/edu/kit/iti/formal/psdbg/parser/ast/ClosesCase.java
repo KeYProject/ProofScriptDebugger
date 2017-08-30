@@ -16,7 +16,7 @@ public class ClosesCase extends CaseStatement {
     /**
      * Script that should be executed and shown whether case can be closed
      */
-    private CallStatement closesScript;
+    private Statements closesScript;
 
     /**
      * A close subscript() {bodyscript} expression
@@ -24,7 +24,7 @@ public class ClosesCase extends CaseStatement {
      * @param closesScript the script that is exectued in order to determine whether goal would clos. This proof is pruned afterwards
      * @param body         the actual script that is then executed when closesscript was successful and pruned
      */
-    public ClosesCase(CallStatement closesScript, Statements body) {
+    public ClosesCase(Statements closesScript, Statements body) {
         this.body = body;
         this.closesScript = closesScript;
     }
@@ -41,8 +41,8 @@ public class ClosesCase extends CaseStatement {
      * {@inheritDoc}
      */
     @Override
-    public tryCase copy() {
-        return new tryCase(body.copy());
+    public ClosesCase copy() {
+        return new ClosesCase(closesScript.copy(), body.copy());
     }
 
 }

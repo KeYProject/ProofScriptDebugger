@@ -1,5 +1,6 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
+import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.AnchorPane;
@@ -21,13 +22,19 @@ public class WelcomePane extends AnchorPane {
     public void loadContraPosition(ActionEvent event) {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
-        proofScriptDebugger.openScript(
-                new File("src/test/resources/edu/kit/formal/psdb/interpreter/contraposition/w_branching.kps")
+
+        Examples.loadExamples().forEach(example -> {
+            if (example.getName().equals("Contraposition"))
+                example.open(proofScriptDebugger);
+
+        });
+       /* proofScriptDebugger.openScript(
+                new File("")
         );
 
         proofScriptDebugger.openKeyFile(
                 new File("src/test/resources/edu/kit/formal/psdb/interpreter/contraposition/contraposition.key"));
-
+        */
     }
 
     public void loadJavaTest(ActionEvent event) {

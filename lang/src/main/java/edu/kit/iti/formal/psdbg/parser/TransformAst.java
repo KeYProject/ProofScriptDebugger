@@ -328,7 +328,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
             ClosesCase closesCase = new ClosesCase();
             closesCase.setClosedStmt(true);
             closesCase.setRuleContext(ctx);
-            closesCase.setClosesScript((CallStatement) ctx.closesExpression().closesScript.accept(this));
+            closesCase.setClosesScript((Statements) ctx.closesExpression().closesScript.accept(this));
             closesCase.setBody((Statements) ctx.stmtList().accept(this));
             return closesCase;
 
