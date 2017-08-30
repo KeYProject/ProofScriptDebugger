@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * A facade for capturing everthing we want to do with matchers.
+ * A facade for capturing everything we want to do with matchers.
  *
  * @author Alexander Weigl
  * @author S.Grebing

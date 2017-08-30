@@ -1,51 +1,19 @@
 // Please select one of the following scripts.
 //
 
-script main() {}
-
-
-script cpauto () {
-    auto;
-}
-
-script cpwob () {
-    impRight;
-    impRight;
-    notLeft;
-    notRight;
-    replace_known_left occ='2';
-    concrete_impl_1;
-    close;
-}
-
-script cpwb () {
-    impRight;
-    impLeft;
-    cases{
-        case match `==> p`:{
-            auto;
-        }
-        default:{
-            auto;
-        }
-    }
-}
-
-
 script cpClosable(){
     impRight;
     impRight;
     cases{
-        case try:{
+        try:
             notLeft;
             notRight;
             replace_known_left occ='2';
             concrete_impl_1;
             close;
-        }
 
-        default:{
+        default:
             auto;
-        }
+
     }
 }

@@ -16,6 +16,7 @@ public class KeyAssignmentHook extends DefaultAssignmentHook<KeyData> {
 
     public KeyAssignmentHook() {
         register("MAX_AUTO_STEPS", this::setMaxAutosteps, this::getMaxAutosteps);
+        //register()
     }
 
     public Value<BigInteger> getMaxAutosteps(KeyData data) {

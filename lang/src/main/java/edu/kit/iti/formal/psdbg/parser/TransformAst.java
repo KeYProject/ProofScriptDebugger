@@ -321,56 +321,28 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         if (ctx.TRY() != null) {
             tryCase tryCase = new tryCase();
             tryCase.setRuleContext(ctx);
-            tryCase.setBody((Statements) ctx.stmtList().accept(this));
+            tryCase.setBody((Statements) ctx.body.accept(this));
             return tryCase;
         }
-        if (ctx.closesExpression() != null) {
+        if (ctx.closesScript != null) {
             ClosesCase closesCase = new ClosesCase();
             closesCase.setClosedStmt(true);
             closesCase.setRuleContext(ctx);
-            closesCase.setClosesScript((Statements) ctx.closesExpression().closesScript.accept(this));
-            closesCase.setBody((Statements) ctx.stmtList().accept(this));
+
+            closesCase.setClosesScript((Statements) ctx.closesScript.accept(this));
+            closesCase.setBody((Statements) ctx.body.accept(this));
             return closesCase;
 
         } else {
             SimpleCaseStatement caseStatement = new SimpleCaseStatement();
             caseStatement.setRuleContext(ctx);
             caseStatement.setGuard((Expression<ParserRuleContext>) ctx.expression().accept(this));
-            caseStatement.setBody((Statements) ctx.stmtList().accept(this));
+            caseStatement.setBody((Statements) ctx.body.accept(this));
             return caseStatement;
         }
-     /*   CaseStatement caseStatement = new CaseStatement();
-        caseStatement.setRuleContext(ctx);
-        caseStatement.setGuard((Expression) ctx.expression().accept(this));
-        caseStatement.setBody((Statements) ctx.stmtList().accept(this));
-        return caseStatement;*/
 
     }
 
-    @Override
-    public Object visitClosesExpression(ScriptLanguageParser.ClosesExpressionContext ctx) {
-        return null;
-    }
-
-/*
-    @Override
-    public Object visitSimpleCase(ScriptLanguageParser.SimpleCaseContext ctx) {
-        SimpleCaseStatement caseStatement = new SimpleCaseStatement();
-        caseStatement.setRuleContext(ctx);
-        caseStatement.setGuard((Expression) ctx.expression().accept(this));
-        caseStatement.setBody((Statements) ctx.stmtList().accept(this));
-        return caseStatement;
-
-    }
-
-    @Override
-    public Object visitClosableCase(ScriptLanguageParser.ClosableCaseContext ctx) {
-        IsClosableCase isClosableCase = new IsClosableCase();
-        isClosableCase.setRuleContext(ctx);
-        isClosableCase.setBody((Statements) ctx.stmtList().accept(this));
-        return isClosableCase;
-    }
-*/
 
     @Override
     public Object visitForEachStmt(ScriptLanguageParser.ForEachStmtContext ctx) {

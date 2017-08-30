@@ -204,15 +204,20 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
         List<CaseStatement> cases = casesStatement.getCases();
         for (CaseStatement aCase : cases) {
-            ControlFlowNode caseNode = new ControlFlowNode(aCase);
-            mappingOfNodes.put(aCase, caseNode);
-            graph.addNode(caseNode);
-            //System.out.println("\n" + caseNode + "\n");
-            graph.putEdgeValue(currentNode, caseNode, EdgeTypes.STEP_OVER); //??is this right?
-            graph.putEdgeValue(caseNode, currentNode, EdgeTypes.STEP_BACK);
-            lastNode = caseNode;
-            aCase.getBody().accept(this);
-            graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
+
+            if (aCase.isClosedStmt) {
+                System.out.println("Handle sondercases");
+            } else {
+                ControlFlowNode caseNode = new ControlFlowNode(aCase);
+                mappingOfNodes.put(aCase, caseNode);
+                graph.addNode(caseNode);
+                //System.out.println("\n" + caseNode + "\n");
+                graph.putEdgeValue(currentNode, caseNode, EdgeTypes.STEP_OVER); //??is this right?
+                graph.putEdgeValue(caseNode, currentNode, EdgeTypes.STEP_BACK);
+                lastNode = caseNode;
+                aCase.getBody().accept(this);
+                graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
+            }
         }
         lastNode = currentNode;
         return null;

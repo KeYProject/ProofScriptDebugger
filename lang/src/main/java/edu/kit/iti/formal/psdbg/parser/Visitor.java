@@ -76,5 +76,5 @@ public interface Visitor<T> {
 
     T visit(SubstituteExpression subst);
 
-    T visit(ClosesCase colsesCase);
+    T visit(ClosesCase closesCase);
 }

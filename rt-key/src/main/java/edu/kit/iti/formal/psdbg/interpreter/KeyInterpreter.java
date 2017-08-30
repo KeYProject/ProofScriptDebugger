@@ -11,6 +11,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.CommandLookup;
+import edu.kit.iti.formal.psdbg.parser.ast.ClosesCase;
 import edu.kit.iti.formal.psdbg.parser.ast.tryCase;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import lombok.Getter;
@@ -43,6 +44,18 @@ public class KeyInterpreter extends Interpreter<KeyData> {
 
 
     @Override
+    public Object visit(ClosesCase closesCase) {
+        State<KeyData> currentStateToMatch = peekState();
+        State<KeyData> currentStateToMatchCopy = peekState().copy(); //deepcopy
+        GoalNode<KeyData> selectedGoalNode = currentStateToMatch.getSelectedGoalNode();
+        GoalNode<KeyData> selectedGoalCopy = currentStateToMatch.getSelectedGoalNode().deepCopy(); //deepcopy
+        enterScope(closesCase);
+//        executeBody(closesCase.getClosesScript(), )
+        exitScope(closesCase);
+        return false;
+    }
+
+    @Override
     public Object visit(tryCase tryCase) {
         State<KeyData> currentStateToMatch = peekState();
         State<KeyData> currentStateToMatchCopy = peekState().copy(); //deepcopy
@@ -71,6 +84,26 @@ public class KeyInterpreter extends Interpreter<KeyData> {
         }
         //check if state is closed
         exitScope(tryCase);
-        return false;
+        return allClosed;
+
+        /*        //executeBody and if goal is closed afterwards return true
+        //else prune proof and return false
+
+        State<T> stateBeforeTry = peekState().copy();
+        State<T> tState = executeBody(tryCase.getBody(), peekState().getSelectedGoalNode(), peekState().getSelectedGoalNode().getAssignments());
+
+        boolean isClosed = tState.getGoals().stream().allMatch(tGoalNode -> tGoalNode.isClosed());
+
+
+        if(!isClosed){
+
+            exitScope(tryCase);
+            return false;
+        }else{
+
+            exitScope(tryCase);
+            return true;
+        }
+*/
     }
 }
