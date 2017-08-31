@@ -36,7 +36,7 @@ public class KeYInterpreterTest {
 
 
     @Test
-    public void testIsClosable() throws IOException, ProblemLoaderException {
+    public void testTryFail() throws IOException, ProblemLoaderException {
         facade.loadKeyFileSync(new File("src/test/resources/edu/kit/iti/formal/psdbg/interpreter/contraposition/contraposition.key"));
         Interpreter<KeyData> i = execute(getClass().getResourceAsStream("contraposition/testIsClosable.kps"));
         List<GoalNode<KeyData>> goals = i.getCurrentState().getGoals();
@@ -45,7 +45,32 @@ public class KeYInterpreterTest {
             Assert.assertEquals("Label for node " + goal.getData().getNode(), "impLeft // impRight // $$", goal.getData().getRuleLabel());
         }
 
+    }
+
+    @Test
+    public void testClosesFail() throws IOException, ProblemLoaderException {
+        facade.loadKeyFileSync(new File("src/test/resources/edu/kit/iti/formal/psdbg/interpreter/contraposition/contraposition.key"));
+        Interpreter<KeyData> i = execute(getClass().getResourceAsStream("contraposition/closes.kps"));
+        List<GoalNode<KeyData>> goals = i.getCurrentState().getGoals();
+        Assert.assertEquals(2, goals.size());
+        for (GoalNode<KeyData> goal : goals) {
+            Assert.assertEquals("Label for node " + goal.getData().getNode(), "impLeft // impRight // $$", goal.getData().getRuleLabel());
+        }
+
         // Assert.assertEquals(10, i.getCurrentState().getGoals().size());
+    }
+
+    @Test
+    public void testClosesScriptSuccess() throws IOException, ProblemLoaderException {
+        facade.loadKeyFileSync(new File("src/test/resources/edu/kit/iti/formal/psdbg/interpreter/contraposition/contraposition.key"));
+        Interpreter<KeyData> i = execute(getClass().getResourceAsStream("contraposition/closesSuccess.kps"));
+        List<GoalNode<KeyData>> goals = i.getCurrentState().getGoals();
+        Assert.assertEquals(2, goals.size());
+        for (GoalNode<KeyData> goal : goals) {
+            Assert.assertEquals("Label for node " + goal.getData().getNode(), "impRight // impLeft // impRight // $$", goal.getData().getRuleLabel());
+        }
+
+
     }
 
 

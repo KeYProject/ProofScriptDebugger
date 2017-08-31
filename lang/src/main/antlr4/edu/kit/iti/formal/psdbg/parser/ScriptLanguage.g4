@@ -114,7 +114,10 @@ casesStmt
     ;
 
 casesList
-    :    (TRY | (CASE  (expression | (CLOSES  INDENT closesScript=stmtList DEDENT)))) COLON INDENT? body=stmtList DEDENT?
+    :    (TRY |
+            (CASE  (expression
+                | (CLOSES  INDENT closesScript=stmtList DEDENT) ) ) )
+                COLON INDENT? body=stmtList DEDENT?
     ;
 
 /*closesExpression

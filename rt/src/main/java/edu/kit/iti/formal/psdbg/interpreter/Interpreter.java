@@ -184,8 +184,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         //handle cases
         List<CaseStatement> cases = casesStatement.getCases();
 
-        //   Map<GoalNode, Pair<VariableAssignment, Statements>> goalToCaseMapping = matchGoalsToCases(allGoalsBeforeCases, casesStatement);
-
         for (GoalNode<T> goal : allGoalsBeforeCases) {
             newState(goal); //to allow the visit method for the case stmt to retrieve goal
 
