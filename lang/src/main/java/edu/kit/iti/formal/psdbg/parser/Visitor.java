@@ -68,7 +68,7 @@ public interface Visitor<T> {
     T visit(UnaryExpression e);
 
 
-    T visit(tryCase tryCase);
+    T visit(TryCase TryCase);
 
     T visit(SimpleCaseStatement simpleCaseStatement);
 

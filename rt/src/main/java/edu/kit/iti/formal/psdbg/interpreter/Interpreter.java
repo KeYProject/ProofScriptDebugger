@@ -1,7 +1,6 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
 
-import com.google.common.collect.Sets;
 import edu.kit.iti.formal.psdbg.interpreter.assignhook.VariableAssignmentHook;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
@@ -13,10 +12,8 @@ import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
-import javafx.util.Pair;
 import lombok.Getter;
 import lombok.Setter;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -167,38 +164,13 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return null;
     }
 
-    @Override
-    public Object visit(tryCase tryCase) {
-        enterScope(tryCase);
-
-        exitScope(tryCase);
-        return false;
-    }
-
-    @Override
-    public Object visit(SimpleCaseStatement simpleCaseStatement) {
-        Expression matchExpression = simpleCaseStatement.getGuard();
-        State<T> currentStateToMatch = peekState();
-        GoalNode<T> selectedGoal = currentStateToMatch.getSelectedGoalNode();
-        VariableAssignment va = evaluateMatchInGoal(matchExpression, selectedGoal);
-        if (va != null) {
-            enterScope(simpleCaseStatement);
-            executeBody(simpleCaseStatement.getBody(), selectedGoal, va);
-            exitScope(simpleCaseStatement);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     /**
-     * Old visit method, for deocumentation purposes
      *
      * @param casesStatement
      * @return
      */
-    @Deprecated
-    public Object visitOld(CasesStatement casesStatement) {
+    @Override
+    public Object visit(CasesStatement casesStatement) {
         enterScope(casesStatement);
         State<T> beforeCases = peekState();
 
@@ -212,7 +184,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         //handle cases
         List<CaseStatement> cases = casesStatement.getCases();
 
-        Map<GoalNode, Pair<VariableAssignment, Statements>> goalToCaseMapping = matchGoalsToCases(allGoalsBeforeCases, casesStatement);
+        //   Map<GoalNode, Pair<VariableAssignment, Statements>> goalToCaseMapping = matchGoalsToCases(allGoalsBeforeCases, casesStatement);
 
         for (GoalNode<T> goal : allGoalsBeforeCases) {
             newState(goal); //to allow the visit method for the case stmt to retrieve goal
@@ -266,13 +238,37 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return null;
     }
 
+   /* @Override
+    public Object visit(SimpleCaseStatement simpleCaseStatement) {
+        Expression matchExpression = simpleCaseStatement.getGuard();
+        State<T> currentStateToMatch = peekState();
+        GoalNode<T> selectedGoal = currentStateToMatch.getSelectedGoalNode();
+        VariableAssignment va = evaluateMatchInGoal(matchExpression, selectedGoal);
+        if (va != null) {
+            enterScope(simpleCaseStatement);
+            executeBody(simpleCaseStatement.getBody(), selectedGoal, va);
+            exitScope(simpleCaseStatement);
+            return true;
+        } else {
+            return false;
+        }
+    }*/
+
+    @Override
+    public Object visit(TryCase TryCase) {
+        enterScope(TryCase);
+
+        exitScope(TryCase);
+        return false;
+    }
+
     /**
      * Computes which goals are handled by the different cases in the order the cases appear in the script
      * @param allGoalsBeforeCases
      * @param cases all cases as ordered list
      * @return a mapping of each goal to the matched case body together with variableassignments from the matching process
      */
-    private Map<GoalNode, Pair<VariableAssignment, Statements>> matchGoalsToCases(List<GoalNode<T>> allGoalsBeforeCases, CasesStatement cases) {
+  /*  private Map<GoalNode, Pair<VariableAssignment, Statements>> matchGoalsToCases(List<GoalNode<T>> allGoalsBeforeCases, CasesStatement cases) {
         //list of cases
         List<CaseStatement> caseStmts = cases.getCases();
         //remaining goals
@@ -302,7 +298,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return returnMap;
 
 
-    }
+    }*/
 
     /**
      * Match a set of goal nodes against a matchpattern of a case and return the matched goals together with instantiated variables
@@ -311,7 +307,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
      * @param aCase
      * @return
      */
-    private Map<GoalNode<T>, VariableAssignment> matchGoal(Set<GoalNode<T>> allGoalsBeforeCases, CaseStatement aCase) {
+  /*  private Map<GoalNode<T>, VariableAssignment> matchGoal(Set<GoalNode<T>> allGoalsBeforeCases, CaseStatement aCase) {
 
         HashMap<GoalNode<T>, VariableAssignment> matchedGoals = new HashMap<>();
         if (!aCase.isClosedStmt()) {
@@ -326,16 +322,41 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             return matchedGoals;
         } else {
             //handle try and closes
-            throw new NotImplementedException();
+            if(aCase instanceof ClosesCase){
+                ClosesCase closesCase = (ClosesCase) aCase;
+                for (GoalNode<T> goal : allGoalsBeforeCases) {
+                    //put state onto stack
+                    newState(goal);
+                    boolean matched = (Boolean) closesCase.accept(this);
+                    if (matched) {
+                        matchedGoals.put(goal, new VariableAssignment(null));
+                    }
+                }
+                return matchedGoals;
+            }else{
+                TryCase tryCase = (TryCase) aCase;
+                for (GoalNode<T> goal : allGoalsBeforeCases) {
+                    //put state onto stack
+                    newState(goal);
+                    boolean matched = (Boolean) tryCase.accept(this);
+                    if (matched) {
+                        matchedGoals.put(goal, new VariableAssignment(null));
+                    }
+                }
+                return matchedGoals;
+
+            }
+
+
         }
-    }
+    }*/
 
     /**
      * @param casesStatement
      * @return
      */
-    @Override
-    public Object visit(CasesStatement casesStatement) {
+/*
+    public Object visitOld(CasesStatement casesStatement) {
         enterScope(casesStatement);
         State<T> beforeCases = peekState();
 
@@ -352,13 +373,17 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         Map<GoalNode, Pair<VariableAssignment, Statements>> goalToCaseMapping = matchGoalsToCases(allGoalsBeforeCases, casesStatement);
 
         goalToCaseMapping.forEach((goalNode, variableAssignmentStatementsPair) -> {
-            State<T> createdState = newState(goalNode);
-            executeBody(variableAssignmentStatementsPair.getValue(), goalNode, variableAssignmentStatementsPair.getKey());
-            //stmts.accept(this);
+            if(variableAssignmentStatementsPair.getValue().isEmpty()){
+                //TODO this is the try case
+            }else {
+                State<T> createdState = newState(goalNode);
+                executeBody(variableAssignmentStatementsPair.getValue(), goalNode, variableAssignmentStatementsPair.getKey());
+                //stmts.accept(this);
 
-            State<T> stateAfterCase = popState(); //remove state from stack
-            if (stateAfterCase.getGoals() != null) {
-                resultingGoals.addAll(stateAfterCase.getGoals());
+                State<T> stateAfterCase = popState(); //remove state from stack
+                if (stateAfterCase.getGoals() != null) {
+                    resultingGoals.addAll(stateAfterCase.getGoals());
+                }
             }
         });
 
@@ -381,7 +406,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         //stateStack.peek().getGoals().removeAll(beforeCases.getGoals());
         exitScope(casesStatement);
         return null;
-    }
+    }*/
 
     /**
      * Evaluate a match in a specific goal

@@ -74,13 +74,21 @@ public class State<T> {
     }
 
     /**
-     * TODO correct this method, atm does nothing helpful!
+     * Deep Copy state
      *
      * @return
      */
     public State<T> copy() {
-        List<GoalNode<T>> copiedGoals = new ArrayList<>(goals);
-        GoalNode<T> refToSelGoal = selectedGoalNode;
+        List<GoalNode<T>> copiedGoals = new ArrayList<>();
+        GoalNode<T> refToSelGoal = null;
+
+        for (GoalNode<T> goal : goals) {
+            GoalNode<T> deepcopy = goal.deepCopy();
+            copiedGoals.add(deepcopy);
+            if (goal.equals(selectedGoalNode)) {
+                refToSelGoal = deepcopy;
+            }
+        }
         return new State<T>(copiedGoals, refToSelGoal);
     }
 

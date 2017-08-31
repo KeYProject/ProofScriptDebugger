@@ -319,10 +319,10 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     public Object visitCasesList(ScriptLanguageParser.CasesListContext ctx) {
 
         if (ctx.TRY() != null) {
-            tryCase tryCase = new tryCase();
-            tryCase.setRuleContext(ctx);
-            tryCase.setBody((Statements) ctx.body.accept(this));
-            return tryCase;
+            TryCase TryCase = new TryCase();
+            TryCase.setRuleContext(ctx);
+            TryCase.setBody((Statements) ctx.body.accept(this));
+            return TryCase;
         }
         if (ctx.closesScript != null) {
             ClosesCase closesCase = new ClosesCase();

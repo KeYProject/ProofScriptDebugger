@@ -133,8 +133,8 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
     }
 
     @Override
-    public T visit(tryCase tryCase) {
-        return defaultVisit(tryCase);
+    public T visit(TryCase TryCase) {
+        return defaultVisit(TryCase);
     }
 
     @Override

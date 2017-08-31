@@ -112,9 +112,9 @@ public class ASTChanger extends DefaultASTVisitor<ASTNode> {
     }
 
     @Override
-    public tryCase visit(tryCase tryCase) {
-        tryCase.getBody().accept(this);
-        return tryCase;
+    public TryCase visit(TryCase TryCase) {
+        TryCase.getBody().accept(this);
+        return TryCase;
     }
 
     @Override

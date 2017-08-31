@@ -8,7 +8,6 @@ import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -35,7 +34,7 @@ public class KeYInterpreterTest {
         return i;
     }
 
-    @Ignore
+
     @Test
     public void testIsClosable() throws IOException, ProblemLoaderException {
         facade.loadKeyFileSync(new File("src/test/resources/edu/kit/iti/formal/psdbg/interpreter/contraposition/contraposition.key"));

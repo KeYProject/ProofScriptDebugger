@@ -12,7 +12,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.CommandLookup;
 import edu.kit.iti.formal.psdbg.parser.ast.ClosesCase;
-import edu.kit.iti.formal.psdbg.parser.ast.tryCase;
+import edu.kit.iti.formal.psdbg.parser.ast.TryCase;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import lombok.Getter;
 import org.key_project.util.collection.ImmutableList;
@@ -46,24 +46,43 @@ public class KeyInterpreter extends Interpreter<KeyData> {
     @Override
     public Object visit(ClosesCase closesCase) {
         State<KeyData> currentStateToMatch = peekState();
-        State<KeyData> currentStateToMatchCopy = peekState().copy(); //deepcopy
+        State<KeyData> currentStateToMatchCopy = currentStateToMatch.copy(); //deepcopy
         GoalNode<KeyData> selectedGoalNode = currentStateToMatch.getSelectedGoalNode();
         GoalNode<KeyData> selectedGoalCopy = currentStateToMatch.getSelectedGoalNode().deepCopy(); //deepcopy
         enterScope(closesCase);
-//        executeBody(closesCase.getClosesScript(), )
+        //execute closesscript
+        executeBody(closesCase.getClosesScript(), selectedGoalNode, new VariableAssignment(selectedGoalNode.getAssignments()));
+        //check whether script closed proof
+        State<KeyData> stateafterIsClosable = peekState();
+        List<GoalNode<KeyData>> goals = stateafterIsClosable.getGoals();
+        boolean allClosed = true;
+        for (GoalNode<KeyData> goal : goals) {
+            KeyData data = (KeyData) goal.getData();
+            if (!data.getNode().isClosed()) {
+                allClosed = false;
+                break;
+            }
+        }
+        //prune proof
+        System.out.println("The closes script " + (allClosed ? "closed the proof.\n" : "did not close the proof.\n") + "Rolling Back proof now.");
+        Proof currentKeYproof = selectedGoalNode.getData().getProof();
+        ImmutableList<Goal> subtreeGoals = currentKeYproof.getSubtreeGoals(((KeyData) selectedGoalNode.getData()).getNode());
+        currentKeYproof.pruneProof(selectedGoalCopy.getData().getNode());
+        popState();
+        pushState(currentStateToMatchCopy);
         exitScope(closesCase);
-        return false;
+        return allClosed;
     }
 
     @Override
-    public Object visit(tryCase tryCase) {
+    public Object visit(TryCase TryCase) {
         State<KeyData> currentStateToMatch = peekState();
-        State<KeyData> currentStateToMatchCopy = peekState().copy(); //deepcopy
+        State<KeyData> currentStateToMatchCopy = currentStateToMatch.copy(); //deepcopy
         GoalNode<KeyData> selectedGoalNode = currentStateToMatch.getSelectedGoalNode();
         GoalNode<KeyData> selectedGoalCopy = currentStateToMatch.getSelectedGoalNode().deepCopy(); //deepcopy
 
-        enterScope(tryCase);
-        executeBody(tryCase.getBody(), selectedGoalNode, new VariableAssignment(selectedGoalNode.getAssignments()));
+        enterScope(TryCase);
+        executeBody(TryCase.getBody(), selectedGoalNode, new VariableAssignment(selectedGoalNode.getAssignments()));
         State<KeyData> stateafterIsClosable = peekState();
         List<GoalNode<KeyData>> goals = stateafterIsClosable.getGoals();
         boolean allClosed = true;
@@ -83,7 +102,7 @@ public class KeyInterpreter extends Interpreter<KeyData> {
             pushState(currentStateToMatchCopy);
         }
         //check if state is closed
-        exitScope(tryCase);
+        exitScope(TryCase);
         return allClosed;
 
         /*        //executeBody and if goal is closed afterwards return true

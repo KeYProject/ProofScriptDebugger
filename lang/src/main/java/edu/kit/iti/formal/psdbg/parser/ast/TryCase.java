@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class tryCase extends CaseStatement {
+public class TryCase extends CaseStatement {
     private boolean isClosedStmt = true;
 
-    public tryCase(Statements body) {
+    public TryCase(Statements body) {
         this.body = body;
     }
 
@@ -28,7 +28,7 @@ public class tryCase extends CaseStatement {
      * {@inheritDoc}
      */
     @Override
-    public tryCase copy() {
-        return new tryCase(body.copy());
+    public TryCase copy() {
+        return new TryCase(body.copy());
     }
 }

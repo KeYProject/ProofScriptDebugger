@@ -161,8 +161,8 @@ public interface ASTTraversal<T> extends Visitor<T> {
     }
 
     @Override
-    default T visit(tryCase tryCase) {
-        tryCase.getBody().accept(this);
+    default T visit(TryCase TryCase) {
+        TryCase.getBody().accept(this);
         return null;
     }
 
