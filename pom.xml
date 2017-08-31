@@ -57,7 +57,7 @@
         <module>rt</module>
         <module>rt-key</module>
         <module>ui</module>
-        <module>lib/DockFX</module>
+        <module>DockFX</module>
         <module>lint</module>
         <module>keydeps</module>
         <module>matcher</module>
