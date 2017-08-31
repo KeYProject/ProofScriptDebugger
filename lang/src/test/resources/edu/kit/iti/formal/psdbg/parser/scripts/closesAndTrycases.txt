@@ -4,11 +4,11 @@ script ruRg ()
         {   aM:TERM:=not ka&bi;
             dsL f5=90;
         }
-        case try :
+        try :
         {   last;
         }
 
-        case closes body;{
+        case closes {body;}:{
             last;
             last;
         }

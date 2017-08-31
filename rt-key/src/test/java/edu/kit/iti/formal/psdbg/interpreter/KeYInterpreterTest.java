@@ -1,9 +1,6 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
-import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
-import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
-import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.parser.Facade;
@@ -11,6 +8,7 @@ import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -37,6 +35,7 @@ public class KeYInterpreterTest {
         return i;
     }
 
+    @Ignore
     @Test
     public void testIsClosable() throws IOException, ProblemLoaderException {
         facade.loadKeyFileSync(new File("src/test/resources/edu/kit/iti/formal/psdbg/interpreter/contraposition/contraposition.key"));

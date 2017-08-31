@@ -1,11 +1,11 @@
 script fc() {
     cases {
-        case x = y {
+        case x = y :
             print a;
-        }
 
-        default {
+
+        default :
             print `blubb`;
-        }
+
     }
 }

@@ -314,7 +314,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     private Map<GoalNode<T>, VariableAssignment> matchGoal(Set<GoalNode<T>> allGoalsBeforeCases, CaseStatement aCase) {
 
         HashMap<GoalNode<T>, VariableAssignment> matchedGoals = new HashMap<>();
-        if (aCase.isClosedStmt == false) {
+        if (!aCase.isClosedStmt()) {
             SimpleCaseStatement caseStmt = (SimpleCaseStatement) aCase;
             Expression matchExpression = caseStmt.getGuard();
             for (GoalNode<T> goal : allGoalsBeforeCases) {

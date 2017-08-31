@@ -2,9 +2,9 @@ script t1(){
     impRight;
     impLeft;
     cases{
-        case isCloseable:{
+        try :
             impRight; //should not close proof
-        }
+
 
     }
 
