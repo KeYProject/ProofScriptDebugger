@@ -191,6 +191,13 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         }
     }
 
+    /**
+     * Old visit method, for deocumentation purposes
+     *
+     * @param casesStatement
+     * @return
+     */
+    @Deprecated
     public Object visitOld(CasesStatement casesStatement) {
         enterScope(casesStatement);
         State<T> beforeCases = peekState();
@@ -259,6 +266,12 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return null;
     }
 
+    /**
+     * Computes which goals are handled by the different cases in the order the cases appear in the script
+     * @param allGoalsBeforeCases
+     * @param cases all cases as ordered list
+     * @return a mapping of each goal to the matched case body together with variableassignments from the matching process
+     */
     private Map<GoalNode, Pair<VariableAssignment, Statements>> matchGoalsToCases(List<GoalNode<T>> allGoalsBeforeCases, CasesStatement cases) {
         //list of cases
         List<CaseStatement> caseStmts = cases.getCases();
@@ -288,20 +301,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         }
         return returnMap;
 
-        //matchGoal(allGoalsBeforeCases, acase)
 
-        /*
-        *         //for all remaining goals execute default
-        if (!toMatch.isEmpty()) {
-            VariableAssignment va = new VariableAssignment();
-            Statements defaultCase = casesStatement.getDefaultCase();
-            for (GoalNode<T> goal : toMatch) {
-                resultingGoals.addAll(executeBody(defaultCase, goal, va).getGoals());
-            }
-        }
-
-        *
-        * */
     }
 
     /**
@@ -325,6 +325,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             }
             return matchedGoals;
         } else {
+            //handle try and closes
             throw new NotImplementedException();
         }
     }
@@ -391,7 +392,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
      */
     private VariableAssignment evaluateMatchInGoal(Expression matchExpression, GoalNode<T> goal) {
         enterScope(matchExpression);
-//        System.out.println("Goal to match " + goal.toCellTextForKeYData());
         MatchEvaluator mEval = new MatchEvaluator(goal.getAssignments(), goal, matcherApi);
         mEval.getEntryListeners().addAll(entryListeners);
         mEval.getExitListeners().addAll(exitListeners);

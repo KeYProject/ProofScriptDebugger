@@ -8,7 +8,7 @@ import org.dockfx.DockNode;
 /**
  * This controller manages a list of {@link InspectionView} and the associated {@link DockNode}s.
  *
- * Espeically, this class holds the active tab, which is connected with the {@link edu.kit.iti.formal.psdbg.interpreter.graphs.ProofTreeController},
+ * Especially, this class holds the active tab, which is connected with the {@link edu.kit.iti.formal.psdbg.interpreter.graphs.ProofTreeController},
  * and shows the current interpreter state.
  *
  * @author weigl

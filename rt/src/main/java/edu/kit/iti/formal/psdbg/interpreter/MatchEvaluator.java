@@ -1,11 +1,11 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
-import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
+import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
 import lombok.Getter;
@@ -55,6 +55,11 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
         List<VariableAssignment> right = decideEvaluatorAndEvaluate(e.getRight());
         Operator op = e.getOperator();
         return evaluateExpression(op, left, right);
+    }
+
+    @Override
+    public List<VariableAssignment> visit(BooleanLiteral booleanLiteral) {
+        return transformTruthValue(Value.from(booleanLiteral));
     }
 
     /**
@@ -207,7 +212,7 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
 
         if (v.getType().equals(SimpleType.BOOL)) {
             List<VariableAssignment> transformedValue = new ArrayList<>();
-            if (v.getData().equals(Value.TRUE)) {
+            if (((Boolean) v.getData()).booleanValue() == ((Boolean) Value.TRUE.getData()).booleanValue() || v.getData().equals(Value.TRUE)) {
                 transformedValue.add(new VariableAssignment(null));
             }
             return transformedValue;

@@ -21,6 +21,9 @@ import javafx.util.StringConverter;
 
 import java.util.stream.Collectors;
 
+/**
+ * KeY Proof Tree
+ */
 public class ProofTree extends BorderPane {
     private ObjectProperty<Proof> proof = new SimpleObjectProperty<>();
     private ObjectProperty<Node> root = new SimpleObjectProperty<>();
