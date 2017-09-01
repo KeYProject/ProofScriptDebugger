@@ -236,7 +236,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return null;
     }
 
-   /* @Override
+    @Override
     public Object visit(SimpleCaseStatement simpleCaseStatement) {
         Expression matchExpression = simpleCaseStatement.getGuard();
         State<T> currentStateToMatch = peekState();
@@ -250,7 +250,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         } else {
             return false;
         }
-    }*/
+    }
 
     @Override
     public Object visit(TryCase TryCase) {

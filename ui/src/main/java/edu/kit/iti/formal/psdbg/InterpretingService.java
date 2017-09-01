@@ -69,7 +69,7 @@ public class InterpretingService extends Service<State<KeyData>> {
         //check state for empty/error goal nodes
         //currentGoals.set(state.getGoals());
         //currentSelectedGoal.set(state.getSelectedGoalNode());
-
+        System.out.println("Updating View");
         blocker.publishState();
     }
 

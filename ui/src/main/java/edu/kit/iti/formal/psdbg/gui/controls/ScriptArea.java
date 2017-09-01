@@ -228,16 +228,6 @@ public class ScriptArea extends CodeArea {
         if (hasExecutionMarker()) {
             System.out.println("getExecutionMarkerPosition() = " + getExecutionMarkerPosition());
 
- /*           getStyleSpans(0, getExecutionMarkerPosition()).stream()
-                    .map(span -> {
-                        Collection<String> style = span.getStyle();
-                        if (style.isEmpty()) {
-                            Collections.singleton("NON_EXE_AREA");
-                        } else {
-                            style.add("NON_EXE_AREA");
-                        }
-                        return style;
-                    });*/
 
             UnaryOperator<Collection<String>> styleMapper = strings -> {
                 if (strings.isEmpty()) {
@@ -252,11 +242,11 @@ public class ScriptArea extends CodeArea {
             setStyleSpans(0, getStyleSpans(0, getExecutionMarkerPosition()).mapStyles(styleMapper));
 
 
+            //this results in a NotSupportedOperation Exception because the add to an immutable list is not allowed
            /* getStyleSpans(0, getExecutionMarkerPosition()).forEach(span -> {
                 Collection<String> style = span.getStyle();
                 if (style.isEmpty()) {
-                    style.add("NON_EXE_AREA");
-                    //setStyle(0, getExecutionMarkerPosition(), Collections.singleton("NON_EXE_AREA"));
+                    setStyle(0, getExecutionMarkerPosition(), Collections.singleton("NON_EXE_AREA"));
                 } else {
                     style.add("NON_EXE_AREA");
                 }

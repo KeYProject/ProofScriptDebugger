@@ -9,7 +9,6 @@ import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.StateGraphException;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
-import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -269,6 +268,7 @@ public class StateGraphWrapper<T> {
         changeListeners.forEach(list -> {
             Platform.runLater(() -> {
                 list.graphChanged(nodeAddedEvent);
+                System.out.println("New StateGraphChange " + this.asdot());
             });
         });
 
@@ -310,11 +310,11 @@ public class StateGraphWrapper<T> {
             return createNewNode(casesStatement);
         }
 
-        @Override
-        public Void visit(CaseStatement caseStatement) {
-            return createNewNode(caseStatement);
-        }
-
+        /* @Override
+         public Void visit(CaseStatement caseStatement) {
+             return createNewNode(caseStatement);
+         }
+         */
         @Override
         public Void visit(CallStatement call) {
             return createNewNode(call);
@@ -334,6 +334,21 @@ public class StateGraphWrapper<T> {
         public Void visit(RepeatStatement repeatStatement) {
             return createNewNode(repeatStatement);
         }
+
+        @Override
+        public Void visit(TryCase tryCase) {
+            return createNewNode(tryCase);
+        }
+
+        @Override
+        public Void visit(SimpleCaseStatement simpleCaseStatement) {
+            return createNewNode(simpleCaseStatement);
+        }
+
+        @Override
+        public Void visit(ClosesCase closesCase) {
+            return createNewNode(closesCase);
+        }
     }
 
     private class ExitListener extends DefaultASTVisitor<Void> {
@@ -347,10 +362,10 @@ public class StateGraphWrapper<T> {
             return addState(casesStatement);
         }
 
-        @Override
+        /*@Override
         public Void visit(CaseStatement caseStatement) {
             return addState(caseStatement);
-        }
+        }*/
 
         @Override
         public Void visit(CallStatement call) {
@@ -372,6 +387,20 @@ public class StateGraphWrapper<T> {
             return addState(repeatStatement);
         }
 
+        @Override
+        public Void visit(TryCase tryCase) {
+            return addState(tryCase);
+        }
+
+        @Override
+        public Void visit(SimpleCaseStatement simpleCaseStatement) {
+            return addState(simpleCaseStatement);
+        }
+
+        @Override
+        public Void visit(ClosesCase closesCase) {
+            return addState(closesCase);
+        }
        /* @Override
         public Void visit(ProofScript proofScript) {
             return addState(proofScript);

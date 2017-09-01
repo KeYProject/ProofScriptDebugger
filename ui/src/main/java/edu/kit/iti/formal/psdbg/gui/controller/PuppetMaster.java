@@ -100,8 +100,23 @@ public class PuppetMaster {
 
             Platform.runLater(() -> {
 
-                currentGoals.set(state.getGoals());
-                currentSelectedGoal.set(state.getSelectedGoalNode());
+
+                //filter whether all goals are closed
+                Object[] arr = state.getGoals().stream().filter(keyDataGoalNode -> !keyDataGoalNode.isClosed()).toArray();
+
+                if (state.getSelectedGoalNode() == null) {
+                    if (arr.length == 0) {
+                        currentGoals.set(Collections.emptyList());
+                        //currentSelectedGoal.set(state.getGoals().get(0));
+                        currentSelectedGoal.set(null);
+                    } else {
+                        currentGoals.set(state.getGoals());
+                        currentSelectedGoal.set(null);
+                    }
+                } else {
+                    currentGoals.set(state.getGoals());
+                    currentSelectedGoal.set(state.getSelectedGoalNode());
+                }
 
             });
         } else {

@@ -28,6 +28,7 @@ public class InspectionModel {
     private final BooleanProperty isInterpreterTab = new SimpleBooleanProperty();
     private ObjectProperty<Mode> mode = new SimpleObjectProperty<>();
 
+
     public GoalNode<KeyData> getCurrentInterpreterGoal() {
         return currentInterpreterGoal.get();
     }

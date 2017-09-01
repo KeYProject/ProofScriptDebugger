@@ -7,13 +7,17 @@
 @base2: rgb(238, 232, 213);
 @base3: rgb(253, 246, 227);
 @yellow: rgb(181, 137, 0);
-@orange: rgb(203, 75, 22);
+@orange: rgb(203, 133, 91);
 @red: rgb(220, 50, 47);
 @magenta: rgb(211, 54, 130);
 @violet: rgb(108, 113, 196);
 @blue: rgb(38, 139, 210);
 @cyan: rgb(42, 161, 152);
-@green: rgb(133, 153, 0);
+@green: rgb(38, 187, 108);
+@basenavy: #f6f8ff;
+@keywordColor: #200080;
+@stringliteralColor: #6679aa;
+@integerLiteralColor: #008c00;
 
 .solarized-dark() {
   background-color: @base03;
@@ -26,8 +30,10 @@
 }
 
 .script-area {
-  -fx-background-color: @base3;
-  -fx-font-family: "Fira Code Medium", monospace;
+  //-fx-background-color: @base3;
+  -fx-background-color: @basenavy;
+  -fx-font-family: "Inconsolata", monospace;
+  //-fx-font-family: "Fira Code Medium", monospace;
   -fx-font-size: 12pt;
   -fx-fill: @base00;
 
@@ -53,7 +59,8 @@
   // Structures
   .FOREACH, .CASES, .CASE, .DEFAULT
   .THEONLY, .SCRIPT, .USING, .REPEAT {
-    -fx-fill: @blue;
+    // -fx-fill: @blue;
+    -fx-fill: @keywordColor;
     -fx-font-weight: bold;
   }
 
@@ -73,7 +80,8 @@
   }
 
   .DIGITS, .TRUE, .FALSE {
-    -fx-fill: @orange;
+    -fx-fill: @integerLiteralColor;
+    //-fx-fill: @orange;
   }
 
   .TERM_LITERAL {
@@ -81,7 +89,8 @@
   }
 
   .STRING_LITERAL {
-    -fx-fill: @violet;
+    -fx-fill: @stringliteralColor;
+    //-fx-fill: @violet;
   }
 
   .SINGLE_LINE_COMMENT, .MULTI_LINE_COMMENT {
@@ -103,7 +112,7 @@
   }
 
   .line-highlight-postmortem {
-    -rtfx-background-color: @blue;
+    -rtfx-background-color: @cyan;
   }
 
   .line-unhighlight {
@@ -126,8 +135,10 @@
 
 
 .java-area {
-  -fx-background-color: @base3;
-  -fx-font-family: "Fira Code Medium", monospace;
+  -fx-background-color: @basenavy;
+  //  -fx-background-color: @base3;
+  -fx-font-family: "Inconsolata", monospace;
+  //-fx-font-family: "Fira Code Medium", monospace;
   -fx-font-size: 12pt;
   -fx-fill: @base01;
 
@@ -138,7 +149,8 @@
   .INTERFACE, .LONG, .NATIVE, .NEW, .PACKAGE, .PRIVATE, .PROTECTED, .PUBLIC, .RETURN,
   .SHORT, .STATIC, .STRICTFP, .SUPER, .SWITCH, .SYNCHRONIZED, .THIS, .THROW, .THROWS,
   .TRANSIENT, .TRY, .VOID, .VOLATILE, .WHILE {
-    -fx-fill: darkgreen;
+    //-fx-fill: darkgreen;
+    -fx-fill: @keywordColor;
     -fx-font-weight: bold;
   }
 
@@ -157,17 +169,20 @@
   }
 
   .INTEGER_LITERAL {
-    -fx-fill: @blue;
+    -fx-fill: @integerLiteralColor;
+    //-fx-fill: @blue;
   }
 
   .StringLiteral, .CharacterLiteral {
-    -fx-fill: @green;
+    //-fx-fill: @green;
+    -fx-fill: @stringliteralColor;
     -fx-font-smoothing-type: lcd;
   }
 
   .LINE_COMMENT, .COMMENT {
     -fx-fill: @base01;
-    -fx-font-family: "Fira Code Light";
+    //-fx-font-family:  "Fira Code Light", monospace;
+    -fx-font-family: "Inconsolata", monospace;
   }
 
   .Identifier {
@@ -180,10 +195,10 @@
     -fx-underline: true;
   }
   .line-highlight {
-    -rtfx-background-color: @blue;
+    -rtfx-background-color: @cyan;
   }
     .line-un-highlight {
-      -rtfx-background-color: @base3;
+      -rtfx-background-color: @basenavy;
     }
 
 }
@@ -191,7 +206,7 @@
 /**********************************************************************************************************************/
 
 .problem-popup {
-  -fx-background-color: @base03;
+  -fx-background-color: @basenavy;
   -fx-text-fill: @base3;
   -fx-text-alignment: center;
   -fx-wrap-text: true;
@@ -222,7 +237,7 @@
 
 .sequent-view {
   -fx-font-size: 14pt;
-  -fx-background-color: @base2;
+  -fx-background-color: @basenavy;
   -fx-fill: black;
 
   .sequent-highlight {

@@ -58,21 +58,6 @@ public class State<T> {
         return goals;
     }
 
-    public GoalNode<T> getSelectedGoalNode() {
-        if (selectedGoalNode == null) {
-            throw new IllegalStateException("no selected node");
-        } else {
-            if (getGoals().size() == 1) {
-                selectedGoalNode = getGoals().get(0);
-            }
-            return selectedGoalNode;
-        }
-    }
-
-    public void setSelectedGoalNode(GoalNode<T> gn) {
-        this.selectedGoalNode = gn;
-    }
-
     /**
      * Deep Copy state
      *
@@ -81,15 +66,41 @@ public class State<T> {
     public State<T> copy() {
         List<GoalNode<T>> copiedGoals = new ArrayList<>();
         GoalNode<T> refToSelGoal = null;
-
-        for (GoalNode<T> goal : goals) {
-            GoalNode<T> deepcopy = goal.deepCopy();
+        if (goals.size() == 1) {
+            GoalNode<T> deepcopy = goals.get(0).deepCopy();
+            refToSelGoal = deepcopy;
             copiedGoals.add(deepcopy);
-            if (goal.equals(getSelectedGoalNode())) {
-                refToSelGoal = deepcopy;
+        } else {
+            for (GoalNode<T> goal : goals) {
+                GoalNode<T> deepcopy = goal.deepCopy();
+                copiedGoals.add(deepcopy);
+
+                if (selectedGoalNode != null && goal.equals(getSelectedGoalNode())) {
+                    refToSelGoal = deepcopy;
+                }
             }
         }
         return new State<T>(copiedGoals, refToSelGoal);
+    }
+
+    public void setSelectedGoalNode(GoalNode<T> gn) {
+        this.selectedGoalNode = gn;
+    }
+
+    public GoalNode<T> getSelectedGoalNode() {
+     /*   if (selectedGoalNode == null) {
+            throw new IllegalStateException("no selected node");
+        } else {
+            if (getGoals().size() == 1) {
+                selectedGoalNode = getGoals().get(0);
+            }
+            return selectedGoalNode;
+        }*/
+
+        if (getGoals().size() == 1) {
+            selectedGoalNode = getGoals().get(0);
+        }
+        return selectedGoalNode;
     }
 
     public String toString() {

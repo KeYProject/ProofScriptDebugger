@@ -190,7 +190,7 @@ public class DebuggerMain implements Initializable {
             //System.out.println("Pos: "+newValue.getData().getNode().getNodeInfo().getActiveStatement().getPositionInfo());
         });
 
-        //TODO nullpointer
+
         proofTreeController.currentHighlightNodeProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 scriptController.getDebugPositionHighlighter().highlight(newValue);
@@ -211,16 +211,7 @@ public class DebuggerMain implements Initializable {
     }
 
     public void marriageJavaCode() {
-        /*javaFileProperty().addListener((observable, oldValue, newValue) -> {
-            showCodeDock(null);
-            try {
-                String code = FileUtils.readFileToString(newValue, Charset.defaultCharset());
-                javaCode.set(code);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });*/
-
+        //Listener on chosenContract from
         chosenContract.addListener(o -> {
             //javaCode.set(Utils.getJavaCode(chosenContract.get()));
             try {

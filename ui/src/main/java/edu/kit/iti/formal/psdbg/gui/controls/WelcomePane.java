@@ -5,8 +5,6 @@ import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import javafx.event.ActionEvent;
 import javafx.scene.layout.AnchorPane;
 
-import java.io.File;
-
 /**
  * Welcome pane that allows for a more usable entry point
  * Created by weigl on 7/7/17.
@@ -40,11 +38,16 @@ public class WelcomePane extends AnchorPane {
     public void loadJavaTest(ActionEvent event) {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
-        proofScriptDebugger.openScript(
+        Examples.loadExamples().forEach(example -> {
+            if (example.getName().equals("Test"))
+                example.open(proofScriptDebugger);
+
+        });
+       /* proofScriptDebugger.openScript(
                 new File("src/test/resources/edu/kit/formal/psdb/interpreter/javaExample/test.kps")
         );
         proofScriptDebugger.openJavaFile(
-                new File("src/test/resources/edu/kit/formal/psdb/interpreter/javaExample/Test.java"));
+                new File("src/test/resources/edu/kit/formal/psdb/interpreter/javaExample/Test.java"));*/
     }
 
     public void loadHelpPage(ActionEvent event) {

@@ -13,6 +13,12 @@ import java.nio.charset.Charset;
  * @author Alexander Weigl
  */
 public class JavaExample extends Example {
+
+
+    public void setJavaFile(URL javaFile) {
+        this.javaFile = javaFile;
+    }
+
     protected URL javaFile;
 
     @Override
@@ -23,9 +29,12 @@ public class JavaExample extends Example {
         try {
             File script = newTempFile(scriptFile, getName() + ".kps");
             debuggerMain.openScript(script);
-            File key = newTempFile(keyFile, "problem.key");
+
+            //File key = newTempFile(keyFile, "project.key");
             File java = newTempFile(javaFile, getName() + ".java");
-            debuggerMain.openKeyFile(key);
+            //System.out.println(java.getAbsolutePath());
+            //debuggerMain.openKeyFile(key);
+            debuggerMain.openJavaFile(java);
             if (helpText != null) {
                 String content = IOUtils.toString(helpText, Charset.defaultCharset());
                 debuggerMain.openNewHelpDock(getName() + " Example", content);

@@ -1,0 +1,14 @@
+script t1(){
+    symbex;
+    cases{
+       case match '.*x.*':
+            auto;
+
+	   default:
+	       auto;
+
+    }
+
+}
+
+

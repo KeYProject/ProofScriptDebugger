@@ -129,7 +129,9 @@ public class ProofTreeController {
         //this.currentSelectedGoal.bindBidirectional(blocker.currentSelectedGoalProperty());
         blocker.currentSelectedGoalProperty().addListener((observable, oldValue, newValue) -> {
             Platform.runLater(() -> {
-                this.setCurrentSelectedGoal(newValue);
+                if (newValue != null) {
+                    this.setCurrentSelectedGoal(newValue);
+                }
             });
         });
         blocker.currentGoalsProperty().addListener((observable, oldValue, newValue) -> {
@@ -156,7 +158,9 @@ public class ProofTreeController {
      */
     private void setNewState(State<KeyData> state) {
         setCurrentGoals(state == null ? null : state.getGoals());
-        setCurrentSelectedGoal(state == null ? null : state.getSelectedGoalNode());
+
+        setCurrentSelectedGoal(state == null ? null : (state.getSelectedGoalNode() == null ? null : state.getSelectedGoalNode()));
+
         setCurrentHighlightNode(statePointer.getScriptstmt());
         LOGGER.debug("New State from this command: {}@{}",
                 this.statePointer.getScriptstmt().getNodeName(),
