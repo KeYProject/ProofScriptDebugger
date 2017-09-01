@@ -54,6 +54,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
+import java.util.function.UnaryOperator;
 
 /**
  * ScriptArea is the {@link CodeArea} for writing Proof Scripts.
@@ -225,10 +226,42 @@ public class ScriptArea extends CodeArea {
 
     private void highlightNonExecutionArea() {
         if (hasExecutionMarker()) {
-            getStyleSpans(0, getExecutionMarkerPosition()).forEach(span -> {
-                span.getStyle().add("NON_EXE_AREA");
+            System.out.println("getExecutionMarkerPosition() = " + getExecutionMarkerPosition());
+
+ /*           getStyleSpans(0, getExecutionMarkerPosition()).stream()
+                    .map(span -> {
+                        Collection<String> style = span.getStyle();
+                        if (style.isEmpty()) {
+                            Collections.singleton("NON_EXE_AREA");
+                        } else {
+                            style.add("NON_EXE_AREA");
+                        }
+                        return style;
+                    });*/
+
+            UnaryOperator<Collection<String>> styleMapper = strings -> {
+                if (strings.isEmpty()) {
+                    return Collections.singleton("NON_EXE_AREA");
+                } else {
+                    Collection res = strings;
+                    res.add("NON_EXE_AREA");
+                    return res;
+                }
+            };
+
+            setStyleSpans(0, getStyleSpans(0, getExecutionMarkerPosition()).mapStyles(styleMapper));
+
+
+           /* getStyleSpans(0, getExecutionMarkerPosition()).forEach(span -> {
+                Collection<String> style = span.getStyle();
+                if (style.isEmpty()) {
+                    style.add("NON_EXE_AREA");
+                    //setStyle(0, getExecutionMarkerPosition(), Collections.singleton("NON_EXE_AREA"));
+                } else {
+                    style.add("NON_EXE_AREA");
+                }
             });
-            //setStyle(0, getExecutionMarkerPosition(), Collections.singleton("NON_EXE_AREA"));
+*/
         }
     }
 
@@ -305,7 +338,7 @@ public class ScriptArea extends CodeArea {
 
     public Collection<? extends Breakpoint> getBreakpoints() {
         List<Breakpoint> list = new ArrayList<>();
-        int line = 0;
+        int line = 1;
         for (GutterAnnotation s : gutter.lineAnnotations) {
             if (s.isBreakpoint()) {
                 Breakpoint b = new Breakpoint(filePath.get(), line);

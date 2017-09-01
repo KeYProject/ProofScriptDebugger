@@ -85,7 +85,7 @@ public class State<T> {
         for (GoalNode<T> goal : goals) {
             GoalNode<T> deepcopy = goal.deepCopy();
             copiedGoals.add(deepcopy);
-            if (goal.equals(selectedGoalNode)) {
+            if (goal.equals(getSelectedGoalNode())) {
                 refToSelGoal = deepcopy;
             }
         }

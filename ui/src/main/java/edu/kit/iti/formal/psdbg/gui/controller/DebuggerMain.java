@@ -10,7 +10,7 @@ import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
 import edu.kit.iti.formal.psdbg.gui.controls.*;
 import edu.kit.iti.formal.psdbg.gui.model.Breakpoint;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
-import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
+import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
@@ -190,8 +190,11 @@ public class DebuggerMain implements Initializable {
             //System.out.println("Pos: "+newValue.getData().getNode().getNodeInfo().getActiveStatement().getPositionInfo());
         });
 
+        //TODO nullpointer
         proofTreeController.currentHighlightNodeProperty().addListener((observable, oldValue, newValue) -> {
-            scriptController.getDebugPositionHighlighter().highlight(newValue);
+            if (newValue != null) {
+                scriptController.getDebugPositionHighlighter().highlight(newValue);
+            }
 
         });
 
@@ -425,12 +428,13 @@ public class DebuggerMain implements Initializable {
     }
 
     /**
-     * Execute the script that with using the interpreter that is build using teh interpreterbuilder
+     * Execute the script that with using the interpreter that is build using the interpreterbuilder
      *
      * @param ib
      * @param debugMode
      */
     private void executeScript(InterpreterBuilder ib, boolean debugMode) {
+
         Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
 
         if (proofTreeController.isAlreadyExecuted()) {
@@ -441,13 +445,34 @@ public class DebuggerMain implements Initializable {
         try {
 
             List<ProofScript> scripts = scriptController.getCombinedAST();
+            int n = 0;
+            if (scriptController.getMainScript() == null) {
+                MainScriptIdentifier msi = new MainScriptIdentifier();
+                msi.setLineNumber(scripts.get(0).getStartPosition().getLineNumber());
+                msi.setScriptName(scripts.get(0).getName());
+                msi.setSourceName(scripts.get(0).getRuleContext().getStart().getInputStream().getSourceName());
+                msi.setScriptArea(scriptController.findEditor(new File(scripts.get(0).getRuleContext().getStart().getInputStream().getSourceName())));
+                scriptController.setMainScript(msi);
+                n = 0;
+            } else {
+                for (int i = 0; i < scripts.size(); i++) {
+                    ProofScript proofScript = scripts.get(i);
+                    if (proofScript.getName().equals(scriptController.getMainScript().getScriptName())) {
+                        n = i;
+                        break;
+                    }
+                }
+            }
+
             statusBar.publishMessage("Creating new Interpreter instance ...");
             ib.setScripts(scripts);
             KeyInterpreter currentInterpreter = ib.build();
 
             proofTreeController.setCurrentInterpreter(currentInterpreter);
-            proofTreeController.setMainScript(scripts.get(0));
-            statusBar.publishMessage("Executing script " + scripts.get(0).getName());
+            proofTreeController.setMainScript(scripts.get(n));
+
+            statusBar.publishMessage("Executing script " + scripts.get(n).getName());
+
             proofTreeController.executeScript(this.debugMode.get(), statusBar, breakpoints);
             //highlight signature of main script
             //scriptController.setDebugMark(scripts.get(0).getStartPosition().getLineNumber());

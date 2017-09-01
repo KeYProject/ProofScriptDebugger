@@ -92,23 +92,32 @@ public class ProofTreeController {
     private PTreeNode<KeyData> statePointer = null;
 
     /**
-     * Teh mainscipt that is executed
+     * The mainscipt that is executed
      */
-    private ProofScript mainScript;
-
+    private SimpleObjectProperty<ProofScript> mainScript = new SimpleObjectProperty<>();
     /**
      * Add a change listener for the stategraph, whenever a new node is added it receives an event
      */
     private GraphChangedListener graphChangedListener = nodeAddedEvent -> {
 
-        if (statePointer.equals(nodeAddedEvent.getLastPointer())) {
+        //if (statePointer.equals(nodeAddedEvent.getLastPointer())) {
             //set value of newly computed node
             nextComputedNode.setValue(nodeAddedEvent.getAddedNode());
-            //setNewState(this.statePointer.getState());
             Events.fire(new Events.NewNodeExecuted(nodeAddedEvent.getAddedNode().getScriptstmt()));
-        }
-
+        //}
     };
+
+    public ProofScript getMainScript() {
+        return mainScript.get();
+    }
+
+    public void setMainScript(ProofScript mainScript) {
+        this.mainScript.set(mainScript);
+    }
+
+    public SimpleObjectProperty<ProofScript> mainScriptProperty() {
+        return mainScript;
+    }
 
     /**
      *  Create a new ProofTreeController
@@ -258,12 +267,12 @@ public class ProofTreeController {
         } else {
             statusBar.setText("Starting in debug mode for script " + mainScript.getName());
             statusBar.indicateProgress();
-            setCurrentHighlightNode(mainScript.getSignature());
+            setCurrentHighlightNode(mainScript.get());
 
             //build CFG
-            buildControlFlowGraph(mainScript);
+            buildControlFlowGraph(mainScript.get());
             //build StateGraph
-            this.stateGraphWrapper = new StateGraphWrapper(currentInterpreter, this.mainScript, this.controlFlowGraphVisitor);
+            this.stateGraphWrapper = new StateGraphWrapper(currentInterpreter, mainScript.get(), this.controlFlowGraphVisitor);
 
             this.stateGraphWrapper.install(currentInterpreter);
             this.stateGraphWrapper.addChangeListener(graphChangedListener);
@@ -277,7 +286,8 @@ public class ProofTreeController {
             interpreterService.reset();
         }
         interpreterService.interpreterProperty().set(currentInterpreter);
-        interpreterService.mainScriptProperty().set(mainScript);
+
+        interpreterService.mainScriptProperty().set(mainScript.get());
         interpreterService.start();
         interpreterService.setOnSucceeded(event -> {
             statusBar.setText("Executed script until end of script.");
@@ -298,6 +308,7 @@ public class ProofTreeController {
     private void buildControlFlowGraph(ProofScript mainScript) {
         this.controlFlowGraphVisitor = new ControlFlowVisitor(currentInterpreter.getFunctionLookup());
         mainScript.accept(controlFlowGraphVisitor);
+        this.setMainScript(mainScript);
         System.out.println("CFG\n" + controlFlowGraphVisitor.asdot());
 
     }
@@ -335,10 +346,10 @@ public class ProofTreeController {
         this.currentInterpreter = currentInterpreter;
     }
 
-    public void setMainScript(ProofScript mainScript) {
+/*    public void setMainScript(ProofScript mainScript) {
         this.mainScript = mainScript;
 
-    }
+    }*/
 
     public StateGraphWrapper getStateVisitor() {
         return this.stateGraphWrapper;
