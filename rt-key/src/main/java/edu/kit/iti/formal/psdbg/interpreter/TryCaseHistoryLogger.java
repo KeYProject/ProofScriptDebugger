@@ -18,15 +18,24 @@ import java.util.Map;
 
 /**
  * Logger for Interpreting a try case. If the case was successful,
- * the logged Events can be replayed by the parent interpreter listeners
+ * the logged Events can be replayed back to the parent interpreter listeners
  */
 public class TryCaseHistoryLogger extends HistoryListener {
 
     private Interpreter currentInterpreter;
+
     private EntryListener entryListener = new EntryListener();
-    ;
+
     private ExitListener exitListener = new ExitListener();
+
+    /**
+     * Mapping of ASTNodes and their entry and exit states
+     */
     private Map<ASTNode, EntryExitPair> mapOfNodesAndStates = new HashMap<>();
+    /**
+     * List containing of pairs which contain an ASTNode and whether it was visited by entry or exit
+     */
+
     private List<Pair<EntryName, ASTNode>> sequenceOfEvents = new LinkedList<>();
 
     public TryCaseHistoryLogger(Interpreter interpreter) {
@@ -57,12 +66,25 @@ public class TryCaseHistoryLogger extends HistoryListener {
         }
     }
 
+    /**
+     * Create a new entry in maps. This is done when entering a node
+     *
+     * @param node
+     * @param state
+     * @return
+     */
     private Void createNewEntry(ASTNode node, State state) {
         this.sequenceOfEvents.add(new Pair<>(EntryName.ENTRY, node));
         this.mapOfNodesAndStates.put(node, new EntryExitPair(state));
         return null;
     }
 
+    /**
+     * Update the antrx after exiting the node
+     * @param node
+     * @param state
+     * @return
+     */
     private Void updateEntry(ASTNode node, State state) {
         this.sequenceOfEvents.add(new Pair<>(EntryName.EXIT, node));
         this.mapOfNodesAndStates.get(node).setExitState(state);

@@ -74,7 +74,6 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         context.add(proofScript);
         mappingOfNodes.put(proofScript, scriptNode);
         graph.addNode(scriptNode);
-        //System.out.println("\n" + scriptNode + "\n");
         lastNode = scriptNode;
 
         return this.visit(proofScript.getBody());
@@ -86,7 +85,6 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         ControlFlowNode assignmentNode = new ControlFlowNode(assignment);
         mappingOfNodes.put(assignment, assignmentNode);
         graph.addNode(assignmentNode);
-        //System.out.println("\n" + assignmentNode + "\n");
         lastNode = assignmentNode;
         return null;
     }
@@ -120,8 +118,6 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         boolean atomic = functionLookup.isAtomic(call);
         //Annahme: wenn ich zwischendrin keine return kante habe, dann wird solange durchgegangen, bis eine return kante da ist
         if (atomic) {
-
-
             LinkedList<ASTNode> copiedContext = new LinkedList<>();
 
             //to check whether context is restored properly, copy context before call
@@ -184,7 +180,6 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         ControlFlowNode currentNode = new ControlFlowNode(repeatStatement);
         mappingOfNodes.put(repeatStatement, currentNode);
         graph.addNode(currentNode);
-        // System.out.println("\n" + currentNode + "\n");
         graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
         lastNode = currentNode;
@@ -205,9 +200,9 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         List<CaseStatement> cases = casesStatement.getCases();
         for (CaseStatement aCase : cases) {
 
-            if (aCase.isClosedStmt) {
-                System.out.println("Handle sondercases");
-            } else {
+//            if (aCase.isClosedStmt) {
+
+//            } else {
                 ControlFlowNode caseNode = new ControlFlowNode(aCase);
                 mappingOfNodes.put(aCase, caseNode);
                 graph.addNode(caseNode);
@@ -217,7 +212,20 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
                 lastNode = caseNode;
                 aCase.getBody().accept(this);
                 graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
-            }
+            //           }
+        }
+        if (casesStatement.getDefaultCase() != null) {
+            Statements defaultCase = casesStatement.getDefaultCase();
+
+            ControlFlowNode caseNode = new ControlFlowNode(defaultCase);
+            mappingOfNodes.put(defaultCase, caseNode);
+            graph.addNode(caseNode);
+            //System.out.println("\n" + caseNode + "\n");
+            graph.putEdgeValue(currentNode, caseNode, EdgeTypes.STEP_OVER); //??is this right?
+            graph.putEdgeValue(caseNode, currentNode, EdgeTypes.STEP_BACK);
+            lastNode = caseNode;
+            defaultCase.accept(this);
+            graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
         }
         lastNode = currentNode;
         return null;

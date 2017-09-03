@@ -729,7 +729,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     //endregion
 
     /**
-     * Start a new context where already registered listsners are not informed
+     * Start a new context where already registered listeners are not informed
      */
     protected void startSideComputation() {
         entryListenerStack.push(new ArrayList<>());
