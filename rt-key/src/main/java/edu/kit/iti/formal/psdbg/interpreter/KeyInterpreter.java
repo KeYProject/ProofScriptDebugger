@@ -43,6 +43,7 @@ public class KeyInterpreter extends Interpreter<KeyData> {
     }
 
 
+
     @Override
     public Object visit(ClosesCase closesCase) {
         State<KeyData> currentStateToMatch = peekState();
@@ -75,14 +76,21 @@ public class KeyInterpreter extends Interpreter<KeyData> {
     }
 
     @Override
-    public Object visit(TryCase TryCase) {
+    public Object visit(TryCase tryCase) {
         State<KeyData> currentStateToMatch = peekState();
         State<KeyData> currentStateToMatchCopy = currentStateToMatch.copy(); //deepcopy
         GoalNode<KeyData> selectedGoalNode = currentStateToMatch.getSelectedGoalNode();
         GoalNode<KeyData> selectedGoalCopy = currentStateToMatch.getSelectedGoalNode().deepCopy(); //deepcopy
 
-        enterScope(TryCase);
-        executeBody(TryCase.getBody(), selectedGoalNode, new VariableAssignment(selectedGoalNode.getAssignments()));
+        //historylistener for recording try
+        logger.info(String.format("Beginning side computation of %s", tryCase.getNodeName()));
+        startSideComputation();
+
+        TryCaseHistoryLogger list = new TryCaseHistoryLogger(this);
+
+        enterScope(tryCase);
+
+        executeBody(tryCase.getBody(), selectedGoalNode, new VariableAssignment(selectedGoalNode.getAssignments()));
         State<KeyData> stateafterIsClosable = peekState();
         List<GoalNode<KeyData>> goals = stateafterIsClosable.getGoals();
         boolean allClosed = true;
@@ -93,17 +101,26 @@ public class KeyInterpreter extends Interpreter<KeyData> {
                 break;
             }
         }
+        logger.info(String.format("Ended Side Computation of %s", tryCase.getNodeName()));
+        endSideComputation();
+
         if (!allClosed) {
-            System.out.println("IsClosable was not successful, rolling back proof");
+            logger.info("Try was not successful, rolling back proof");
             Proof currentKeYproof = selectedGoalNode.getData().getProof();
             ImmutableList<Goal> subtreeGoals = currentKeYproof.getSubtreeGoals(((KeyData) selectedGoalNode.getData()).getNode());
             currentKeYproof.pruneProof(selectedGoalCopy.getData().getNode());
             popState();
             pushState(currentStateToMatchCopy);
-        }
+        } else {
+            //replay all proof events
         //check if state is closed
-        exitScope(TryCase);
+            exitScope(tryCase);
+            list.printSequenceOfEvents();
+            list.replayEvents(this);
+            logger.info("Replaying Events finished");
+        }
         return allClosed;
+
 
         /*        //executeBody and if goal is closed afterwards return true
         //else prune proof and return false

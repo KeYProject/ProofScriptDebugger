@@ -30,13 +30,18 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         implements ScopeObservable {
     private static final int MAX_ITERATIONS = 5;
 
-    private static Logger logger = Logger.getLogger("interpreter");
+    protected static Logger logger = Logger.getLogger("interpreter");
 
     //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
     private Stack<State<T>> stateStack = new Stack<>();
-    @Getter
-    private List<Visitor> entryListeners = new ArrayList<>(),
-            exitListeners = new ArrayList<>();
+
+    private Stack<List<Visitor>> entryListenerStack = new Stack<>();
+    private Stack<List<Visitor>> exitListenerStack = new Stack<>();
+
+    //@Getter
+    //private List<Visitor> entryListeners = new ArrayList<>(),
+    //        exitListeners = new ArrayList<>();
+
     @Getter
     @Setter
     private MatcherApi<T> matcherApi;
@@ -52,6 +57,18 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     public Interpreter(CommandLookup lookup) {
         functionLookup = lookup;
+        entryListenerStack.push(new ArrayList<>());
+        exitListenerStack.push(new ArrayList<>());
+    }
+
+    @Override
+    public List<Visitor> getExitListeners() {
+        return exitListenerStack.peek();
+    }
+
+    @Override
+    public List<Visitor> getEntryListeners() {
+        return entryListenerStack.peek();
     }
 
     /**
@@ -141,8 +158,8 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         enterScope(expr);
         Evaluator evaluator = new Evaluator(g.getAssignments(), g);
         evaluator.setMatcher(matcherApi);
-        evaluator.getEntryListeners().addAll(entryListeners);
-        evaluator.getExitListeners().addAll(exitListeners);
+        evaluator.getEntryListeners().addAll(entryListenerStack.peek());
+        evaluator.getExitListeners().addAll(exitListenerStack.peek());
         exitScope(expr);
         return evaluator.eval(expr);
     }
@@ -416,8 +433,8 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     private VariableAssignment evaluateMatchInGoal(Expression matchExpression, GoalNode<T> goal) {
         enterScope(matchExpression);
         MatchEvaluator mEval = new MatchEvaluator(goal.getAssignments(), goal, matcherApi);
-        mEval.getEntryListeners().addAll(entryListeners);
-        mEval.getExitListeners().addAll(exitListeners);
+        mEval.getEntryListeners().addAll(entryListenerStack.peek());
+        mEval.getExitListeners().addAll(exitListenerStack.peek());
         exitScope(matchExpression);
 
         List<VariableAssignment> matchResult = mEval.eval(matchExpression);
@@ -709,6 +726,24 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return getCurrentState().getGoals();
     }
 
-
     //endregion
+
+    /**
+     * Start a new context where already registered listsners are not informed
+     */
+    protected void startSideComputation() {
+        entryListenerStack.push(new ArrayList<>());
+        exitListenerStack.push(new ArrayList<>());
+    }
+
+    /**
+     * End side computation and restore listeners
+     */
+    protected void endSideComputation() {
+        assert !exitListenerStack.empty() && !entryListenerStack.empty();
+        entryListenerStack.pop();
+        exitListenerStack.pop();
+
+
+    }
 }
