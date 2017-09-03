@@ -5,6 +5,10 @@ script cpClosable(){
     impRight;
     impRight;
     cases{
+
+       case match `?X -> ?Y ==> not(?Z)`:
+            notLeft;
+
         try:
             notLeft;
             notRight;

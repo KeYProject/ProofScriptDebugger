@@ -3,6 +3,7 @@ package edu.kit.iti.formal.psdbg.interpreter;
 import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.api.VariableAssignments;
 import de.uka.ilkd.key.logic.Name;
+import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.SchemaVariable;
 import de.uka.ilkd.key.proof.ApplyStrategy;
@@ -14,19 +15,20 @@ import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
-import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.Signature;
 import edu.kit.iti.formal.psdbg.parser.ast.TermLiteral;
-import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import edu.kit.iti.formal.psdbg.parser.ast.Variable;
+import edu.kit.iti.formal.psdbg.parser.data.Value;
+import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
+import edu.kit.iti.formal.psdbg.parser.types.TermType;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
+import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
+import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
+import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
 import org.key_project.util.collection.ImmutableList;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -163,8 +165,8 @@ public class KeYMatcher implements MatcherApi<KeyData> {
      * @param signature
      * @return
      */
-    @Override
-    public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState,
+    //@Override
+    public List<VariableAssignment> matchSeqKeY(GoalNode<KeyData> currentState,
                                              String term,
                                              Signature signature) {
 
@@ -189,6 +191,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
 
         //   System.out.println("Matching: "+term.toString()+"\n================\n"+currentState.getData().getNode().sequent()+"\n================\n");
         List<VariableAssignments> keyMatchResult = scrapi.matchPattern(term, currentState.getData().getNode().sequent(), keyAssignments);
+
         //empty keyassignments
         // System.out.println("Matched " + keyMatchResult.size() + " goals from " + currentState.toString() + " with pattern " + term);
         List<VariableAssignment> transformedMatchResults = new ArrayList<>();
@@ -198,6 +201,31 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         //keyMatchResult.forEach(r -> transformedMatchResults.add(from(r)));
         return transformedMatchResults;
 
+    }
+
+    @Override
+    public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState, String data, Signature sig) {
+        System.out.println("State that will be matched " + currentState.getData().getNode().sequent() + " with pattern " + data);
+        System.out.println("Signature " + sig.toString());
+        Matchings m = MatcherFacade.matches(data, currentState.getData().getNode().sequent());
+        if (m.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            Map<String, MatchPath> firstMatch = m.first();
+            VariableAssignment va = new VariableAssignment(null);
+            for (String s : firstMatch.keySet()) {
+                MatchPath matchPath = firstMatch.get(s);
+                if (!s.equals("EMPTY_MATCH")) {
+                    Term matched = (Term) matchPath.getUnit();
+                    va.declare(s, new TermType());
+                    va.assign(s, Value.from(from(matched)));
+                }
+            }
+            List<VariableAssignment> retList = new LinkedList();
+            System.out.println("Matched Variables " + va.toString());
+            retList.add(va);
+            return retList;
+        }
     }
 
     /**
@@ -225,5 +253,9 @@ public class KeYMatcher implements MatcherApi<KeyData> {
 
     private TermLiteral from(Term t) {
         return new TermLiteral(t.toString());
+    }
+
+    private TermLiteral from(SequentFormula sf) {
+        return new TermLiteral(sf.toString());
     }
 }
