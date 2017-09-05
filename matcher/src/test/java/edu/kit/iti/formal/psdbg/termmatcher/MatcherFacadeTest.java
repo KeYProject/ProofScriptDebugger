@@ -41,14 +41,15 @@ public class MatcherFacadeTest {
         //        shouldMatch("h2(2,3) = 0",
         //               "?X=0", "[{?X= h2(2,3)}]");
 
+        String s = "[{?X=h2(Z(2(#)),Z(3(#)))}]";
         shouldMatchSeq("h2(2,3) = 0 ==>",
-                "?X=0 ==>", "[{?X= h2(2,3)}]");
+                "?X=0 ==>", s);
 
         shouldMatchSeq("h2(2,3) = 0 ==> p, !p",
-                "?X=0 ==>", "[{?X= h2(2,3)}]");
+                "?X=0 ==>", s);
 
         shouldMatchSeq("2 >= 1, h2(1,2) = h2(2,3), h2(2,3) = 0 ==> p, !p",
-                "?X=0 ==>", "[{?X= h2(2,3)}]");
+                "?X=0 ==>", s);
     }
 
     @Test
