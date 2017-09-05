@@ -37,6 +37,21 @@ public class MatcherFacadeTest {
     }
 
     @Test
+    public void error() throws ParserException {
+        //        shouldMatch("h2(2,3) = 0",
+        //               "?X=0", "[{?X= h2(2,3)}]");
+
+        shouldMatchSeq("h2(2,3) = 0 ==>",
+                "?X=0 ==>", "[{?X= h2(2,3)}]");
+
+        shouldMatchSeq("h2(2,3) = 0 ==> p, !p",
+                "?X=0 ==>", "[{?X= h2(2,3)}]");
+
+        shouldMatchSeq("2 >= 1, h2(1,2) = h2(2,3), h2(2,3) = 0 ==> p, !p",
+                "?X=0 ==>", "[{?X= h2(2,3)}]");
+    }
+
+    @Test
     public void matches() throws Exception {
         shouldMatch("f(a)", "_");
         shouldMatch("f(a)", "?X", "[{?X=f(a)}]");
@@ -61,7 +76,8 @@ public class MatcherFacadeTest {
 
     }
 
-    @Test public void testBindContext() throws ParserException {
+    @Test
+    public void testBindContext() throws ParserException {
         //shouldMatch("f(a)", "f(a) : ?Y", "[{?Y=f(a)}]");
         //shouldMatch("f(g(a))", "_ \\as ?Y", "[{?Y=f(g(a))}]");
         //shouldMatch("i+i+j", "(?X + ?Y) : ?Z", "[{?X=add(i,i), ?Y=j, ?Z=add(add(i,i),j)}]");

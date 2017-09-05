@@ -517,7 +517,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
 
     @Override
     protected Matchings visitEquality(MatchPatternParser.EqualityContext ctx, MatchPath peek) {
-        return visitBinaryOperation("eq", ctx.termPattern(0), ctx.termPattern(1), peek);
+        return visitBinaryOperation("equals", ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     private Stream<MatchPath.MPTerm> subTerms(MatchPath.MPTerm peek) {
