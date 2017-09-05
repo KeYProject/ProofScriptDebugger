@@ -27,14 +27,17 @@ public class JavaExample extends Example {
         //     Loading via key file, or using an automatic contract selector?
 
         try {
+
             File script = newTempFile(scriptFile, getName() + ".kps");
             debuggerMain.openScript(script);
-
+            debuggerMain.getWelcomePaneDock().close();
             //File key = newTempFile(keyFile, "project.key");
             File java = newTempFile(javaFile, getName() + ".java");
             //System.out.println(java.getAbsolutePath());
             //debuggerMain.openKeyFile(key);
             debuggerMain.openJavaFile(java);
+
+            debuggerMain.showActiveInspector(null);
             if (helpText != null) {
                 String content = IOUtils.toString(helpText, Charset.defaultCharset());
                 debuggerMain.openNewHelpDock(getName() + " Example", content);

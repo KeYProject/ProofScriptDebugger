@@ -39,7 +39,7 @@ public class WelcomePane extends AnchorPane {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
         Examples.loadExamples().forEach(example -> {
-            if (example.getName().equals("Test"))
+            if (example.getName().equals("Transitive Permutation"))
                 example.open(proofScriptDebugger);
 
         });

@@ -46,6 +46,7 @@ public abstract class Example {
                 String content = IOUtils.toString(helpText, Charset.defaultCharset());
                 debuggerMain.openNewHelpDock(getName() + " Example", content);
             }
+            debuggerMain.getWelcomePaneDock().close();
         } catch (IOException e) {
             e.printStackTrace();
         }

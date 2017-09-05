@@ -1,3 +1,4 @@
 edu.kit.iti.formal.psdbg.examples.contraposition.ContrapositionExample
 edu.kit.iti.formal.psdbg.examples.fol.FirstOrderLogicExample
-edu.kit.iti.formal.psdbg.examples.java.JavaSimpleExample
+edu.kit.iti.formal.psdbg.examples.java.simple.JavaSimpleExample
+edu.kit.iti.formal.psdbg.examples.java.transitive.PaperExample
