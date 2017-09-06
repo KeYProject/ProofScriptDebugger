@@ -1,0 +1,3 @@
+script cutTest(){
+    cut #2=`p`;
+}

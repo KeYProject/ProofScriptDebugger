@@ -2,8 +2,8 @@ script cpwb () {
     impRight;
     impLeft;
     cases{
-        case match `==> p`:{
-            auto;
+        case match `==> ?X`:{
+          auto;
         }
         default:{
             auto;

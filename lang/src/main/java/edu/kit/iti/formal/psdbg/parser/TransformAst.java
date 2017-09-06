@@ -364,7 +364,12 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     public Object visitScriptCommand(ScriptLanguageParser.ScriptCommandContext ctx) {
         CallStatement scs = new CallStatement();
         scs.setRuleContext(ctx);
-        scs.setCommand(ctx.cmd.getText());
+        String commandName = ctx.cmd.getText();
+        //Sonderfall für KeYs heap-simp macro
+        if (commandName.equals("heap_simp")) {
+            commandName = "heap-simp";
+        }
+        scs.setCommand(commandName);
         if (ctx.parameters() != null) {
             scs.setParameters((Parameters) ctx.parameters().accept(this));
         }

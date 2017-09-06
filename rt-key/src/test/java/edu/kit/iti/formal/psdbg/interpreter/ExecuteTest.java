@@ -1,14 +1,11 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
-import edu.kit.iti.formal.psdbg.interpreter.Execute;
-import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
+import static edu.kit.iti.formal.psdbg.TestHelper.getFile;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import org.apache.commons.cli.ParseException;
 import org.junit.Test;
 
 import java.io.IOException;
-
-import static edu.kit.iti.formal.psdbg.TestHelper.getFile;
 
 /**
  * @author Alexander Weigl
@@ -43,6 +40,16 @@ public class ExecuteTest {
         Execute execute = create(
                 getFile(getClass(), "contraposition/contraposition.key"),
                 "-s", getFile(getClass(), "contraposition/w_branching.kps"));
+        Interpreter<KeyData> i = execute.run();
+        System.out.println(i.getCurrentState());
+
+    }
+
+    @Test
+    public void testContrapositionCut() throws IOException, ParseException {
+        Execute execute = create(
+                getFile(getClass(), "contraposition/contraposition.key"),
+                "-s", getFile(getClass(), "contraposition/cutTest.kps"));
         Interpreter<KeyData> i = execute.run();
         System.out.println(i.getCurrentState());
 

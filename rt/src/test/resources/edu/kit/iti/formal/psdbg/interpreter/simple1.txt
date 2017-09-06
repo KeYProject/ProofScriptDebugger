@@ -10,27 +10,27 @@ script Simple1(i:int, j:int) {
     assertEq i 4;
     assert (i=4) & j=8;
     split;
-    print_state;
+       //print_state;
     foreach {
         assert (i=4) & j=8;
         split 5;
-        print_state;
+        //print_state;
     }
 
-    print_state;
+    //print_state;
 
     cases {
-        case match `(?<X>.*).b.a` using [X : string] {
+        case match `(?<X>.*).b.a` using [X : string] :
             assertEq X 'abc' msg='bla bla';
             print_state;
-        }
 
-        case match '.*b' {
-            print_state;
-        }
 
-        default {
+        case match '.*b' :
             print_state;
-        }
+
+
+        default :
+            print_state;
+
     }
 }
