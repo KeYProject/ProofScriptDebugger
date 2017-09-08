@@ -280,7 +280,7 @@ public class ProofTreeController {
 
             this.stateGraphWrapper.install(currentInterpreter);
             this.stateGraphWrapper.addChangeListener(graphChangedListener);
-
+            statusBar.stopProgress();
             blocker.getStepUntilBlock().set(1);
         }
 
@@ -292,9 +292,10 @@ public class ProofTreeController {
         interpreterService.interpreterProperty().set(currentInterpreter);
 
         interpreterService.mainScriptProperty().set(mainScript.get());
+
         interpreterService.start();
         interpreterService.setOnSucceeded(event -> {
-            statusBar.setText("Executed script until end of script.");
+            statusBar.setText("Executed until end of script.");
             statusBar.stopProgress();
         });
         interpreterService.setOnFailed(event -> {

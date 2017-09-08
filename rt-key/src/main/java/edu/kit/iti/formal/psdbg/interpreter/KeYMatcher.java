@@ -207,7 +207,9 @@ public class KeYMatcher implements MatcherApi<KeyData> {
     public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState, String data, Signature sig) {
         System.out.println("State that will be matched " + currentState.getData().getNode().sequent() + " with pattern " + data);
         System.out.println("Signature " + sig.toString());
+
         Matchings m = MatcherFacade.matches(data, currentState.getData().getNode().sequent());
+
         if (m.isEmpty()) {
             return Collections.emptyList();
         } else {
@@ -217,8 +219,13 @@ public class KeYMatcher implements MatcherApi<KeyData> {
                 MatchPath matchPath = firstMatch.get(s);
                 if (!s.equals("EMPTY_MATCH")) {
                     Term matched = (Term) matchPath.getUnit();
+                    if (s.startsWith("?")) {
+
+                        s = s.replaceFirst("\\?", "");
+                    }
                     va.declare(s, new TermType());
                     va.assign(s, Value.from(from(matched)));
+                    System.out.println("Variable " + s + " : " + Value.from(from(matched)));
                 }
             }
             List<VariableAssignment> retList = new LinkedList();

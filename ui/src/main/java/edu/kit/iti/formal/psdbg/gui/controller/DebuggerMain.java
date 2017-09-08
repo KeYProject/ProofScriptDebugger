@@ -159,6 +159,7 @@ public class DebuggerMain implements Initializable {
      * If the mouse moves other toolbar button, the help text should display in the status bar
      */
     private void registerToolbarToStatusBar() {
+
         /*toolbar.getChildrenUnmodifiable().forEach(
                 n -> n.setOnMouseEntered(statusBar.getTooltipHandler()));
 
@@ -176,6 +177,7 @@ public class DebuggerMain implements Initializable {
         proofTreeController.currentGoalsProperty().addListener((o, old, fresh) -> {
             if (fresh != null) {
                 imodel.setGoals(fresh);
+
             } else {
                 // no goals, set an empty list
                 imodel.setGoals(FXCollections.observableArrayList());
@@ -197,6 +199,11 @@ public class DebuggerMain implements Initializable {
             }
 
         });
+
+        imodel.goalsProperty().addListener((observable, oldValue, newValue) -> statusBar.setNumberOfGoals(newValue.size()));
+
+
+
 
       /*proofTreeController.currentExecutionEndProperty().addListener((observable, oldValue, newValue) -> {
                     scriptController.getMainScript().getScriptArea().removeExecutionMarker();

@@ -1,6 +1,7 @@
 package edu.kit.iti.formal.psdbg;
 
 import edu.kit.iti.formal.psdbg.gui.controller.PuppetMaster;
+import edu.kit.iti.formal.psdbg.gui.controls.DebuggerStatusBar;
 import edu.kit.iti.formal.psdbg.gui.controls.Utils;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -17,11 +18,11 @@ import javafx.concurrent.Task;
  * @author A. Weigl
  */
 public class InterpretingService extends Service<State<KeyData>> {
-
     /**
-     * The interpreter (with teh appropriate KeY state) that is used to traverse and execute the script
+     * The interpreter (with the appropriate KeY state) that is used to traverse and execute the script
      */
     private final SimpleObjectProperty<Interpreter<KeyData>> interpreter = new SimpleObjectProperty<>();
+    private DebuggerStatusBar statusBar;
 
     /**
      * The main script that is traversed
@@ -39,6 +40,12 @@ public class InterpretingService extends Service<State<KeyData>> {
 
     public InterpretingService(PuppetMaster blocker) {
         this.blocker = blocker;
+    }
+
+
+    public InterpretingService(PuppetMaster blocker, DebuggerStatusBar statusBar) {
+        this.blocker = blocker;
+        this.statusBar = statusBar;
     }
 
     public SimpleBooleanProperty hasRunSucessfullyProperty() {
@@ -70,6 +77,9 @@ public class InterpretingService extends Service<State<KeyData>> {
         //currentGoals.set(state.getGoals());
         //currentSelectedGoal.set(state.getSelectedGoalNode());
         System.out.println("Updating View");
+        if (statusBar != null) {
+            statusBar.stopProgress();
+        }
         blocker.publishState();
     }
 
@@ -87,6 +97,9 @@ public class InterpretingService extends Service<State<KeyData>> {
              */
             @Override
             protected edu.kit.iti.formal.psdbg.interpreter.data.State<KeyData> call() throws Exception {
+                if (statusBar != null) {
+                    statusBar.indicateProgress();
+                }
                 i.interpret(ast);
                 return i.peekState();
             }

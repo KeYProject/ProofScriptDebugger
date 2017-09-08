@@ -52,7 +52,13 @@ public class DefaultLookup implements CommandLookup {
                 if (found == null) {
                     found = b;
                 } else {
-                    throw new IllegalStateException("Call on line" + callStatement + " is ambigue.");
+                    found = b; //CUTCommand
+                    System.out.println(b.getClass());
+                    System.out.println(found.getClass());
+                    if (callStatement.getCommand().equals("cut")) {
+                        System.out.println("Cut Case");
+                    }
+                    //throw new IllegalStateException("Call on line" + callStatement + " is ambigue.");
                 }
             }
         }

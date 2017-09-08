@@ -2,7 +2,9 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.scene.control.Control;
@@ -26,12 +28,8 @@ public class DebuggerStatusBar extends StatusBar {
     //private LogCatchHandlerFX logCatchHandler = new LogCatchHandlerFX();
 
     private ObjectProperty<MainScriptIdentifier> mainScriptIdentifier = new SimpleObjectProperty<>();
-    private Label lblCurrentNodes = new Label("#nodes: %s");
-    private Label lblMainscript = new Label();
-    private ProgressIndicator progressIndicator = new ProgressIndicator();
-    private EventHandler<MouseEvent> toolTipHandler = event -> {
-        publishMessage(((Control) event.getTarget()).getTooltip().getText());
-    };
+
+    private IntegerProperty numberOfGoals = new SimpleIntegerProperty(0);
 
     public DebuggerStatusBar() {
         //listenOnField("psdbg");
@@ -47,7 +45,9 @@ public class DebuggerStatusBar extends StatusBar {
                 contextMenu.show(this, event.getScreenX(), event.getScreenY());
             }
         });*/
-
+        numberOfGoals.addListener((observable, oldValue, newValue) -> {
+            lblCurrentNodes.setText("#nodes: " + newValue);
+        });
 
         mainScriptIdentifier.addListener((ov, o, n) -> {
             if (n != null) {
@@ -73,6 +73,25 @@ public class DebuggerStatusBar extends StatusBar {
                 Events.fire(new Events.FocusScriptArea(area));
             }
         });
+    }
+
+    public int getNumberOfGoals() {
+        return numberOfGoals.get();
+    }
+
+    public void setNumberOfGoals(int numberOfGoals) {
+        this.numberOfGoals.set(numberOfGoals);
+    }
+
+    private Label lblCurrentNodes = new Label("#nodes: %s");
+    private Label lblMainscript = new Label();
+    private ProgressIndicator progressIndicator = new ProgressIndicator();
+    private EventHandler<MouseEvent> toolTipHandler = event -> {
+        publishMessage(((Control) event.getTarget()).getTooltip().getText());
+    };
+
+    public IntegerProperty numberOfGoalsProperty() {
+        return numberOfGoals;
     }
 
     /*
