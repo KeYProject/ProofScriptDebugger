@@ -1,0 +1,18 @@
+site_name: Proof Script Debugger -- KeY
+site_url: https://formal.iti.kit.edu/psdbg
+#weigl/verifaps/
+#repo_url: https://github.com/example/repository/
+site_description:
+site_author: Alexander Weigl <weigl@kit.edu>
+
+pages:
+    - Home: index.md
+
+theme_dir: kit_theme
+
+markdown_extensions:
+  - smarty
+  - toc:
+      permalink: True
+      separator: "_"
+  - sane_lists
