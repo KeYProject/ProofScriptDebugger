@@ -132,7 +132,7 @@ public class KeYProofFacade {
                 .macros()
                 .scriptCommands()
                 .scriptSearchPath(new File("."));
-        getProof().getProofIndependentSettings().getGeneralSettings().setOneStepSimplification(false);
+        //getProof().getProofIndependentSettings().getGeneralSettings().setOneStepSimplification(false);
 
         return interpreterBuilder;
     }

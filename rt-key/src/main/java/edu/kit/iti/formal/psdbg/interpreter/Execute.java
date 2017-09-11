@@ -54,7 +54,7 @@ public class Execute {
                     .addProofScripts(ast)
                     .scriptSearchPath(new File("."));
 
-            pa.getProof().getProofIndependentSettings().getGeneralSettings().setOneStepSimplification(false);
+            //pa.getProof().getProofIndependentSettings().getGeneralSettings().setOneStepSimplification(false);
 
             Interpreter<KeyData> inter = interpreterBuilder.build();
             KeyData keyData = new KeyData(root.getProofNode(), pa.getEnv(), pa.getProof());
