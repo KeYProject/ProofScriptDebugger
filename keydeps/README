@@ -1,13 +1,13 @@
 # Execute this in this folder.
 
 # Set to key/key/deployment/components/
-COMPONENTS=lib/components/
+COMPONENTS=~/work/key/key/deployment/components/
 
 
 mvn install:install-file -Dfile=$COMPONENTS/key.core.jar \
                          -DgroupId=key-project-psdbg \
                          -DartifactId=key.core \
-                         -Dversion=2.7 \
+                         -Dversion=2.7-SNAPSHOT \
                          -Dpackaging=jar \
                          -DlocalRepositoryPath=local-repo
 
@@ -15,7 +15,7 @@ mvn install:install-file -Dfile=$COMPONENTS/key.core.jar \
 mvn install:install-file -Dfile=$COMPONENTS/key.ui.jar \
                          -DgroupId=key-project-psdbg \
                          -DartifactId=key.ui \
-                         -Dversion=2.7 \
+                         -Dversion=2.7-SNAPSHOT \
                          -Dpackaging=jar \
                          -DlocalRepositoryPath=local-repo
 
@@ -23,7 +23,7 @@ mvn install:install-file -Dfile=$COMPONENTS/key.ui.jar \
 mvn install:install-file -Dfile=$COMPONENTS/key.util.jar \
                          -DgroupId=key-project-psdbg \
                          -DartifactId=key.util \
-                         -Dversion=2.7 \
+                         -Dversion=2.7-SNAPSHOT \
                          -Dpackaging=jar \
                          -DlocalRepositoryPath=local-repo
 
@@ -31,6 +31,6 @@ mvn install:install-file -Dfile=$COMPONENTS/key.util.jar \
 mvn install:install-file -Dfile=$COMPONENTS/../libs/recoderKey.jar\
                          -DgroupId=key-project-psdbg \
                          -DartifactId=recoder \
-                         -Dversion=2.7 \
+                         -Dversion=2.7\
                          -Dpackaging=jar \
                          -DlocalRepositoryPath=local-repo

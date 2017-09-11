@@ -5,10 +5,6 @@ site_url: https://formal.iti.kit.edu/psdbg
 site_description:
 site_author: Alexander Weigl <weigl@kit.edu>
 
-pages:
-    - Home: index.md
-    - Macro-Commands: macros.md
-    - Proof Rules: commands.md
 
 theme_dir: kit_theme
 

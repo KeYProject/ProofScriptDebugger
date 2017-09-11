@@ -1,7 +1,7 @@
 
 # Macros
     
-Generated on: Sat Sep 09 23:02:00 CEST 2017 by `gendoc.groovy`. 
+Generated on: Mon Sep 11 14:19:11 CEST 2017 by `gendoc.groovy`. 
 
 Covering the macros of [KeY](http://key-project.org).
 
@@ -83,4 +83,13 @@ Apply rules to decompose propositional toplevel formulas; does not split the goa
 Simplification
 
 One single proof step is applied
+
+
+
+## Integer Simplification (`simp-int`) 
+
+Simplification
+
+This macro performs simplification of integers and terms with integers.
+It applies only non-splitting simplification rules.
 

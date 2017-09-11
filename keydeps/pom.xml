@@ -18,6 +18,11 @@
             <id>local-repo</id>
             <name>local-repo</name>
             <url>file:///${basedir}/local-repo</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
         </repository>
     </repositories>
 
@@ -25,17 +30,17 @@
         <dependency>
             <groupId>key-project-psdbg</groupId>
             <artifactId>key.core</artifactId>
-            <version>2.7</version>
+            <version>2.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>key-project-psdbg</groupId>
             <artifactId>key.ui</artifactId>
-            <version>2.7</version>
+            <version>2.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>key-project-psdbg</groupId>
             <artifactId>key.util</artifactId>
-            <version>2.7</version>
+            <version>2.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.antlr</groupId>
@@ -58,5 +63,35 @@
             <version>2.7</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <workingDirectory>${basedir}/../</workingDirectory>
+                    <!--                 <arguments>
+                                <systemProperties>
+                                    <systemProperty>
+                                        <key>java.security.policy</key>
+                                        <value>policy</value>
+                                    </systemProperty>
+                                </systemProperties>
+                            </arguments>-->
+                    <mainClass>GenDoc</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
