@@ -60,7 +60,7 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
         try {
             EngineState estate = new EngineState(kd.getProof());
             estate.setGoal(kd.getNode());
-            Object cc = c.evaluateArguments(estate, map);
+            Object cc = c.evaluateArguments(estate, map); //exception?
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
 

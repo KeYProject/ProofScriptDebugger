@@ -3,7 +3,6 @@ package edu.kit.iti.formal.psdbg.interpreter.exceptions;
 import de.uka.ilkd.key.macros.scripts.RuleCommand;
 
 import java.util.Map;
-import edu.kit.iti.formal.psdbg.parser.ast.*;
 /**
  * Exception for not applicable Rules
  */
@@ -21,9 +20,10 @@ public class ScriptCommandNotApplicableException extends RuntimeException {
         StringBuffer sb = new StringBuffer();
         sb.append("Call " + c.getName() + " with parameters ");
         for (String s : params.keySet()) {
-            sb.append(params.get(s));
+
+            sb.append(s + " " + params.get(s));
         }
         sb.append(" was not applicable");
-        System.out.println(sb.toString());
+        System.out.println(e.getMessage() + sb.toString());
     }
 }

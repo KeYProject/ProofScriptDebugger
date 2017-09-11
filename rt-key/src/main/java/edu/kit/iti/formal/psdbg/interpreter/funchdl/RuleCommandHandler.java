@@ -58,7 +58,7 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
             map.put("#2", call.getCommand());
             EngineState estate = new EngineState(kd.getProof());
             estate.setGoal(kd.getNode());
-            RuleCommand.Parameters cc = c.evaluateArguments(estate, map);
+            RuleCommand.Parameters cc = c.evaluateArguments(estate, map); //reflection exception
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
 

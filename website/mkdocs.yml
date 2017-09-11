@@ -7,6 +7,8 @@ site_author: Alexander Weigl <weigl@kit.edu>
 
 pages:
     - Home: index.md
+    - Macro-Commands: macros.md
+    - Proof Rules: commands.md
 
 theme_dir: kit_theme
 

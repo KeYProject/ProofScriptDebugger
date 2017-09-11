@@ -63,21 +63,20 @@ A full description of the language and debugging-concept is published at <a href
 
 <div class="column">
     <div >
-        <img src="https://placeimg.com/150/150/any" />
-        <h3>Feature 1</h3>
-        <p>
-
+<!--<img src="https://placeimg.com/150/150/any" />-->
+        <h3>Stepping back and forth in Proof Script</h3>
+        <p> 
         </p>
     </div>
 
     <div >
-        <img src="https://placeimg.com/150/150/any" />
-        <h3>Feature 2</h3>
+      <!--  <img src="https://placeimg.com/150/150/any" /> -->
+        <h3>Different views onto one proof state</h3>
     </div>
 
     <div >
-        <img src="https://placeimg.com/150/150/any" />
-        <h3>Feature 3</h3>
+       <!-- <img src="https://placeimg.com/150/150/any" />--<
+        <h3>Run To Breakpoints in Script-Evaluation</h3>
     </div>
 
 </div>
@@ -85,7 +84,7 @@ A full description of the language and debugging-concept is published at <a href
     <div class="column">
         <div >
             <img src="https://placeimg.com/150/150/any" />
-            <h3>Feature 1</h3>
+            <h3>Inspect proof State</h3>
             <p>
 
             </p>
@@ -102,23 +101,25 @@ A full description of the language and debugging-concept is published at <a href
         </div>
 
     </div>
-    <div style="clear: both;"/>
+    <div style="clear: both;"/> 
 
 
-        <!--    <h2>Getting Started</h2>
-
-
-            <h2>Downloads</h2>
-
-            <ul>
-            <li>Version 1.0
-            <p>
-            <a href="#">psdb-0.9-alpha.jar</a>
-            </p>
-            </li>
-            </ul>
-        -->
+ 
+        
         <footer style="border-top: #ccc 1px solid">
             Contact: <a href="https://formal.iti.kit.edu/~grebing/">Sarah Grebing</a>
         </footer>
         </p>
+<!--  <h2>Getting Started</h2>
+    
+    
+                <h2>Downloads</h2>
+    
+                <ul>
+                <li>Version 1.0
+                <p>
+                <a href="#">psdb-0.9-alpha.jar</a>
+                </p>
+                </li>
+                </ul>
+       -->

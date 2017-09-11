@@ -41,6 +41,7 @@ import java.util.Map;
  * @version 1 (27.04.17)
  */
 public class TransformAst implements ScriptLanguageVisitor<Object> {
+
     private List<ProofScript> scripts = new ArrayList<>(10);
 
     public List<ProofScript> getScripts() {
@@ -366,9 +367,9 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         scs.setRuleContext(ctx);
         String commandName = ctx.cmd.getText();
         //Sonderfall für KeYs heap-simp macro
-        if (commandName.equals("heap_simp")) {
+      /*  if (commandName.equals("heap_simp")) {
             commandName = "heap-simp";
-        }
+        }*/
         scs.setCommand(commandName);
         if (ctx.parameters() != null) {
             scs.setParameters((Parameters) ctx.parameters().accept(this));

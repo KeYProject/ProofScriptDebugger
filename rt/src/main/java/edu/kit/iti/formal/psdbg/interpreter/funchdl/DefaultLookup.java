@@ -46,10 +46,14 @@ public class DefaultLookup implements CommandLookup {
     }
 
     public CommandHandler getBuilder(CallStatement callStatement) {
+        boolean mayBeEscapedMacro = callStatement.getCommand().contains("_");
+        List<CommandHandler> foundHandlers = new ArrayList<>();
         CommandHandler found = null;
         for (CommandHandler b : builders) {
             if (b.handles(callStatement)) {
-                if (found == null) {
+                foundHandlers.add(b);
+                found = b;
+                /*if (found == null) {
                     found = b;
                 } else {
                     found = b; //CUTCommand
@@ -59,12 +63,25 @@ public class DefaultLookup implements CommandLookup {
                         System.out.println("Cut Case");
                     }
                     //throw new IllegalStateException("Call on line" + callStatement + " is ambigue.");
+                }*/
+            } else {
+                if (mayBeEscapedMacro) {
+                    String command = callStatement.getCommand();
+                    callStatement.setCommand(command.replace("_", "-"));
+                    if (b.handles(callStatement)) {
+                        foundHandlers.add(b);
+                        found = b;
+                    }
                 }
             }
         }
 
-        if (found != null) return found;
-        throw new NoCallHandlerException(callStatement);
+        if (foundHandlers.size() == 1) return foundHandlers.get(0);
+        if (foundHandlers.size() > 1) {
+            return foundHandlers.get(0);
+        } else {
+            throw new NoCallHandlerException(callStatement);
+        }
     }
 
     @Override
