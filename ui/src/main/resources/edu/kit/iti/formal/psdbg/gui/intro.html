@@ -24,7 +24,7 @@ name. Single '...'and double quotes "..." can both be used.
 <br>
 Single-line comments are start with //.
 
-<h3>KeY Rules</h3>
+<h3>KeY Rules/Taclets</h3>
 All KeY rules can be used as proof command.
 The following command structure is used to apply single KeY rules onto the sequent of a selected goal node.
 If no argument is following the proof command the taclet corresponding to this command has to match at most once on the
@@ -78,10 +78,52 @@ inst_occ="...").
 </ul>
 <h3>Macro-Commands</h3>
 In the KeY system macro commands are proof strategies tailored to specific proof tasks.
-The available macro commands are listed below. Using them in a script is similar to using rule commands:
+The available macro commands can be found using the command help.
+Using them in a script is similar to using rule commands:
 <br>
 MACRONAME (PARAMETERS)?
 <br>
+Often used macro commands are:
+<ul>
+    <li>symbex : performs symbolic execution</li>
+    <li>auto: invokes the automatic strategy of key</li>
+    <li>heap_simp: performs heap simplification</li>
+    <li>autopilot: full autopilot</li>
+    <li>autopilot_prep: preparation only autopilot</li>
+    <li>split_prop: propositional expansion w/ splits</li>
+    <li>nosplit_prop: propositional expansion w/o splits</li>
+    <li>simp_upd: update simplification</li>
+    <li>simp_heap: heap simplification</li>
+
+</ul>
+
+Example:
+
+auto;
+<h2>Selectors</h2>
+As nited before proof commands are implemented as single goal statements.
+Some proof commands split a proof into more than one goal.
+To allow to apply proof commands in proof state with more than one proof goal, the language allows for
+a selector statement <em>cases</em>. Such a <em>cases</em>-statement has the following structure:
+<br>
+cases { <br>
+case MATCHER: <br>
+STATEMENTS <br>
+[default: <br>
+STATEMENTS]?<br>
+}
+
+<h2>Control Flow Statements</h2>
+The script language allows different statements for control-flow.
+Control-Flow statements define blocks, therefor it is neccessary to use curly braces after a control-flow statement.
+<ul>
+    <li>foreach {STATEMENTS}</li>
+    <li>theOnly {STATEMENTS}</li>
+    <li>repeat {STATEMENTS}</li>
+
+</ul>
+
+
 <!--
 
 
