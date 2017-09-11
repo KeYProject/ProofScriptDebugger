@@ -1,4 +1,4 @@
-# <h1>Language Constructs
+# Language Constructs
 
 Proof scripts are textual representations of rule applications, settings changes
 and macro invocations.
@@ -21,14 +21,40 @@ A script variable has a name, a type and a value.
 Variables are declared by
 
 ```
-var0 : type
-var1 : type :=  value
+var0 : type;
+var1 : type :=  value;
+var2 :=  value;
 ```
+
+Both statements declare a variable, in the later we directly assign a value, in
+the first form `var0` receives a default value.
 
 ### Types and Literals
 
-We have following types: `INT`, `Term<Sort>`, `String`
+We have following types: `INT`, `TERM<Sort>`, `String`.
 
+* `INT` represents integer of arbitrary size.
+    ```
+    42
+    -134
+    ```
+
+
+* `TERM<S>` represents a term of sort `S` in KeY.
+  `S` can be any sort of KeY. If the sort is ommitied, then `S=Any`.
+
+  ```
+  `f(x)`
+  `g(a)`
+  `imp(p,q)`
+  ```
+
+
+* `STRING`
+
+  ```
+  "i am a string"
+  ```
 
 ### Special Variables
 
