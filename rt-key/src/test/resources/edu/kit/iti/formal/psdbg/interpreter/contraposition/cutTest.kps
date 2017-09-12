@@ -1,11 +1,12 @@
 script cutTest(){
-  cut `p`;
-  //cases{
-  //  case match `==>?X -> ?Y`:
+  //auto step=2;
+  //cut `p`;
+  cases{
+    case match `==>?X -> ?Y`:
     //auto steps=100;
-    //cut formula=`?X`[];
+    cut `?Y`[];
      
-  //}
+  }
     //cut #2=`p`;
     //auto steps=100;
 }

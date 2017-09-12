@@ -25,6 +25,7 @@ import edu.kit.iti.formal.psdbg.parser.types.TermType;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
 import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
+import edu.kit.iti.formal.psdbg.termmatcher.Utils;
 import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
 import org.key_project.util.collection.ImmutableList;
 
@@ -223,6 +224,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
 
                         s = s.replaceFirst("\\?", "");
                     }
+
                     va.declare(s, new TermType());
                     va.assign(s, Value.from(from(matched)));
                     System.out.println("Variable " + s + " : " + Value.from(from(matched)));
@@ -259,7 +261,8 @@ public class KeYMatcher implements MatcherApi<KeyData> {
     }
 
     private TermLiteral from(Term t) {
-        return new TermLiteral(t.toString());
+        //TODO rewrite operator
+        return new TermLiteral(Utils.toPrettyTerm(t));
     }
 
     private TermLiteral from(SequentFormula sf) {
