@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class handle the call of key's proof script commands, e.g. select or auto;
+ * This class handles the call of key's proof script commands, e.g. select or auto;
  *
  * @author Alexander Weigl
  * @version 1 (21.05.17)
@@ -56,7 +56,6 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
         KeyData kd = expandedNode.getData();
         Map<String, String> map = new HashMap<>();
         params.asMap().forEach((k, v) -> map.put(k.getIdentifier(), v.getData().toString()));
-        //System.out.println(map);
         try {
             EngineState estate = new EngineState(kd.getProof());
             estate.setGoal(kd.getNode());

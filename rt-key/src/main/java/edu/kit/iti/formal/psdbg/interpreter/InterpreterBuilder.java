@@ -51,7 +51,7 @@ public class InterpreterBuilder {
     @Getter
     private ScopeLogger logger;
     @Getter
-    private DefaultLookup lookup = new DefaultLookup(psh, pmh, pmr, pmc);
+    private DefaultLookup lookup = new DefaultLookup(psh, pmh, pmc, pmr);
     private KeyInterpreter interpreter = new KeyInterpreter(lookup);
 
     @Getter

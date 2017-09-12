@@ -41,6 +41,10 @@ import java.util.Map;
  * @version 1 (27.04.17)
  */
 public class TransformAst implements ScriptLanguageVisitor<Object> {
+    /**
+     * Start Index for positional arguments for command calls
+     */
+    public static final int KEY_START_INDEX_PARAMETER = 2;
 
     private List<ProofScript> scripts = new ArrayList<>(10);
 
@@ -380,7 +384,9 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     @Override
     public Object visitParameters(ScriptLanguageParser.ParametersContext ctx) {
         Parameters params = new Parameters();
-        int i = 1;
+
+        int i = KEY_START_INDEX_PARAMETER;
+
         for (ScriptLanguageParser.ParameterContext pc : ctx.parameter()) {
             Expression expr = (Expression) pc.expr.accept(this);
             Variable key = pc.pname != null ? new Variable(pc.pname) : new Variable("#" + (i++));
