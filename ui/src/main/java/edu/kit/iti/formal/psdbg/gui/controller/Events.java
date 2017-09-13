@@ -4,10 +4,15 @@ import com.google.common.eventbus.EventBus;
 import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptArea;
+import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
+import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 /**
  * See http://codingjunkie.net/guava-eventbus/ for an introduction.
@@ -57,5 +62,22 @@ public class Events {
      */
     public static class NewNodeExecuted {
         private final ASTNode correspondingASTNode;
+    }
+
+
+    @Data
+    @RequiredArgsConstructor
+    /**
+     * Event that should be fired when a new goal node was created to inform view
+     * components s.t. they can update their view
+     */
+    public static class EventForNewGoalView {
+        private final ASTNode correspodingASTNode;
+        private final State<KeyData> newState;
+        private final List<GoalNode> listOfNotExecutedNodes;
+        private final List<GoalNode> listOfAlreadyExecutedGoalNodes;
+        private final List<GoalNode> closedNodes;
+        private final List<GoalNode> openNodes;
+
     }
 }
