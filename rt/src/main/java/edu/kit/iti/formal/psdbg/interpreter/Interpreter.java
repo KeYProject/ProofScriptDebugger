@@ -488,7 +488,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         goalNode.enterScope(va);
         State<T> s = newState(goalNode);
         caseStmts.accept(this);
-        popState(s);
+        //popState(s); //This may be incorrect-> Bug? -> Cases Statement needs to pop, as goals need to be collected
         exitScope(caseStmts);
         return s;
     }
