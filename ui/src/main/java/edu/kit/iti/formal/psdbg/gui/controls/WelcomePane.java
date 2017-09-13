@@ -17,6 +17,11 @@ public class WelcomePane extends AnchorPane {
         Utils.createWithFXML(this);
     }
 
+    /**
+     * Load the contraposition example
+     *
+     * @param event
+     */
     public void loadContraPosition(ActionEvent event) {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
@@ -35,6 +40,10 @@ public class WelcomePane extends AnchorPane {
         */
     }
 
+    /**
+     * Load a test example
+     * @param event
+     */
     public void loadJavaTest(ActionEvent event) {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
@@ -50,6 +59,10 @@ public class WelcomePane extends AnchorPane {
                 new File("src/test/resources/edu/kit/formal/psdb/interpreter/javaExample/Test.java"));*/
     }
 
+    /**
+     * Load teh help page documentation
+     * @param event
+     */
     public void loadHelpPage(ActionEvent event) {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showCommandHelp(event);
@@ -58,6 +71,10 @@ public class WelcomePane extends AnchorPane {
 
     }
 
+    /**
+     * Load a Java problem with an existing script
+     * @param event
+     */
     public void loadJavaProblem(ActionEvent event) {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
@@ -81,5 +98,21 @@ public class WelcomePane extends AnchorPane {
 
         proofScriptDebugger.openScript();
     }
+
+
+    /**
+     * Load a Java File and an Empty Script
+     *
+     * @param event
+     */
+    public void loadJavaProblemWithNewScript(ActionEvent event) {
+        proofScriptDebugger.getWelcomePaneDock().close();
+        proofScriptDebugger.showActiveInspector(null);
+
+        proofScriptDebugger.openJavaFile();
+        proofScriptDebugger.getScriptController().newScript();
+
+    }
+
 }
 
