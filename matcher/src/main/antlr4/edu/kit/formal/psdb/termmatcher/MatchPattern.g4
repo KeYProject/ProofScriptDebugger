@@ -26,13 +26,12 @@ termPattern :
     | <assoc=right> termPattern op=(DIV|MOD) termPattern        #divMod
     | termPattern op=(PLUS|MINUS) termPattern                   #plusMinus
     | termPattern op=(LE|GE|LEQ|GEQ) termPattern                #comparison
-    | termPattern op=(NEQ|EQ) termPattern                 #equality
+    | termPattern op=(NEQ|EQ) termPattern                       #equality
     | termPattern AND termPattern                               #and
     | termPattern OR termPattern                                #or
     | termPattern IMP termPattern                               #impl
     | termPattern XOR termPattern                               #xor
-   // | termPattern EQUIV termPattern                             #equivalence
-    //|   termPattern EQUIV termPattern already covered by EQ/NEQ
+    | termPattern EQUIV termPattern                             #equivalence
     | MINUS termPattern                                         #exprNegate
     | NOT termPattern                                           #exprNot
     | '(' termPattern ')' bindClause?                                      #exprParen

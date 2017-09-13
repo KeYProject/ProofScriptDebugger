@@ -7,6 +7,7 @@ import de.uka.ilkd.key.logic.Term;
 import edu.kit.formal.psdb.termmatcher.MatchPatternLexer;
 import edu.kit.formal.psdb.termmatcher.MatchPatternParser;
 import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
+import static edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPathFacade.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.CommonToken;
@@ -16,8 +17,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import static edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPathFacade.*;
 
 /**
  * Matchpattern visitor visits the matchpatterns of case-statements
@@ -518,6 +517,11 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     @Override
     protected Matchings visitEquality(MatchPatternParser.EqualityContext ctx, MatchPath peek) {
         return visitBinaryOperation("equals", ctx.termPattern(0), ctx.termPattern(1), peek);
+    }
+
+    @Override
+    protected Matchings visitEquivalence(MatchPatternParser.EquivalenceContext ctx, MatchPath peek) {
+        return visitBinaryOperation("equiv", ctx.termPattern(0), ctx.termPattern(1), peek);
     }
 
     private Stream<MatchPath.MPTerm> subTerms(MatchPath.MPTerm peek) {

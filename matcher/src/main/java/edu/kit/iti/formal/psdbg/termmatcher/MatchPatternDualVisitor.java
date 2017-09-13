@@ -85,6 +85,7 @@ public abstract class MatchPatternDualVisitor<T, S> extends MatchPatternBaseVisi
         return visitPlusMinus(ctx, stack.peek());
     }
 
+
     protected abstract T visitPlusMinus(MatchPatternParser.PlusMinusContext ctx, S peek);
 
     @Override
@@ -164,6 +165,13 @@ public abstract class MatchPatternDualVisitor<T, S> extends MatchPatternBaseVisi
     }
 
     protected abstract T visitEquality(MatchPatternParser.EqualityContext ctx, S peek);
+
+    @Override
+    public T visitEquivalence(MatchPatternParser.EquivalenceContext ctx) {
+        return visitEquivalence(ctx, stack.peek());
+    }
+
+    protected abstract T visitEquivalence(MatchPatternParser.EquivalenceContext ctx, S peek);
 }
     
 
