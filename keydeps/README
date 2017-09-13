@@ -1,7 +1,7 @@
 # Execute this in this folder.
 
 # Set to key/key/deployment/components/
-COMPONENTS=~/work/key/key/deployment/components/
+COMPONENTS=${COMPONENTS:-~/work/key/key/deployment/components/}
 
 
 mvn install:install-file -Dfile=$COMPONENTS/key.core.jar \

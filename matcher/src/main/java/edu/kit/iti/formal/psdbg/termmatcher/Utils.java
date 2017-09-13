@@ -12,10 +12,12 @@ public class Utils {
      * @param formula
      * @return parsable Stringversion of Term
      */
+    @Deprecated
     public static String toPrettyTerm(Term formula) {
         StringBuilder sb = new StringBuilder();
 
         Operator op = formula.op();
+
         //ugly if/else
         if (op.equals(Junctor.IMP)) {
             sb.append("(" + toPrettyTerm(formula.sub(0)) + ") -> (" + toPrettyTerm(formula.sub(1)) + ")");

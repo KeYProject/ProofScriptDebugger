@@ -3,9 +3,9 @@ package edu.kit.iti.formal.psdbg.interpreter;
 import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.api.VariableAssignments;
 import de.uka.ilkd.key.logic.Name;
-import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.SchemaVariable;
+import de.uka.ilkd.key.pp.LogicPrinter;
 import de.uka.ilkd.key.proof.ApplyStrategy;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
@@ -15,9 +15,9 @@ import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.SortType;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.Signature;
-import edu.kit.iti.formal.psdbg.parser.ast.TermLiteral;
 import edu.kit.iti.formal.psdbg.parser.ast.Variable;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
@@ -25,7 +25,6 @@ import edu.kit.iti.formal.psdbg.parser.types.TermType;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
 import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
-import edu.kit.iti.formal.psdbg.termmatcher.Utils;
 import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
 import org.key_project.util.collection.ImmutableList;
 
@@ -197,11 +196,44 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         // System.out.println("Matched " + keyMatchResult.size() + " goals from " + currentState.toString() + " with pattern " + term);
         List<VariableAssignment> transformedMatchResults = new ArrayList<>();
         for (VariableAssignments mResult : keyMatchResult) {
-            transformedMatchResults.add(from(mResult));
+            transformedMatchResults.add(from(mResult, currentState.getData()));
         }
         //keyMatchResult.forEach(r -> transformedMatchResults.add(from(r)));
         return transformedMatchResults;
 
+    }
+
+    /**
+     * Transforms a KeY Variable Assignment into an assignment for the interpreter
+     *
+     * @param keyAssignments
+     * @param currentState
+     * @return
+     */
+    public VariableAssignment from(VariableAssignments keyAssignments, KeyData currentState) {
+
+        VariableAssignment interpreterAssignments = new VariableAssignment(null);
+
+        Map<String, VariableAssignments.VarType> keyTypeMap = keyAssignments.getTypeMap();
+        keyTypeMap.entrySet().forEach(e -> interpreterAssignments.declare(e.getKey(), interpreter.getTypeConversionBiMap().inverse().get(e.getValue())));
+        keyTypeMap.keySet().forEach(k -> {
+            try {
+                interpreterAssignments.assign(k, toValueTerm(currentState, (Term) keyAssignments.getVarValue(k)));
+                //System.out.println(keyAssignments.getVarValue(k));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return interpreterAssignments;
+    }
+
+    private Value<String> toValueTerm(KeyData currentState, Term matched) {
+        String reprTerm = LogicPrinter.quickPrintTerm(matched, currentState.getEnv().getServices());
+
+        return new Value<>(
+                new TermType(new SortType(matched.sort())),
+                reprTerm
+        );
     }
 
     @Override
@@ -225,9 +257,10 @@ public class KeYMatcher implements MatcherApi<KeyData> {
                         s = s.replaceFirst("\\?", "");
                     }
 
-                    va.declare(s, new TermType());
-                    va.assign(s, Value.from(from(matched)));
-                    System.out.println("Variable " + s + " : " + Value.from(from(matched)));
+                    Value<String> value = toValueTerm(currentState.getData(), matched);
+                    va.declare(s, value.getType());
+                    va.assign(s, value);
+                    System.out.println("Variable " + s + " : " + value);
                 }
             }
             List<VariableAssignment> retList = new LinkedList();
@@ -237,35 +270,8 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         }
     }
 
-    /**
-     * Transforms a KeY Variable Assignment into an assignment for the interpreter
-     *
-     * @param keyAssignments
-     * @return
-     */
-    public VariableAssignment from(VariableAssignments keyAssignments) {
 
-        VariableAssignment interpreterAssignments = new VariableAssignment(null);
-
-        Map<String, VariableAssignments.VarType> keyTypeMap = keyAssignments.getTypeMap();
-        keyTypeMap.entrySet().forEach(e -> interpreterAssignments.declare(e.getKey(), interpreter.getTypeConversionBiMap().inverse().get(e.getValue())));
-        keyTypeMap.keySet().forEach(k -> {
-            try {
-                interpreterAssignments.assign(k, Value.from(from((Term) keyAssignments.getVarValue(k))));
-                //System.out.println(keyAssignments.getVarValue(k));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        return interpreterAssignments;
-    }
-
-    private TermLiteral from(Term t) {
-        //TODO rewrite operator
-        return new TermLiteral(Utils.toPrettyTerm(t));
-    }
-
-    private TermLiteral from(SequentFormula sf) {
-        return new TermLiteral(sf.toString());
-    }
+    //private TermLiteral from(SequentFormula sf) {
+    //    return new TermLiteral(sf.toString());
+    //}
 }

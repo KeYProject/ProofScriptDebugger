@@ -235,13 +235,4 @@ public class Utils {
         return String.valueOf(t.getData().getNode().serialNr());
     }
 
-    /**
-     * Rewrite toString() representation of Term to a parsable version
-     *
-     * @param formula
-     * @return parsable Stringversion of Term
-     */
-  /*  public static String toPrettyTerm(Term formula) {
-      return KeYUtils.toPrettyTerm(formula);
-    }*/
 }

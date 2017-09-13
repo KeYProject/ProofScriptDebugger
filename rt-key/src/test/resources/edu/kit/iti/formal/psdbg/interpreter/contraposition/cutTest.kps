@@ -1,12 +1,8 @@
 script cutTest(){
-  //auto step=2;
-  //cut `p`;
   cases{
+    //X:TERM :=`p`;
     case match `==>?X -> ?Y`:
-    //auto steps=100;
-    cut `?Y`[];
-     
+        cut `?X`[?X \ Y];
+
   }
-    //cut #2=`p`;
-    //auto steps=100;
 }

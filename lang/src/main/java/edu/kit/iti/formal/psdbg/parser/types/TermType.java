@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -16,6 +17,10 @@ import java.util.List;
 @Data
 public class TermType implements Type {
     private List<Type> argTypes = new ArrayList<>();
+
+    public TermType(Type... sortType) {
+        this(Arrays.asList(sortType));
+    }
 
     @Override
     public String symbol() {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<comment>Generated on: Mon Sep 11 17:22:08 CEST 2017. Use gen</comment>
+    <comment>Generated on: Tue Sep 12 15:08:54 CEST 2017. Use gen</comment>
 <entry key="wd_Logical_Op_Or">wd_Logical_Op_Or {
 \find(WD(or(a,b)))
 \replacewith(or(or(and(WD(a),a),and(WD(b),b)),and(WD(a),WD(b)))) 
@@ -160,7 +160,7 @@ Choices: {}}</entry>
 <entry key="add_sub_elim_right">add_sub_elim_right {
 \find(add(i,neg(i)))
 \replacewith(Z(0(#))) 
-\heuristics(simplify_int)
+
 Choices: {}}</entry>
 <entry key="leq_to_geq">leq_to_geq {
 \find(leq(i,i0))
@@ -529,11 +529,6 @@ Choices: {reach:on}}</entry>
 \replacewith(or(exists{i (variable)}(and(WD(a),not(a))),all{i (variable)}(WD(a)))) 
 \heuristics(simplify)
 Choices: {wdOperator:D,wdChecks:on}}</entry>
-<entry key="emptyIndexedLoopScope">emptyIndexedLoopScope {
-\find(#allmodal ( (modal operator))\[{ .. loop-scope(#lhs) {} ... }\] (post))
-\replacewith(if-then-else(equals(#lhs,TRUE),#allmodal(post),#allmodal(post))) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="eqClose">eqClose {
 \find(equals(s,s))
 \replacewith(true) 
@@ -925,14 +920,6 @@ Choices: {}}</entry>
 \replacewith(if-then-else(exists{intVar (variable)}(phi),b,c)) 
 \heuristics(simplify)
 Choices: {}}</entry>
-<entry key="unlabeledContinueIndexedLoopScope">unlabeledContinueIndexedLoopScope {
-\find(#allmodal ( (modal operator))\[{ .. loop-scope(#lhs) {continue ;
-    #slist
-  }
- ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{#lhs=false;}\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="compound_assignment_op_shiftright">compound_assignment_op_shiftright {
 \find(#allmodal ( (modal operator))\[{ .. #v&gt;&gt;=#e; ... }\] (post))
 \replacewith(#allmodal ( (modal operator))\[{ .. #v=(#typeof(#v))(#v&gt;&gt;(#e)); ... }\] (post)) 
@@ -1099,7 +1086,7 @@ Choices: {programRules:Java}}</entry>
 <entry key="less_base">less_base {
 \find(lt(i,i))
 \replacewith(false) 
-\heuristics(simplify_int)
+
 Choices: {}}</entry>
 <entry key="wd_Heap_Memset">wd_Heap_Memset {
 \find(wd(memset(h,l,a)))
@@ -1381,6 +1368,11 @@ Choices: {programRules:Java}}</entry>
 \replacewith(or(and(wellFormed(h),equals(x,null)),and(equals(boolean::select(h,x,java.lang.Object::&lt;created&gt;),TRUE),arrayStoreValid(o,x)))) 
 \heuristics(simplify_enlarging)
 Choices: {programRules:Java}}</entry>
+    <entry key="UNSOUND_ASSUME">UNSOUND_ASSUME {
+        \add [b]==&gt;[]
+        \heuristics(obsolete)
+        Choices: {debug:on}}
+    </entry>
 <entry key="createdInHeapWithAllFieldsEQ">createdInHeapWithAllFieldsEQ {
 \assumes ([equals(allFields(o),EQ)]==&gt;[]) 
 \find(createdInHeap(EQ,h))
@@ -1736,8 +1728,8 @@ Choices: {}}</entry>
 <entry key="methodCallSuper">methodCallWithAssignmentSuper {
 \find(#allmodal ( (modal operator))\[{ .. #lhs=super.#mn(#elist); ... }\] (post))
 \varcond(\new(#v0 (program Variable), \typeof(#lhs (program LeftHandSide))))
-\replacewith(#allmodal ( (modal operator))\[{ .. #typeof(#lhs) #v0;method-call(super.#mn(#elist);)#lhs=#v0; ... }\] (post)) 
-\heuristics(method_expand, simplify_autoname)
+\replacewith(#allmodal ( (modal operator))\[{ .. #typeof(#lhs) #v0;method-call(super.#mn(#elist);)#lhs=#v0; ... }\] (post))
+    \heuristics(simplify_autoname)
 Choices: {programRules:Java}}</entry>
 <entry key="wd_Numerical_Quant_Min">wd_Numerical_Quant_Min {
 \find(wd(min{j (variable)}(f,c)))
@@ -1844,15 +1836,6 @@ Choices: {integerSimplificationRules:full}}</entry>
 \replacewith(update-application(elem-update(#loc (program Variable))(javaBitwiseNegation(#se)),#normalassign(post))) 
 \heuristics(executeIntegerAssignment)
 Choices: {programRules:Java}}</entry>
-<entry key="blockBreakLabeled">blockBreakLabeled {
-\find(#allmodal ( (modal operator))\[{ ..  {break ;
-    #slist
-  }
- ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ .. break ;
- ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="defOfSeqSwap">defOfSeqSwap {
 \find(seqSwap(s,iv,jv))
 \varcond(\notFreeIn(uSub (variable), jv (int term)), \notFreeIn(uSub (variable), iv (int term)), \notFreeIn(uSub (variable), s (Seq term)))
@@ -1899,7 +1882,7 @@ Choices: {}}</entry>
 Choices: {}}</entry>
 <entry key="simplifyIfThenElse">simplifyIfThenElseUpdate4 {
 \find(if-then-else(phi,t,t))
-\varcond(de.uka.ilkd.key.rule.conditions.SimplifyIfThenElseUpdateCondition@28bcfcad, )
+    \varcond(de.uka.ilkd.key.rule.conditions.SimplifyIfThenElseUpdateCondition@59f4f0de, )
 \replacewith(result) 
 
 Choices: {}}</entry>
@@ -1933,7 +1916,7 @@ Choices: {programRules:Java}}</entry>
 <entry key="square_nonneg">square_nonneg {
 \find(leq(Z(0(#)),mul(i0,i0)))
 \replacewith(true) 
-\heuristics(simplify_int)
+
 Choices: {}}</entry>
 <entry key="distributeIntersection">distributeIntersection {
 \find(intersect(s1,union(s2,s3)))
@@ -2345,11 +2328,6 @@ Choices: {integerSimplificationRules:full}}</entry>
 \replacewith([]==&gt;[b]) 
 \heuristics(beta)
 Choices: {}}</entry>
-<entry key="emptyReturnIndexedLoopScope">emptyReturnIndexedLoopScope {
-\find(#allmodal ( (modal operator))\[{ .. loop-scope(#lhs) {return ;#slist} ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ .. #lhs=true;return ; ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="bsum_invert_index">bsum_invert_index {
 \find(bsum{uSub (variable)}(i0,i1,t))
 \varcond(\notFreeIn(uSub1 (variable), t (int term)), \notFreeIn(uSub1 (variable), i1 (int term)), \notFreeIn(uSub1 (variable), i0 (int term)), \notFreeIn(uSub (variable), i1 (int term)), \notFreeIn(uSub (variable), i0 (int term)))
@@ -2411,13 +2389,13 @@ Choices: {integerSimplificationRules:full}}</entry>
 \assumes ([]==&gt;[lt(i,j)]) 
 \find(==&gt;equals(i,j))
 \replacewith([]==&gt;[leq(i,j)]) 
-\heuristics(simplify_int)
+
 Choices: {}}</entry>
 <entry key="lt_to_leq_1">lt_to_leq_1 {
 \find(or(lt(i,j),equals(i,j)))
-\replacewith(leq(i,j)) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(leq(i,j))
+
+    Choices: {}}</entry>
 <entry key="translateJavaBitwiseOr">translateJavaBitwiseOrLong {
 \find(javaBitwiseOrLong(left,right))
 \replacewith(orJlong(left,right)) 
@@ -3161,15 +3139,6 @@ Choices: {programRules:Java}}</entry>
 \replacewith(false) 
 \heuristics(concrete)
 Choices: {programRules:Java}}</entry>
-<entry key="blockContinue">blockContinue {
-\find(#allmodal ( (modal operator))\[{ ..  {continue ;
-    #slist
-  }
- ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ .. continue ;
- ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="wellFormedStoreLocSetEQ">wellFormedStoreLocSetEQ {
 \assumes ([equals(store(h,o,f,x),EQ)]==&gt;[]) 
 \find(wellFormed(EQ))
@@ -3324,11 +3293,6 @@ Choices: {}}</entry>
  ... }\] (post))
 \varcond(\newLabel (#innerLabel (program Label)), \newLabel (#outerLabel (program Label)), )
 \replacewith(#allmodal ( (modal operator))\[{ .. #unwind-loop(do#swhile ( #e );  ) ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
-<entry key="blockLoopScopes">blockLoopScopes {
-\find(#allmodal ( (modal operator))\[{ ..  {loop-scope(#lhs) {#slist}} ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ .. loop-scope(#lhs) {#slist} ... }\] (post)) 
 \heuristics(simplify_prog)
 Choices: {programRules:Java}}</entry>
 <entry key="wd_Logical_Op_Eqv">wd_Logical_Op_Eqv {
@@ -3664,11 +3628,6 @@ Choices: {wdChecks:on}}</entry>
 \replacewith(leq(i0,i)) 
 
 Choices: {}}</entry>
-<entry key="deleteMergePoint">deleteMergePoint {
-\find(#allmodal ( (modal operator))\[{ .. //@ merge_point (#lhs (program LeftHandSide)); ... }\] (post))
-\replacewith(#allmodal(post)) 
-\heuristics(merge_point, simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="selectOfStoreEQ">selectOfStoreEQ {
 \assumes ([equals(store(h,o,f,x),EQ)]==&gt;[]) 
 \find(beta::select(EQ,o2,f2))
@@ -3980,9 +3939,9 @@ Choices: {programRules:Java}}</entry>
 Choices: {sequences:on}}</entry>
 <entry key="leq_diff1_eq">leq_diff1_eq {
 \find(leq(i0,sub(i1,Z(1(#)))))
-\replacewith(lt(i0,i1)) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(lt(i0,i1))
+
+    Choices: {}}</entry>
 <entry key="diamond_and_left">diamond_and_left {
 \find(#diamond ( (modal operator))\[{ .. #s ... }\] (and(post,post1))==&gt;)
 \replacewith([and(#diamond ( (modal operator))\[{ .. #s ... }\] (post),#diamond ( (modal operator))\[{ .. #s ... }\] (post1))]==&gt;[]) 
@@ -4030,15 +3989,6 @@ Choices: {}}</entry>
 \replacewith(b) 
 \heuristics(elimQuantifier)
 Choices: {}}</entry>
-<entry key="labeledContinueIndexedLoopScope">labeledContinueIndexedLoopScope {
-\find(#allmodal ( (modal operator))\[{ .. loop-scope(#lhs) {continue ;
-    #slist
-  }
- ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ .. #lhs=true;continue ;
- ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="wd_F_Subst_Formula">wd_F_Subst_Formula {
 \find(F(subst{v (variable)}(u,f)))
 \replacewith(and(wd(u),subst{v (variable)}(u,F(f)))) 
@@ -4172,16 +4122,6 @@ Choices: {}}</entry>
 \add [all{iv (variable)}(imp(and(leq(Z(0(#)),iv),lt(iv,seqLen(s))),and(and(leq(Z(0(#)),int::seqGet(s,iv)),lt(int::seqGet(s,iv),seqLen(s))),equals(int::instance(any::seqGet(s,iv)),TRUE))))]==&gt;[] 
 
 Choices: {moreSeqRules:on,sequences:on}}</entry>
-<entry key="blockContinueNoMatch">blockContinueNoMatch {
-\find(#allmodal ( (modal operator))\[{ .. #lb1: {continue ;
-    #slist
-  }
- ... }\] (post))
-\varcond(\different (#lb1 (program Label), #lb (program Label)), )
-\replacewith(#allmodal ( (modal operator))\[{ .. continue ;
- ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="returnPermission_empty">returnPermission_empty {
 \find(returnPermission(from,to,emptyPermission))
 \replacewith(emptyPermission) 
@@ -4687,6 +4627,10 @@ Choices: {programRules:Java}}</entry>
 \replacewith(#allmodal ( (modal operator))\[{ .. #typeof(#e0) #v = #e0;#v.#attribute=(#typeof(#attribute))(#v.#attribute&amp;#e); ... }\] (post)) 
 \heuristics(simplify_prog)
 Choices: {programRules:Java}}</entry>
+    <entry key="FAKE_CLOSE">FAKE_CLOSE {
+        \closegoal\heuristics(obsolete)
+        Choices: {debug:on}}
+    </entry>
 <entry key="writePermissionAfterReturn">writePermissionAfterReturn {
 \assumes ([writePermissionObject(o1,p)]==&gt;[]) 
 \find(writePermissionObject(o2,returnPermission(o1,o2,p)))
@@ -4789,9 +4733,9 @@ Choices: {Strings:on}}</entry>
 Choices: {programRules:Java}}</entry>
 <entry key="i_minus_i_is_zero">i_minus_i_is_zero {
 \find(sub(i,i))
-\replacewith(Z(0(#))) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(Z(0(#)))
+
+    Choices: {}}</entry>
 <entry key="poolIsInjective">poolIsInjective {
 \find(equals(strPool(slit1),strPool(slit2)))
 \replacewith(equals(slit1,slit2)) 
@@ -4817,9 +4761,9 @@ Choices: {programRules:Java}}</entry>
 Choices: {programRules:Java}}</entry>
 <entry key="add_sub_elim_left">add_sub_elim_left {
 \find(add(neg(i),i))
-\replacewith(Z(0(#))) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(Z(0(#)))
+
+    Choices: {}}</entry>
 <entry key="ifthenelse_same_branches">ifthenelse_same_branches_for {
 \find(if-then-else(phi,b,b))
 \replacewith(b) 
@@ -4940,9 +4884,9 @@ Choices: {sequences:on}}</entry>
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}</entry>
 <entry key="minus_distribute">minus_distribute_2 {
 \find(neg(sub(i,i1)))
-\replacewith(add(neg(i),i1)) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(add(neg(i),i1))
+
+    Choices: {}}</entry>
 <entry key="preincrement_assignment_array">preincrement_assignment_array {
 \find(#allmodal ( (modal operator))\[{ .. #lhs0=++#e[#e0]; ... }\] (post))
 \varcond(\new(#v0 (program Variable), \typeof(#e0 (program Expression))), \new(#v (program Variable), \typeof(#e (program Expression))))
@@ -5029,11 +4973,6 @@ Choices: {wdOperator:Y,wdChecks:on}}</entry>
 \replacewith(#allmodal ( (modal operator))\[{ .. return #se; ... }\] (post)) 
 \heuristics(simplify_prog_subset, simplify_prog)
 Choices: {programRules:Java}}</entry>
-<entry key="returnIndexedLoopScope">returnIndexedLoopScope {
-\find(#allmodal ( (modal operator))\[{ .. loop-scope(#lhs) {return #se;#slist} ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ .. #lhs=true;return #se; ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="less_is_alternative_2">less_is_alternative_2 {
 \assumes ([]==&gt;[lt(i,i0)]) 
 \find(==&gt;lt(i0,i))
@@ -5088,20 +5027,11 @@ Choices: {programRules:Java}}</entry>
 \sameUpdateLevel\replacewith(t) 
 \heuristics(simplify)
 Choices: {intRules:arithmeticSemanticsCheckingOF}}</entry>
-<entry key="blockContinueLabeled">blockContinueLabeled {
-\find(#allmodal ( (modal operator))\[{ ..  {continue ;
-    #slist
-  }
- ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ .. continue ;
- ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="times_minus_one">times_minus_one_2 {
 \find(mul(Z(neglit(1(#))),i))
-\replacewith(neg(i)) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(neg(i))
+
+    Choices: {}}</entry>
 <entry key="isFiniteOfMapUpdate">isFiniteOfMapUpdate {
 \find(isFinite(mapUpdate(m,key,value)))
 \sameUpdateLevel\replacewith(isFinite(m)) 
@@ -5650,9 +5580,9 @@ Choices: {}}</entry>
 Choices: {programRules:Java}}</entry>
 <entry key="sub_zero_2">sub_zero_2 {
 \find(sub(i,Z(0(#))))
-\replacewith(i) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(i)
+
+    Choices: {}}</entry>
 <entry key="subsetOfUnionWithItSelf1">subsetOfUnionWithItSelf1 {
 \find(subset(s,union(s,s2)))
 \replacewith(true) 
@@ -5680,18 +5610,6 @@ Choices: {runtimeExceptions:ignore,programRules:Java}}</entry>
 \succedentPolarity\varcond(\fieldType(f (Field term), alpha), )
 \replacewith(or(and(wellFormed(h),equals(x,null)),and(equals(boolean::select(h,x,java.lang.Object::&lt;created&gt;),TRUE),equals(alpha::instance(x),TRUE)))) 
 \heuristics(simplify_enlarging)
-Choices: {programRules:Java}}</entry>
-<entry key="try_continue">try_finally_continue_2 {
-\find(#allmodal ( (modal operator))\[{ .. try {continue ;
-    #slist
-  }
-  #cs               finally {
-    #slist2
-  }
- ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ ..  {#slist2}continue ;
- ... }\] (post)) 
-\heuristics(simplify_prog)
 Choices: {programRules:Java}}</entry>
 <entry key="initFullPermission">initFullPermission {
 \find(initFullPermission)
@@ -5873,9 +5791,9 @@ Choices: {}}</entry>
 Choices: {programRules:Java}}</entry>
 <entry key="le1_add1_eq_le">le1_add1_eq_le {
 \find(lt(i0,add(i1,Z(1(#)))))
-\replacewith(leq(i0,i1)) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(leq(i0,i1))
+
+    Choices: {}}</entry>
 <entry key="intersectAllFieldsFreshLocs">intersectAllFieldsFreshLocs {
 \find(equals(intersect(allFields(o),freshLocs(h)),empty))
 \replacewith(or(equals(o,null),equals(boolean::select(h,o,java.lang.Object::&lt;created&gt;),TRUE))) 
@@ -5907,9 +5825,9 @@ Choices: {programRules:Java}}</entry>
 Choices: {integerSimplificationRules:full}}</entry>
 <entry key="add_eq_back">add_eq_back_3 {
 \find(equals(i1,add(i1,i0)))
-\replacewith(equals(Z(0(#)),i0)) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(equals(Z(0(#)),i0))
+
+    Choices: {}}</entry>
 <entry key="inequality comparison">inequality_comparison_simple {
 \find(#allmodal ( (modal operator))\[{ .. #lhs=#se0!=#se1; ... }\] (post))
 \replacewith(update-application(elem-update(#lhs (program LeftHandSide))(if-then-else(equals(#se0,#se1),FALSE,TRUE)),#allmodal(post))) 
@@ -5962,14 +5880,6 @@ Choices: {wdOperator:D,wdChecks:on}}</entry>
 \replacewith(exists{u (variable)}(not(phi))) 
 \heuristics(notHumanReadable, negationNormalForm)
 Choices: {}}</entry>
-<entry key="unlabeledBreakIndexedLoopScope">unlabeledBreakIndexedLoopScope {
-\find(#allmodal ( (modal operator))\[{ .. loop-scope(#lhs) {break ;
-    #slist
-  }
- ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ .. #lhs=true; ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="reach_does_not_depend_on_fresh_locs_EQ">reach_does_not_depend_on_fresh_locs_EQ {
 \assumes ([equals(anon(h,empty,h2),EQ)]==&gt;[equals(o,null)]) 
 \find(reach(EQ,s,o,o2,n))
@@ -6274,15 +6184,6 @@ Choices: {}}</entry>
 \replacewith(true) 
 \heuristics(simplify)
 Choices: {permissions:on}}</entry>
-<entry key="blockContinueLabel">blockContinueLabel {
-\find(#allmodal ( (modal operator))\[{ .. #lb: {continue ;
-    #slist
-  }
- ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ .. continue ;
- ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="bitwiseXOr">assignmentBitwiseXOrLong3 {
 \find(#normalassign ( (modal operator))\[{ .. #loc=#seLong0^#seLong1; ... }\] (post))
 \replacewith(update-application(elem-update(#loc (program Variable))(javaBitwiseXOrLong(#seLong0,#seLong1)),#normalassign(post))) 
@@ -6299,15 +6200,6 @@ Choices: {sequences:on}}</entry>
 \replacewith(and(equals(x,null),equals(y,null))) 
 \heuristics(simplify)
 Choices: {}}</entry>
-<entry key="labeledBreakIndexedLoopScope">labeledBreakIndexedLoopScope {
-\find(#allmodal ( (modal operator))\[{ .. loop-scope(#lhs) {break ;
-    #slist
-  }
- ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ .. #lhs=true;break ;
- ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="ifElseUnfold">ifUnfold {
 \find(#allmodal ( (modal operator))\[{ .. if (#nse)
     #s0
@@ -6572,9 +6464,9 @@ Choices: {}}</entry>
 Choices: {programRules:Java}}</entry>
 <entry key="times_one">times_one_2 {
 \find(mul(Z(1(#)),i))
-\replacewith(i) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(i)
+
+    Choices: {}}</entry>
 <entry key="bprod_induction_upper_concrete">bprod_induction_upper_concrete {
 \find(bprod{uSub (variable)}(i0,add(Z(1(#)),i2),t))
 \varcond(\notFreeIn(uSub (variable), i2 (int term)), \notFreeIn(uSub (variable), i0 (int term)))
@@ -6922,7 +6814,10 @@ Choices: {wdChecks:on}}</entry>
 <entry key="precOfSeq">precOfSeq {
 \find(prec(s1,s2))
 \varcond(\notFreeIn(jv (variable), s2 (Seq term)), \notFreeIn(jv (variable), s1 (Seq term)), \notFreeIn(iv (variable), s2 (Seq term)), \notFreeIn(iv (variable), s1 (Seq term)))
-\replacewith(or(and(equals(seqLen(s1),seqLen(s2)),exists{iv (variable)}(and(and(and(leq(Z(0(#)),iv),lt(iv,seqLen(s1))),prec(any::seqGet(s1,iv),any::seqGet(s2,iv))),all{jv (variable)}(imp(and(leq(Z(0(#)),jv),lt(jv,iv)),equals(any::seqGet(s1,jv),any::seqGet(s2,jv))))))),lt(seqLen(s1),seqLen(s2)))) 
+    \replacewith(or(exists{iv
+    (variable)}(and(and(and(and(leq(Z(0(#)),iv),lt(iv,seqLen(s1))),lt(iv,seqLen(s2))),prec(any::seqGet(s1,iv),any::seqGet(s2,iv))),all{jv
+    (variable)}(imp(and(leq(Z(0(#)),jv),lt(jv,iv)),equals(any::seqGet(s1,jv),any::seqGet(s2,jv)))))),and(lt(seqLen(s1),seqLen(s2)),all{iv
+    (variable)}(imp(and(leq(Z(0(#)),iv),lt(iv,seqLen(s1))),equals(any::seqGet(s1,iv),any::seqGet(s2,iv)))))))
 
 Choices: {}}</entry>
 <entry key="methodCallEmpty">methodCallEmptyNoreturnBox {
@@ -6933,9 +6828,9 @@ Choices: {}}</entry>
 Choices: {programRules:Java}}</entry>
 <entry key="sub_sub_elim">sub_sub_elim {
 \find(neg(neg(i)))
-\replacewith(i) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(i)
+
+    Choices: {}}</entry>
 <entry key="leq_add_one">leq_add_one {
 \find(leq(i0,i1))
 \replacewith(leq(add(i0,Z(1(#))),add(i1,Z(1(#))))) 
@@ -6964,15 +6859,6 @@ Choices: {programRules:Java}}</entry>
 \replacewith(and(equals(seqLen(s),Z(1(#))),equals(any::seqGet(s,Z(0(#))),x))) 
 \heuristics(simplify)
 Choices: {moreSeqRules:on,sequences:on}}</entry>
-<entry key="blockBreak">blockBreak {
-\find(#allmodal ( (modal operator))\[{ ..  {break ;
-    #slist
-  }
- ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ .. break ;
- ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="commuteUnion">commuteUnion {
 \find(union(commLeft,commRight))
 \replacewith(union(commRight,commLeft)) 
@@ -7075,11 +6961,6 @@ Choices: {integerSimplificationRules:full}}</entry>
 \sameUpdateLevel\replacewith(if-then-else(equals(#constantvalue(#csv),null),null,strPool(Seq::cast(#constantvalue(#csv))))) 
 \heuristics(concrete)
 Choices: {}}</entry>
-<entry key="throwIndexedLoopScope">throwIndexedLoopScope {
-\find(#allmodal ( (modal operator))\[{ .. loop-scope(#lhs) {throw #se;#slist} ... }\] (post))
-\replacewith(#allmodal ( (modal operator))\[{ .. #lhs=true;throw #se; ... }\] (post)) 
-\heuristics(simplify_prog)
-Choices: {programRules:Java}}</entry>
 <entry key="close">closeAntec {
 \assumes ([]==&gt;[b]) 
 \find(b==&gt;)
@@ -7127,9 +7008,9 @@ Choices: {moreSeqRules:on,sequences:on}}</entry>
 Choices: {sequences:on}}</entry>
 <entry key="sub">sub {
 \find(sub(i,i0))
-\replacewith(add(i,neg(i0))) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(add(i,neg(i0)))
+
+    Choices: {}}</entry>
 <entry key="less_trans">less_trans {
 \assumes ([lt(i,i0)]==&gt;[]) 
 \find(lt(i0,i1)==&gt;)
@@ -7788,9 +7669,9 @@ Choices: {sequences:on}}</entry>
 Choices: {}}</entry>
 <entry key="add_less_back">add_less_back_zero_2_comm {
 \find(lt(add(i1,i),i))
-\replacewith(lt(i1,Z(0(#)))) 
-\heuristics(simplify_int)
-Choices: {}}</entry>
+\replacewith(lt(i1,Z(0(#))))
+
+    Choices: {}}</entry>
 <entry key="seqNPermInvNPermReplace">seqNPermInvNPermReplace {
 \find(seqNPerm(seqNPermInv(s1)))
 \replacewith(seqNPerm(s1)) 
@@ -8449,7 +8330,7 @@ Choices: {moreSeqRules:on,sequences:on}}</entry>
         #t #v0;
         #v0=(#t)#se;
         #slist1
-      }      finally {
+    } finally {
         #slist2
       }
     }
@@ -8709,17 +8590,18 @@ Choices: {}}</entry>
 Choices: {}}] \replacewith([equals(if-then-else(and(and(equals(o,o2),equals(f,f2)),not(equals(f,java.lang.Object::&lt;created&gt;))),beta::cast(x),beta::select(h,o2,f2)),sk)]==&gt;[]) 
 \heuristics(simplify_select)
 Choices: {programRules:Java}}</entry>
-<entry key="replace_short_MAX">replace_short_MAX {
-\find(short_MAX)
-\replacewith(Z(7(6(7(2(3(#))))))) 
-\heuristics(defOps_expandRanges)
-Choices: {}}</entry>
 <entry key="preincrement_attribute">preincrement_attribute {
 \find(#allmodal ( (modal operator))\[{ .. ++#e.#attribute; ... }\] (post))
 \varcond(\new(#v (program Variable), \typeof(#e (program Expression))))
 \replacewith(#allmodal ( (modal operator))\[{ .. #typeof(#e) #v = #e;#v.#attribute=(#typeof(#attribute))(#v.#attribute+1); ... }\] (post)) 
 \heuristics(simplify_expression)
 Choices: {programRules:Java}}</entry>
+    <entry key="replace_short_MAX">replace_short_MAX {
+        \find(short_MAX)
+        \replacewith(Z(7(6(7(2(3(#)))))))
+        \heuristics(defOps_expandRanges)
+        Choices: {}}
+    </entry>
 <entry key="removeZeros">removeZeros {
 \find(clRemoveZeros(l))
 \replacewith(if-then-else(or(equals(l,seqEmpty),equals(int::seqGet(l,Z(0(#))),C(8(4(#))))),l,clRemoveZeros(seqSub(l,Z(1(#)),seqLen(l))))) 

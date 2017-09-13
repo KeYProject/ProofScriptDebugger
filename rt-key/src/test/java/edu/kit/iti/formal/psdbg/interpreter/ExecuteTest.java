@@ -2,7 +2,9 @@ package edu.kit.iti.formal.psdbg.interpreter;
 
 import static edu.kit.iti.formal.psdbg.TestHelper.getFile;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import org.apache.commons.cli.ParseException;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -51,7 +53,10 @@ public class ExecuteTest {
                 getFile(getClass(), "contraposition/contraposition.key"),
                 "-s", getFile(getClass(), "contraposition/cutTest.kps"));
         Interpreter<KeyData> i = execute.run();
-        System.out.println(i.getCurrentState());
+        State<KeyData> currentState = i.getCurrentState();
+        System.out.println(currentState);
+        //This reveals a bug in the cases merge
+        Assert.assertEquals("Number of goals has to be two ", 2, i.getCurrentGoals().size());
 
     }
 }
