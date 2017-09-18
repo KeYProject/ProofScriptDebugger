@@ -150,7 +150,7 @@ public class ScriptController {
         if (lastScriptArea == null)
             dockNode.dock(parent, DockPos.LEFT);
         else
-            dockNode.dock(parent, DockPos.CENTER, getDockNode(lastScriptArea));
+            dockNode.dock(parent, DockPos.LEFT, getDockNode(lastScriptArea));
 
         area.dirtyProperty().addListener(new ChangeListener<Boolean>() {
             @Override
