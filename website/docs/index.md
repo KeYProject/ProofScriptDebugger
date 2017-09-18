@@ -13,7 +13,7 @@
         .column>div{
             float: left;
             width: 33%;
-            text-align: center;
+            text-align: left;
         }
 
         .column img {
@@ -63,63 +63,44 @@ A full description of the language and debugging-concept is published at <a href
 
 <div class="column">
     <div >
-<!--<img src="https://placeimg.com/150/150/any" />-->
-        <h3>Stepping back and forth in Proof Script</h3>
+        <h3>Inspection of different parts of the proof state</h3>
         <p> 
-        </p>
+        The different parts of the proof state can be inspected:
+        <ul>
+         <li>list of open goals</li>
+         <li>sequent of selected open goal</li>
+         <li>path through program (if existing) for selected open goal</li>
+         </ul>
+        </p> 
     </div>
-
     <div >
-      <!--  <img src="https://placeimg.com/150/150/any" /> -->
-        <h3>Different views onto one proof state</h3>
+        <h3>Adjustable view on list of open goals</h3>
+        <img src="img/simpleJavaGoalList.png" style="width:304px;height:228px;"  />
     </div>
-
     <div >
-       <!-- <img src="https://placeimg.com/150/150/any" />--<
-        <h3>Run To Breakpoints in Script-Evaluation</h3>
+        <h3>Explore the proof tree of KeY</h3>
     </div>
-
 </div>
 <div style="clear: both;"/>
     <div class="column">
         <div >
-            <img src="https://placeimg.com/150/150/any" />
-            <h3>Inspect proof State</h3>
+            <h3>Stepwise evaluation of the proof script</h3>
             <p>
-
+            The proof script can be evaluated stepwise and by running to a set breakpoint.
             </p>
         </div>
-
         <div >
-            <img src="https://placeimg.com/150/150/any" />
-            <h3>Feature 2</h3>
+            <h3>Set a breakpoint and run execution to breakpoint</h3>
+             <img src="img/simpleJava2.png"  style="width:304px;height:228px;"/>
         </div>
-
-        <div >
-            <img src="https://placeimg.com/150/150/any" />
-            <h3>Feature 3</h3>
+        <div > 
+            <h3> Step forward and step backward</h3>
+            <img src="img/simpleJavaStep.png" style="width:304px;height:228px;" />
         </div>
-
     </div>
     <div style="clear: both;"/> 
-
-
- 
-        
-        <footer style="border-top: #ccc 1px solid">
+    <p>
+<footer style="border-top: #ccc 1px solid">
             Contact: <a href="https://formal.iti.kit.edu/~grebing/">Sarah Grebing</a>
         </footer>
         </p>
-<!--  <h2>Getting Started</h2>
-    
-    
-                <h2>Downloads</h2>
-    
-                <ul>
-                <li>Version 1.0
-                <p>
-                <a href="#">psdb-0.9-alpha.jar</a>
-                </p>
-                </li>
-                </ul>
-       -->
