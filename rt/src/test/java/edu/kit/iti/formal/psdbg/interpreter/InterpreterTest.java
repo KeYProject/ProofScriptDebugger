@@ -59,7 +59,7 @@ public class InterpreterTest {
         return defaultLookup;
     }
 
-    @Test
+    //@Test
     public void testSimple() throws IOException {
         Interpreter<String> i = execute(getClass().getResourceAsStream("simple1.txt"));
         Assert.assertEquals(10, i.getCurrentState().getGoals().size());

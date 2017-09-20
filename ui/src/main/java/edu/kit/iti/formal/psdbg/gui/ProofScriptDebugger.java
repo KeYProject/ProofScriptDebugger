@@ -37,6 +37,8 @@ public class ProofScriptDebugger extends Application {
     @Override
     public void start(Stage primaryStage) {
         Locale.setDefault(Locale.ENGLISH);
+        //System.setProperty("log4j.configurationFile", "/tmp/log4j.properties");
+        //System.setProperty("log4j2.loggerContextFactory", "org.apache.logging.log4j.core.impl.Log4jContextFactory");
 
         try {
 

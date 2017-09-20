@@ -38,7 +38,7 @@ public class GenDoc {
 
     private static File basedir = new File("..");
     private static File propertiesFile = new File(basedir, "rt-key/src/main/resources/edu/kit/iti/formal/psdbg/taclets.properties.xml");
-    private static File dummyFile = new File(basedir, "rt-key/src/test/resources/edu/kit/iti/formal/psdbg/interpreter/contraposition/contraposition.key");
+    private static File dummyFile = new File(".", "rt-key/src/test/resources/edu/kit/iti/formal/psdbg/interpreter/contraposition/contraposition.key");
     private static File websiteDoc = new File(basedir, "website/docs/");
 
 

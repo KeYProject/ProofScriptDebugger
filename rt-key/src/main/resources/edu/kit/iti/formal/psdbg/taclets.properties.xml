@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <comment>Generated on: Tue Sep 12 15:08:54 CEST 2017. Use gen</comment>
+    <comment>Generated on: Tue Sep 19 17:10:07 CEST 2017. Use gen</comment>
 <entry key="wd_Logical_Op_Or">wd_Logical_Op_Or {
 \find(WD(or(a,b)))
 \replacewith(or(or(and(WD(a),a),and(WD(b),b)),and(WD(a),WD(b)))) 
@@ -1728,7 +1728,8 @@ Choices: {}}</entry>
 <entry key="methodCallSuper">methodCallWithAssignmentSuper {
 \find(#allmodal ( (modal operator))\[{ .. #lhs=super.#mn(#elist); ... }\] (post))
 \varcond(\new(#v0 (program Variable), \typeof(#lhs (program LeftHandSide))))
-\replacewith(#allmodal ( (modal operator))\[{ .. #typeof(#lhs) #v0;method-call(super.#mn(#elist);)#lhs=#v0; ... }\] (post))
+    \replacewith(#allmodal ( (modal operator))\[{ .. #typeof(#lhs) #v0;method-call(super.#mn(#elist);)#lhs=#v0; ... }\]
+    (post))
     \heuristics(simplify_autoname)
 Choices: {programRules:Java}}</entry>
 <entry key="wd_Numerical_Quant_Min">wd_Numerical_Quant_Min {
@@ -1882,7 +1883,7 @@ Choices: {}}</entry>
 Choices: {}}</entry>
 <entry key="simplifyIfThenElse">simplifyIfThenElseUpdate4 {
 \find(if-then-else(phi,t,t))
-    \varcond(de.uka.ilkd.key.rule.conditions.SimplifyIfThenElseUpdateCondition@59f4f0de, )
+    \varcond(de.uka.ilkd.key.rule.conditions.SimplifyIfThenElseUpdateCondition@13029db4, )
 \replacewith(result) 
 
 Choices: {}}</entry>
@@ -2393,9 +2394,10 @@ Choices: {integerSimplificationRules:full}}</entry>
 Choices: {}}</entry>
 <entry key="lt_to_leq_1">lt_to_leq_1 {
 \find(or(lt(i,j),equals(i,j)))
-\replacewith(leq(i,j))
+    \replacewith(leq(i,j))
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="translateJavaBitwiseOr">translateJavaBitwiseOrLong {
 \find(javaBitwiseOrLong(left,right))
 \replacewith(orJlong(left,right)) 
@@ -3939,9 +3941,10 @@ Choices: {programRules:Java}}</entry>
 Choices: {sequences:on}}</entry>
 <entry key="leq_diff1_eq">leq_diff1_eq {
 \find(leq(i0,sub(i1,Z(1(#)))))
-\replacewith(lt(i0,i1))
+    \replacewith(lt(i0,i1))
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="diamond_and_left">diamond_and_left {
 \find(#diamond ( (modal operator))\[{ .. #s ... }\] (and(post,post1))==&gt;)
 \replacewith([and(#diamond ( (modal operator))\[{ .. #s ... }\] (post),#diamond ( (modal operator))\[{ .. #s ... }\] (post1))]==&gt;[]) 
@@ -4733,9 +4736,10 @@ Choices: {Strings:on}}</entry>
 Choices: {programRules:Java}}</entry>
 <entry key="i_minus_i_is_zero">i_minus_i_is_zero {
 \find(sub(i,i))
-\replacewith(Z(0(#)))
+    \replacewith(Z(0(#)))
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="poolIsInjective">poolIsInjective {
 \find(equals(strPool(slit1),strPool(slit2)))
 \replacewith(equals(slit1,slit2)) 
@@ -4761,9 +4765,10 @@ Choices: {programRules:Java}}</entry>
 Choices: {programRules:Java}}</entry>
 <entry key="add_sub_elim_left">add_sub_elim_left {
 \find(add(neg(i),i))
-\replacewith(Z(0(#)))
+    \replacewith(Z(0(#)))
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="ifthenelse_same_branches">ifthenelse_same_branches_for {
 \find(if-then-else(phi,b,b))
 \replacewith(b) 
@@ -4884,9 +4889,10 @@ Choices: {sequences:on}}</entry>
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}</entry>
 <entry key="minus_distribute">minus_distribute_2 {
 \find(neg(sub(i,i1)))
-\replacewith(add(neg(i),i1))
+    \replacewith(add(neg(i),i1))
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="preincrement_assignment_array">preincrement_assignment_array {
 \find(#allmodal ( (modal operator))\[{ .. #lhs0=++#e[#e0]; ... }\] (post))
 \varcond(\new(#v0 (program Variable), \typeof(#e0 (program Expression))), \new(#v (program Variable), \typeof(#e (program Expression))))
@@ -5029,9 +5035,10 @@ Choices: {programRules:Java}}</entry>
 Choices: {intRules:arithmeticSemanticsCheckingOF}}</entry>
 <entry key="times_minus_one">times_minus_one_2 {
 \find(mul(Z(neglit(1(#))),i))
-\replacewith(neg(i))
+    \replacewith(neg(i))
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="isFiniteOfMapUpdate">isFiniteOfMapUpdate {
 \find(isFinite(mapUpdate(m,key,value)))
 \sameUpdateLevel\replacewith(isFinite(m)) 
@@ -5580,9 +5587,10 @@ Choices: {}}</entry>
 Choices: {programRules:Java}}</entry>
 <entry key="sub_zero_2">sub_zero_2 {
 \find(sub(i,Z(0(#))))
-\replacewith(i)
+    \replacewith(i)
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="subsetOfUnionWithItSelf1">subsetOfUnionWithItSelf1 {
 \find(subset(s,union(s,s2)))
 \replacewith(true) 
@@ -5791,9 +5799,10 @@ Choices: {}}</entry>
 Choices: {programRules:Java}}</entry>
 <entry key="le1_add1_eq_le">le1_add1_eq_le {
 \find(lt(i0,add(i1,Z(1(#)))))
-\replacewith(leq(i0,i1))
+    \replacewith(leq(i0,i1))
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="intersectAllFieldsFreshLocs">intersectAllFieldsFreshLocs {
 \find(equals(intersect(allFields(o),freshLocs(h)),empty))
 \replacewith(or(equals(o,null),equals(boolean::select(h,o,java.lang.Object::&lt;created&gt;),TRUE))) 
@@ -5825,9 +5834,10 @@ Choices: {programRules:Java}}</entry>
 Choices: {integerSimplificationRules:full}}</entry>
 <entry key="add_eq_back">add_eq_back_3 {
 \find(equals(i1,add(i1,i0)))
-\replacewith(equals(Z(0(#)),i0))
+    \replacewith(equals(Z(0(#)),i0))
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="inequality comparison">inequality_comparison_simple {
 \find(#allmodal ( (modal operator))\[{ .. #lhs=#se0!=#se1; ... }\] (post))
 \replacewith(update-application(elem-update(#lhs (program LeftHandSide))(if-then-else(equals(#se0,#se1),FALSE,TRUE)),#allmodal(post))) 
@@ -6464,9 +6474,10 @@ Choices: {}}</entry>
 Choices: {programRules:Java}}</entry>
 <entry key="times_one">times_one_2 {
 \find(mul(Z(1(#)),i))
-\replacewith(i)
+    \replacewith(i)
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="bprod_induction_upper_concrete">bprod_induction_upper_concrete {
 \find(bprod{uSub (variable)}(i0,add(Z(1(#)),i2),t))
 \varcond(\notFreeIn(uSub (variable), i2 (int term)), \notFreeIn(uSub (variable), i0 (int term)))
@@ -6828,9 +6839,10 @@ Choices: {}}</entry>
 Choices: {programRules:Java}}</entry>
 <entry key="sub_sub_elim">sub_sub_elim {
 \find(neg(neg(i)))
-\replacewith(i)
+    \replacewith(i)
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="leq_add_one">leq_add_one {
 \find(leq(i0,i1))
 \replacewith(leq(add(i0,Z(1(#))),add(i1,Z(1(#))))) 
@@ -7008,9 +7020,10 @@ Choices: {moreSeqRules:on,sequences:on}}</entry>
 Choices: {sequences:on}}</entry>
 <entry key="sub">sub {
 \find(sub(i,i0))
-\replacewith(add(i,neg(i0)))
+    \replacewith(add(i,neg(i0)))
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="less_trans">less_trans {
 \assumes ([lt(i,i0)]==&gt;[]) 
 \find(lt(i0,i1)==&gt;)
@@ -7669,9 +7682,10 @@ Choices: {sequences:on}}</entry>
 Choices: {}}</entry>
 <entry key="add_less_back">add_less_back_zero_2_comm {
 \find(lt(add(i1,i),i))
-\replacewith(lt(i1,Z(0(#))))
+    \replacewith(lt(i1,Z(0(#))))
 
-    Choices: {}}</entry>
+    Choices: {}}
+</entry>
 <entry key="seqNPermInvNPermReplace">seqNPermInvNPermReplace {
 \find(seqNPerm(seqNPermInv(s1)))
 \replacewith(seqNPerm(s1)) 

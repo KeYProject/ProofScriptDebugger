@@ -1,10 +1,10 @@
 # Taclets
 
-Generated on: Tue Sep 12 15:08:55 CEST 2017
+Generated on: Tue Sep 19 17:10:07 CEST 2017
 
 Covering the *default* taclets of [KeY](http://key-project.org).
 
-## FAKE_CLOSE
+## ${t.displayName()}
 
 ```
 FAKE_CLOSE {
@@ -12,7 +12,7 @@ FAKE_CLOSE {
 Choices: {debug:on}}
 ```
 
-## UNSOUND_ASSUME
+## ${t.displayName()}
 
 ```
 UNSOUND_ASSUME {
@@ -21,7 +21,7 @@ UNSOUND_ASSUME {
 Choices: {debug:on}}
 ```
 
-## abortJavaCardTransactionAPI
+## ${t.displayName()}
 
 ```
 abortJavaCardTransactionAPI {
@@ -32,7 +32,7 @@ abortJavaCardTransactionAPI {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## abortJavaCardTransaction
+## ${t.displayName()}
 
 ```
 abortJavaCardTransactionBox {
@@ -42,7 +42,7 @@ abortJavaCardTransactionBox {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## abortJavaCardTransaction
+## ${t.displayName()}
 
 ```
 abortJavaCardTransactionDiamond {
@@ -52,7 +52,7 @@ abortJavaCardTransactionDiamond {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## accDefinition
+## ${t.displayName()}
 
 ```
 accDefinition {
@@ -63,7 +63,7 @@ accDefinition {
 Choices: {reach:on}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseAddition {
@@ -74,7 +74,7 @@ activeUseAddition {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseAddition {
@@ -85,7 +85,7 @@ activeUseAddition {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseBitwiseAnd {
@@ -96,7 +96,7 @@ activeUseBitwiseAnd {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseBitwiseAnd {
@@ -107,7 +107,7 @@ activeUseBitwiseAnd {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseBitwiseNegation {
@@ -118,7 +118,7 @@ activeUseBitwiseNegation {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseBitwiseNegation {
@@ -129,7 +129,7 @@ activeUseBitwiseNegation {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseBitwiseOr {
@@ -140,7 +140,7 @@ activeUseBitwiseOr {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseBitwiseOr {
@@ -151,7 +151,7 @@ activeUseBitwiseOr {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseBitwiseXOr {
@@ -162,7 +162,7 @@ activeUseBitwiseXOr {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseBitwiseXOr {
@@ -173,7 +173,7 @@ activeUseBitwiseXOr {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseByteCast {
@@ -184,7 +184,7 @@ activeUseByteCast {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseByteCast {
@@ -195,7 +195,7 @@ activeUseByteCast {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseCharCast {
@@ -206,7 +206,7 @@ activeUseCharCast {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseCharCast {
@@ -217,7 +217,7 @@ activeUseCharCast {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseDivision {
@@ -228,7 +228,7 @@ activeUseDivision {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseDivision {
@@ -239,7 +239,7 @@ activeUseDivision {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseIntCast {
@@ -250,7 +250,7 @@ activeUseIntCast {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseIntCast {
@@ -261,7 +261,7 @@ activeUseIntCast {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseMinus {
@@ -272,7 +272,7 @@ activeUseMinus {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseModulo {
@@ -283,7 +283,7 @@ activeUseModulo {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseModulo {
@@ -294,7 +294,7 @@ activeUseModulo {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseMultiplication {
@@ -305,7 +305,7 @@ activeUseMultiplication {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseMultiplication {
@@ -316,7 +316,7 @@ activeUseMultiplication {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseShiftLeft {
@@ -327,7 +327,7 @@ activeUseShiftLeft {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseShiftLeft {
@@ -338,7 +338,7 @@ activeUseShiftLeft {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseShiftRight {
@@ -349,7 +349,7 @@ activeUseShiftRight {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseShiftRight {
@@ -360,7 +360,7 @@ activeUseShiftRight {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseShortCast {
@@ -371,7 +371,7 @@ activeUseShortCast {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseShortCast {
@@ -382,7 +382,7 @@ activeUseShortCast {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldReadAccess {
@@ -392,7 +392,7 @@ activeUseStaticFieldReadAccess {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldReadAccess {
@@ -402,7 +402,7 @@ activeUseStaticFieldReadAccess {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldReadAccess2 {
@@ -412,7 +412,7 @@ activeUseStaticFieldReadAccess2 {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldReadAccess2 {
@@ -422,7 +422,7 @@ activeUseStaticFieldReadAccess2 {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldWriteAccess {
@@ -433,7 +433,7 @@ activeUseStaticFieldWriteAccess {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldWriteAccess {
@@ -444,7 +444,7 @@ activeUseStaticFieldWriteAccess {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldWriteAccess2 {
@@ -455,7 +455,7 @@ activeUseStaticFieldWriteAccess2 {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldWriteAccess2 {
@@ -466,7 +466,7 @@ activeUseStaticFieldWriteAccess2 {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldWriteAccess3 {
@@ -477,7 +477,7 @@ activeUseStaticFieldWriteAccess3 {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldWriteAccess3 {
@@ -488,7 +488,7 @@ activeUseStaticFieldWriteAccess3 {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldWriteAccess4 {
@@ -499,7 +499,7 @@ activeUseStaticFieldWriteAccess4 {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldWriteAccess4 {
@@ -510,7 +510,7 @@ activeUseStaticFieldWriteAccess4 {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldWriteAccess5 {
@@ -521,7 +521,7 @@ activeUseStaticFieldWriteAccess5 {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldWriteAccess5 {
@@ -532,7 +532,7 @@ activeUseStaticFieldWriteAccess5 {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldWriteAccess6 {
@@ -543,7 +543,7 @@ activeUseStaticFieldWriteAccess6 {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseStaticFieldWriteAccess6 {
@@ -554,7 +554,7 @@ activeUseStaticFieldWriteAccess6 {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseSubtraction {
@@ -565,7 +565,7 @@ activeUseSubtraction {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseSubtraction {
@@ -576,7 +576,7 @@ activeUseSubtraction {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseUnaryMinus {
@@ -587,7 +587,7 @@ activeUseUnaryMinus {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseUnsignedShiftRight {
@@ -598,7 +598,7 @@ activeUseUnsignedShiftRight {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## activeUse
+## ${t.displayName()}
 
 ```
 activeUseUnsignedShiftRight {
@@ -609,7 +609,7 @@ activeUseUnsignedShiftRight {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## add_eq
+## ${t.displayName()}
 
 ```
 add_eq {
@@ -619,7 +619,7 @@ add_eq {
 Choices: {}}
 ```
 
-## add_eq_back
+## ${t.displayName()}
 
 ```
 add_eq_back {
@@ -629,7 +629,7 @@ add_eq_back {
 Choices: {}}
 ```
 
-## add_eq_back
+## ${t.displayName()}
 
 ```
 add_eq_back_2 {
@@ -639,7 +639,7 @@ add_eq_back_2 {
 Choices: {}}
 ```
 
-## add_eq_back
+## ${t.displayName()}
 
 ```
 add_eq_back_2_fst_comm {
@@ -649,7 +649,7 @@ add_eq_back_2_fst_comm {
 Choices: {}}
 ```
 
-## add_eq_back
+## ${t.displayName()}
 
 ```
 add_eq_back_3 {
@@ -659,7 +659,7 @@ add_eq_back_3 {
 Choices: {}}
 ```
 
-## add_equations
+## ${t.displayName()}
 
 ```
 add_equations {
@@ -670,7 +670,7 @@ add_equations {
 Choices: {}}
 ```
 
-## add_equations_right
+## ${t.displayName()}
 
 ```
 add_equations_right {
@@ -681,7 +681,7 @@ add_equations_right {
 Choices: {}}
 ```
 
-## add_less
+## ${t.displayName()}
 
 ```
 add_less {
@@ -691,7 +691,7 @@ add_less {
 Choices: {}}
 ```
 
-## add_less_back
+## ${t.displayName()}
 
 ```
 add_less_back {
@@ -701,7 +701,7 @@ add_less_back {
 Choices: {}}
 ```
 
-## add_less_back
+## ${t.displayName()}
 
 ```
 add_less_back_zero_1 {
@@ -711,7 +711,7 @@ add_less_back_zero_1 {
 Choices: {}}
 ```
 
-## add_less_back
+## ${t.displayName()}
 
 ```
 add_less_back_zero_1_comm {
@@ -721,7 +721,7 @@ add_less_back_zero_1_comm {
 Choices: {}}
 ```
 
-## add_less_back
+## ${t.displayName()}
 
 ```
 add_less_back_zero_2 {
@@ -731,7 +731,7 @@ add_less_back_zero_2 {
 Choices: {}}
 ```
 
-## add_less_back
+## ${t.displayName()}
 
 ```
 add_less_back_zero_2_comm {
@@ -741,7 +741,7 @@ add_less_back_zero_2_comm {
 Choices: {}}
 ```
 
-## add_literals
+## ${t.displayName()}
 
 ```
 add_literals {
@@ -751,7 +751,7 @@ add_literals {
 Choices: {}}
 ```
 
-## add_non_neg_square
+## ${t.displayName()}
 
 ```
 add_non_neg_square {
@@ -760,7 +760,7 @@ add_non_neg_square {
 Choices: {}}
 ```
 
-## add_sub_elim_left
+## ${t.displayName()}
 
 ```
 add_sub_elim_left {
@@ -770,7 +770,7 @@ add_sub_elim_left {
 Choices: {}}
 ```
 
-## add_sub_elim_right
+## ${t.displayName()}
 
 ```
 add_sub_elim_right {
@@ -780,7 +780,7 @@ add_sub_elim_right {
 Choices: {}}
 ```
 
-## add_sub_step
+## ${t.displayName()}
 
 ```
 add_sub_step {
@@ -790,7 +790,7 @@ add_sub_step {
 Choices: {}}
 ```
 
-## add_two_inequations_1
+## ${t.displayName()}
 
 ```
 add_two_inequations_1 {
@@ -801,7 +801,7 @@ add_two_inequations_1 {
 Choices: {}}
 ```
 
-## add_two_inequations_2
+## ${t.displayName()}
 
 ```
 add_two_inequations_2 {
@@ -812,7 +812,7 @@ add_two_inequations_2 {
 Choices: {}}
 ```
 
-## add_zero_left
+## ${t.displayName()}
 
 ```
 add_zero_left {
@@ -822,7 +822,7 @@ add_zero_left {
 Choices: {}}
 ```
 
-## add_zero_right
+## ${t.displayName()}
 
 ```
 add_zero_right {
@@ -832,7 +832,7 @@ add_zero_right {
 Choices: {}}
 ```
 
-## addition_associative
+## ${t.displayName()}
 
 ```
 addition_associative {
@@ -842,7 +842,7 @@ addition_associative {
 Choices: {}}
 ```
 
-## allFieldsEq
+## ${t.displayName()}
 
 ```
 allFieldsEq {
@@ -852,7 +852,7 @@ allFieldsEq {
 Choices: {programRules:Java}}
 ```
 
-## allFieldsSubsetOf
+## ${t.displayName()}
 
 ```
 allFieldsSubsetOf {
@@ -863,7 +863,7 @@ allFieldsSubsetOf {
 Choices: {programRules:Java}}
 ```
 
-## allFieldsAssignment
+## ${t.displayName()}
 
 ```
 allFieldsUnfold {
@@ -874,7 +874,7 @@ allFieldsUnfold {
 Choices: {programRules:Java}}
 ```
 
-## allLeft
+## ${t.displayName()}
 
 ```
 allLeft {
@@ -884,7 +884,7 @@ allLeft {
 Choices: {}}
 ```
 
-## allLeftHide
+## ${t.displayName()}
 
 ```
 allLeftHide {
@@ -897,7 +897,7 @@ Choices: {}}] \replacewith([subst{u (variable)}(t,b)]==>[])
 Choices: {}}
 ```
 
-## allObjectsAssignment
+## ${t.displayName()}
 
 ```
 allObjectsAssignment {
@@ -907,7 +907,7 @@ allObjectsAssignment {
 Choices: {programRules:Java}}
 ```
 
-## allRight
+## ${t.displayName()}
 
 ```
 allRight {
@@ -917,7 +917,7 @@ allRight {
 Choices: {}}
 ```
 
-## all_bool
+## ${t.displayName()}
 
 ```
 all_bool {
@@ -927,7 +927,7 @@ all_bool {
 Choices: {}}
 ```
 
-## all_pull_out0
+## ${t.displayName()}
 
 ```
 all_pull_out0 {
@@ -938,7 +938,7 @@ all_pull_out0 {
 Choices: {}}
 ```
 
-## all_pull_out1
+## ${t.displayName()}
 
 ```
 all_pull_out1 {
@@ -949,7 +949,7 @@ all_pull_out1 {
 Choices: {}}
 ```
 
-## all_pull_out2
+## ${t.displayName()}
 
 ```
 all_pull_out2 {
@@ -960,7 +960,7 @@ all_pull_out2 {
 Choices: {}}
 ```
 
-## all_pull_out3
+## ${t.displayName()}
 
 ```
 all_pull_out3 {
@@ -971,7 +971,7 @@ all_pull_out3 {
 Choices: {}}
 ```
 
-## all_pull_out4
+## ${t.displayName()}
 
 ```
 all_pull_out4 {
@@ -982,7 +982,7 @@ all_pull_out4 {
 Choices: {}}
 ```
 
-## all_unused
+## ${t.displayName()}
 
 ```
 all_unused {
@@ -993,7 +993,7 @@ all_unused {
 Choices: {}}
 ```
 
-## allocateInstance
+## ${t.displayName()}
 
 ```
 allocateInstance {
@@ -1005,7 +1005,7 @@ allocateInstance {
 Choices: {permissions:on,programRules:Java}}
 ```
 
-## allocateInstance
+## ${t.displayName()}
 
 ```
 allocateInstance {
@@ -1017,7 +1017,7 @@ allocateInstance {
 Choices: {permissions:off,programRules:Java}}
 ```
 
-## allocateInstanceWithLength
+## ${t.displayName()}
 
 ```
 allocateInstanceWithLength {
@@ -1029,7 +1029,7 @@ allocateInstanceWithLength {
 Choices: {permissions:on,programRules:Java}}
 ```
 
-## allocateInstanceWithLength
+## ${t.displayName()}
 
 ```
 allocateInstanceWithLength {
@@ -1041,7 +1041,7 @@ allocateInstanceWithLength {
 Choices: {permissions:off,programRules:Java}}
 ```
 
-## altAxiom
+## ${t.displayName()}
 
 ```
 altAxiom {
@@ -1051,7 +1051,7 @@ altAxiom {
 Choices: {Strings:on}}
 ```
 
-## andJIntDef
+## ${t.displayName()}
 
 ```
 andJIntDef {
@@ -1061,7 +1061,7 @@ andJIntDef {
 Choices: {}}
 ```
 
-## andLeft
+## ${t.displayName()}
 
 ```
 andLeft {
@@ -1071,7 +1071,7 @@ andLeft {
 Choices: {}}
 ```
 
-## andRight
+## ${t.displayName()}
 
 ```
 andRight {
@@ -1082,7 +1082,7 @@ andRight {
 Choices: {}}
 ```
 
-## applyEq
+## ${t.displayName()}
 
 ```
 applyEq {
@@ -1093,7 +1093,7 @@ applyEq {
 Choices: {}}
 ```
 
-## applyEqReverse
+## ${t.displayName()}
 
 ```
 applyEqReverse {
@@ -1104,7 +1104,7 @@ applyEqReverse {
 Choices: {}}
 ```
 
-## applyEq
+## ${t.displayName()}
 
 ```
 applyEqRigid {
@@ -1115,7 +1115,7 @@ applyEqRigid {
 Choices: {}}
 ```
 
-## applyEq_and_gen0
+## ${t.displayName()}
 
 ```
 applyEq_and_gen0 {
@@ -1125,7 +1125,7 @@ applyEq_and_gen0 {
 Choices: {}}
 ```
 
-## applyEq_and_gen1
+## ${t.displayName()}
 
 ```
 applyEq_and_gen1 {
@@ -1135,7 +1135,7 @@ applyEq_and_gen1 {
 Choices: {}}
 ```
 
-## applyEq_and_gen2
+## ${t.displayName()}
 
 ```
 applyEq_and_gen2 {
@@ -1145,7 +1145,7 @@ applyEq_and_gen2 {
 Choices: {}}
 ```
 
-## applyEq_and_gen3
+## ${t.displayName()}
 
 ```
 applyEq_and_gen3 {
@@ -1155,7 +1155,7 @@ applyEq_and_gen3 {
 Choices: {}}
 ```
 
-## applyEq_and_int0
+## ${t.displayName()}
 
 ```
 applyEq_and_int0 {
@@ -1165,7 +1165,7 @@ applyEq_and_int0 {
 Choices: {}}
 ```
 
-## applyEq_and_int1
+## ${t.displayName()}
 
 ```
 applyEq_and_int1 {
@@ -1175,7 +1175,7 @@ applyEq_and_int1 {
 Choices: {}}
 ```
 
-## applyEq_and_int2
+## ${t.displayName()}
 
 ```
 applyEq_and_int2 {
@@ -1185,7 +1185,7 @@ applyEq_and_int2 {
 Choices: {}}
 ```
 
-## applyEq_and_int3
+## ${t.displayName()}
 
 ```
 applyEq_and_int3 {
@@ -1195,7 +1195,7 @@ applyEq_and_int3 {
 Choices: {}}
 ```
 
-## applyEq_and_int4
+## ${t.displayName()}
 
 ```
 applyEq_and_int4 {
@@ -1205,7 +1205,7 @@ applyEq_and_int4 {
 Choices: {}}
 ```
 
-## applyEq_and_int5
+## ${t.displayName()}
 
 ```
 applyEq_and_int5 {
@@ -1215,7 +1215,7 @@ applyEq_and_int5 {
 Choices: {}}
 ```
 
-## applyEq_and_int6
+## ${t.displayName()}
 
 ```
 applyEq_and_int6 {
@@ -1225,7 +1225,7 @@ applyEq_and_int6 {
 Choices: {}}
 ```
 
-## applyEq_and_int7
+## ${t.displayName()}
 
 ```
 applyEq_and_int7 {
@@ -1235,7 +1235,7 @@ applyEq_and_int7 {
 Choices: {}}
 ```
 
-## applyEq_or_gen0
+## ${t.displayName()}
 
 ```
 applyEq_or_gen0 {
@@ -1245,7 +1245,7 @@ applyEq_or_gen0 {
 Choices: {}}
 ```
 
-## applyEq_or_gen1
+## ${t.displayName()}
 
 ```
 applyEq_or_gen1 {
@@ -1255,7 +1255,7 @@ applyEq_or_gen1 {
 Choices: {}}
 ```
 
-## applyEq_or_gen2
+## ${t.displayName()}
 
 ```
 applyEq_or_gen2 {
@@ -1265,7 +1265,7 @@ applyEq_or_gen2 {
 Choices: {}}
 ```
 
-## applyEq_or_gen3
+## ${t.displayName()}
 
 ```
 applyEq_or_gen3 {
@@ -1275,7 +1275,7 @@ applyEq_or_gen3 {
 Choices: {}}
 ```
 
-## applyEq_or_int0
+## ${t.displayName()}
 
 ```
 applyEq_or_int0 {
@@ -1285,7 +1285,7 @@ applyEq_or_int0 {
 Choices: {}}
 ```
 
-## applyEq_or_int1
+## ${t.displayName()}
 
 ```
 applyEq_or_int1 {
@@ -1295,7 +1295,7 @@ applyEq_or_int1 {
 Choices: {}}
 ```
 
-## applyEq_or_int2
+## ${t.displayName()}
 
 ```
 applyEq_or_int2 {
@@ -1305,7 +1305,7 @@ applyEq_or_int2 {
 Choices: {}}
 ```
 
-## applyEq_or_int3
+## ${t.displayName()}
 
 ```
 applyEq_or_int3 {
@@ -1315,7 +1315,7 @@ applyEq_or_int3 {
 Choices: {}}
 ```
 
-## applyEq_or_int4
+## ${t.displayName()}
 
 ```
 applyEq_or_int4 {
@@ -1325,7 +1325,7 @@ applyEq_or_int4 {
 Choices: {}}
 ```
 
-## applyEq_or_int5
+## ${t.displayName()}
 
 ```
 applyEq_or_int5 {
@@ -1335,7 +1335,7 @@ applyEq_or_int5 {
 Choices: {}}
 ```
 
-## applyEq_or_int6
+## ${t.displayName()}
 
 ```
 applyEq_or_int6 {
@@ -1345,7 +1345,7 @@ applyEq_or_int6 {
 Choices: {}}
 ```
 
-## applyEq_or_int7
+## ${t.displayName()}
 
 ```
 applyEq_or_int7 {
@@ -1355,7 +1355,7 @@ applyEq_or_int7 {
 Choices: {}}
 ```
 
-## applyOnElementary
+## ${t.displayName()}
 
 ```
 applyOnElementary {
@@ -1365,7 +1365,7 @@ applyOnElementary {
 Choices: {}}
 ```
 
-## applyOnPV
+## ${t.displayName()}
 
 ```
 applyOnPV {
@@ -1375,7 +1375,7 @@ applyOnPV {
 Choices: {}}
 ```
 
-## applyOnParallel
+## ${t.displayName()}
 
 ```
 applyOnParallel {
@@ -1385,7 +1385,7 @@ applyOnParallel {
 Choices: {}}
 ```
 
-## applyOnRigidFormula
+## ${t.displayName()}
 
 ```
 applyOnRigidFormula {
@@ -1396,7 +1396,7 @@ applyOnRigidFormula {
 Choices: {}}
 ```
 
-## applyOnRigidTerm
+## ${t.displayName()}
 
 ```
 applyOnRigidTerm {
@@ -1407,7 +1407,7 @@ applyOnRigidTerm {
 Choices: {}}
 ```
 
-## applyOnSkip
+## ${t.displayName()}
 
 ```
 applyOnSkip {
@@ -1417,7 +1417,7 @@ applyOnSkip {
 Choices: {}}
 ```
 
-## applySkip1
+## ${t.displayName()}
 
 ```
 applySkip1 {
@@ -1427,7 +1427,7 @@ applySkip1 {
 Choices: {}}
 ```
 
-## applySkip2
+## ${t.displayName()}
 
 ```
 applySkip2 {
@@ -1437,7 +1437,7 @@ applySkip2 {
 Choices: {}}
 ```
 
-## applySkip3
+## ${t.displayName()}
 
 ```
 applySkip3 {
@@ -1447,7 +1447,7 @@ applySkip3 {
 Choices: {}}
 ```
 
-## apply_eq_boolean
+## ${t.displayName()}
 
 ```
 apply_eq_boolean {
@@ -1458,7 +1458,7 @@ apply_eq_boolean {
 Choices: {}}
 ```
 
-## apply_eq_boolean
+## ${t.displayName()}
 
 ```
 apply_eq_boolean_2 {
@@ -1469,7 +1469,7 @@ apply_eq_boolean_2 {
 Choices: {}}
 ```
 
-## apply_eq_boolean
+## ${t.displayName()}
 
 ```
 apply_eq_boolean_rigid {
@@ -1480,7 +1480,7 @@ apply_eq_boolean_rigid {
 Choices: {}}
 ```
 
-## apply_eq_boolean
+## ${t.displayName()}
 
 ```
 apply_eq_boolean_rigid_2 {
@@ -1491,7 +1491,7 @@ apply_eq_boolean_rigid_2 {
 Choices: {}}
 ```
 
-## apply_eq_monomials
+## ${t.displayName()}
 
 ```
 apply_eq_monomials {
@@ -1502,7 +1502,7 @@ apply_eq_monomials {
 Choices: {}}
 ```
 
-## apply_eq_monomials_rigid
+## ${t.displayName()}
 
 ```
 apply_eq_monomials_rigid {
@@ -1513,7 +1513,7 @@ apply_eq_monomials_rigid {
 Choices: {}}
 ```
 
-## apply_eq_pseudo_eq
+## ${t.displayName()}
 
 ```
 apply_eq_pseudo_eq {
@@ -1524,7 +1524,7 @@ apply_eq_pseudo_eq {
 Choices: {}}
 ```
 
-## apply_eq_pseudo_geq
+## ${t.displayName()}
 
 ```
 apply_eq_pseudo_geq {
@@ -1535,7 +1535,7 @@ apply_eq_pseudo_geq {
 Choices: {}}
 ```
 
-## apply_eq_pseudo_leq
+## ${t.displayName()}
 
 ```
 apply_eq_pseudo_leq {
@@ -1546,7 +1546,7 @@ apply_eq_pseudo_leq {
 Choices: {}}
 ```
 
-## apply_subst
+## ${t.displayName()}
 
 ```
 apply_subst {
@@ -1556,7 +1556,7 @@ apply_subst {
 Choices: {}}
 ```
 
-## apply_subst
+## ${t.displayName()}
 
 ```
 apply_subst_for {
@@ -1566,7 +1566,7 @@ apply_subst_for {
 Choices: {}}
 ```
 
-## array2seqDef
+## ${t.displayName()}
 
 ```
 array2seqDef {
@@ -1577,7 +1577,7 @@ array2seqDef {
 Choices: {sequences:on}}
 ```
 
-## arrayCreation
+## ${t.displayName()}
 
 ```
 arrayCreation {
@@ -1588,7 +1588,7 @@ arrayCreation {
 Choices: {programRules:Java}}
 ```
 
-## arrayCreationWithInitializers
+## ${t.displayName()}
 
 ```
 arrayCreationWithInitializers {
@@ -1599,7 +1599,7 @@ arrayCreationWithInitializers {
 Choices: {programRules:Java}}
 ```
 
-## arrayInitialisation
+## ${t.displayName()}
 
 ```
 arrayInitialisation {
@@ -1611,7 +1611,7 @@ arrayInitialisation {
 Choices: {programRules:Java}}
 ```
 
-## arrayLengthIsAShort
+## ${t.displayName()}
 
 ```
 arrayLengthIsAShort {
@@ -1621,7 +1621,7 @@ arrayLengthIsAShort {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## arrayLengthIsAnInt
+## ${t.displayName()}
 
 ```
 arrayLengthIsAnInt {
@@ -1631,7 +1631,7 @@ arrayLengthIsAnInt {
 Choices: {JavaCard:off,programRules:Java}}
 ```
 
-## arrayLengthNotNegative
+## ${t.displayName()}
 
 ```
 arrayLengthNotNegative {
@@ -1641,7 +1641,7 @@ arrayLengthNotNegative {
 Choices: {programRules:Java}}
 ```
 
-## array_post_declaration
+## ${t.displayName()}
 
 ```
 array_post_declaration {
@@ -1651,7 +1651,7 @@ array_post_declaration {
 Choices: {programRules:Java}}
 ```
 
-## array_self_reference
+## ${t.displayName()}
 
 ```
 array_self_reference {
@@ -1662,7 +1662,7 @@ array_self_reference {
 Choices: {programRules:Java}}
 ```
 
-## array_self_reference_eq
+## ${t.displayName()}
 
 ```
 array_self_reference_eq {
@@ -1673,7 +1673,7 @@ array_self_reference_eq {
 Choices: {programRules:Java}}
 ```
 
-## known dynamic array type
+## ${t.displayName()}
 
 ```
 array_store_known_dynamic_array_type {
@@ -1685,7 +1685,7 @@ array_store_known_dynamic_array_type {
 Choices: {programRules:Java}}
 ```
 
-## assert
+## ${t.displayName()}
 
 ```
 assert {
@@ -1696,7 +1696,7 @@ assert {
 Choices: {assertions:on,programRules:Java}}
 ```
 
-## assert
+## ${t.displayName()}
 
 ```
 assertSafe {
@@ -1714,7 +1714,7 @@ assertSafe {
 Choices: {assertions:safe,programRules:Java}}
 ```
 
-## assert
+## ${t.displayName()}
 
 ```
 assertSafeWithMessage {
@@ -1731,7 +1731,7 @@ assertSafeWithMessage {
 Choices: {assertions:safe,programRules:Java}}
 ```
 
-## assert
+## ${t.displayName()}
 
 ```
 assertWithPrimitiveMessage {
@@ -1743,7 +1743,7 @@ assertWithPrimitiveMessage {
 Choices: {assertions:on,programRules:Java}}
 ```
 
-## assert
+## ${t.displayName()}
 
 ```
 assertWithReferenceMessage {
@@ -1755,7 +1755,7 @@ assertWithReferenceMessage {
 Choices: {assertions:on,programRules:Java}}
 ```
 
-## assert
+## ${t.displayName()}
 
 ```
 assertWithReferenceMessageNull {
@@ -1766,7 +1766,7 @@ assertWithReferenceMessageNull {
 Choices: {assertions:on,programRules:Java}}
 ```
 
-## assignment
+## ${t.displayName()}
 
 ```
 assignment {
@@ -1776,7 +1776,7 @@ assignment {
 Choices: {programRules:Java}}
 ```
 
-## addition
+## ${t.displayName()}
 
 ```
 assignmentAdditionBigint1 {
@@ -1786,7 +1786,7 @@ assignmentAdditionBigint1 {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## addition
+## ${t.displayName()}
 
 ```
 assignmentAdditionBigint2 {
@@ -1796,7 +1796,7 @@ assignmentAdditionBigint2 {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## addition
+## ${t.displayName()}
 
 ```
 assignmentAdditionInt {
@@ -1806,7 +1806,7 @@ assignmentAdditionInt {
 Choices: {programRules:Java}}
 ```
 
-## addition
+## ${t.displayName()}
 
 ```
 assignmentAdditionLong {
@@ -1816,7 +1816,7 @@ assignmentAdditionLong {
 Choices: {programRules:Java}}
 ```
 
-## addition
+## ${t.displayName()}
 
 ```
 assignmentAdditionLong2 {
@@ -1826,7 +1826,7 @@ assignmentAdditionLong2 {
 Choices: {programRules:Java}}
 ```
 
-## addition
+## ${t.displayName()}
 
 ```
 assignmentAdditionLong3 {
@@ -1836,7 +1836,7 @@ assignmentAdditionLong3 {
 Choices: {programRules:Java}}
 ```
 
-## bitwiseAnd
+## ${t.displayName()}
 
 ```
 assignmentBitwiseAndInt {
@@ -1846,7 +1846,7 @@ assignmentBitwiseAndInt {
 Choices: {programRules:Java}}
 ```
 
-## bitwiseAnd
+## ${t.displayName()}
 
 ```
 assignmentBitwiseAndLong {
@@ -1856,7 +1856,7 @@ assignmentBitwiseAndLong {
 Choices: {programRules:Java}}
 ```
 
-## bitwiseAnd
+## ${t.displayName()}
 
 ```
 assignmentBitwiseAndLong2 {
@@ -1866,7 +1866,7 @@ assignmentBitwiseAndLong2 {
 Choices: {programRules:Java}}
 ```
 
-## bitwiseAnd
+## ${t.displayName()}
 
 ```
 assignmentBitwiseAndLong3 {
@@ -1876,7 +1876,7 @@ assignmentBitwiseAndLong3 {
 Choices: {programRules:Java}}
 ```
 
-## bitwiseOr
+## ${t.displayName()}
 
 ```
 assignmentBitwiseOrInt {
@@ -1886,7 +1886,7 @@ assignmentBitwiseOrInt {
 Choices: {programRules:Java}}
 ```
 
-## bitwiseOr
+## ${t.displayName()}
 
 ```
 assignmentBitwiseOrLong {
@@ -1896,7 +1896,7 @@ assignmentBitwiseOrLong {
 Choices: {programRules:Java}}
 ```
 
-## bitwiseOr
+## ${t.displayName()}
 
 ```
 assignmentBitwiseOrLong2 {
@@ -1906,7 +1906,7 @@ assignmentBitwiseOrLong2 {
 Choices: {programRules:Java}}
 ```
 
-## bitwiseOr
+## ${t.displayName()}
 
 ```
 assignmentBitwiseOrLong3 {
@@ -1916,7 +1916,7 @@ assignmentBitwiseOrLong3 {
 Choices: {programRules:Java}}
 ```
 
-## bitwiseXOr
+## ${t.displayName()}
 
 ```
 assignmentBitwiseXOrInt {
@@ -1926,7 +1926,7 @@ assignmentBitwiseXOrInt {
 Choices: {programRules:Java}}
 ```
 
-## bitwiseXOr
+## ${t.displayName()}
 
 ```
 assignmentBitwiseXOrLong {
@@ -1936,7 +1936,7 @@ assignmentBitwiseXOrLong {
 Choices: {programRules:Java}}
 ```
 
-## bitwiseXOr
+## ${t.displayName()}
 
 ```
 assignmentBitwiseXOrLong2 {
@@ -1946,7 +1946,7 @@ assignmentBitwiseXOrLong2 {
 Choices: {programRules:Java}}
 ```
 
-## bitwiseXOr
+## ${t.displayName()}
 
 ```
 assignmentBitwiseXOrLong3 {
@@ -1956,7 +1956,7 @@ assignmentBitwiseXOrLong3 {
 Choices: {programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionBigint1 {
@@ -1967,7 +1967,7 @@ assignmentDivisionBigint1 {
 Choices: {runtimeExceptions:ban,bigint:on,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionBigint1 {
@@ -1977,7 +1977,7 @@ assignmentDivisionBigint1 {
 Choices: {runtimeExceptions:ignore,bigint:on,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionBigint1 {
@@ -1987,7 +1987,7 @@ assignmentDivisionBigint1 {
 Choices: {runtimeExceptions:allow,bigint:on,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionBigint2 {
@@ -1998,7 +1998,7 @@ assignmentDivisionBigint2 {
 Choices: {runtimeExceptions:ban,bigint:on,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionBigint2 {
@@ -2008,7 +2008,7 @@ assignmentDivisionBigint2 {
 Choices: {runtimeExceptions:ignore,bigint:on,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionBigint2 {
@@ -2018,7 +2018,7 @@ assignmentDivisionBigint2 {
 Choices: {runtimeExceptions:allow,bigint:on,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionInt {
@@ -2029,7 +2029,7 @@ assignmentDivisionInt {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionInt {
@@ -2039,7 +2039,7 @@ assignmentDivisionInt {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionInt {
@@ -2049,7 +2049,7 @@ assignmentDivisionInt {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionLong {
@@ -2060,7 +2060,7 @@ assignmentDivisionLong {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionLong {
@@ -2070,7 +2070,7 @@ assignmentDivisionLong {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionLong {
@@ -2080,7 +2080,7 @@ assignmentDivisionLong {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionLong2 {
@@ -2091,7 +2091,7 @@ assignmentDivisionLong2 {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionLong2 {
@@ -2101,7 +2101,7 @@ assignmentDivisionLong2 {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 assignmentDivisionLong2 {
@@ -2111,7 +2111,7 @@ assignmentDivisionLong2 {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## modulo
+## ${t.displayName()}
 
 ```
 assignmentModulo {
@@ -2122,7 +2122,7 @@ assignmentModulo {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## modulo
+## ${t.displayName()}
 
 ```
 assignmentModulo {
@@ -2132,7 +2132,7 @@ assignmentModulo {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## modulo
+## ${t.displayName()}
 
 ```
 assignmentModulo {
@@ -2142,7 +2142,7 @@ assignmentModulo {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## modulo
+## ${t.displayName()}
 
 ```
 assignmentModuloBigint1 {
@@ -2153,7 +2153,7 @@ assignmentModuloBigint1 {
 Choices: {runtimeExceptions:ban,bigint:on,programRules:Java}}
 ```
 
-## modulo
+## ${t.displayName()}
 
 ```
 assignmentModuloBigint1 {
@@ -2163,7 +2163,7 @@ assignmentModuloBigint1 {
 Choices: {runtimeExceptions:ignore,bigint:on,programRules:Java}}
 ```
 
-## modulo
+## ${t.displayName()}
 
 ```
 assignmentModuloBigint1 {
@@ -2173,7 +2173,7 @@ assignmentModuloBigint1 {
 Choices: {runtimeExceptions:allow,bigint:on,programRules:Java}}
 ```
 
-## modulo
+## ${t.displayName()}
 
 ```
 assignmentModuloBigint2 {
@@ -2184,7 +2184,7 @@ assignmentModuloBigint2 {
 Choices: {runtimeExceptions:ban,bigint:on,programRules:Java}}
 ```
 
-## modulo
+## ${t.displayName()}
 
 ```
 assignmentModuloBigint2 {
@@ -2194,7 +2194,7 @@ assignmentModuloBigint2 {
 Choices: {runtimeExceptions:ignore,bigint:on,programRules:Java}}
 ```
 
-## modulo
+## ${t.displayName()}
 
 ```
 assignmentModuloBigint2 {
@@ -2204,7 +2204,7 @@ assignmentModuloBigint2 {
 Choices: {runtimeExceptions:allow,bigint:on,programRules:Java}}
 ```
 
-## multiplication
+## ${t.displayName()}
 
 ```
 assignmentMultiplicationBigint1 {
@@ -2214,7 +2214,7 @@ assignmentMultiplicationBigint1 {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## multiplication
+## ${t.displayName()}
 
 ```
 assignmentMultiplicationBigint2 {
@@ -2224,7 +2224,7 @@ assignmentMultiplicationBigint2 {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## multiplication
+## ${t.displayName()}
 
 ```
 assignmentMultiplicationInt {
@@ -2234,7 +2234,7 @@ assignmentMultiplicationInt {
 Choices: {programRules:Java}}
 ```
 
-## multiplication
+## ${t.displayName()}
 
 ```
 assignmentMultiplicationLong {
@@ -2244,7 +2244,7 @@ assignmentMultiplicationLong {
 Choices: {programRules:Java}}
 ```
 
-## multiplication
+## ${t.displayName()}
 
 ```
 assignmentMultiplicationLong2 {
@@ -2254,7 +2254,7 @@ assignmentMultiplicationLong2 {
 Choices: {programRules:Java}}
 ```
 
-## multiplication
+## ${t.displayName()}
 
 ```
 assignmentMultiplicationLong3 {
@@ -2264,7 +2264,7 @@ assignmentMultiplicationLong3 {
 Choices: {programRules:Java}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 assignmentShiftLeftInt {
@@ -2274,7 +2274,7 @@ assignmentShiftLeftInt {
 Choices: {programRules:Java}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 assignmentShiftLeftLong {
@@ -2284,7 +2284,7 @@ assignmentShiftLeftLong {
 Choices: {programRules:Java}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 assignmentShiftRightInt {
@@ -2294,7 +2294,7 @@ assignmentShiftRightInt {
 Choices: {programRules:Java}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 assignmentShiftRightLong {
@@ -2304,7 +2304,7 @@ assignmentShiftRightLong {
 Choices: {programRules:Java}}
 ```
 
-## subtraction
+## ${t.displayName()}
 
 ```
 assignmentSubtractionBigint1 {
@@ -2314,7 +2314,7 @@ assignmentSubtractionBigint1 {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## subtraction
+## ${t.displayName()}
 
 ```
 assignmentSubtractionBigint2 {
@@ -2324,7 +2324,7 @@ assignmentSubtractionBigint2 {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## subtraction
+## ${t.displayName()}
 
 ```
 assignmentSubtractionInt {
@@ -2334,7 +2334,7 @@ assignmentSubtractionInt {
 Choices: {programRules:Java}}
 ```
 
-## subtraction
+## ${t.displayName()}
 
 ```
 assignmentSubtractionLong {
@@ -2344,7 +2344,7 @@ assignmentSubtractionLong {
 Choices: {programRules:Java}}
 ```
 
-## subtraction
+## ${t.displayName()}
 
 ```
 assignmentSubtractionLong2 {
@@ -2354,7 +2354,7 @@ assignmentSubtractionLong2 {
 Choices: {programRules:Java}}
 ```
 
-## subtraction
+## ${t.displayName()}
 
 ```
 assignmentSubtractionLong3 {
@@ -2364,7 +2364,7 @@ assignmentSubtractionLong3 {
 Choices: {programRules:Java}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 assignmentUnsignedShiftRightInt {
@@ -2374,7 +2374,7 @@ assignmentUnsignedShiftRightInt {
 Choices: {programRules:Java}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 assignmentUnsignedShiftRightLong {
@@ -2384,7 +2384,7 @@ assignmentUnsignedShiftRightLong {
 Choices: {programRules:Java}}
 ```
 
-## assignment_array2
+## ${t.displayName()}
 
 ```
 assignment_array2 {
@@ -2398,7 +2398,7 @@ assignment_array2 {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## assignment_array2
+## ${t.displayName()}
 
 ```
 assignment_array2 {
@@ -2412,7 +2412,7 @@ assignment_array2 {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## assignment_array2
+## ${t.displayName()}
 
 ```
 assignment_array2 {
@@ -2423,7 +2423,7 @@ assignment_array2 {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## assignment_read_attribute
+## ${t.displayName()}
 
 ```
 assignment_read_attribute {
@@ -2436,7 +2436,7 @@ assignment_read_attribute {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## assignment_read_attribute
+## ${t.displayName()}
 
 ```
 assignment_read_attribute {
@@ -2449,7 +2449,7 @@ assignment_read_attribute {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## assignment_read_attribute
+## ${t.displayName()}
 
 ```
 assignment_read_attribute {
@@ -2460,7 +2460,7 @@ assignment_read_attribute {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## assignment_read_attribute_this
+## ${t.displayName()}
 
 ```
 assignment_read_attribute_this {
@@ -2472,7 +2472,7 @@ assignment_read_attribute_this {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## assignment_read_attribute_this
+## ${t.displayName()}
 
 ```
 assignment_read_attribute_this {
@@ -2484,7 +2484,7 @@ assignment_read_attribute_this {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## assignment_read_attribute_this
+## ${t.displayName()}
 
 ```
 assignment_read_attribute_this {
@@ -2495,7 +2495,7 @@ assignment_read_attribute_this {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## assignment_read_length
+## ${t.displayName()}
 
 ```
 assignment_read_length {
@@ -2507,7 +2507,7 @@ assignment_read_length {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## assignment_read_length
+## ${t.displayName()}
 
 ```
 assignment_read_length {
@@ -2519,7 +2519,7 @@ assignment_read_length {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## assignment_read_length
+## ${t.displayName()}
 
 ```
 assignment_read_length {
@@ -2530,7 +2530,7 @@ assignment_read_length {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## assignment_read_length_this
+## ${t.displayName()}
 
 ```
 assignment_read_length_this {
@@ -2541,7 +2541,7 @@ assignment_read_length_this {
 Choices: {programRules:Java}}
 ```
 
-## assignment_read_static_attribute
+## ${t.displayName()}
 
 ```
 assignment_read_static_attribute {
@@ -2553,7 +2553,7 @@ assignment_read_static_attribute {
 Choices: {programRules:Java}}
 ```
 
-## assignment
+## ${t.displayName()}
 
 ```
 assignment_read_static_attribute_with_variable_prefix {
@@ -2565,7 +2565,7 @@ assignment_read_static_attribute_with_variable_prefix {
 Choices: {programRules:Java}}
 ```
 
-## assignment_to_primitive_array_component
+## ${t.displayName()}
 
 ```
 assignment_to_primitive_array_component {
@@ -2579,7 +2579,7 @@ assignment_to_primitive_array_component {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## assignment_to_primitive_array_component
+## ${t.displayName()}
 
 ```
 assignment_to_primitive_array_component {
@@ -2593,7 +2593,7 @@ assignment_to_primitive_array_component {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## assignment_to_primitive_array_component
+## ${t.displayName()}
 
 ```
 assignment_to_primitive_array_component {
@@ -2604,7 +2604,7 @@ assignment_to_primitive_array_component {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## assignment_to_primitive_array_component
+## ${t.displayName()}
 
 ```
 assignment_to_primitive_array_component_transaction {
@@ -2617,7 +2617,7 @@ assignment_to_primitive_array_component_transaction {
 Choices: {JavaCard:on,runtimeExceptions:allow,programRules:Java}}
 ```
 
-## assignment_to_primitive_array_component
+## ${t.displayName()}
 
 ```
 assignment_to_primitive_array_component_transaction {
@@ -2630,7 +2630,7 @@ assignment_to_primitive_array_component_transaction {
 Choices: {JavaCard:on,runtimeExceptions:ban,programRules:Java}}
 ```
 
-## assignment_to_primitive_array_component
+## ${t.displayName()}
 
 ```
 assignment_to_primitive_array_component_transaction {
@@ -2641,7 +2641,7 @@ assignment_to_primitive_array_component_transaction {
 Choices: {JavaCard:on,runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## assignment_to_reference_array_component
+## ${t.displayName()}
 
 ```
 assignment_to_reference_array_component {
@@ -2656,7 +2656,7 @@ assignment_to_reference_array_component {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## assignment_to_reference_array_component
+## ${t.displayName()}
 
 ```
 assignment_to_reference_array_component {
@@ -2671,7 +2671,7 @@ assignment_to_reference_array_component {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## assignment_to_reference_array_component
+## ${t.displayName()}
 
 ```
 assignment_to_reference_array_component {
@@ -2682,7 +2682,7 @@ assignment_to_reference_array_component {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## assignment_to_reference_array_component
+## ${t.displayName()}
 
 ```
 assignment_to_reference_array_component_transaction {
@@ -2696,7 +2696,7 @@ assignment_to_reference_array_component_transaction {
 Choices: {JavaCard:on,runtimeExceptions:allow,programRules:Java}}
 ```
 
-## assignment_to_reference_array_component
+## ${t.displayName()}
 
 ```
 assignment_to_reference_array_component_transaction {
@@ -2710,7 +2710,7 @@ assignment_to_reference_array_component_transaction {
 Choices: {JavaCard:on,runtimeExceptions:ban,programRules:Java}}
 ```
 
-## assignment_to_reference_array_component
+## ${t.displayName()}
 
 ```
 assignment_to_reference_array_component_transaction {
@@ -2721,7 +2721,7 @@ assignment_to_reference_array_component_transaction {
 Choices: {JavaCard:on,runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## assignment
+## ${t.displayName()}
 
 ```
 assignment_write_array_this_access_normalassign {
@@ -2731,7 +2731,7 @@ assignment_write_array_this_access_normalassign {
 Choices: {permissions:off,programRules:Java}}
 ```
 
-## assignment
+## ${t.displayName()}
 
 ```
 assignment_write_array_this_access_normalassign {
@@ -2741,7 +2741,7 @@ assignment_write_array_this_access_normalassign {
 Choices: {permissions:on,programRules:Java}}
 ```
 
-## assignment
+## ${t.displayName()}
 
 ```
 assignment_write_attribute {
@@ -2754,7 +2754,7 @@ assignment_write_attribute {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## assignment
+## ${t.displayName()}
 
 ```
 assignment_write_attribute {
@@ -2767,7 +2767,7 @@ assignment_write_attribute {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## assignment
+## ${t.displayName()}
 
 ```
 assignment_write_attribute {
@@ -2778,7 +2778,7 @@ assignment_write_attribute {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## assignmentThis
+## ${t.displayName()}
 
 ```
 assignment_write_attribute_this {
@@ -2790,7 +2790,7 @@ assignment_write_attribute_this {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## assignmentThis
+## ${t.displayName()}
 
 ```
 assignment_write_attribute_this {
@@ -2802,7 +2802,7 @@ assignment_write_attribute_this {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## assignment
+## ${t.displayName()}
 
 ```
 assignment_write_static_attribute {
@@ -2813,7 +2813,7 @@ assignment_write_static_attribute {
 Choices: {programRules:Java}}
 ```
 
-## active_attribute_access
+## ${t.displayName()}
 
 ```
 assignment_write_static_attribute_with_variable_prefix {
@@ -2824,7 +2824,7 @@ assignment_write_static_attribute_with_variable_prefix {
 Choices: {programRules:Java}}
 ```
 
-## associativeLawIntersect
+## ${t.displayName()}
 
 ```
 associativeLawIntersect {
@@ -2834,7 +2834,7 @@ associativeLawIntersect {
 Choices: {programRules:Java}}
 ```
 
-## associativeLawUnion
+## ${t.displayName()}
 
 ```
 associativeLawUnion {
@@ -2844,7 +2844,7 @@ associativeLawUnion {
 Choices: {programRules:Java}}
 ```
 
-## auto_induction_lemma
+## ${t.displayName()}
 
 ```
 autoInductGEQ_Lemma_1 {
@@ -2857,7 +2857,7 @@ autoInductGEQ_Lemma_1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction_lemma
+## ${t.displayName()}
 
 ```
 autoInductGEQ_Lemma_2 {
@@ -2870,7 +2870,7 @@ autoInductGEQ_Lemma_2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction_lemma
+## ${t.displayName()}
 
 ```
 autoInductGEQ_Lemma_3 {
@@ -2883,7 +2883,7 @@ autoInductGEQ_Lemma_3 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction_lemma
+## ${t.displayName()}
 
 ```
 autoInductGEQ_Lemma_5 {
@@ -2896,7 +2896,7 @@ autoInductGEQ_Lemma_5 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction_lemma
+## ${t.displayName()}
 
 ```
 autoInductGEQ_Lemma_6 {
@@ -2909,7 +2909,7 @@ autoInductGEQ_Lemma_6 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction_lemma
+## ${t.displayName()}
 
 ```
 autoInductGT_Lemma_1 {
@@ -2922,7 +2922,7 @@ autoInductGT_Lemma_1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction_lemma
+## ${t.displayName()}
 
 ```
 autoInductGT_Lemma_2 {
@@ -2935,7 +2935,7 @@ autoInductGT_Lemma_2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction_lemma
+## ${t.displayName()}
 
 ```
 autoInductGT_Lemma_3 {
@@ -2948,7 +2948,7 @@ autoInductGT_Lemma_3 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction_lemma
+## ${t.displayName()}
 
 ```
 autoInductGT_Lemma_5 {
@@ -2961,7 +2961,7 @@ autoInductGT_Lemma_5 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction_lemma
+## ${t.displayName()}
 
 ```
 autoInductGT_Lemma_6 {
@@ -2974,7 +2974,7 @@ autoInductGT_Lemma_6 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## autoInduct_Lemma
+## ${t.displayName()}
 
 ```
 autoInduct_Lemma {
@@ -2987,7 +2987,7 @@ autoInduct_Lemma {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_geqZero {
@@ -2999,7 +2999,7 @@ auto_int_induction_geqZero {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_geqZeroLeft {
@@ -3011,7 +3011,7 @@ auto_int_induction_geqZeroLeft {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_geq_1 {
@@ -3023,7 +3023,7 @@ auto_int_induction_geq_1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_geq_2 {
@@ -3035,7 +3035,7 @@ auto_int_induction_geq_2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_geq_3 {
@@ -3047,7 +3047,7 @@ auto_int_induction_geq_3 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_geq_5 {
@@ -3059,7 +3059,7 @@ auto_int_induction_geq_5 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_geq_6 {
@@ -3071,7 +3071,7 @@ auto_int_induction_geq_6 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_geq_Left1 {
@@ -3083,7 +3083,7 @@ auto_int_induction_geq_Left1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_geq_Left2 {
@@ -3095,7 +3095,7 @@ auto_int_induction_geq_Left2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_gt_1 {
@@ -3107,7 +3107,7 @@ auto_int_induction_gt_1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_gt_2 {
@@ -3119,7 +3119,7 @@ auto_int_induction_gt_2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_gt_3 {
@@ -3131,7 +3131,7 @@ auto_int_induction_gt_3 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_gt_5 {
@@ -3143,7 +3143,7 @@ auto_int_induction_gt_5 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_gt_6 {
@@ -3155,7 +3155,7 @@ auto_int_induction_gt_6 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_gt_Left1 {
@@ -3167,7 +3167,7 @@ auto_int_induction_gt_Left1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## auto_induction
+## ${t.displayName()}
 
 ```
 auto_int_induction_gt_Left2 {
@@ -3179,7 +3179,7 @@ auto_int_induction_gt_Left2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## beginJavaCardTransactionAPI
+## ${t.displayName()}
 
 ```
 beginJavaCardTransactionAPI {
@@ -3190,7 +3190,7 @@ beginJavaCardTransactionAPI {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## beginJavaCardTransaction
+## ${t.displayName()}
 
 ```
 beginJavaCardTransactionBox {
@@ -3200,7 +3200,7 @@ beginJavaCardTransactionBox {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## beginJavaCardTransaction
+## ${t.displayName()}
 
 ```
 beginJavaCardTransactionDiamond {
@@ -3210,7 +3210,7 @@ beginJavaCardTransactionDiamond {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## binaryAndOne
+## ${t.displayName()}
 
 ```
 binaryAndOne {
@@ -3220,7 +3220,7 @@ binaryAndOne {
 Choices: {}}
 ```
 
-## binaryAndSymm
+## ${t.displayName()}
 
 ```
 binaryAndSymm {
@@ -3230,7 +3230,7 @@ binaryAndSymm {
 Choices: {}}
 ```
 
-## binaryAndZeroLeft
+## ${t.displayName()}
 
 ```
 binaryAndZeroLeft {
@@ -3240,7 +3240,7 @@ binaryAndZeroLeft {
 Choices: {}}
 ```
 
-## binaryAndZeroRight
+## ${t.displayName()}
 
 ```
 binaryAndZeroRight {
@@ -3250,7 +3250,7 @@ binaryAndZeroRight {
 Choices: {}}
 ```
 
-## binary_AND
+## ${t.displayName()}
 
 ```
 binaryAnd_literals {
@@ -3260,7 +3260,7 @@ binaryAnd_literals {
 Choices: {}}
 ```
 
-## binaryOrGte
+## ${t.displayName()}
 
 ```
 binaryOrGte {
@@ -3270,7 +3270,7 @@ binaryOrGte {
 Choices: {}}
 ```
 
-## binaryOrInInt
+## ${t.displayName()}
 
 ```
 binaryOrInInt {
@@ -3280,7 +3280,7 @@ binaryOrInInt {
 Choices: {}}
 ```
 
-## binaryOrNeutralLeft
+## ${t.displayName()}
 
 ```
 binaryOrNeutralLeft {
@@ -3290,7 +3290,7 @@ binaryOrNeutralLeft {
 Choices: {}}
 ```
 
-## binaryOrNeutralRight
+## ${t.displayName()}
 
 ```
 binaryOrNeutralRight {
@@ -3300,7 +3300,7 @@ binaryOrNeutralRight {
 Choices: {}}
 ```
 
-## binaryOrSign
+## ${t.displayName()}
 
 ```
 binaryOrSign {
@@ -3310,7 +3310,7 @@ binaryOrSign {
 Choices: {}}
 ```
 
-## binary_OR
+## ${t.displayName()}
 
 ```
 binaryOr_literals {
@@ -3320,7 +3320,7 @@ binaryOr_literals {
 Choices: {}}
 ```
 
-## binary_XOR
+## ${t.displayName()}
 
 ```
 binaryXOr_literals {
@@ -3330,7 +3330,7 @@ binaryXOr_literals {
 Choices: {}}
 ```
 
-## invertBits
+## ${t.displayName()}
 
 ```
 bitwiseNegation {
@@ -3340,7 +3340,7 @@ bitwiseNegation {
 Choices: {programRules:Java}}
 ```
 
-## blockBreakLabel
+## ${t.displayName()}
 
 ```
 blockBreakLabel {
@@ -3353,7 +3353,7 @@ blockBreakLabel {
 Choices: {programRules:Java}}
 ```
 
-## blockBreakNoLabel
+## ${t.displayName()}
 
 ```
 blockBreakNoLabel {
@@ -3367,7 +3367,7 @@ blockBreakNoLabel {
 Choices: {programRules:Java}}
 ```
 
-## blockEmpty
+## ${t.displayName()}
 
 ```
 blockEmpty {
@@ -3377,7 +3377,7 @@ blockEmpty {
 Choices: {programRules:Java}}
 ```
 
-## blockEmpty
+## ${t.displayName()}
 
 ```
 blockEmptyLabel {
@@ -3387,7 +3387,7 @@ blockEmptyLabel {
 Choices: {programRules:Java}}
 ```
 
-## blockReturn
+## ${t.displayName()}
 
 ```
 blockReturn {
@@ -3397,7 +3397,7 @@ blockReturn {
 Choices: {programRules:Java}}
 ```
 
-## blockReturn (remove label)
+## ${t.displayName()}
 
 ```
 blockReturnLabel1 {
@@ -3407,7 +3407,7 @@ blockReturnLabel1 {
 Choices: {programRules:Java}}
 ```
 
-## blockReturn (remove label)
+## ${t.displayName()}
 
 ```
 blockReturnLabel2 {
@@ -3417,7 +3417,7 @@ blockReturnLabel2 {
 Choices: {programRules:Java}}
 ```
 
-## blockReturn
+## ${t.displayName()}
 
 ```
 blockReturnNoValue {
@@ -3427,7 +3427,7 @@ blockReturnNoValue {
 Choices: {programRules:Java}}
 ```
 
-## blockThrow
+## ${t.displayName()}
 
 ```
 blockThrow {
@@ -3437,7 +3437,7 @@ blockThrow {
 Choices: {programRules:Java}}
 ```
 
-## boolean_equal
+## ${t.displayName()}
 
 ```
 boolean_equal {
@@ -3447,7 +3447,7 @@ boolean_equal {
 Choices: {}}
 ```
 
-## boolean_equal
+## ${t.displayName()}
 
 ```
 boolean_equal_2 {
@@ -3457,7 +3457,7 @@ boolean_equal_2 {
 Choices: {}}
 ```
 
-## boolean commute
+## ${t.displayName()}
 
 ```
 boolean_false_commute {
@@ -3467,7 +3467,7 @@ boolean_false_commute {
 Choices: {}}
 ```
 
-## boolean_not_equal
+## ${t.displayName()}
 
 ```
 boolean_not_equal_1 {
@@ -3477,7 +3477,7 @@ boolean_not_equal_1 {
 Choices: {}}
 ```
 
-## boolean_not_equal
+## ${t.displayName()}
 
 ```
 boolean_not_equal_2 {
@@ -3487,7 +3487,7 @@ boolean_not_equal_2 {
 Choices: {}}
 ```
 
-## boolean commute
+## ${t.displayName()}
 
 ```
 boolean_true_commute {
@@ -3497,7 +3497,7 @@ boolean_true_commute {
 Choices: {}}
 ```
 
-## boxToDiamond
+## ${t.displayName()}
 
 ```
 boxToDiamond {
@@ -3507,7 +3507,7 @@ boxToDiamond {
 Choices: {programRules:Java}}
 ```
 
-## boxToDiamond
+## ${t.displayName()}
 
 ```
 boxToDiamondTransaction {
@@ -3517,7 +3517,7 @@ boxToDiamondTransaction {
 Choices: {programRules:Java}}
 ```
 
-## box_and_left
+## ${t.displayName()}
 
 ```
 box_and_left {
@@ -3527,7 +3527,7 @@ box_and_left {
 Choices: {programRules:Java}}
 ```
 
-## box_and_right
+## ${t.displayName()}
 
 ```
 box_and_right {
@@ -3538,7 +3538,7 @@ box_and_right {
 Choices: {programRules:Java}}
 ```
 
-## box_or_left
+## ${t.displayName()}
 
 ```
 box_or_left {
@@ -3548,7 +3548,7 @@ box_or_left {
 Choices: {programRules:Java}}
 ```
 
-## box_or_right
+## ${t.displayName()}
 
 ```
 box_or_right {
@@ -3558,7 +3558,7 @@ box_or_right {
 Choices: {programRules:Java}}
 ```
 
-## box_true
+## ${t.displayName()}
 
 ```
 box_true {
@@ -3568,7 +3568,7 @@ box_true {
 Choices: {programRules:Java}}
 ```
 
-## bprod_commutative_associative
+## ${t.displayName()}
 
 ```
 bprod_commutative_associative {
@@ -3579,7 +3579,7 @@ bprod_commutative_associative {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_empty
+## ${t.displayName()}
 
 ```
 bprod_empty {
@@ -3591,7 +3591,7 @@ bprod_empty {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_equal_one_right
+## ${t.displayName()}
 
 ```
 bprod_equal_one_right {
@@ -3602,7 +3602,7 @@ bprod_equal_one_right {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_equal_zero_right
+## ${t.displayName()}
 
 ```
 bprod_equal_zero_right {
@@ -3613,7 +3613,7 @@ bprod_equal_zero_right {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_find
+## ${t.displayName()}
 
 ```
 bprod_find {
@@ -3624,7 +3624,7 @@ bprod_find {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_induction_lower
+## ${t.displayName()}
 
 ```
 bprod_induction_lower {
@@ -3635,7 +3635,7 @@ bprod_induction_lower {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_induction_lower_concrete
+## ${t.displayName()}
 
 ```
 bprod_induction_lower_concrete {
@@ -3646,7 +3646,7 @@ bprod_induction_lower_concrete {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_induction_upper
+## ${t.displayName()}
 
 ```
 bprod_induction_upper {
@@ -3657,7 +3657,7 @@ bprod_induction_upper {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_induction_upper_concrete
+## ${t.displayName()}
 
 ```
 bprod_induction_upper_concrete {
@@ -3668,7 +3668,7 @@ bprod_induction_upper_concrete {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_invert_index
+## ${t.displayName()}
 
 ```
 bprod_invert_index {
@@ -3679,7 +3679,7 @@ bprod_invert_index {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_invert_index_concrete
+## ${t.displayName()}
 
 ```
 bprod_invert_index_concrete {
@@ -3690,7 +3690,7 @@ bprod_invert_index_concrete {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_lower_equals_upper
+## ${t.displayName()}
 
 ```
 bprod_lower_equals_upper {
@@ -3701,7 +3701,7 @@ bprod_lower_equals_upper {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_one
+## ${t.displayName()}
 
 ```
 bprod_one {
@@ -3712,7 +3712,7 @@ bprod_one {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_one_factor
+## ${t.displayName()}
 
 ```
 bprod_one_factor {
@@ -3723,7 +3723,7 @@ bprod_one_factor {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_one_factor_concrete1
+## ${t.displayName()}
 
 ```
 bprod_one_factor_concrete1 {
@@ -3734,7 +3734,7 @@ bprod_one_factor_concrete1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_one_factor_concrete2
+## ${t.displayName()}
 
 ```
 bprod_one_factor_concrete2 {
@@ -3745,7 +3745,7 @@ bprod_one_factor_concrete2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_shift_index
+## ${t.displayName()}
 
 ```
 bprod_shift_index {
@@ -3756,7 +3756,7 @@ bprod_shift_index {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bprod_zero
+## ${t.displayName()}
 
 ```
 bprod_zero {
@@ -3767,7 +3767,7 @@ bprod_zero {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## break
+## ${t.displayName()}
 
 ```
 break {
@@ -3778,7 +3778,7 @@ break {
 Choices: {programRules:Java}}
 ```
 
-## bsum_add
+## ${t.displayName()}
 
 ```
 bsum_add {
@@ -3789,7 +3789,7 @@ bsum_add {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_add_concrete
+## ${t.displayName()}
 
 ```
 bsum_add_concrete {
@@ -3801,7 +3801,7 @@ bsum_add_concrete {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_commutative_associative
+## ${t.displayName()}
 
 ```
 bsum_commutative_associative {
@@ -3812,7 +3812,7 @@ bsum_commutative_associative {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_def
+## ${t.displayName()}
 
 ```
 bsum_def {
@@ -3823,7 +3823,7 @@ bsum_def {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_distributive
+## ${t.displayName()}
 
 ```
 bsum_distributive {
@@ -3834,7 +3834,7 @@ bsum_distributive {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_empty
+## ${t.displayName()}
 
 ```
 bsum_empty {
@@ -3846,7 +3846,7 @@ bsum_empty {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_equal_split1
+## ${t.displayName()}
 
 ```
 bsum_equal_split1 {
@@ -3857,7 +3857,7 @@ bsum_equal_split1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_equal_split2
+## ${t.displayName()}
 
 ```
 bsum_equal_split2 {
@@ -3869,7 +3869,7 @@ bsum_equal_split2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_equal_split3
+## ${t.displayName()}
 
 ```
 bsum_equal_split3 {
@@ -3880,7 +3880,7 @@ bsum_equal_split3 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_equal_split4
+## ${t.displayName()}
 
 ```
 bsum_equal_split4 {
@@ -3892,7 +3892,7 @@ bsum_equal_split4 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_induction_lower
+## ${t.displayName()}
 
 ```
 bsum_induction_lower {
@@ -3903,7 +3903,7 @@ bsum_induction_lower {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_induction_lower2
+## ${t.displayName()}
 
 ```
 bsum_induction_lower2 {
@@ -3914,7 +3914,7 @@ bsum_induction_lower2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_induction_lower2_concrete
+## ${t.displayName()}
 
 ```
 bsum_induction_lower2_concrete {
@@ -3925,7 +3925,7 @@ bsum_induction_lower2_concrete {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_induction_lower_concrete
+## ${t.displayName()}
 
 ```
 bsum_induction_lower_concrete {
@@ -3936,7 +3936,7 @@ bsum_induction_lower_concrete {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_induction_upper
+## ${t.displayName()}
 
 ```
 bsum_induction_upper {
@@ -3947,7 +3947,7 @@ bsum_induction_upper {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_induction_upper2
+## ${t.displayName()}
 
 ```
 bsum_induction_upper2 {
@@ -3958,7 +3958,7 @@ bsum_induction_upper2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_induction_upper2_concrete
+## ${t.displayName()}
 
 ```
 bsum_induction_upper2_concrete {
@@ -3969,7 +3969,7 @@ bsum_induction_upper2_concrete {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_induction_upper_concrete
+## ${t.displayName()}
 
 ```
 bsum_induction_upper_concrete {
@@ -3980,7 +3980,7 @@ bsum_induction_upper_concrete {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_induction_upper_concrete_2
+## ${t.displayName()}
 
 ```
 bsum_induction_upper_concrete_2 {
@@ -3991,7 +3991,7 @@ bsum_induction_upper_concrete_2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_invert_index
+## ${t.displayName()}
 
 ```
 bsum_invert_index {
@@ -4002,7 +4002,7 @@ bsum_invert_index {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_invert_index_concrete
+## ${t.displayName()}
 
 ```
 bsum_invert_index_concrete {
@@ -4013,7 +4013,7 @@ bsum_invert_index_concrete {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_lower_equals_upper
+## ${t.displayName()}
 
 ```
 bsum_lower_equals_upper {
@@ -4024,7 +4024,7 @@ bsum_lower_equals_upper {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_one_summand
+## ${t.displayName()}
 
 ```
 bsum_one_summand {
@@ -4035,7 +4035,7 @@ bsum_one_summand {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_one_summand_concrete1
+## ${t.displayName()}
 
 ```
 bsum_one_summand_concrete1 {
@@ -4046,7 +4046,7 @@ bsum_one_summand_concrete1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_one_summand_concrete2
+## ${t.displayName()}
 
 ```
 bsum_one_summand_concrete2 {
@@ -4057,7 +4057,7 @@ bsum_one_summand_concrete2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_positive1
+## ${t.displayName()}
 
 ```
 bsum_positive1 {
@@ -4068,7 +4068,7 @@ bsum_positive1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_positive2
+## ${t.displayName()}
 
 ```
 bsum_positive2 {
@@ -4079,7 +4079,7 @@ bsum_positive2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_same_summand
+## ${t.displayName()}
 
 ```
 bsum_same_summand {
@@ -4090,7 +4090,7 @@ bsum_same_summand {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_shift_index
+## ${t.displayName()}
 
 ```
 bsum_shift_index {
@@ -4101,7 +4101,7 @@ bsum_shift_index {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_split
+## ${t.displayName()}
 
 ```
 bsum_split {
@@ -4112,7 +4112,7 @@ bsum_split {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_split_in_three
+## ${t.displayName()}
 
 ```
 bsum_split_in_three {
@@ -4124,7 +4124,7 @@ bsum_split_in_three {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_zero
+## ${t.displayName()}
 
 ```
 bsum_zero {
@@ -4135,7 +4135,7 @@ bsum_zero {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## bsum_zero_right
+## ${t.displayName()}
 
 ```
 bsum_zero_right {
@@ -4146,7 +4146,7 @@ bsum_zero_right {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## case_distinction
+## ${t.displayName()}
 
 ```
 case_distinction_l {
@@ -4165,7 +4165,7 @@ Choices: {}}]
 Choices: {}}
 ```
 
-## case_distinction
+## ${t.displayName()}
 
 ```
 case_distinction_r {
@@ -4184,7 +4184,7 @@ Choices: {}}]
 Choices: {}}
 ```
 
-## narrow type
+## ${t.displayName()}
 
 ```
 castAdd {
@@ -4195,7 +4195,7 @@ castAdd {
 Choices: {}}
 ```
 
-## castAdd
+## ${t.displayName()}
 
 ```
 castAdd2 {
@@ -4207,7 +4207,7 @@ castAdd2 {
 Choices: {}}
 ```
 
-## castDel
+## ${t.displayName()}
 
 ```
 castDel {
@@ -4217,7 +4217,7 @@ castDel {
 Choices: {}}
 ```
 
-## castDel
+## ${t.displayName()}
 
 ```
 castDel2 {
@@ -4228,7 +4228,7 @@ castDel2 {
 Choices: {}}
 ```
 
-## castToBoolean
+## ${t.displayName()}
 
 ```
 castToBoolean {
@@ -4238,7 +4238,7 @@ castToBoolean {
 Choices: {programRules:Java}}
 ```
 
-## castTrueImpliesOriginalTrue
+## ${t.displayName()}
 
 ```
 castTrueImpliesOriginalTrue {
@@ -4249,7 +4249,7 @@ castTrueImpliesOriginalTrue {
 Choices: {programRules:Java}}
 ```
 
-## castType
+## ${t.displayName()}
 
 ```
 castType {
@@ -4260,7 +4260,7 @@ castType {
 Choices: {}}
 ```
 
-## castType
+## ${t.displayName()}
 
 ```
 castType2 {
@@ -4271,7 +4271,7 @@ castType2 {
 Choices: {}}
 ```
 
-## castedGetAny
+## ${t.displayName()}
 
 ```
 castedGetAny {
@@ -4281,7 +4281,7 @@ castedGetAny {
 Choices: {sequences:on}}
 ```
 
-## charLiteral_to_int
+## ${t.displayName()}
 
 ```
 charLiteral_to_int {
@@ -4291,7 +4291,7 @@ charLiteral_to_int {
 Choices: {}}
 ```
 
-## checkPermissionOwner_empty
+## ${t.displayName()}
 
 ```
 checkPermissionOwner_empty {
@@ -4302,7 +4302,7 @@ checkPermissionOwner_empty {
 Choices: {permissions:on}}
 ```
 
-## checkPermissionOwner_nonempty
+## ${t.displayName()}
 
 ```
 checkPermissionOwner_nonempty {
@@ -4313,7 +4313,7 @@ checkPermissionOwner_nonempty {
 Choices: {permissions:on}}
 ```
 
-## initialized classes have been prepared
+## ${t.displayName()}
 
 ```
 class_being_initialized_is_prepared {
@@ -4324,7 +4324,7 @@ class_being_initialized_is_prepared {
 Choices: {programRules:Java}}
 ```
 
-## initialization process has already terminated (or never begun)
+## ${t.displayName()}
 
 ```
 class_erroneous_excludes_class_in_init {
@@ -4335,7 +4335,7 @@ class_erroneous_excludes_class_in_init {
 Choices: {programRules:Java}}
 ```
 
-## initialisation process has already terminated
+## ${t.displayName()}
 
 ```
 class_initialized_excludes_class_init_in_progress {
@@ -4346,7 +4346,7 @@ class_initialized_excludes_class_init_in_progress {
 Choices: {programRules:Java}}
 ```
 
-## close
+## ${t.displayName()}
 
 ```
 close {
@@ -4356,7 +4356,7 @@ close {
 Choices: {}}
 ```
 
-## close
+## ${t.displayName()}
 
 ```
 closeAntec {
@@ -4366,7 +4366,7 @@ closeAntec {
 Choices: {}}
 ```
 
-## closeFalse
+## ${t.displayName()}
 
 ```
 closeFalse {
@@ -4375,7 +4375,7 @@ closeFalse {
 Choices: {}}
 ```
 
-## closeTrue
+## ${t.displayName()}
 
 ```
 closeTrue {
@@ -4384,7 +4384,7 @@ closeTrue {
 Choices: {}}
 ```
 
-## closeType
+## ${t.displayName()}
 
 ```
 closeType {
@@ -4394,7 +4394,7 @@ closeType {
 Choices: {}}
 ```
 
-## closeType
+## ${t.displayName()}
 
 ```
 closeTypeSwitched {
@@ -4404,7 +4404,7 @@ closeTypeSwitched {
 Choices: {}}
 ```
 
-## close_by_lt_leq
+## ${t.displayName()}
 
 ```
 close_by_lt_leq {
@@ -4415,7 +4415,7 @@ close_by_lt_leq {
 Choices: {}}
 ```
 
-## cnf_eqv
+## ${t.displayName()}
 
 ```
 cnf_eqv {
@@ -4425,7 +4425,7 @@ cnf_eqv {
 Choices: {}}
 ```
 
-## cnf_rightDist
+## ${t.displayName()}
 
 ```
 cnf_rightDist {
@@ -4435,7 +4435,7 @@ cnf_rightDist {
 Choices: {}}
 ```
 
-## collect_same_terms
+## ${t.displayName()}
 
 ```
 collect_same_terms_1 {
@@ -4445,7 +4445,7 @@ collect_same_terms_1 {
 Choices: {}}
 ```
 
-## collect_same_terms
+## ${t.displayName()}
 
 ```
 collect_same_terms_2 {
@@ -4455,7 +4455,7 @@ collect_same_terms_2 {
 Choices: {}}
 ```
 
-## collect_same_terms
+## ${t.displayName()}
 
 ```
 collect_same_terms_3 {
@@ -4465,7 +4465,7 @@ collect_same_terms_3 {
 Choices: {}}
 ```
 
-## commitJavaCardTransactionAPI
+## ${t.displayName()}
 
 ```
 commitJavaCardTransactionAPI {
@@ -4476,7 +4476,7 @@ commitJavaCardTransactionAPI {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## commitJavaCardTransaction
+## ${t.displayName()}
 
 ```
 commitJavaCardTransactionBox {
@@ -4486,7 +4486,7 @@ commitJavaCardTransactionBox {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## commitJavaCardTransaction
+## ${t.displayName()}
 
 ```
 commitJavaCardTransactionDiamond {
@@ -4496,7 +4496,7 @@ commitJavaCardTransactionDiamond {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## commuteDisjoint
+## ${t.displayName()}
 
 ```
 commuteDisjoint {
@@ -4506,7 +4506,7 @@ commuteDisjoint {
 Choices: {programRules:Java}}
 ```
 
-## commuteIntersection
+## ${t.displayName()}
 
 ```
 commuteIntersection {
@@ -4516,7 +4516,7 @@ commuteIntersection {
 Choices: {programRules:Java}}
 ```
 
-## commuteIntersection_2
+## ${t.displayName()}
 
 ```
 commuteIntersection_2 {
@@ -4526,7 +4526,7 @@ commuteIntersection_2 {
 Choices: {programRules:Java}}
 ```
 
-## commuteUnion
+## ${t.displayName()}
 
 ```
 commuteUnion {
@@ -4536,7 +4536,7 @@ commuteUnion {
 Choices: {programRules:Java}}
 ```
 
-## commuteUnion_2
+## ${t.displayName()}
 
 ```
 commuteUnion_2 {
@@ -4546,7 +4546,7 @@ commuteUnion_2 {
 Choices: {programRules:Java}}
 ```
 
-## commute_and
+## ${t.displayName()}
 
 ```
 commute_and {
@@ -4556,7 +4556,7 @@ commute_and {
 Choices: {}}
 ```
 
-## commute_and_2
+## ${t.displayName()}
 
 ```
 commute_and_2 {
@@ -4566,7 +4566,7 @@ commute_and_2 {
 Choices: {}}
 ```
 
-## commute_or
+## ${t.displayName()}
 
 ```
 commute_or {
@@ -4576,7 +4576,7 @@ commute_or {
 Choices: {}}
 ```
 
-## commute_or_2
+## ${t.displayName()}
 
 ```
 commute_or_2 {
@@ -4586,7 +4586,7 @@ commute_or_2 {
 Choices: {}}
 ```
 
-## addition
+## ${t.displayName()}
 
 ```
 compound_addition_1 {
@@ -4597,7 +4597,7 @@ compound_addition_1 {
 Choices: {programRules:Java}}
 ```
 
-## addition
+## ${t.displayName()}
 
 ```
 compound_addition_2 {
@@ -4608,7 +4608,7 @@ compound_addition_2 {
 Choices: {programRules:Java}}
 ```
 
-## assignment_negation
+## ${t.displayName()}
 
 ```
 compound_assignment_1_new {
@@ -4618,7 +4618,7 @@ compound_assignment_1_new {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment
+## ${t.displayName()}
 
 ```
 compound_assignment_2 {
@@ -4629,7 +4629,7 @@ compound_assignment_2 {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment
+## ${t.displayName()}
 
 ```
 compound_assignment_3_mixed {
@@ -4640,7 +4640,7 @@ compound_assignment_3_mixed {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment
+## ${t.displayName()}
 
 ```
 compound_assignment_3_nonsimple {
@@ -4654,7 +4654,7 @@ compound_assignment_3_nonsimple {
 Choices: {programRules:Java}}
 ```
 
-## assignment_and
+## ${t.displayName()}
 
 ```
 compound_assignment_3_simple {
@@ -4664,7 +4664,7 @@ compound_assignment_3_simple {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment
+## ${t.displayName()}
 
 ```
 compound_assignment_4_nonsimple {
@@ -4675,7 +4675,7 @@ compound_assignment_4_nonsimple {
 Choices: {programRules:Java}}
 ```
 
-## assignment_and
+## ${t.displayName()}
 
 ```
 compound_assignment_4_simple {
@@ -4685,7 +4685,7 @@ compound_assignment_4_simple {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment
+## ${t.displayName()}
 
 ```
 compound_assignment_5_mixed {
@@ -4696,7 +4696,7 @@ compound_assignment_5_mixed {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment
+## ${t.displayName()}
 
 ```
 compound_assignment_5_nonsimple {
@@ -4710,7 +4710,7 @@ compound_assignment_5_nonsimple {
 Choices: {programRules:Java}}
 ```
 
-## assignment_or
+## ${t.displayName()}
 
 ```
 compound_assignment_5_simple {
@@ -4720,7 +4720,7 @@ compound_assignment_5_simple {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment
+## ${t.displayName()}
 
 ```
 compound_assignment_6_nonsimple {
@@ -4731,7 +4731,7 @@ compound_assignment_6_nonsimple {
 Choices: {programRules:Java}}
 ```
 
-## assignment_or
+## ${t.displayName()}
 
 ```
 compound_assignment_6_simple {
@@ -4741,7 +4741,7 @@ compound_assignment_6_simple {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_and
+## ${t.displayName()}
 
 ```
 compound_assignment_op_and {
@@ -4751,7 +4751,7 @@ compound_assignment_op_and {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_and_array
+## ${t.displayName()}
 
 ```
 compound_assignment_op_and_array {
@@ -4762,7 +4762,7 @@ compound_assignment_op_and_array {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_and_attr
+## ${t.displayName()}
 
 ```
 compound_assignment_op_and_attr {
@@ -4773,7 +4773,7 @@ compound_assignment_op_and_attr {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_div
+## ${t.displayName()}
 
 ```
 compound_assignment_op_div {
@@ -4783,7 +4783,7 @@ compound_assignment_op_div {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_div_array
+## ${t.displayName()}
 
 ```
 compound_assignment_op_div_array {
@@ -4794,7 +4794,7 @@ compound_assignment_op_div_array {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_div_attr
+## ${t.displayName()}
 
 ```
 compound_assignment_op_div_attr {
@@ -4805,7 +4805,7 @@ compound_assignment_op_div_attr {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_minus
+## ${t.displayName()}
 
 ```
 compound_assignment_op_minus {
@@ -4815,7 +4815,7 @@ compound_assignment_op_minus {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_minus_array
+## ${t.displayName()}
 
 ```
 compound_assignment_op_minus_array {
@@ -4826,7 +4826,7 @@ compound_assignment_op_minus_array {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_minus_attr
+## ${t.displayName()}
 
 ```
 compound_assignment_op_minus_attr {
@@ -4837,7 +4837,7 @@ compound_assignment_op_minus_attr {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_mod
+## ${t.displayName()}
 
 ```
 compound_assignment_op_mod {
@@ -4847,7 +4847,7 @@ compound_assignment_op_mod {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_mod_array
+## ${t.displayName()}
 
 ```
 compound_assignment_op_mod_array {
@@ -4858,7 +4858,7 @@ compound_assignment_op_mod_array {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_mod_attr
+## ${t.displayName()}
 
 ```
 compound_assignment_op_mod_attr {
@@ -4869,7 +4869,7 @@ compound_assignment_op_mod_attr {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_mul
+## ${t.displayName()}
 
 ```
 compound_assignment_op_mul {
@@ -4879,7 +4879,7 @@ compound_assignment_op_mul {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_mul_array
+## ${t.displayName()}
 
 ```
 compound_assignment_op_mul_array {
@@ -4890,7 +4890,7 @@ compound_assignment_op_mul_array {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_mul_attr
+## ${t.displayName()}
 
 ```
 compound_assignment_op_mul_attr {
@@ -4901,7 +4901,7 @@ compound_assignment_op_mul_attr {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_or
+## ${t.displayName()}
 
 ```
 compound_assignment_op_or {
@@ -4911,7 +4911,7 @@ compound_assignment_op_or {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_or_array
+## ${t.displayName()}
 
 ```
 compound_assignment_op_or_array {
@@ -4922,7 +4922,7 @@ compound_assignment_op_or_array {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_or_attr
+## ${t.displayName()}
 
 ```
 compound_assignment_op_or_attr {
@@ -4933,7 +4933,7 @@ compound_assignment_op_or_attr {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_plus
+## ${t.displayName()}
 
 ```
 compound_assignment_op_plus {
@@ -4943,7 +4943,7 @@ compound_assignment_op_plus {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_plus_array
+## ${t.displayName()}
 
 ```
 compound_assignment_op_plus_array {
@@ -4954,7 +4954,7 @@ compound_assignment_op_plus_array {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_plus_attr
+## ${t.displayName()}
 
 ```
 compound_assignment_op_plus_attr {
@@ -4965,7 +4965,7 @@ compound_assignment_op_plus_attr {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_shiftleft
+## ${t.displayName()}
 
 ```
 compound_assignment_op_shiftleft {
@@ -4975,7 +4975,7 @@ compound_assignment_op_shiftleft {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_shiftleft_array
+## ${t.displayName()}
 
 ```
 compound_assignment_op_shiftleft_array {
@@ -4986,7 +4986,7 @@ compound_assignment_op_shiftleft_array {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_shiftleft_attr
+## ${t.displayName()}
 
 ```
 compound_assignment_op_shiftleft_attr {
@@ -4997,7 +4997,7 @@ compound_assignment_op_shiftleft_attr {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_shiftright
+## ${t.displayName()}
 
 ```
 compound_assignment_op_shiftright {
@@ -5007,7 +5007,7 @@ compound_assignment_op_shiftright {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_shiftright_array
+## ${t.displayName()}
 
 ```
 compound_assignment_op_shiftright_array {
@@ -5018,7 +5018,7 @@ compound_assignment_op_shiftright_array {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_shiftright_attr
+## ${t.displayName()}
 
 ```
 compound_assignment_op_shiftright_attr {
@@ -5029,7 +5029,7 @@ compound_assignment_op_shiftright_attr {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_unsigned_shiftright
+## ${t.displayName()}
 
 ```
 compound_assignment_op_unsigned_shiftright {
@@ -5039,7 +5039,7 @@ compound_assignment_op_unsigned_shiftright {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_unsigned_shiftright_array
+## ${t.displayName()}
 
 ```
 compound_assignment_op_unsigned_shiftright_array {
@@ -5050,7 +5050,7 @@ compound_assignment_op_unsigned_shiftright_array {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_unsigned_shiftright_attr
+## ${t.displayName()}
 
 ```
 compound_assignment_op_unsigned_shiftright_attr {
@@ -5061,7 +5061,7 @@ compound_assignment_op_unsigned_shiftright_attr {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_xor
+## ${t.displayName()}
 
 ```
 compound_assignment_op_xor {
@@ -5071,7 +5071,7 @@ compound_assignment_op_xor {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_xor_array
+## ${t.displayName()}
 
 ```
 compound_assignment_op_xor_array {
@@ -5082,7 +5082,7 @@ compound_assignment_op_xor_array {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment_op_xor_attr
+## ${t.displayName()}
 
 ```
 compound_assignment_op_xor_attr {
@@ -5093,7 +5093,7 @@ compound_assignment_op_xor_attr {
 Choices: {programRules:Java}}
 ```
 
-## compound_assignment
+## ${t.displayName()}
 
 ```
 compound_assignment_xor_nonsimple {
@@ -5104,7 +5104,7 @@ compound_assignment_xor_nonsimple {
 Choices: {programRules:Java}}
 ```
 
-## assignment_xor
+## ${t.displayName()}
 
 ```
 compound_assignment_xor_simple {
@@ -5114,7 +5114,7 @@ compound_assignment_xor_simple {
 Choices: {programRules:Java}}
 ```
 
-## binary_AND
+## ${t.displayName()}
 
 ```
 compound_binary_AND_1 {
@@ -5125,7 +5125,7 @@ compound_binary_AND_1 {
 Choices: {programRules:Java}}
 ```
 
-## binary_AND
+## ${t.displayName()}
 
 ```
 compound_binary_AND_2 {
@@ -5136,7 +5136,7 @@ compound_binary_AND_2 {
 Choices: {programRules:Java}}
 ```
 
-## binary_OR
+## ${t.displayName()}
 
 ```
 compound_binary_OR_1 {
@@ -5147,7 +5147,7 @@ compound_binary_OR_1 {
 Choices: {programRules:Java}}
 ```
 
-## binary_OR
+## ${t.displayName()}
 
 ```
 compound_binary_OR_2 {
@@ -5158,7 +5158,7 @@ compound_binary_OR_2 {
 Choices: {programRules:Java}}
 ```
 
-## binary_XOR
+## ${t.displayName()}
 
 ```
 compound_binary_XOR_1 {
@@ -5169,7 +5169,7 @@ compound_binary_XOR_1 {
 Choices: {programRules:Java}}
 ```
 
-## binary_XOR
+## ${t.displayName()}
 
 ```
 compound_binary_XOR_2 {
@@ -5180,7 +5180,7 @@ compound_binary_XOR_2 {
 Choices: {programRules:Java}}
 ```
 
-## compound_binary_neg
+## ${t.displayName()}
 
 ```
 compound_binary_neg {
@@ -5191,7 +5191,7 @@ compound_binary_neg {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 compound_byte_cast_expression {
@@ -5202,7 +5202,7 @@ compound_byte_cast_expression {
 Choices: {programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 compound_division_1 {
@@ -5213,7 +5213,7 @@ compound_division_1 {
 Choices: {programRules:Java}}
 ```
 
-## division
+## ${t.displayName()}
 
 ```
 compound_division_2 {
@@ -5224,7 +5224,7 @@ compound_division_2 {
 Choices: {programRules:Java}}
 ```
 
-## equality
+## ${t.displayName()}
 
 ```
 compound_equality_comparison_1 {
@@ -5235,7 +5235,7 @@ compound_equality_comparison_1 {
 Choices: {programRules:Java}}
 ```
 
-## equality
+## ${t.displayName()}
 
 ```
 compound_equality_comparison_2 {
@@ -5246,7 +5246,7 @@ compound_equality_comparison_2 {
 Choices: {programRules:Java}}
 ```
 
-## greater_or_equal
+## ${t.displayName()}
 
 ```
 compound_greater_equal_than_comparison_1 {
@@ -5257,7 +5257,7 @@ compound_greater_equal_than_comparison_1 {
 Choices: {programRules:Java}}
 ```
 
-## greater_or_equal
+## ${t.displayName()}
 
 ```
 compound_greater_equal_than_comparison_2 {
@@ -5268,7 +5268,7 @@ compound_greater_equal_than_comparison_2 {
 Choices: {programRules:Java}}
 ```
 
-## greater_than
+## ${t.displayName()}
 
 ```
 compound_greater_than_comparison_1 {
@@ -5279,7 +5279,7 @@ compound_greater_than_comparison_1 {
 Choices: {programRules:Java}}
 ```
 
-## greater_than
+## ${t.displayName()}
 
 ```
 compound_greater_than_comparison_2 {
@@ -5290,7 +5290,7 @@ compound_greater_than_comparison_2 {
 Choices: {programRules:Java}}
 ```
 
-## inequality
+## ${t.displayName()}
 
 ```
 compound_inequality_comparison_1 {
@@ -5301,7 +5301,7 @@ compound_inequality_comparison_1 {
 Choices: {programRules:Java}}
 ```
 
-## inequality
+## ${t.displayName()}
 
 ```
 compound_inequality_comparison_2 {
@@ -5312,7 +5312,7 @@ compound_inequality_comparison_2 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 compound_int_cast_expression {
@@ -5323,7 +5323,7 @@ compound_int_cast_expression {
 Choices: {programRules:Java}}
 ```
 
-## invert_bits
+## ${t.displayName()}
 
 ```
 compound_invert_bits {
@@ -5334,7 +5334,7 @@ compound_invert_bits {
 Choices: {programRules:Java}}
 ```
 
-## less_or_equal
+## ${t.displayName()}
 
 ```
 compound_less_equal_than_comparison_1 {
@@ -5345,7 +5345,7 @@ compound_less_equal_than_comparison_1 {
 Choices: {programRules:Java}}
 ```
 
-## less_or_equal
+## ${t.displayName()}
 
 ```
 compound_less_equal_than_comparison_2 {
@@ -5356,7 +5356,7 @@ compound_less_equal_than_comparison_2 {
 Choices: {programRules:Java}}
 ```
 
-## less_than
+## ${t.displayName()}
 
 ```
 compound_less_than_comparison_1 {
@@ -5367,7 +5367,7 @@ compound_less_than_comparison_1 {
 Choices: {programRules:Java}}
 ```
 
-## less_than
+## ${t.displayName()}
 
 ```
 compound_less_than_comparison_2 {
@@ -5378,7 +5378,7 @@ compound_less_than_comparison_2 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 compound_long_cast_expression {
@@ -5389,7 +5389,7 @@ compound_long_cast_expression {
 Choices: {programRules:Java}}
 ```
 
-## modulo
+## ${t.displayName()}
 
 ```
 compound_modulo_1 {
@@ -5400,7 +5400,7 @@ compound_modulo_1 {
 Choices: {programRules:Java}}
 ```
 
-## modulo
+## ${t.displayName()}
 
 ```
 compound_modulo_2 {
@@ -5411,7 +5411,7 @@ compound_modulo_2 {
 Choices: {programRules:Java}}
 ```
 
-## multiplication
+## ${t.displayName()}
 
 ```
 compound_multiplication_1 {
@@ -5422,7 +5422,7 @@ compound_multiplication_1 {
 Choices: {programRules:Java}}
 ```
 
-## multiplication
+## ${t.displayName()}
 
 ```
 compound_multiplication_2 {
@@ -5433,7 +5433,7 @@ compound_multiplication_2 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 compound_reference_cast_expression {
@@ -5444,7 +5444,7 @@ compound_reference_cast_expression {
 Choices: {programRules:Java}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 compound_shiftleft_1 {
@@ -5455,7 +5455,7 @@ compound_shiftleft_1 {
 Choices: {programRules:Java}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 compound_shiftleft_2 {
@@ -5466,7 +5466,7 @@ compound_shiftleft_2 {
 Choices: {programRules:Java}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 compound_shiftright_1 {
@@ -5477,7 +5477,7 @@ compound_shiftright_1 {
 Choices: {programRules:Java}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 compound_shiftright_2 {
@@ -5488,7 +5488,7 @@ compound_shiftright_2 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 compound_short_cast_expression {
@@ -5499,7 +5499,7 @@ compound_short_cast_expression {
 Choices: {programRules:Java}}
 ```
 
-## subtraction
+## ${t.displayName()}
 
 ```
 compound_subtraction_1 {
@@ -5510,7 +5510,7 @@ compound_subtraction_1 {
 Choices: {programRules:Java}}
 ```
 
-## subtraction
+## ${t.displayName()}
 
 ```
 compound_subtraction_2 {
@@ -5521,7 +5521,7 @@ compound_subtraction_2 {
 Choices: {programRules:Java}}
 ```
 
-## compound_unary_minus_eval
+## ${t.displayName()}
 
 ```
 compound_unary_minus_eval {
@@ -5532,7 +5532,7 @@ compound_unary_minus_eval {
 Choices: {programRules:Java}}
 ```
 
-## compound_unary_plus_assignment
+## ${t.displayName()}
 
 ```
 compound_unary_plus_assignment {
@@ -5542,7 +5542,7 @@ compound_unary_plus_assignment {
 Choices: {programRules:Java}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 compound_unsigned_shiftright_1 {
@@ -5553,7 +5553,7 @@ compound_unsigned_shiftright_1 {
 Choices: {programRules:Java}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 compound_unsigned_shiftright_2 {
@@ -5564,7 +5564,7 @@ compound_unsigned_shiftright_2 {
 Choices: {programRules:Java}}
 ```
 
-## concatRepeatContraction3
+## ${t.displayName()}
 
 ```
 concatRepeatContraction3 {
@@ -5574,7 +5574,7 @@ concatRepeatContraction3 {
 Choices: {Strings:on}}
 ```
 
-## concatRepeatContraction3Sym
+## ${t.displayName()}
 
 ```
 concatRepeatContraction3Sym {
@@ -5584,7 +5584,7 @@ concatRepeatContraction3Sym {
 Choices: {Strings:on}}
 ```
 
-## concrete_and_1
+## ${t.displayName()}
 
 ```
 concrete_and_1 {
@@ -5594,7 +5594,7 @@ concrete_and_1 {
 Choices: {}}
 ```
 
-## concrete_and_2
+## ${t.displayName()}
 
 ```
 concrete_and_2 {
@@ -5604,7 +5604,7 @@ concrete_and_2 {
 Choices: {}}
 ```
 
-## concrete_and_3
+## ${t.displayName()}
 
 ```
 concrete_and_3 {
@@ -5614,7 +5614,7 @@ concrete_and_3 {
 Choices: {}}
 ```
 
-## concrete_and_4
+## ${t.displayName()}
 
 ```
 concrete_and_4 {
@@ -5624,7 +5624,7 @@ concrete_and_4 {
 Choices: {}}
 ```
 
-## concrete_eq_1
+## ${t.displayName()}
 
 ```
 concrete_eq_1 {
@@ -5634,7 +5634,7 @@ concrete_eq_1 {
 Choices: {}}
 ```
 
-## concrete_eq_2
+## ${t.displayName()}
 
 ```
 concrete_eq_2 {
@@ -5644,7 +5644,7 @@ concrete_eq_2 {
 Choices: {}}
 ```
 
-## concrete_eq_3
+## ${t.displayName()}
 
 ```
 concrete_eq_3 {
@@ -5654,7 +5654,7 @@ concrete_eq_3 {
 Choices: {}}
 ```
 
-## concrete_eq_4
+## ${t.displayName()}
 
 ```
 concrete_eq_4 {
@@ -5664,7 +5664,7 @@ concrete_eq_4 {
 Choices: {}}
 ```
 
-## concrete_impl_1
+## ${t.displayName()}
 
 ```
 concrete_impl_1 {
@@ -5674,7 +5674,7 @@ concrete_impl_1 {
 Choices: {}}
 ```
 
-## concrete_impl_2
+## ${t.displayName()}
 
 ```
 concrete_impl_2 {
@@ -5684,7 +5684,7 @@ concrete_impl_2 {
 Choices: {}}
 ```
 
-## concrete_impl_3
+## ${t.displayName()}
 
 ```
 concrete_impl_3 {
@@ -5694,7 +5694,7 @@ concrete_impl_3 {
 Choices: {}}
 ```
 
-## concrete_impl_4
+## ${t.displayName()}
 
 ```
 concrete_impl_4 {
@@ -5704,7 +5704,7 @@ concrete_impl_4 {
 Choices: {}}
 ```
 
-## concrete_not_1
+## ${t.displayName()}
 
 ```
 concrete_not_1 {
@@ -5714,7 +5714,7 @@ concrete_not_1 {
 Choices: {}}
 ```
 
-## concrete_not_2
+## ${t.displayName()}
 
 ```
 concrete_not_2 {
@@ -5724,7 +5724,7 @@ concrete_not_2 {
 Choices: {}}
 ```
 
-## concrete_or_1
+## ${t.displayName()}
 
 ```
 concrete_or_1 {
@@ -5734,7 +5734,7 @@ concrete_or_1 {
 Choices: {}}
 ```
 
-## concrete_or_2
+## ${t.displayName()}
 
 ```
 concrete_or_2 {
@@ -5744,7 +5744,7 @@ concrete_or_2 {
 Choices: {}}
 ```
 
-## concrete_or_3
+## ${t.displayName()}
 
 ```
 concrete_or_3 {
@@ -5754,7 +5754,7 @@ concrete_or_3 {
 Choices: {}}
 ```
 
-## concrete_or_4
+## ${t.displayName()}
 
 ```
 concrete_or_4 {
@@ -5764,7 +5764,7 @@ concrete_or_4 {
 Choices: {}}
 ```
 
-## distr_elim
+## ${t.displayName()}
 
 ```
 concrete_or_5 {
@@ -5774,7 +5774,7 @@ concrete_or_5 {
 Choices: {}}
 ```
 
-## condition
+## ${t.displayName()}
 
 ```
 condition {
@@ -5790,7 +5790,7 @@ condition {
 Choices: {programRules:Java}}
 ```
 
-## condition
+## ${t.displayName()}
 
 ```
 condition_not_simple {
@@ -5801,7 +5801,7 @@ condition_not_simple {
 Choices: {programRules:Java}}
 ```
 
-## condition
+## ${t.displayName()}
 
 ```
 condition_simple {
@@ -5811,7 +5811,7 @@ condition_simple {
 Choices: {programRules:Java}}
 ```
 
-## contains
+## ${t.displayName()}
 
 ```
 contains {
@@ -5821,7 +5821,7 @@ contains {
 Choices: {Strings:on}}
 ```
 
-## containsAxiomAntec
+## ${t.displayName()}
 
 ```
 containsAxiomAntec {
@@ -5832,7 +5832,7 @@ containsAxiomAntec {
 Choices: {Strings:on}}
 ```
 
-## containsAxiomSucc
+## ${t.displayName()}
 
 ```
 containsAxiomSucc {
@@ -5843,7 +5843,7 @@ containsAxiomSucc {
 Choices: {Strings:on}}
 ```
 
-## createdInHeapToElementOf
+## ${t.displayName()}
 
 ```
 createdInHeapToElementOf {
@@ -5854,7 +5854,7 @@ createdInHeapToElementOf {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithAllFields
+## ${t.displayName()}
 
 ```
 createdInHeapWithAllFields {
@@ -5864,7 +5864,7 @@ createdInHeapWithAllFields {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithAllFieldsEQ
+## ${t.displayName()}
 
 ```
 createdInHeapWithAllFieldsEQ {
@@ -5875,7 +5875,7 @@ createdInHeapWithAllFieldsEQ {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithArrayRange
+## ${t.displayName()}
 
 ```
 createdInHeapWithArrayRange {
@@ -5885,7 +5885,7 @@ createdInHeapWithArrayRange {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithArrayRangeEQ
+## ${t.displayName()}
 
 ```
 createdInHeapWithArrayRangeEQ {
@@ -5896,7 +5896,7 @@ createdInHeapWithArrayRangeEQ {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithEmpty
+## ${t.displayName()}
 
 ```
 createdInHeapWithEmpty {
@@ -5906,7 +5906,7 @@ createdInHeapWithEmpty {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithObserver
+## ${t.displayName()}
 
 ```
 createdInHeapWithObserver {
@@ -5917,7 +5917,7 @@ createdInHeapWithObserver {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithObserverEQ
+## ${t.displayName()}
 
 ```
 createdInHeapWithObserverEQ {
@@ -5929,7 +5929,7 @@ createdInHeapWithObserverEQ {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithSelect
+## ${t.displayName()}
 
 ```
 createdInHeapWithSelect {
@@ -5939,7 +5939,7 @@ createdInHeapWithSelect {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithSelectEQ
+## ${t.displayName()}
 
 ```
 createdInHeapWithSelectEQ {
@@ -5950,7 +5950,7 @@ createdInHeapWithSelectEQ {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithSetMinusFreshLocs
+## ${t.displayName()}
 
 ```
 createdInHeapWithSetMinusFreshLocs {
@@ -5960,7 +5960,7 @@ createdInHeapWithSetMinusFreshLocs {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithSetMinusFreshLocsEQ
+## ${t.displayName()}
 
 ```
 createdInHeapWithSetMinusFreshLocsEQ {
@@ -5971,7 +5971,7 @@ createdInHeapWithSetMinusFreshLocsEQ {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithSingleton
+## ${t.displayName()}
 
 ```
 createdInHeapWithSingleton {
@@ -5981,7 +5981,7 @@ createdInHeapWithSingleton {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithSingletonEQ
+## ${t.displayName()}
 
 ```
 createdInHeapWithSingletonEQ {
@@ -5992,7 +5992,7 @@ createdInHeapWithSingletonEQ {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithUnion
+## ${t.displayName()}
 
 ```
 createdInHeapWithUnion {
@@ -6003,7 +6003,7 @@ createdInHeapWithUnion {
 Choices: {programRules:Java}}
 ```
 
-## createdInHeapWithUnionEQ
+## ${t.displayName()}
 
 ```
 createdInHeapWithUnionEQ {
@@ -6015,7 +6015,7 @@ createdInHeapWithUnionEQ {
 Choices: {programRules:Java}}
 ```
 
-## createdOnHeapImpliesCreatedOnPermissions
+## ${t.displayName()}
 
 ```
 createdOnHeapImpliesCreatedOnPermissions {
@@ -6026,7 +6026,7 @@ createdOnHeapImpliesCreatedOnPermissions {
 Choices: {permissions:on}}
 ```
 
-## crossInst
+## ${t.displayName()}
 
 ```
 crossInst {
@@ -6037,7 +6037,7 @@ crossInst {
 Choices: {}}
 ```
 
-## cut
+## ${t.displayName()}
 
 ```
 cut {
@@ -6047,7 +6047,7 @@ cut {
 Choices: {}}
 ```
 
-## cutUpperBound
+## ${t.displayName()}
 
 ```
 cutUpperBound {
@@ -6059,7 +6059,7 @@ cutUpperBound {
 Choices: {}}
 ```
 
-## cut_direct
+## ${t.displayName()}
 
 ```
 cut_direct {
@@ -6070,7 +6070,7 @@ cut_direct {
 Choices: {}}
 ```
 
-## cut_direct_l
+## ${t.displayName()}
 
 ```
 cut_direct_l {
@@ -6081,7 +6081,7 @@ cut_direct_l {
 Choices: {}}
 ```
 
-## cut_direct_r
+## ${t.displayName()}
 
 ```
 cut_direct_r {
@@ -6092,7 +6092,7 @@ cut_direct_r {
 Choices: {}}
 ```
 
-## defInDomainImpliesCreated
+## ${t.displayName()}
 
 ```
 defInDomainImpliesCreated {
@@ -6103,7 +6103,7 @@ defInDomainImpliesCreated {
 Choices: {}}
 ```
 
-## defIsFinite
+## ${t.displayName()}
 
 ```
 defIsFinite {
@@ -6114,7 +6114,7 @@ defIsFinite {
 Choices: {}}
 ```
 
-## defMapEmpty
+## ${t.displayName()}
 
 ```
 defMapEmpty {
@@ -6124,7 +6124,7 @@ defMapEmpty {
 Choices: {}}
 ```
 
-## defMapEquality
+## ${t.displayName()}
 
 ```
 defMapEquality {
@@ -6135,7 +6135,7 @@ defMapEquality {
 Choices: {}}
 ```
 
-## defMapOverride
+## ${t.displayName()}
 
 ```
 defMapOverride {
@@ -6146,7 +6146,7 @@ defMapOverride {
 Choices: {}}
 ```
 
-## defMapRemove
+## ${t.displayName()}
 
 ```
 defMapRemove {
@@ -6157,7 +6157,7 @@ defMapRemove {
 Choices: {}}
 ```
 
-## defMapSingleton
+## ${t.displayName()}
 
 ```
 defMapSingleton {
@@ -6168,7 +6168,7 @@ defMapSingleton {
 Choices: {}}
 ```
 
-## defMapUpdate
+## ${t.displayName()}
 
 ```
 defMapUpdate {
@@ -6179,7 +6179,7 @@ defMapUpdate {
 Choices: {}}
 ```
 
-## defOfEmpty
+## ${t.displayName()}
 
 ```
 defOfEmpty {
@@ -6190,7 +6190,7 @@ defOfEmpty {
 Choices: {sequences:on}}
 ```
 
-## defOfSeqConcat
+## ${t.displayName()}
 
 ```
 defOfSeqConcat {
@@ -6201,7 +6201,7 @@ defOfSeqConcat {
 Choices: {sequences:on}}
 ```
 
-## defOfSeqNPermInv
+## ${t.displayName()}
 
 ```
 defOfSeqNPermInv {
@@ -6212,7 +6212,7 @@ defOfSeqNPermInv {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## defOfSeqRemove
+## ${t.displayName()}
 
 ```
 defOfSeqRemove {
@@ -6223,7 +6223,7 @@ defOfSeqRemove {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## defOfSeqReverse
+## ${t.displayName()}
 
 ```
 defOfSeqReverse {
@@ -6234,7 +6234,7 @@ defOfSeqReverse {
 Choices: {sequences:on}}
 ```
 
-## defOfSeqSingleton
+## ${t.displayName()}
 
 ```
 defOfSeqSingleton {
@@ -6245,7 +6245,7 @@ defOfSeqSingleton {
 Choices: {sequences:on}}
 ```
 
-## defOfSeqSub
+## ${t.displayName()}
 
 ```
 defOfSeqSub {
@@ -6256,7 +6256,7 @@ defOfSeqSub {
 Choices: {sequences:on}}
 ```
 
-## defOfSeqSwap
+## ${t.displayName()}
 
 ```
 defOfSeqSwap {
@@ -6267,7 +6267,7 @@ defOfSeqSwap {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## defSeq2Map
+## ${t.displayName()}
 
 ```
 defSeq2Map {
@@ -6278,7 +6278,7 @@ defSeq2Map {
 Choices: {}}
 ```
 
-## def_wellOrderLeqInt
+## ${t.displayName()}
 
 ```
 def_wellOrderLeqInt {
@@ -6288,7 +6288,7 @@ def_wellOrderLeqInt {
 Choices: {}}
 ```
 
-## definitionAllElementsOfArray
+## ${t.displayName()}
 
 ```
 definitionAllElementsOfArray {
@@ -6299,7 +6299,7 @@ definitionAllElementsOfArray {
 Choices: {programRules:Java}}
 ```
 
-## definitionAllElementsOfArray2
+## ${t.displayName()}
 
 ```
 definitionAllElementsOfArray2 {
@@ -6310,7 +6310,7 @@ definitionAllElementsOfArray2 {
 Choices: {programRules:Java}}
 ```
 
-## definitionAllElementsOfArrayLocsets
+## ${t.displayName()}
 
 ```
 definitionAllElementsOfArrayLocsets {
@@ -6321,7 +6321,7 @@ definitionAllElementsOfArrayLocsets {
 Choices: {programRules:Java}}
 ```
 
-## definitionOfNewObjectsIsomorphic
+## ${t.displayName()}
 
 ```
 definitionOfNewObjectsIsomorphic {
@@ -6334,7 +6334,7 @@ definitionOfNewObjectsIsomorphic {
 Choices: {}}
 ```
 
-## definitionOfNewOnHeap
+## ${t.displayName()}
 
 ```
 definitionOfNewOnHeap {
@@ -6345,7 +6345,7 @@ definitionOfNewOnHeap {
 Choices: {}}
 ```
 
-## definitionOfObjectIsomorphic
+## ${t.displayName()}
 
 ```
 definitionOfObjectIsomorphic {
@@ -6356,7 +6356,7 @@ definitionOfObjectIsomorphic {
 Choices: {}}
 ```
 
-## definitionOfObjectsIsomorphic
+## ${t.displayName()}
 
 ```
 definitionOfObjectsIsomorphic {
@@ -6367,7 +6367,7 @@ definitionOfObjectsIsomorphic {
 Choices: {}}
 ```
 
-## definitionOfSameTypes
+## ${t.displayName()}
 
 ```
 definitionOfSameTypes {
@@ -6378,7 +6378,7 @@ definitionOfSameTypes {
 Choices: {}}
 ```
 
-## definitionSeqdefWorkaround
+## ${t.displayName()}
 
 ```
 definitionSeqdefWorkaround {
@@ -6389,7 +6389,7 @@ definitionSeqdefWorkaround {
 Choices: {sequences:on}}
 ```
 
-## definitionSeqdefWorkaround2
+## ${t.displayName()}
 
 ```
 definitionSeqdefWorkaround2 {
@@ -6400,7 +6400,7 @@ definitionSeqdefWorkaround2 {
 Choices: {sequences:on}}
 ```
 
-## delete_unnecessary_cast
+## ${t.displayName()}
 
 ```
 delete_unnecessary_cast {
@@ -6412,7 +6412,7 @@ delete_unnecessary_cast {
 Choices: {programRules:Java}}
 ```
 
-## diamondToBox
+## ${t.displayName()}
 
 ```
 diamondToBox {
@@ -6422,7 +6422,7 @@ diamondToBox {
 Choices: {programRules:Java}}
 ```
 
-## diamondToBox
+## ${t.displayName()}
 
 ```
 diamondToBoxTransaction {
@@ -6432,7 +6432,7 @@ diamondToBoxTransaction {
 Choices: {programRules:Java}}
 ```
 
-## diamond_and_left
+## ${t.displayName()}
 
 ```
 diamond_and_left {
@@ -6442,7 +6442,7 @@ diamond_and_left {
 Choices: {programRules:Java}}
 ```
 
-## diamond_and_right
+## ${t.displayName()}
 
 ```
 diamond_and_right {
@@ -6453,7 +6453,7 @@ diamond_and_right {
 Choices: {programRules:Java}}
 ```
 
-## diamond_false
+## ${t.displayName()}
 
 ```
 diamond_false {
@@ -6463,7 +6463,7 @@ diamond_false {
 Choices: {programRules:Java}}
 ```
 
-## diamond_or_left
+## ${t.displayName()}
 
 ```
 diamond_or_left {
@@ -6473,7 +6473,7 @@ diamond_or_left {
 Choices: {programRules:Java}}
 ```
 
-## diamond_or_right
+## ${t.displayName()}
 
 ```
 diamond_or_right {
@@ -6483,7 +6483,7 @@ diamond_or_right {
 Choices: {programRules:Java}}
 ```
 
-## diamond_split_termination
+## ${t.displayName()}
 
 ```
 diamond_split_termination {
@@ -6493,7 +6493,7 @@ diamond_split_termination {
 Choices: {programRules:Java}}
 ```
 
-## disjointAllFields
+## ${t.displayName()}
 
 ```
 disjointAllFields {
@@ -6504,7 +6504,7 @@ disjointAllFields {
 Choices: {programRules:Java}}
 ```
 
-## disjointAllFields_2
+## ${t.displayName()}
 
 ```
 disjointAllFields_2 {
@@ -6514,7 +6514,7 @@ disjointAllFields_2 {
 Choices: {programRules:Java}}
 ```
 
-## disjointAllObjects
+## ${t.displayName()}
 
 ```
 disjointAllObjects {
@@ -6525,7 +6525,7 @@ disjointAllObjects {
 Choices: {programRules:Java}}
 ```
 
-## disjointAndSubset1
+## ${t.displayName()}
 
 ```
 disjointAndSubset1 {
@@ -6536,7 +6536,7 @@ disjointAndSubset1 {
 Choices: {programRules:Java}}
 ```
 
-## disjointAndSubset2
+## ${t.displayName()}
 
 ```
 disjointAndSubset2 {
@@ -6547,7 +6547,7 @@ disjointAndSubset2 {
 Choices: {programRules:Java}}
 ```
 
-## disjointAndSubset_3
+## ${t.displayName()}
 
 ```
 disjointAndSubset_3 {
@@ -6558,7 +6558,7 @@ disjointAndSubset_3 {
 Choices: {programRules:Java}}
 ```
 
-## disjointAndSubset_4
+## ${t.displayName()}
 
 ```
 disjointAndSubset_4 {
@@ -6569,7 +6569,7 @@ disjointAndSubset_4 {
 Choices: {programRules:Java}}
 ```
 
-## disjointAndSubset_5
+## ${t.displayName()}
 
 ```
 disjointAndSubset_5 {
@@ -6580,7 +6580,7 @@ disjointAndSubset_5 {
 Choices: {programRules:Java}}
 ```
 
-## disjointAndSubset_6
+## ${t.displayName()}
 
 ```
 disjointAndSubset_6 {
@@ -6591,7 +6591,7 @@ disjointAndSubset_6 {
 Choices: {programRules:Java}}
 ```
 
-## disjointDefinition
+## ${t.displayName()}
 
 ```
 disjointDefinition {
@@ -6601,7 +6601,7 @@ disjointDefinition {
 Choices: {programRules:Java}}
 ```
 
-## disjointInfiniteUnion
+## ${t.displayName()}
 
 ```
 disjointInfiniteUnion {
@@ -6612,7 +6612,7 @@ disjointInfiniteUnion {
 Choices: {programRules:Java}}
 ```
 
-## disjointInfiniteUnion_2
+## ${t.displayName()}
 
 ```
 disjointInfiniteUnion_2 {
@@ -6623,7 +6623,7 @@ disjointInfiniteUnion_2 {
 Choices: {programRules:Java}}
 ```
 
-## disjointNotInOtherLocset1
+## ${t.displayName()}
 
 ```
 disjointNotInOtherLocset1 {
@@ -6634,7 +6634,7 @@ disjointNotInOtherLocset1 {
 Choices: {programRules:Java}}
 ```
 
-## disjointNotInOtherLocset2
+## ${t.displayName()}
 
 ```
 disjointNotInOtherLocset2 {
@@ -6645,7 +6645,7 @@ disjointNotInOtherLocset2 {
 Choices: {programRules:Java}}
 ```
 
-## disjointToElementOf
+## ${t.displayName()}
 
 ```
 disjointToElementOf {
@@ -6656,7 +6656,7 @@ disjointToElementOf {
 Choices: {programRules:Java}}
 ```
 
-## disjointWithEmpty
+## ${t.displayName()}
 
 ```
 disjointWithEmpty {
@@ -6666,7 +6666,7 @@ disjointWithEmpty {
 Choices: {programRules:Java}}
 ```
 
-## disjointWithSingleton
+## ${t.displayName()}
 
 ```
 disjointWithSingleton1 {
@@ -6676,7 +6676,7 @@ disjointWithSingleton1 {
 Choices: {programRules:Java}}
 ```
 
-## disjointWithSingleton
+## ${t.displayName()}
 
 ```
 disjointWithSingleton2 {
@@ -6686,7 +6686,7 @@ disjointWithSingleton2 {
 Choices: {programRules:Java}}
 ```
 
-## dismissNonSelectedField
+## ${t.displayName()}
 
 ```
 dismissNonSelectedField {
@@ -6697,7 +6697,7 @@ dismissNonSelectedField {
 Choices: {programRules:Java}}
 ```
 
-## dismissNonSelectedFieldEQ
+## ${t.displayName()}
 
 ```
 dismissNonSelectedFieldEQ {
@@ -6709,7 +6709,7 @@ dismissNonSelectedFieldEQ {
 Choices: {programRules:Java}}
 ```
 
-## distr_existsAnd1
+## ${t.displayName()}
 
 ```
 distr_existsAnd1 {
@@ -6720,7 +6720,7 @@ distr_existsAnd1 {
 Choices: {}}
 ```
 
-## distr_existsAnd2
+## ${t.displayName()}
 
 ```
 distr_existsAnd2 {
@@ -6731,7 +6731,7 @@ distr_existsAnd2 {
 Choices: {}}
 ```
 
-## distr_existsOr
+## ${t.displayName()}
 
 ```
 distr_existsOr {
@@ -6741,7 +6741,7 @@ distr_existsOr {
 Choices: {}}
 ```
 
-## distr_forallAnd
+## ${t.displayName()}
 
 ```
 distr_forallAnd {
@@ -6751,7 +6751,7 @@ distr_forallAnd {
 Choices: {}}
 ```
 
-## distr_forallOr1
+## ${t.displayName()}
 
 ```
 distr_forallOr1 {
@@ -6762,7 +6762,7 @@ distr_forallOr1 {
 Choices: {}}
 ```
 
-## distr_forallOr2
+## ${t.displayName()}
 
 ```
 distr_forallOr2 {
@@ -6773,7 +6773,7 @@ distr_forallOr2 {
 Choices: {}}
 ```
 
-## distributeIntersection
+## ${t.displayName()}
 
 ```
 distributeIntersection {
@@ -6783,7 +6783,7 @@ distributeIntersection {
 Choices: {programRules:Java}}
 ```
 
-## distributeIntersection_2
+## ${t.displayName()}
 
 ```
 distributeIntersection_2 {
@@ -6793,7 +6793,7 @@ distributeIntersection_2 {
 Choices: {programRules:Java}}
 ```
 
-## div_axiom
+## ${t.displayName()}
 
 ```
 div_axiom {
@@ -6803,7 +6803,7 @@ div_axiom {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## div_literals
+## ${t.displayName()}
 
 ```
 div_literals {
@@ -6813,7 +6813,7 @@ div_literals {
 Choices: {}}
 ```
 
-## divide_eq0
+## ${t.displayName()}
 
 ```
 divide_eq0 {
@@ -6824,7 +6824,7 @@ divide_eq0 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_eq1
+## ${t.displayName()}
 
 ```
 divide_eq1 {
@@ -6835,7 +6835,7 @@ divide_eq1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_eq2
+## ${t.displayName()}
 
 ```
 divide_eq2 {
@@ -6846,7 +6846,7 @@ divide_eq2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_eq3
+## ${t.displayName()}
 
 ```
 divide_eq3 {
@@ -6857,7 +6857,7 @@ divide_eq3 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_eq4
+## ${t.displayName()}
 
 ```
 divide_eq4 {
@@ -6868,7 +6868,7 @@ divide_eq4 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_eq5
+## ${t.displayName()}
 
 ```
 divide_eq5 {
@@ -6879,7 +6879,7 @@ divide_eq5 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_eq6
+## ${t.displayName()}
 
 ```
 divide_eq6 {
@@ -6890,7 +6890,7 @@ divide_eq6 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_eq7
+## ${t.displayName()}
 
 ```
 divide_eq7 {
@@ -6901,7 +6901,7 @@ divide_eq7 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_equation
+## ${t.displayName()}
 
 ```
 divide_equation {
@@ -6911,7 +6911,7 @@ divide_equation {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_geq
+## ${t.displayName()}
 
 ```
 divide_geq {
@@ -6921,7 +6921,7 @@ divide_geq {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_inEq0
+## ${t.displayName()}
 
 ```
 divide_inEq0 {
@@ -6932,7 +6932,7 @@ divide_inEq0 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_inEq1
+## ${t.displayName()}
 
 ```
 divide_inEq1 {
@@ -6943,7 +6943,7 @@ divide_inEq1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_inEq2
+## ${t.displayName()}
 
 ```
 divide_inEq2 {
@@ -6954,7 +6954,7 @@ divide_inEq2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_inEq3
+## ${t.displayName()}
 
 ```
 divide_inEq3 {
@@ -6965,7 +6965,7 @@ divide_inEq3 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_inEq4
+## ${t.displayName()}
 
 ```
 divide_inEq4 {
@@ -6976,7 +6976,7 @@ divide_inEq4 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_inEq5
+## ${t.displayName()}
 
 ```
 divide_inEq5 {
@@ -6987,7 +6987,7 @@ divide_inEq5 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_inEq6
+## ${t.displayName()}
 
 ```
 divide_inEq6 {
@@ -6998,7 +6998,7 @@ divide_inEq6 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_inEq7
+## ${t.displayName()}
 
 ```
 divide_inEq7 {
@@ -7009,7 +7009,7 @@ divide_inEq7 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## divide_leq
+## ${t.displayName()}
 
 ```
 divide_leq {
@@ -7019,7 +7019,7 @@ divide_leq {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## doWhileUnwind
+## ${t.displayName()}
 
 ```
 doWhileUnwind {
@@ -7031,7 +7031,7 @@ doWhileUnwind {
 Choices: {programRules:Java}}
 ```
 
-## doubleImpLeft
+## ${t.displayName()}
 
 ```
 doubleImpLeft {
@@ -7043,7 +7043,7 @@ doubleImpLeft {
 Choices: {}}
 ```
 
-## double_not
+## ${t.displayName()}
 
 ```
 double_not {
@@ -7053,7 +7053,7 @@ double_not {
 Choices: {}}
 ```
 
-## double_unary_minus
+## ${t.displayName()}
 
 ```
 double_unary_minus_literal {
@@ -7063,7 +7063,7 @@ double_unary_minus_literal {
 Choices: {}}
 ```
 
-## dropEffectlessStores
+## ${t.displayName()}
 
 ```
 dropEffectlessStores {
@@ -7074,7 +7074,7 @@ dropEffectlessStores {
 Choices: {programRules:Java}}
 ```
 
-## elementOfAllFields
+## ${t.displayName()}
 
 ```
 elementOfAllFields {
@@ -7084,7 +7084,7 @@ elementOfAllFields {
 Choices: {programRules:Java}}
 ```
 
-## elementOfAllLocs
+## ${t.displayName()}
 
 ```
 elementOfAllLocs {
@@ -7094,7 +7094,7 @@ elementOfAllLocs {
 Choices: {programRules:Java}}
 ```
 
-## elementOfAllObjects
+## ${t.displayName()}
 
 ```
 elementOfAllObjects {
@@ -7104,7 +7104,7 @@ elementOfAllObjects {
 Choices: {programRules:Java}}
 ```
 
-## elementOfArrayRange
+## ${t.displayName()}
 
 ```
 elementOfArrayRange {
@@ -7115,7 +7115,7 @@ elementOfArrayRange {
 Choices: {programRules:Java}}
 ```
 
-## elementOfArrayRangeConcrete
+## ${t.displayName()}
 
 ```
 elementOfArrayRangeConcrete {
@@ -7125,7 +7125,7 @@ elementOfArrayRangeConcrete {
 Choices: {programRules:Java}}
 ```
 
-## elementOfArrayRangeEQ
+## ${t.displayName()}
 
 ```
 elementOfArrayRangeEQ {
@@ -7137,7 +7137,7 @@ elementOfArrayRangeEQ {
 Choices: {programRules:Java}}
 ```
 
-## elementOfEmpty
+## ${t.displayName()}
 
 ```
 elementOfEmpty {
@@ -7147,7 +7147,7 @@ elementOfEmpty {
 Choices: {programRules:Java}}
 ```
 
-## elementOfFreshLocs
+## ${t.displayName()}
 
 ```
 elementOfFreshLocs {
@@ -7157,7 +7157,7 @@ elementOfFreshLocs {
 Choices: {programRules:Java}}
 ```
 
-## elementOfGuardedSet
+## ${t.displayName()}
 
 ```
 elementOfGuardedSet {
@@ -7167,7 +7167,7 @@ elementOfGuardedSet {
 Choices: {programRules:Java}}
 ```
 
-## elementOfInfiniteUnion
+## ${t.displayName()}
 
 ```
 elementOfInfiniteUnion {
@@ -7178,7 +7178,7 @@ elementOfInfiniteUnion {
 Choices: {programRules:Java}}
 ```
 
-## elementOfInfiniteUnion2Vars
+## ${t.displayName()}
 
 ```
 elementOfInfiniteUnion2Vars {
@@ -7189,7 +7189,7 @@ elementOfInfiniteUnion2Vars {
 Choices: {programRules:Java}}
 ```
 
-## elementOfInfiniteUnion2VarsEQ
+## ${t.displayName()}
 
 ```
 elementOfInfiniteUnion2VarsEQ {
@@ -7201,7 +7201,7 @@ elementOfInfiniteUnion2VarsEQ {
 Choices: {programRules:Java}}
 ```
 
-## elementOfInfiniteUnionEQ
+## ${t.displayName()}
 
 ```
 elementOfInfiniteUnionEQ {
@@ -7213,7 +7213,7 @@ elementOfInfiniteUnionEQ {
 Choices: {programRules:Java}}
 ```
 
-## elementOfIntersect
+## ${t.displayName()}
 
 ```
 elementOfIntersect {
@@ -7223,7 +7223,7 @@ elementOfIntersect {
 Choices: {programRules:Java}}
 ```
 
-## elementOfIntersectEQ
+## ${t.displayName()}
 
 ```
 elementOfIntersectEQ {
@@ -7234,7 +7234,7 @@ elementOfIntersectEQ {
 Choices: {programRules:Java}}
 ```
 
-## elementOfSetMinus
+## ${t.displayName()}
 
 ```
 elementOfSetMinus {
@@ -7244,7 +7244,7 @@ elementOfSetMinus {
 Choices: {programRules:Java}}
 ```
 
-## elementOfSetMinusEQ
+## ${t.displayName()}
 
 ```
 elementOfSetMinusEQ {
@@ -7255,7 +7255,7 @@ elementOfSetMinusEQ {
 Choices: {programRules:Java}}
 ```
 
-## elementOfSingleton
+## ${t.displayName()}
 
 ```
 elementOfSingleton {
@@ -7265,7 +7265,7 @@ elementOfSingleton {
 Choices: {programRules:Java}}
 ```
 
-## elementOfSubsetImpliesElementOfSuperset
+## ${t.displayName()}
 
 ```
 elementOfSubsetImpliesElementOfSuperset {
@@ -7276,7 +7276,7 @@ elementOfSubsetImpliesElementOfSuperset {
 Choices: {programRules:Java}}
 ```
 
-## elementOfSubsetOfUnion1
+## ${t.displayName()}
 
 ```
 elementOfSubsetOfUnion1 {
@@ -7287,7 +7287,7 @@ elementOfSubsetOfUnion1 {
 Choices: {programRules:Java}}
 ```
 
-## elementOfSubsetOfUnion2
+## ${t.displayName()}
 
 ```
 elementOfSubsetOfUnion2 {
@@ -7298,7 +7298,7 @@ elementOfSubsetOfUnion2 {
 Choices: {programRules:Java}}
 ```
 
-## elementOfUnion
+## ${t.displayName()}
 
 ```
 elementOfUnion {
@@ -7308,7 +7308,7 @@ elementOfUnion {
 Choices: {programRules:Java}}
 ```
 
-## elementOfUnionEQ
+## ${t.displayName()}
 
 ```
 elementOfUnionEQ {
@@ -7319,7 +7319,7 @@ elementOfUnionEQ {
 Choices: {programRules:Java}}
 ```
 
-## elimGcdEq
+## ${t.displayName()}
 
 ```
 elimGcdEq {
@@ -7329,7 +7329,7 @@ elimGcdEq {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## elimGcdGeq
+## ${t.displayName()}
 
 ```
 elimGcdGeq {
@@ -7339,7 +7339,7 @@ elimGcdGeq {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## elimGcdGeq_antec
+## ${t.displayName()}
 
 ```
 elimGcdGeq_antec {
@@ -7349,7 +7349,7 @@ elimGcdGeq_antec {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## elimGcdLeq
+## ${t.displayName()}
 
 ```
 elimGcdLeq {
@@ -7359,7 +7359,7 @@ elimGcdLeq {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## elimGcdLeq_antec
+## ${t.displayName()}
 
 ```
 elimGcdLeq_antec {
@@ -7369,7 +7369,7 @@ elimGcdLeq_antec {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## elim_double_block
+## ${t.displayName()}
 
 ```
 elim_double_block {
@@ -7379,7 +7379,7 @@ elim_double_block {
 Choices: {programRules:Java}}
 ```
 
-## elim_double_block
+## ${t.displayName()}
 
 ```
 elim_double_block_2 {
@@ -7389,7 +7389,7 @@ elim_double_block_2 {
 Choices: {programRules:Java}}
 ```
 
-## elim_double_block
+## ${t.displayName()}
 
 ```
 elim_double_block_3 {
@@ -7404,7 +7404,7 @@ elim_double_block_3 {
 Choices: {programRules:Java}}
 ```
 
-## elim_double_block
+## ${t.displayName()}
 
 ```
 elim_double_block_4 {
@@ -7419,7 +7419,7 @@ elim_double_block_4 {
 Choices: {programRules:Java}}
 ```
 
-## elim_double_block
+## ${t.displayName()}
 
 ```
 elim_double_block_5 {
@@ -7434,7 +7434,7 @@ elim_double_block_5 {
 Choices: {programRules:Java}}
 ```
 
-## elim_double_block
+## ${t.displayName()}
 
 ```
 elim_double_block_6 {
@@ -7449,7 +7449,7 @@ elim_double_block_6 {
 Choices: {programRules:Java}}
 ```
 
-## elim_double_block
+## ${t.displayName()}
 
 ```
 elim_double_block_7 {
@@ -7464,7 +7464,7 @@ elim_double_block_7 {
 Choices: {programRules:Java}}
 ```
 
-## elim_double_block
+## ${t.displayName()}
 
 ```
 elim_double_block_8 {
@@ -7477,7 +7477,7 @@ elim_double_block_8 {
 Choices: {programRules:Java}}
 ```
 
-## elim_exists0
+## ${t.displayName()}
 
 ```
 elim_exists0 {
@@ -7488,7 +7488,7 @@ elim_exists0 {
 Choices: {}}
 ```
 
-## elim_exists1
+## ${t.displayName()}
 
 ```
 elim_exists1 {
@@ -7499,7 +7499,7 @@ elim_exists1 {
 Choices: {}}
 ```
 
-## elim_exists2
+## ${t.displayName()}
 
 ```
 elim_exists2 {
@@ -7510,7 +7510,7 @@ elim_exists2 {
 Choices: {}}
 ```
 
-## elim_exists3
+## ${t.displayName()}
 
 ```
 elim_exists3 {
@@ -7521,7 +7521,7 @@ elim_exists3 {
 Choices: {}}
 ```
 
-## elim_exists4
+## ${t.displayName()}
 
 ```
 elim_exists4 {
@@ -7532,7 +7532,7 @@ elim_exists4 {
 Choices: {}}
 ```
 
-## elim_exists5
+## ${t.displayName()}
 
 ```
 elim_exists5 {
@@ -7543,7 +7543,7 @@ elim_exists5 {
 Choices: {}}
 ```
 
-## elim_exists6
+## ${t.displayName()}
 
 ```
 elim_exists6 {
@@ -7554,7 +7554,7 @@ elim_exists6 {
 Choices: {}}
 ```
 
-## elim_exists7
+## ${t.displayName()}
 
 ```
 elim_exists7 {
@@ -7565,7 +7565,7 @@ elim_exists7 {
 Choices: {}}
 ```
 
-## elim_exists_leq
+## ${t.displayName()}
 
 ```
 elim_exists_leq {
@@ -7576,7 +7576,7 @@ elim_exists_leq {
 Choices: {}}
 ```
 
-## elim_exists_nonSingleton0
+## ${t.displayName()}
 
 ```
 elim_exists_nonSingleton0 {
@@ -7587,7 +7587,7 @@ elim_exists_nonSingleton0 {
 Choices: {}}
 ```
 
-## elim_exists_nonSingleton1
+## ${t.displayName()}
 
 ```
 elim_exists_nonSingleton1 {
@@ -7598,7 +7598,7 @@ elim_exists_nonSingleton1 {
 Choices: {}}
 ```
 
-## elim_exists_nonSingleton2
+## ${t.displayName()}
 
 ```
 elim_exists_nonSingleton2 {
@@ -7609,7 +7609,7 @@ elim_exists_nonSingleton2 {
 Choices: {}}
 ```
 
-## elim_exists_nonSingleton3
+## ${t.displayName()}
 
 ```
 elim_exists_nonSingleton3 {
@@ -7620,7 +7620,7 @@ elim_exists_nonSingleton3 {
 Choices: {}}
 ```
 
-## elim_exists_nonSingleton4
+## ${t.displayName()}
 
 ```
 elim_exists_nonSingleton4 {
@@ -7631,7 +7631,7 @@ elim_exists_nonSingleton4 {
 Choices: {}}
 ```
 
-## elim_exists_nonSingleton5
+## ${t.displayName()}
 
 ```
 elim_exists_nonSingleton5 {
@@ -7642,7 +7642,7 @@ elim_exists_nonSingleton5 {
 Choices: {}}
 ```
 
-## elim_exists_sub_1
+## ${t.displayName()}
 
 ```
 elim_exists_sub_1 {
@@ -7653,7 +7653,7 @@ elim_exists_sub_1 {
 Choices: {}}
 ```
 
-## elim_exists_sub_1_and_phi
+## ${t.displayName()}
 
 ```
 elim_exists_sub_1_and_phi {
@@ -7664,7 +7664,7 @@ elim_exists_sub_1_and_phi {
 Choices: {}}
 ```
 
-## elim_exists_sub_1_or_phi
+## ${t.displayName()}
 
 ```
 elim_exists_sub_1_or_phi {
@@ -7675,7 +7675,7 @@ elim_exists_sub_1_or_phi {
 Choices: {}}
 ```
 
-## elim_forall0
+## ${t.displayName()}
 
 ```
 elim_forall0 {
@@ -7686,7 +7686,7 @@ elim_forall0 {
 Choices: {}}
 ```
 
-## elim_forall1
+## ${t.displayName()}
 
 ```
 elim_forall1 {
@@ -7697,7 +7697,7 @@ elim_forall1 {
 Choices: {}}
 ```
 
-## elim_forall10
+## ${t.displayName()}
 
 ```
 elim_forall10 {
@@ -7708,7 +7708,7 @@ elim_forall10 {
 Choices: {}}
 ```
 
-## elim_forall11
+## ${t.displayName()}
 
 ```
 elim_forall11 {
@@ -7719,7 +7719,7 @@ elim_forall11 {
 Choices: {}}
 ```
 
-## elim_forall12
+## ${t.displayName()}
 
 ```
 elim_forall12 {
@@ -7730,7 +7730,7 @@ elim_forall12 {
 Choices: {}}
 ```
 
-## elim_forall13
+## ${t.displayName()}
 
 ```
 elim_forall13 {
@@ -7741,7 +7741,7 @@ elim_forall13 {
 Choices: {}}
 ```
 
-## elim_forall14
+## ${t.displayName()}
 
 ```
 elim_forall14 {
@@ -7752,7 +7752,7 @@ elim_forall14 {
 Choices: {}}
 ```
 
-## elim_forall15
+## ${t.displayName()}
 
 ```
 elim_forall15 {
@@ -7763,7 +7763,7 @@ elim_forall15 {
 Choices: {}}
 ```
 
-## elim_forall16
+## ${t.displayName()}
 
 ```
 elim_forall16 {
@@ -7774,7 +7774,7 @@ elim_forall16 {
 Choices: {}}
 ```
 
-## elim_forall17
+## ${t.displayName()}
 
 ```
 elim_forall17 {
@@ -7785,7 +7785,7 @@ elim_forall17 {
 Choices: {}}
 ```
 
-## elim_forall18
+## ${t.displayName()}
 
 ```
 elim_forall18 {
@@ -7796,7 +7796,7 @@ elim_forall18 {
 Choices: {}}
 ```
 
-## elim_forall19
+## ${t.displayName()}
 
 ```
 elim_forall19 {
@@ -7807,7 +7807,7 @@ elim_forall19 {
 Choices: {}}
 ```
 
-## elim_forall2
+## ${t.displayName()}
 
 ```
 elim_forall2 {
@@ -7818,7 +7818,7 @@ elim_forall2 {
 Choices: {}}
 ```
 
-## elim_forall3
+## ${t.displayName()}
 
 ```
 elim_forall3 {
@@ -7829,7 +7829,7 @@ elim_forall3 {
 Choices: {}}
 ```
 
-## elim_forall4
+## ${t.displayName()}
 
 ```
 elim_forall4 {
@@ -7840,7 +7840,7 @@ elim_forall4 {
 Choices: {}}
 ```
 
-## elim_forall5
+## ${t.displayName()}
 
 ```
 elim_forall5 {
@@ -7851,7 +7851,7 @@ elim_forall5 {
 Choices: {}}
 ```
 
-## elim_forall6
+## ${t.displayName()}
 
 ```
 elim_forall6 {
@@ -7862,7 +7862,7 @@ elim_forall6 {
 Choices: {}}
 ```
 
-## elim_forall7
+## ${t.displayName()}
 
 ```
 elim_forall7 {
@@ -7873,7 +7873,7 @@ elim_forall7 {
 Choices: {}}
 ```
 
-## elim_forall8
+## ${t.displayName()}
 
 ```
 elim_forall8 {
@@ -7884,7 +7884,7 @@ elim_forall8 {
 Choices: {}}
 ```
 
-## elim_forall9
+## ${t.displayName()}
 
 ```
 elim_forall9 {
@@ -7895,7 +7895,7 @@ elim_forall9 {
 Choices: {}}
 ```
 
-## elim_forall_eqSet_imp_phi
+## ${t.displayName()}
 
 ```
 elim_forall_eqSet_imp_phi {
@@ -7906,7 +7906,7 @@ elim_forall_eqSet_imp_phi {
 Choices: {}}
 ```
 
-## elim_forall_leq
+## ${t.displayName()}
 
 ```
 elim_forall_leq {
@@ -7917,7 +7917,7 @@ elim_forall_leq {
 Choices: {}}
 ```
 
-## elim_forall_nonSingleton0
+## ${t.displayName()}
 
 ```
 elim_forall_nonSingleton0 {
@@ -7928,7 +7928,7 @@ elim_forall_nonSingleton0 {
 Choices: {}}
 ```
 
-## elim_forall_nonSingleton1
+## ${t.displayName()}
 
 ```
 elim_forall_nonSingleton1 {
@@ -7939,7 +7939,7 @@ elim_forall_nonSingleton1 {
 Choices: {}}
 ```
 
-## elim_forall_nonSingleton2
+## ${t.displayName()}
 
 ```
 elim_forall_nonSingleton2 {
@@ -7950,7 +7950,7 @@ elim_forall_nonSingleton2 {
 Choices: {}}
 ```
 
-## elim_forall_nonSingleton3
+## ${t.displayName()}
 
 ```
 elim_forall_nonSingleton3 {
@@ -7961,7 +7961,7 @@ elim_forall_nonSingleton3 {
 Choices: {}}
 ```
 
-## elim_forall_nonSingleton4
+## ${t.displayName()}
 
 ```
 elim_forall_nonSingleton4 {
@@ -7972,7 +7972,7 @@ elim_forall_nonSingleton4 {
 Choices: {}}
 ```
 
-## elim_forall_nonSingleton5
+## ${t.displayName()}
 
 ```
 elim_forall_nonSingleton5 {
@@ -7983,7 +7983,7 @@ elim_forall_nonSingleton5 {
 Choices: {}}
 ```
 
-## elim_forall_subOfAll
+## ${t.displayName()}
 
 ```
 elim_forall_subOfAll {
@@ -7994,7 +7994,7 @@ elim_forall_subOfAll {
 Choices: {}}
 ```
 
-## elim_forall_subOfAll_and_phi
+## ${t.displayName()}
 
 ```
 elim_forall_subOfAll_and_phi {
@@ -8005,7 +8005,7 @@ elim_forall_subOfAll_and_phi {
 Choices: {}}
 ```
 
-## elim_forall_superOfAll
+## ${t.displayName()}
 
 ```
 elim_forall_superOfAll {
@@ -8016,7 +8016,7 @@ elim_forall_superOfAll {
 Choices: {}}
 ```
 
-## elim_forall_superOfAll_and_phi
+## ${t.displayName()}
 
 ```
 elim_forall_superOfAll_and_phi {
@@ -8027,7 +8027,7 @@ elim_forall_superOfAll_and_phi {
 Choices: {}}
 ```
 
-## emptyEqualsSingleton
+## ${t.displayName()}
 
 ```
 emptyEqualsSingleton {
@@ -8037,7 +8037,7 @@ emptyEqualsSingleton {
 Choices: {programRules:Java}}
 ```
 
-## emptyModality
+## ${t.displayName()}
 
 ```
 emptyModality {
@@ -8047,7 +8047,7 @@ emptyModality {
 Choices: {programRules:Java}}
 ```
 
-## emptyModality
+## ${t.displayName()}
 
 ```
 emptyModalityBoxTransaction {
@@ -8057,7 +8057,7 @@ emptyModalityBoxTransaction {
 Choices: {programRules:Java}}
 ```
 
-## emptyModality
+## ${t.displayName()}
 
 ```
 emptyModalityDiamondTransaction {
@@ -8067,7 +8067,7 @@ emptyModalityDiamondTransaction {
 Choices: {programRules:Java}}
 ```
 
-## emptyStatement
+## ${t.displayName()}
 
 ```
 emptyStatement {
@@ -8077,7 +8077,7 @@ emptyStatement {
 Choices: {programRules:Java}}
 ```
 
-## endsWith
+## ${t.displayName()}
 
 ```
 endsWith {
@@ -8087,7 +8087,7 @@ endsWith {
 Choices: {Strings:on}}
 ```
 
-## enhancedfor
+## ${t.displayName()}
 
 ```
 enhancedfor_iterable {
@@ -8100,7 +8100,7 @@ enhancedfor_iterable {
 Choices: {programRules:Java}}
 ```
 
-## eqClose
+## ${t.displayName()}
 
 ```
 eqClose {
@@ -8110,7 +8110,7 @@ eqClose {
 Choices: {}}
 ```
 
-## eqSameSeq
+## ${t.displayName()}
 
 ```
 eqSameSeq {
@@ -8121,7 +8121,7 @@ eqSameSeq {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqConcat
+## ${t.displayName()}
 
 ```
 eqSeqConcat {
@@ -8131,7 +8131,7 @@ eqSeqConcat {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqConcat2
+## ${t.displayName()}
 
 ```
 eqSeqConcat2 {
@@ -8141,7 +8141,7 @@ eqSeqConcat2 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqConcat2EQ
+## ${t.displayName()}
 
 ```
 eqSeqConcat2EQ {
@@ -8152,7 +8152,7 @@ eqSeqConcat2EQ {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqConcat3
+## ${t.displayName()}
 
 ```
 eqSeqConcat3 {
@@ -8162,7 +8162,7 @@ eqSeqConcat3 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqConcat3EQ
+## ${t.displayName()}
 
 ```
 eqSeqConcat3EQ {
@@ -8173,7 +8173,7 @@ eqSeqConcat3EQ {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqConcat4
+## ${t.displayName()}
 
 ```
 eqSeqConcat4 {
@@ -8183,7 +8183,7 @@ eqSeqConcat4 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqConcat4EQ
+## ${t.displayName()}
 
 ```
 eqSeqConcat4EQ {
@@ -8194,7 +8194,7 @@ eqSeqConcat4EQ {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqConcat5
+## ${t.displayName()}
 
 ```
 eqSeqConcat5 {
@@ -8204,7 +8204,7 @@ eqSeqConcat5 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqConcat5EQ
+## ${t.displayName()}
 
 ```
 eqSeqConcat5EQ {
@@ -8215,7 +8215,7 @@ eqSeqConcat5EQ {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqConcatEQ
+## ${t.displayName()}
 
 ```
 eqSeqConcatEQ {
@@ -8226,7 +8226,7 @@ eqSeqConcatEQ {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqDef
+## ${t.displayName()}
 
 ```
 eqSeqDef {
@@ -8237,7 +8237,7 @@ eqSeqDef {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqDef2
+## ${t.displayName()}
 
 ```
 eqSeqDef2 {
@@ -8249,7 +8249,7 @@ eqSeqDef2 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqEmpty
+## ${t.displayName()}
 
 ```
 eqSeqEmpty {
@@ -8259,7 +8259,7 @@ eqSeqEmpty {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqReverse
+## ${t.displayName()}
 
 ```
 eqSeqReverse {
@@ -8270,7 +8270,7 @@ eqSeqReverse {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqReverse2
+## ${t.displayName()}
 
 ```
 eqSeqReverse2 {
@@ -8282,7 +8282,7 @@ eqSeqReverse2 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqSingleton
+## ${t.displayName()}
 
 ```
 eqSeqSingleton {
@@ -8292,7 +8292,7 @@ eqSeqSingleton {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSeqSingleton2
+## ${t.displayName()}
 
 ```
 eqSeqSingleton2 {
@@ -8303,7 +8303,7 @@ eqSeqSingleton2 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## eqSymm
+## ${t.displayName()}
 
 ```
 eqSymm {
@@ -8313,7 +8313,7 @@ eqSymm {
 Choices: {}}
 ```
 
-## eqTermCut
+## ${t.displayName()}
 
 ```
 eqTermCut {
@@ -8324,7 +8324,7 @@ eqTermCut {
 Choices: {}}
 ```
 
-## eq_add_iff1
+## ${t.displayName()}
 
 ```
 eq_add_iff1 {
@@ -8334,7 +8334,7 @@ eq_add_iff1 {
 Choices: {}}
 ```
 
-## eq_add_iff2
+## ${t.displayName()}
 
 ```
 eq_add_iff2 {
@@ -8344,7 +8344,7 @@ eq_add_iff2 {
 Choices: {}}
 ```
 
-## eq_and
+## ${t.displayName()}
 
 ```
 eq_and {
@@ -8354,7 +8354,7 @@ eq_and {
 Choices: {}}
 ```
 
-## eq_and_2
+## ${t.displayName()}
 
 ```
 eq_and_2 {
@@ -8364,7 +8364,7 @@ eq_and_2 {
 Choices: {}}
 ```
 
-## eq_eq
+## ${t.displayName()}
 
 ```
 eq_eq {
@@ -8374,7 +8374,7 @@ eq_eq {
 Choices: {}}
 ```
 
-## eq_imp
+## ${t.displayName()}
 
 ```
 eq_imp {
@@ -8384,7 +8384,7 @@ eq_imp {
 Choices: {}}
 ```
 
-## eq_or
+## ${t.displayName()}
 
 ```
 eq_or {
@@ -8394,7 +8394,7 @@ eq_or {
 Choices: {}}
 ```
 
-## eq_or_2
+## ${t.displayName()}
 
 ```
 eq_or_2 {
@@ -8404,7 +8404,7 @@ eq_or_2 {
 Choices: {}}
 ```
 
-## eq_sides
+## ${t.displayName()}
 
 ```
 eq_sides {
@@ -8414,7 +8414,7 @@ eq_sides {
 Choices: {}}
 ```
 
-## equalCharacters
+## ${t.displayName()}
 
 ```
 equalCharacters {
@@ -8424,7 +8424,7 @@ equalCharacters {
 Choices: {Strings:on}}
 ```
 
-## equalRegEx
+## ${t.displayName()}
 
 ```
 equalRegEx {
@@ -8435,7 +8435,7 @@ equalRegEx {
 Choices: {Strings:on}}
 ```
 
-## equalUnique
+## ${t.displayName()}
 
 ```
 equalUnique {
@@ -8446,7 +8446,7 @@ equalUnique {
 Choices: {}}
 ```
 
-## equal_add
+## ${t.displayName()}
 
 ```
 equal_add {
@@ -8457,7 +8457,7 @@ equal_add {
 Choices: {}}
 ```
 
-## equal_add_one
+## ${t.displayName()}
 
 ```
 equal_add_one {
@@ -8467,7 +8467,7 @@ equal_add_one {
 Choices: {}}
 ```
 
-## equal_bprod_same_index
+## ${t.displayName()}
 
 ```
 equal_bprod1 {
@@ -8478,7 +8478,7 @@ equal_bprod1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## equal_bprod_same_index
+## ${t.displayName()}
 
 ```
 equal_bprod2 {
@@ -8490,7 +8490,7 @@ equal_bprod2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## equal_bprod_same_index
+## ${t.displayName()}
 
 ```
 equal_bprod3 {
@@ -8502,7 +8502,7 @@ equal_bprod3 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## equal_bprod
+## ${t.displayName()}
 
 ```
 equal_bprod5 {
@@ -8514,7 +8514,7 @@ equal_bprod5 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## equal_bprod_perm
+## ${t.displayName()}
 
 ```
 equal_bprod_perm1 {
@@ -8525,7 +8525,7 @@ equal_bprod_perm1 {
 Choices: {sequences:on,integerSimplificationRules:full}}
 ```
 
-## equal_bprod_perm
+## ${t.displayName()}
 
 ```
 equal_bprod_perm2 {
@@ -8537,7 +8537,7 @@ equal_bprod_perm2 {
 Choices: {sequences:on,integerSimplificationRules:full}}
 ```
 
-## equal_bsum_same_index
+## ${t.displayName()}
 
 ```
 equal_bsum1 {
@@ -8548,7 +8548,7 @@ equal_bsum1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## equal_bsum_same_index
+## ${t.displayName()}
 
 ```
 equal_bsum2 {
@@ -8560,7 +8560,7 @@ equal_bsum2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## equal_bsum_same_index
+## ${t.displayName()}
 
 ```
 equal_bsum3 {
@@ -8572,7 +8572,7 @@ equal_bsum3 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## equal_bsum
+## ${t.displayName()}
 
 ```
 equal_bsum5 {
@@ -8584,7 +8584,7 @@ equal_bsum5 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## equal_bsum_perm
+## ${t.displayName()}
 
 ```
 equal_bsum_perm1 {
@@ -8595,7 +8595,7 @@ equal_bsum_perm1 {
 Choices: {sequences:on,integerSimplificationRules:full}}
 ```
 
-## equal_bsum_perm
+## ${t.displayName()}
 
 ```
 equal_bsum_perm2 {
@@ -8607,7 +8607,7 @@ equal_bsum_perm2 {
 Choices: {sequences:on,integerSimplificationRules:full}}
 ```
 
-## equal_bsum_zero_cut
+## ${t.displayName()}
 
 ```
 equal_bsum_zero_cut {
@@ -8618,7 +8618,7 @@ equal_bsum_zero_cut {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## equal_literals
+## ${t.displayName()}
 
 ```
 equal_literals {
@@ -8628,7 +8628,7 @@ equal_literals {
 Choices: {}}
 ```
 
-## equalityToElementOf
+## ${t.displayName()}
 
 ```
 equalityToElementOf {
@@ -8639,7 +8639,7 @@ equalityToElementOf {
 Choices: {programRules:Java}}
 ```
 
-## equalityToElementOfRight
+## ${t.displayName()}
 
 ```
 equalityToElementOfRight {
@@ -8650,7 +8650,7 @@ equalityToElementOfRight {
 Choices: {programRules:Java}}
 ```
 
-## equalityToSelect
+## ${t.displayName()}
 
 ```
 equalityToSelect {
@@ -8661,7 +8661,7 @@ equalityToSelect {
 Choices: {programRules:Java}}
 ```
 
-## equalityToSeqGetAndSeqLen
+## ${t.displayName()}
 
 ```
 equalityToSeqGetAndSeqLen {
@@ -8672,7 +8672,7 @@ equalityToSeqGetAndSeqLen {
 Choices: {sequences:on}}
 ```
 
-## equalityToSeqGetAndSeqLenLeft
+## ${t.displayName()}
 
 ```
 equalityToSeqGetAndSeqLenLeft {
@@ -8683,7 +8683,7 @@ equalityToSeqGetAndSeqLenLeft {
 Choices: {sequences:on}}
 ```
 
-## equalityToSeqGetAndSeqLenRight
+## ${t.displayName()}
 
 ```
 equalityToSeqGetAndSeqLenRight {
@@ -8694,7 +8694,7 @@ equalityToSeqGetAndSeqLenRight {
 Choices: {sequences:on}}
 ```
 
-## equality comparison
+## ${t.displayName()}
 
 ```
 equality_comparison_new {
@@ -8704,7 +8704,7 @@ equality_comparison_new {
 Choices: {programRules:Java}}
 ```
 
-## equality comparison
+## ${t.displayName()}
 
 ```
 equality_comparison_simple {
@@ -8714,7 +8714,7 @@ equality_comparison_simple {
 Choices: {programRules:Java}}
 ```
 
-## equiv_left
+## ${t.displayName()}
 
 ```
 equiv_left {
@@ -8725,7 +8725,7 @@ equiv_left {
 Choices: {}}
 ```
 
-## equiv_right
+## ${t.displayName()}
 
 ```
 equiv_right {
@@ -8736,7 +8736,7 @@ equiv_right {
 Choices: {}}
 ```
 
-## erroneous classes have no initialized subclasses
+## ${t.displayName()}
 
 ```
 erroneous_class_has_no_initialized_sub_class {
@@ -8748,7 +8748,7 @@ erroneous_class_has_no_initialized_sub_class {
 Choices: {programRules:Java}}
 ```
 
-## eval_array_access
+## ${t.displayName()}
 
 ```
 eval_array_this_access {
@@ -8759,7 +8759,7 @@ eval_array_this_access {
 Choices: {programRules:Java}}
 ```
 
-## assignmentUnfoldLeft
+## ${t.displayName()}
 
 ```
 eval_order_access1 {
@@ -8770,7 +8770,7 @@ eval_order_access1 {
 Choices: {programRules:Java}}
 ```
 
-## assignmentUnfoldRight
+## ${t.displayName()}
 
 ```
 eval_order_access2 {
@@ -8781,7 +8781,7 @@ eval_order_access2 {
 Choices: {programRules:Java}}
 ```
 
-## assignmentSaveLocation
+## ${t.displayName()}
 
 ```
 eval_order_access4 {
@@ -8792,7 +8792,7 @@ eval_order_access4 {
 Choices: {programRules:Java}}
 ```
 
-## assignmentSaveLocationThis
+## ${t.displayName()}
 
 ```
 eval_order_access4_this {
@@ -8803,7 +8803,7 @@ eval_order_access4_this {
 Choices: {programRules:Java}}
 ```
 
-## assignmentUnfoldLeft
+## ${t.displayName()}
 
 ```
 eval_order_array_access1 {
@@ -8814,7 +8814,7 @@ eval_order_array_access1 {
 Choices: {programRules:Java}}
 ```
 
-## assignmentUnfoldLeft
+## ${t.displayName()}
 
 ```
 eval_order_array_access2 {
@@ -8825,7 +8825,7 @@ eval_order_array_access2 {
 Choices: {programRules:Java}}
 ```
 
-## assignmentSaveLocation
+## ${t.displayName()}
 
 ```
 eval_order_array_access3 {
@@ -8836,7 +8836,7 @@ eval_order_array_access3 {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## assignmentSaveLocation
+## ${t.displayName()}
 
 ```
 eval_order_array_access3 {
@@ -8847,7 +8847,7 @@ eval_order_array_access3 {
 Choices: {programRules:Java}}
 ```
 
-## assignmentUnfoldRight
+## ${t.displayName()}
 
 ```
 eval_order_array_access4 {
@@ -8858,7 +8858,7 @@ eval_order_array_access4 {
 Choices: {programRules:Java}}
 ```
 
-## assignmentUnfoldRight
+## ${t.displayName()}
 
 ```
 eval_order_array_access5 {
@@ -8869,7 +8869,7 @@ eval_order_array_access5 {
 Choices: {programRules:Java}}
 ```
 
-## assignmentUnfoldRight
+## ${t.displayName()}
 
 ```
 eval_order_array_access6 {
@@ -8880,7 +8880,7 @@ eval_order_array_access6 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_0_0 {
@@ -8891,7 +8891,7 @@ eval_order_iterated_assignments_0_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_0_1 {
@@ -8902,7 +8902,7 @@ eval_order_iterated_assignments_0_1 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_10_0 {
@@ -8913,7 +8913,7 @@ eval_order_iterated_assignments_10_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_10_1 {
@@ -8924,7 +8924,7 @@ eval_order_iterated_assignments_10_1 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_11_0 {
@@ -8935,7 +8935,7 @@ eval_order_iterated_assignments_11_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_11_1 {
@@ -8946,7 +8946,7 @@ eval_order_iterated_assignments_11_1 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_1_0 {
@@ -8957,7 +8957,7 @@ eval_order_iterated_assignments_1_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_1_1 {
@@ -8968,7 +8968,7 @@ eval_order_iterated_assignments_1_1 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_2_0 {
@@ -8979,7 +8979,7 @@ eval_order_iterated_assignments_2_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_2_1 {
@@ -8990,7 +8990,7 @@ eval_order_iterated_assignments_2_1 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_3_0 {
@@ -9001,7 +9001,7 @@ eval_order_iterated_assignments_3_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_3_1 {
@@ -9012,7 +9012,7 @@ eval_order_iterated_assignments_3_1 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_4_0 {
@@ -9023,7 +9023,7 @@ eval_order_iterated_assignments_4_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_4_1 {
@@ -9034,7 +9034,7 @@ eval_order_iterated_assignments_4_1 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_5_0 {
@@ -9045,7 +9045,7 @@ eval_order_iterated_assignments_5_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_5_1 {
@@ -9056,7 +9056,7 @@ eval_order_iterated_assignments_5_1 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_6_0 {
@@ -9067,7 +9067,7 @@ eval_order_iterated_assignments_6_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_6_1 {
@@ -9078,7 +9078,7 @@ eval_order_iterated_assignments_6_1 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_7_0 {
@@ -9089,7 +9089,7 @@ eval_order_iterated_assignments_7_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_7_1 {
@@ -9100,7 +9100,7 @@ eval_order_iterated_assignments_7_1 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_8_0 {
@@ -9111,7 +9111,7 @@ eval_order_iterated_assignments_8_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_8_1 {
@@ -9122,7 +9122,7 @@ eval_order_iterated_assignments_8_1 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_9_0 {
@@ -9133,7 +9133,7 @@ eval_order_iterated_assignments_9_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 eval_order_iterated_assignments_9_1 {
@@ -9144,7 +9144,7 @@ eval_order_iterated_assignments_9_1 {
 Choices: {programRules:Java}}
 ```
 
-## evaluate assert condition
+## ${t.displayName()}
 
 ```
 evaluateAssertCondition_1 {
@@ -9155,7 +9155,7 @@ evaluateAssertCondition_1 {
 Choices: {assertions:on,programRules:Java}}
 ```
 
-## evaluate assert condition
+## ${t.displayName()}
 
 ```
 evaluateAssertCondition_2 {
@@ -9166,7 +9166,7 @@ evaluateAssertCondition_2 {
 Choices: {assertions:on,programRules:Java}}
 ```
 
-## evaluate assert condition
+## ${t.displayName()}
 
 ```
 evaluateAssertMessage {
@@ -9177,7 +9177,7 @@ evaluateAssertMessage {
 Choices: {assertions:on,programRules:Java}}
 ```
 
-## exLeft
+## ${t.displayName()}
 
 ```
 exLeft {
@@ -9187,7 +9187,7 @@ exLeft {
 Choices: {}}
 ```
 
-## exRight
+## ${t.displayName()}
 
 ```
 exRight {
@@ -9197,7 +9197,7 @@ exRight {
 Choices: {}}
 ```
 
-## exRightHide
+## ${t.displayName()}
 
 ```
 exRightHide {
@@ -9210,7 +9210,7 @@ Choices: {}}] \replacewith([]==>[subst{u (variable)}(t,b)])
 Choices: {}}
 ```
 
-## ex_bool
+## ${t.displayName()}
 
 ```
 ex_bool {
@@ -9220,7 +9220,7 @@ ex_bool {
 Choices: {}}
 ```
 
-## ex_pull_out0
+## ${t.displayName()}
 
 ```
 ex_pull_out0 {
@@ -9231,7 +9231,7 @@ ex_pull_out0 {
 Choices: {}}
 ```
 
-## ex_pull_out1
+## ${t.displayName()}
 
 ```
 ex_pull_out1 {
@@ -9242,7 +9242,7 @@ ex_pull_out1 {
 Choices: {}}
 ```
 
-## ex_pull_out2
+## ${t.displayName()}
 
 ```
 ex_pull_out2 {
@@ -9253,7 +9253,7 @@ ex_pull_out2 {
 Choices: {}}
 ```
 
-## ex_pull_out3
+## ${t.displayName()}
 
 ```
 ex_pull_out3 {
@@ -9264,7 +9264,7 @@ ex_pull_out3 {
 Choices: {}}
 ```
 
-## ex_pull_out4
+## ${t.displayName()}
 
 ```
 ex_pull_out4 {
@@ -9275,7 +9275,7 @@ ex_pull_out4 {
 Choices: {}}
 ```
 
-## ex_unused
+## ${t.displayName()}
 
 ```
 ex_unused {
@@ -9286,7 +9286,7 @@ ex_unused {
 Choices: {}}
 ```
 
-## exact_instance_definition_boolean
+## ${t.displayName()}
 
 ```
 exact_instance_definition_boolean {
@@ -9297,7 +9297,7 @@ exact_instance_definition_boolean {
 Choices: {programRules:Java}}
 ```
 
-## exact_instance_definition_int
+## ${t.displayName()}
 
 ```
 exact_instance_definition_int {
@@ -9308,7 +9308,7 @@ exact_instance_definition_int {
 Choices: {programRules:Java}}
 ```
 
-## exact_instance_definition_null
+## ${t.displayName()}
 
 ```
 exact_instance_definition_null {
@@ -9319,7 +9319,7 @@ exact_instance_definition_null {
 Choices: {programRules:Java}}
 ```
 
-## interfaces or abstract classes have no exact instances
+## ${t.displayName()}
 
 ```
 exact_instance_for_interfaces_or_abstract_classes {
@@ -9330,7 +9330,7 @@ exact_instance_for_interfaces_or_abstract_classes {
 Choices: {programRules:Java}}
 ```
 
-## exact_instance_known_dynamic_type
+## ${t.displayName()}
 
 ```
 exact_instance_known_dynamic_type {
@@ -9342,7 +9342,7 @@ exact_instance_known_dynamic_type {
 Choices: {}}
 ```
 
-## expand_addJint
+## ${t.displayName()}
 
 ```
 expand_addJint {
@@ -9352,7 +9352,7 @@ expand_addJint {
 Choices: {}}
 ```
 
-## expand_addJlong
+## ${t.displayName()}
 
 ```
 expand_addJlong {
@@ -9362,7 +9362,7 @@ expand_addJlong {
 Choices: {}}
 ```
 
-## expand_divJint
+## ${t.displayName()}
 
 ```
 expand_divJint {
@@ -9372,7 +9372,7 @@ expand_divJint {
 Choices: {}}
 ```
 
-## expand_divJlong
+## ${t.displayName()}
 
 ```
 expand_divJlong {
@@ -9382,7 +9382,7 @@ expand_divJlong {
 Choices: {}}
 ```
 
-## expand_inByte
+## ${t.displayName()}
 
 ```
 expand_inByte {
@@ -9392,7 +9392,7 @@ expand_inByte {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## expand_inByte
+## ${t.displayName()}
 
 ```
 expand_inByte {
@@ -9402,7 +9402,7 @@ expand_inByte {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## expand_inChar
+## ${t.displayName()}
 
 ```
 expand_inChar {
@@ -9412,7 +9412,7 @@ expand_inChar {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## expand_inChar
+## ${t.displayName()}
 
 ```
 expand_inChar {
@@ -9422,7 +9422,7 @@ expand_inChar {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## expand_inInt
+## ${t.displayName()}
 
 ```
 expand_inInt {
@@ -9432,7 +9432,7 @@ expand_inInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## expand_inInt
+## ${t.displayName()}
 
 ```
 expand_inInt {
@@ -9442,7 +9442,7 @@ expand_inInt {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## expand_inLong
+## ${t.displayName()}
 
 ```
 expand_inLong {
@@ -9452,7 +9452,7 @@ expand_inLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## expand_inLong
+## ${t.displayName()}
 
 ```
 expand_inLong {
@@ -9462,7 +9462,7 @@ expand_inLong {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## expand_inShort
+## ${t.displayName()}
 
 ```
 expand_inShort {
@@ -9472,7 +9472,7 @@ expand_inShort {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## expand_inShort
+## ${t.displayName()}
 
 ```
 expand_inShort {
@@ -9482,7 +9482,7 @@ expand_inShort {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## expand_modJint
+## ${t.displayName()}
 
 ```
 expand_modJint {
@@ -9492,7 +9492,7 @@ expand_modJint {
 Choices: {}}
 ```
 
-## expand_modJlong
+## ${t.displayName()}
 
 ```
 expand_modJlong {
@@ -9502,7 +9502,7 @@ expand_modJlong {
 Choices: {}}
 ```
 
-## expand_moduloByte
+## ${t.displayName()}
 
 ```
 expand_moduloByte {
@@ -9512,7 +9512,7 @@ expand_moduloByte {
 Choices: {}}
 ```
 
-## expand_moduloChar
+## ${t.displayName()}
 
 ```
 expand_moduloChar {
@@ -9522,7 +9522,7 @@ expand_moduloChar {
 Choices: {}}
 ```
 
-## expand_moduloInteger
+## ${t.displayName()}
 
 ```
 expand_moduloInteger {
@@ -9532,7 +9532,7 @@ expand_moduloInteger {
 Choices: {}}
 ```
 
-## expand_moduloLong
+## ${t.displayName()}
 
 ```
 expand_moduloLong {
@@ -9542,7 +9542,7 @@ expand_moduloLong {
 Choices: {}}
 ```
 
-## expand_moduloShort
+## ${t.displayName()}
 
 ```
 expand_moduloShort {
@@ -9552,7 +9552,7 @@ expand_moduloShort {
 Choices: {}}
 ```
 
-## expand_mulJint
+## ${t.displayName()}
 
 ```
 expand_mulJint {
@@ -9562,7 +9562,7 @@ expand_mulJint {
 Choices: {}}
 ```
 
-## expand_mulJlong
+## ${t.displayName()}
 
 ```
 expand_mulJlong {
@@ -9572,7 +9572,7 @@ expand_mulJlong {
 Choices: {}}
 ```
 
-## expand_subJint
+## ${t.displayName()}
 
 ```
 expand_subJint {
@@ -9582,7 +9582,7 @@ expand_subJint {
 Choices: {}}
 ```
 
-## expand_subJlong
+## ${t.displayName()}
 
 ```
 expand_subJlong {
@@ -9592,7 +9592,7 @@ expand_subJlong {
 Choices: {}}
 ```
 
-## expand_unaryMinusJint
+## ${t.displayName()}
 
 ```
 expand_unaryMinusJint {
@@ -9602,7 +9602,7 @@ expand_unaryMinusJint {
 Choices: {}}
 ```
 
-## expand_unaryMinusJlong
+## ${t.displayName()}
 
 ```
 expand_unaryMinusJlong {
@@ -9612,7 +9612,7 @@ expand_unaryMinusJlong {
 Choices: {}}
 ```
 
-## false_right
+## ${t.displayName()}
 
 ```
 false_right {
@@ -9622,7 +9622,7 @@ false_right {
 Choices: {}}
 ```
 
-## false_to_not_true
+## ${t.displayName()}
 
 ```
 false_to_not_true {
@@ -9632,7 +9632,7 @@ false_to_not_true {
 Choices: {}}
 ```
 
-## finishJavaCardTransaction
+## ${t.displayName()}
 
 ```
 finishJavaCardTransactionBox {
@@ -9642,7 +9642,7 @@ finishJavaCardTransactionBox {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## finishJavaCardTransaction
+## ${t.displayName()}
 
 ```
 finishJavaCardTransactionDiamond {
@@ -9652,7 +9652,7 @@ finishJavaCardTransactionDiamond {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## firstOfPair
+## ${t.displayName()}
 
 ```
 firstOfPair {
@@ -9662,7 +9662,7 @@ firstOfPair {
 Choices: {}}
 ```
 
-## for_to_while
+## ${t.displayName()}
 
 ```
 for_to_while {
@@ -9673,7 +9673,7 @@ for_to_while {
 Choices: {programRules:Java}}
 ```
 
-## geq_add
+## ${t.displayName()}
 
 ```
 geq_add {
@@ -9684,7 +9684,7 @@ geq_add {
 Choices: {}}
 ```
 
-## geq_add_one
+## ${t.displayName()}
 
 ```
 geq_add_one {
@@ -9694,7 +9694,7 @@ geq_add_one {
 Choices: {}}
 ```
 
-## geq_diff_1
+## ${t.displayName()}
 
 ```
 geq_diff_1 {
@@ -9704,7 +9704,7 @@ geq_diff_1 {
 Choices: {}}
 ```
 
-## geq_to_leq
+## ${t.displayName()}
 
 ```
 geq_to_leq {
@@ -9714,7 +9714,7 @@ geq_to_leq {
 Choices: {}}
 ```
 
-## geq_to_lt
+## ${t.displayName()}
 
 ```
 geq_to_lt {
@@ -9724,7 +9724,7 @@ geq_to_lt {
 Choices: {}}
 ```
 
-## geq_to_lt_alt
+## ${t.displayName()}
 
 ```
 geq_to_lt_alt {
@@ -9734,7 +9734,7 @@ geq_to_lt_alt {
 Choices: {}}
 ```
 
-## getAnyOfArray2seq
+## ${t.displayName()}
 
 ```
 getAnyOfArray2seq {
@@ -9745,7 +9745,7 @@ getAnyOfArray2seq {
 Choices: {sequences:on}}
 ```
 
-## getAnyOfNPermInv
+## ${t.displayName()}
 
 ```
 getAnyOfNPermInv {
@@ -9756,7 +9756,7 @@ getAnyOfNPermInv {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## getJavaCardTransient
+## ${t.displayName()}
 
 ```
 getJavaCardTransient {
@@ -9768,7 +9768,7 @@ getJavaCardTransient {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## getOfArray2seq
+## ${t.displayName()}
 
 ```
 getOfArray2seq {
@@ -9779,7 +9779,7 @@ getOfArray2seq {
 Choices: {sequences:on}}
 ```
 
-## getOfMapEmpty
+## ${t.displayName()}
 
 ```
 getOfMapEmpty {
@@ -9789,7 +9789,7 @@ getOfMapEmpty {
 Choices: {}}
 ```
 
-## getOfMapForeach
+## ${t.displayName()}
 
 ```
 getOfMapForeach {
@@ -9799,7 +9799,7 @@ getOfMapForeach {
 Choices: {}}
 ```
 
-## getOfMapOverride
+## ${t.displayName()}
 
 ```
 getOfMapOverride {
@@ -9809,7 +9809,7 @@ getOfMapOverride {
 Choices: {}}
 ```
 
-## getOfMapRemove
+## ${t.displayName()}
 
 ```
 getOfMapRemove {
@@ -9819,7 +9819,7 @@ getOfMapRemove {
 Choices: {}}
 ```
 
-## getOfMapSingleton
+## ${t.displayName()}
 
 ```
 getOfMapSingleton {
@@ -9829,7 +9829,7 @@ getOfMapSingleton {
 Choices: {}}
 ```
 
-## getOfMapUpdate
+## ${t.displayName()}
 
 ```
 getOfMapUpdate {
@@ -9839,7 +9839,7 @@ getOfMapUpdate {
 Choices: {}}
 ```
 
-## getOfNPermInv
+## ${t.displayName()}
 
 ```
 getOfNPermInv {
@@ -9850,7 +9850,7 @@ getOfNPermInv {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## getOfRemoveAny
+## ${t.displayName()}
 
 ```
 getOfRemoveAny {
@@ -9860,7 +9860,7 @@ getOfRemoveAny {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## getOfRemoveAnyConcrete1
+## ${t.displayName()}
 
 ```
 getOfRemoveAnyConcrete1 {
@@ -9871,7 +9871,7 @@ getOfRemoveAnyConcrete1 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## getOfRemoveAnyConcrete2
+## ${t.displayName()}
 
 ```
 getOfRemoveAnyConcrete2 {
@@ -9882,7 +9882,7 @@ getOfRemoveAnyConcrete2 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## getOfRemoveInt
+## ${t.displayName()}
 
 ```
 getOfRemoveInt {
@@ -9892,7 +9892,7 @@ getOfRemoveInt {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## getOfSeq2Map
+## ${t.displayName()}
 
 ```
 getOfSeq2Map {
@@ -9902,7 +9902,7 @@ getOfSeq2Map {
 Choices: {}}
 ```
 
-## getOfSeqConcat
+## ${t.displayName()}
 
 ```
 getOfSeqConcat {
@@ -9912,7 +9912,7 @@ getOfSeqConcat {
 Choices: {sequences:on}}
 ```
 
-## getOfSeqConcat
+## ${t.displayName()}
 
 ```
 getOfSeqConcatEQ {
@@ -9923,7 +9923,7 @@ getOfSeqConcatEQ {
 Choices: {sequences:on}}
 ```
 
-## getOfSeqDef
+## ${t.displayName()}
 
 ```
 getOfSeqDef {
@@ -9934,7 +9934,7 @@ getOfSeqDef {
 Choices: {sequences:on}}
 ```
 
-## getOfSeqDef
+## ${t.displayName()}
 
 ```
 getOfSeqDefEQ {
@@ -9946,7 +9946,7 @@ getOfSeqDefEQ {
 Choices: {sequences:on}}
 ```
 
-## getOfSeqReverse
+## ${t.displayName()}
 
 ```
 getOfSeqReverse {
@@ -9956,7 +9956,7 @@ getOfSeqReverse {
 Choices: {sequences:on}}
 ```
 
-## getOfSeqReverse
+## ${t.displayName()}
 
 ```
 getOfSeqReverseEQ {
@@ -9967,7 +9967,7 @@ getOfSeqReverseEQ {
 Choices: {sequences:on}}
 ```
 
-## getOfSeqSingleton
+## ${t.displayName()}
 
 ```
 getOfSeqSingleton {
@@ -9977,7 +9977,7 @@ getOfSeqSingleton {
 Choices: {sequences:on}}
 ```
 
-## getOfSeqSingletonConcrete
+## ${t.displayName()}
 
 ```
 getOfSeqSingletonConcrete {
@@ -9987,7 +9987,7 @@ getOfSeqSingletonConcrete {
 Choices: {sequences:on}}
 ```
 
-## getOfSeqSingleton
+## ${t.displayName()}
 
 ```
 getOfSeqSingletonEQ {
@@ -9998,7 +9998,7 @@ getOfSeqSingletonEQ {
 Choices: {sequences:on}}
 ```
 
-## getOfSeqSub
+## ${t.displayName()}
 
 ```
 getOfSeqSub {
@@ -10008,7 +10008,7 @@ getOfSeqSub {
 Choices: {sequences:on}}
 ```
 
-## getOfSeqSub
+## ${t.displayName()}
 
 ```
 getOfSeqSubEQ {
@@ -10019,7 +10019,7 @@ getOfSeqSubEQ {
 Choices: {sequences:on}}
 ```
 
-## getOfSwap
+## ${t.displayName()}
 
 ```
 getOfSwap {
@@ -10029,7 +10029,7 @@ getOfSwap {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## greater
+## ${t.displayName()}
 
 ```
 greater {
@@ -10039,7 +10039,7 @@ greater {
 Choices: {}}
 ```
 
-## greater_add
+## ${t.displayName()}
 
 ```
 greater_add {
@@ -10050,7 +10050,7 @@ greater_add {
 Choices: {}}
 ```
 
-## greater_add_one
+## ${t.displayName()}
 
 ```
 greater_add_one {
@@ -10060,7 +10060,7 @@ greater_add_one {
 Choices: {}}
 ```
 
-## greater-or-equal than distinction
+## ${t.displayName()}
 
 ```
 greater_equal_than_comparison_new {
@@ -10070,7 +10070,7 @@ greater_equal_than_comparison_new {
 Choices: {programRules:Java}}
 ```
 
-## greater-or-equal than distinction
+## ${t.displayName()}
 
 ```
 greater_equal_than_comparison_simple {
@@ -10080,7 +10080,7 @@ greater_equal_than_comparison_simple {
 Choices: {programRules:Java}}
 ```
 
-## greater_literals
+## ${t.displayName()}
 
 ```
 greater_literals {
@@ -10090,7 +10090,7 @@ greater_literals {
 Choices: {}}
 ```
 
-## greater than distinction
+## ${t.displayName()}
 
 ```
 greater_than_comparison_new {
@@ -10100,7 +10100,7 @@ greater_than_comparison_new {
 Choices: {programRules:Java}}
 ```
 
-## greater than distinction
+## ${t.displayName()}
 
 ```
 greater_than_comparison_simple {
@@ -10110,7 +10110,7 @@ greater_than_comparison_simple {
 Choices: {programRules:Java}}
 ```
 
-## gt_diff_1
+## ${t.displayName()}
 
 ```
 gt_diff_1 {
@@ -10120,7 +10120,7 @@ gt_diff_1 {
 Choices: {}}
 ```
 
-## gt_to_lt
+## ${t.displayName()}
 
 ```
 gt_to_lt {
@@ -10130,7 +10130,7 @@ gt_to_lt {
 Choices: {}}
 ```
 
-## hashCodeBase
+## ${t.displayName()}
 
 ```
 hashCodeBase {
@@ -10140,7 +10140,7 @@ hashCodeBase {
 Choices: {Strings:on}}
 ```
 
-## hideAuxiliaryEq
+## ${t.displayName()}
 
 ```
 hideAuxiliaryEq {
@@ -10154,7 +10154,7 @@ Choices: {}}] \replacewith([]==>[])
 Choices: {programRules:Java}}
 ```
 
-## hideAuxiliaryEqConcrete
+## ${t.displayName()}
 
 ```
 hideAuxiliaryEqConcrete {
@@ -10168,7 +10168,7 @@ Choices: {}}] \replacewith([]==>[])
 Choices: {programRules:Java}}
 ```
 
-## hideAuxiliaryEqConcrete2
+## ${t.displayName()}
 
 ```
 hideAuxiliaryEqConcrete2 {
@@ -10182,7 +10182,7 @@ Choices: {}}] \replacewith([]==>[])
 Choices: {programRules:Java}}
 ```
 
-## hide_left
+## ${t.displayName()}
 
 ```
 hide_left {
@@ -10195,7 +10195,7 @@ Choices: {}}] \replacewith([]==>[])
 Choices: {}}
 ```
 
-## hide_right
+## ${t.displayName()}
 
 ```
 hide_right {
@@ -10208,7 +10208,7 @@ Choices: {}}] \replacewith([]==>[])
 Choices: {}}
 ```
 
-## i_minus_i_is_zero
+## ${t.displayName()}
 
 ```
 i_minus_i_is_zero {
@@ -10218,7 +10218,7 @@ i_minus_i_is_zero {
 Choices: {}}
 ```
 
-## ifElse
+## ${t.displayName()}
 
 ```
 if {
@@ -10230,7 +10230,7 @@ if {
 Choices: {programRules:Java}}
 ```
 
-## ifElse
+## ${t.displayName()}
 
 ```
 ifElse {
@@ -10244,7 +10244,7 @@ ifElse {
 Choices: {programRules:Java}}
 ```
 
-## ifElseFalse
+## ${t.displayName()}
 
 ```
 ifElseFalse {
@@ -10259,7 +10259,7 @@ ifElseFalse {
 Choices: {programRules:Java}}
 ```
 
-## ifElseSkipElse
+## ${t.displayName()}
 
 ```
 ifElseSkipElse {
@@ -10273,7 +10273,7 @@ ifElseSkipElse {
 Choices: {programRules:Java}}
 ```
 
-## ifElseSkipElse
+## ${t.displayName()}
 
 ```
 ifElseSkipElseConditionInBlock {
@@ -10287,7 +10287,7 @@ ifElseSkipElseConditionInBlock {
 Choices: {programRules:Java}}
 ```
 
-## ifElseSkipThen
+## ${t.displayName()}
 
 ```
 ifElseSkipThen {
@@ -10301,7 +10301,7 @@ ifElseSkipThen {
 Choices: {programRules:Java}}
 ```
 
-## ifElseSkipThen
+## ${t.displayName()}
 
 ```
 ifElseSkipThenConditionInBlock {
@@ -10315,7 +10315,7 @@ ifElseSkipThenConditionInBlock {
 Choices: {programRules:Java}}
 ```
 
-## ifElseSplit
+## ${t.displayName()}
 
 ```
 ifElseSplit {
@@ -10330,7 +10330,7 @@ ifElseSplit {
 Choices: {programRules:Java}}
 ```
 
-## ifElseSplitLeft
+## ${t.displayName()}
 
 ```
 ifElseSplitLeft {
@@ -10345,7 +10345,7 @@ ifElseSplitLeft {
 Choices: {programRules:Java}}
 ```
 
-## ifElseTrue
+## ${t.displayName()}
 
 ```
 ifElseTrue {
@@ -10360,7 +10360,7 @@ ifElseTrue {
 Choices: {programRules:Java}}
 ```
 
-## ifElseUnfold
+## ${t.displayName()}
 
 ```
 ifElseUnfold {
@@ -10380,7 +10380,7 @@ ifElseUnfold {
 Choices: {programRules:Java}}
 ```
 
-## ifEnterThen
+## ${t.displayName()}
 
 ```
 ifEnterThen {
@@ -10392,7 +10392,7 @@ ifEnterThen {
 Choices: {programRules:Java}}
 ```
 
-## ifEnterThen
+## ${t.displayName()}
 
 ```
 ifEnterThenConditionInBlock {
@@ -10404,7 +10404,7 @@ ifEnterThenConditionInBlock {
 Choices: {programRules:Java}}
 ```
 
-## ifEqualsInteger
+## ${t.displayName()}
 
 ```
 ifEqualsInteger {
@@ -10414,7 +10414,7 @@ ifEqualsInteger {
 Choices: {}}
 ```
 
-## ifEqualsNull
+## ${t.displayName()}
 
 ```
 ifEqualsNull {
@@ -10424,7 +10424,7 @@ ifEqualsNull {
 Choices: {}}
 ```
 
-## ifEqualsTRUE
+## ${t.displayName()}
 
 ```
 ifEqualsTRUE {
@@ -10434,7 +10434,7 @@ ifEqualsTRUE {
 Choices: {}}
 ```
 
-## ifExthenelse1_eq
+## ${t.displayName()}
 
 ```
 ifExthenelse1_eq {
@@ -10445,7 +10445,7 @@ ifExthenelse1_eq {
 Choices: {}}
 ```
 
-## ifExthenelse1_eq
+## ${t.displayName()}
 
 ```
 ifExthenelse1_eq2 {
@@ -10456,7 +10456,7 @@ ifExthenelse1_eq2 {
 Choices: {}}
 ```
 
-## ifExthenelse1_eq
+## ${t.displayName()}
 
 ```
 ifExthenelse1_eq2_for {
@@ -10467,7 +10467,7 @@ ifExthenelse1_eq2_for {
 Choices: {}}
 ```
 
-## ifExthenelse1_eq
+## ${t.displayName()}
 
 ```
 ifExthenelse1_eq2_for_phi {
@@ -10478,7 +10478,7 @@ ifExthenelse1_eq2_for_phi {
 Choices: {}}
 ```
 
-## ifExthenelse1_eq
+## ${t.displayName()}
 
 ```
 ifExthenelse1_eq2_phi {
@@ -10489,7 +10489,7 @@ ifExthenelse1_eq2_phi {
 Choices: {}}
 ```
 
-## ifExthenelse1_eq
+## ${t.displayName()}
 
 ```
 ifExthenelse1_eq_for {
@@ -10500,7 +10500,7 @@ ifExthenelse1_eq_for {
 Choices: {}}
 ```
 
-## ifExthenelse1_eq
+## ${t.displayName()}
 
 ```
 ifExthenelse1_eq_for_phi {
@@ -10511,7 +10511,7 @@ ifExthenelse1_eq_for_phi {
 Choices: {}}
 ```
 
-## ifExthenelse1_eq_phi
+## ${t.displayName()}
 
 ```
 ifExthenelse1_eq_phi {
@@ -10522,7 +10522,7 @@ ifExthenelse1_eq_phi {
 Choices: {}}
 ```
 
-## ifExthenelse1_false
+## ${t.displayName()}
 
 ```
 ifExthenelse1_false {
@@ -10532,7 +10532,7 @@ ifExthenelse1_false {
 Choices: {}}
 ```
 
-## ifExthenelse1_false
+## ${t.displayName()}
 
 ```
 ifExthenelse1_false_for {
@@ -10542,7 +10542,7 @@ ifExthenelse1_false_for {
 Choices: {}}
 ```
 
-## ifExthenelse1_min
+## ${t.displayName()}
 
 ```
 ifExthenelse1_min {
@@ -10553,7 +10553,7 @@ ifExthenelse1_min {
 Choices: {}}
 ```
 
-## ifExthenelse1_min
+## ${t.displayName()}
 
 ```
 ifExthenelse1_min_for {
@@ -10564,7 +10564,7 @@ ifExthenelse1_min_for {
 Choices: {}}
 ```
 
-## ifExthenelse1_solve
+## ${t.displayName()}
 
 ```
 ifExthenelse1_solve {
@@ -10576,7 +10576,7 @@ ifExthenelse1_solve {
 Choices: {}}
 ```
 
-## ifExthenelse1_solve
+## ${t.displayName()}
 
 ```
 ifExthenelse1_solve_for {
@@ -10588,7 +10588,7 @@ ifExthenelse1_solve_for {
 Choices: {}}
 ```
 
-## ifExthenelse1_split
+## ${t.displayName()}
 
 ```
 ifExthenelse1_split {
@@ -10600,7 +10600,7 @@ ifExthenelse1_split {
 Choices: {}}
 ```
 
-## ifExthenelse1_split
+## ${t.displayName()}
 
 ```
 ifExthenelse1_split_for {
@@ -10612,7 +10612,7 @@ ifExthenelse1_split_for {
 Choices: {}}
 ```
 
-## ifExthenelse1_unused_var
+## ${t.displayName()}
 
 ```
 ifExthenelse1_unused_var {
@@ -10623,7 +10623,7 @@ ifExthenelse1_unused_var {
 Choices: {}}
 ```
 
-## ifExthenelse1_unused_var
+## ${t.displayName()}
 
 ```
 ifExthenelse1_unused_var_for {
@@ -10634,7 +10634,7 @@ ifExthenelse1_unused_var_for {
 Choices: {}}
 ```
 
-## ifFalse
+## ${t.displayName()}
 
 ```
 ifFalse {
@@ -10647,7 +10647,7 @@ ifFalse {
 Choices: {programRules:Java}}
 ```
 
-## ifSkipThen
+## ${t.displayName()}
 
 ```
 ifSkipThen {
@@ -10659,7 +10659,7 @@ ifSkipThen {
 Choices: {programRules:Java}}
 ```
 
-## ifSkipThen
+## ${t.displayName()}
 
 ```
 ifSkipThenConditionInBlock {
@@ -10671,7 +10671,7 @@ ifSkipThenConditionInBlock {
 Choices: {programRules:Java}}
 ```
 
-## ifElseSplit
+## ${t.displayName()}
 
 ```
 ifSplit {
@@ -10684,7 +10684,7 @@ ifSplit {
 Choices: {programRules:Java}}
 ```
 
-## ifSplitLeft
+## ${t.displayName()}
 
 ```
 ifSplitLeft {
@@ -10697,7 +10697,7 @@ ifSplitLeft {
 Choices: {programRules:Java}}
 ```
 
-## ifTrue
+## ${t.displayName()}
 
 ```
 ifTrue {
@@ -10710,7 +10710,7 @@ ifTrue {
 Choices: {programRules:Java}}
 ```
 
-## ifElseUnfold
+## ${t.displayName()}
 
 ```
 ifUnfold {
@@ -10725,7 +10725,7 @@ ifUnfold {
 Choices: {programRules:Java}}
 ```
 
-## ifthenelse_concrete
+## ${t.displayName()}
 
 ```
 ifthenelse_concrete {
@@ -10735,7 +10735,7 @@ ifthenelse_concrete {
 Choices: {}}
 ```
 
-## ifthenelse_concrete
+## ${t.displayName()}
 
 ```
 ifthenelse_concrete2 {
@@ -10745,7 +10745,7 @@ ifthenelse_concrete2 {
 Choices: {}}
 ```
 
-## ifthenelse_concrete
+## ${t.displayName()}
 
 ```
 ifthenelse_concrete3 {
@@ -10755,7 +10755,7 @@ ifthenelse_concrete3 {
 Choices: {}}
 ```
 
-## ifthenelse_concrete
+## ${t.displayName()}
 
 ```
 ifthenelse_concrete4 {
@@ -10765,7 +10765,7 @@ ifthenelse_concrete4 {
 Choices: {}}
 ```
 
-## ifthenelse_false
+## ${t.displayName()}
 
 ```
 ifthenelse_false {
@@ -10775,7 +10775,7 @@ ifthenelse_false {
 Choices: {}}
 ```
 
-## ifthenelse_false
+## ${t.displayName()}
 
 ```
 ifthenelse_false_for {
@@ -10785,7 +10785,7 @@ ifthenelse_false_for {
 Choices: {}}
 ```
 
-## ifthenelse_negated
+## ${t.displayName()}
 
 ```
 ifthenelse_negated {
@@ -10795,7 +10795,7 @@ ifthenelse_negated {
 Choices: {}}
 ```
 
-## ifthenelse_negated
+## ${t.displayName()}
 
 ```
 ifthenelse_negated_for {
@@ -10805,7 +10805,7 @@ ifthenelse_negated_for {
 Choices: {}}
 ```
 
-## ifthenelse_same_branches
+## ${t.displayName()}
 
 ```
 ifthenelse_same_branches {
@@ -10815,7 +10815,7 @@ ifthenelse_same_branches {
 Choices: {}}
 ```
 
-## ifthenelse_same_branches
+## ${t.displayName()}
 
 ```
 ifthenelse_same_branches_for {
@@ -10825,7 +10825,7 @@ ifthenelse_same_branches_for {
 Choices: {}}
 ```
 
-## ifthenelse_split
+## ${t.displayName()}
 
 ```
 ifthenelse_split {
@@ -10836,7 +10836,7 @@ ifthenelse_split {
 Choices: {}}
 ```
 
-## ifthenelse_split
+## ${t.displayName()}
 
 ```
 ifthenelse_split_for {
@@ -10847,7 +10847,7 @@ ifthenelse_split_for {
 Choices: {}}
 ```
 
-## ifthenelse_to_or_for
+## ${t.displayName()}
 
 ```
 ifthenelse_to_or_for {
@@ -10857,7 +10857,7 @@ ifthenelse_to_or_for {
 Choices: {}}
 ```
 
-## ifthenelse_to_or_for2
+## ${t.displayName()}
 
 ```
 ifthenelse_to_or_for2 {
@@ -10867,7 +10867,7 @@ ifthenelse_to_or_for2 {
 Choices: {}}
 ```
 
-## ifthenelse_to_or_left
+## ${t.displayName()}
 
 ```
 ifthenelse_to_or_left {
@@ -10877,7 +10877,7 @@ ifthenelse_to_or_left {
 Choices: {}}
 ```
 
-## ifthenelse_to_or_left2
+## ${t.displayName()}
 
 ```
 ifthenelse_to_or_left2 {
@@ -10887,7 +10887,7 @@ ifthenelse_to_or_left2 {
 Choices: {}}
 ```
 
-## ifthenelse_to_or_right
+## ${t.displayName()}
 
 ```
 ifthenelse_to_or_right {
@@ -10897,7 +10897,7 @@ ifthenelse_to_or_right {
 Choices: {}}
 ```
 
-## ifthenelse_to_or_right2
+## ${t.displayName()}
 
 ```
 ifthenelse_to_or_right2 {
@@ -10907,7 +10907,7 @@ ifthenelse_to_or_right2 {
 Choices: {}}
 ```
 
-## ifthenelse_true
+## ${t.displayName()}
 
 ```
 ifthenelse_true {
@@ -10917,7 +10917,7 @@ ifthenelse_true {
 Choices: {}}
 ```
 
-## ifthenelse_true
+## ${t.displayName()}
 
 ```
 ifthenelse_true_for {
@@ -10927,7 +10927,7 @@ ifthenelse_true_for {
 Choices: {}}
 ```
 
-## impLeft
+## ${t.displayName()}
 
 ```
 impLeft {
@@ -10938,7 +10938,7 @@ impLeft {
 Choices: {}}
 ```
 
-## impRight
+## ${t.displayName()}
 
 ```
 impRight {
@@ -10948,7 +10948,7 @@ impRight {
 Choices: {}}
 ```
 
-## inByte
+## ${t.displayName()}
 
 ```
 inByte {
@@ -10958,7 +10958,7 @@ inByte {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## inChar
+## ${t.displayName()}
 
 ```
 inChar {
@@ -10968,7 +10968,7 @@ inChar {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## inDomainConcrete
+## ${t.displayName()}
 
 ```
 inDomainConcrete {
@@ -10979,7 +10979,7 @@ inDomainConcrete {
 Choices: {}}
 ```
 
-## inDomainOfMapEmpty
+## ${t.displayName()}
 
 ```
 inDomainOfMapEmpty {
@@ -10989,7 +10989,7 @@ inDomainOfMapEmpty {
 Choices: {}}
 ```
 
-## inDomainOfMapForeach
+## ${t.displayName()}
 
 ```
 inDomainOfMapForeach {
@@ -10999,7 +10999,7 @@ inDomainOfMapForeach {
 Choices: {}}
 ```
 
-## inDomainOfMapOverride
+## ${t.displayName()}
 
 ```
 inDomainOfMapOverride {
@@ -11009,7 +11009,7 @@ inDomainOfMapOverride {
 Choices: {}}
 ```
 
-## inDomainOfMapRemove
+## ${t.displayName()}
 
 ```
 inDomainOfMapRemove {
@@ -11019,7 +11019,7 @@ inDomainOfMapRemove {
 Choices: {}}
 ```
 
-## inDomainOfMapSingleton
+## ${t.displayName()}
 
 ```
 inDomainOfMapSingleton {
@@ -11029,7 +11029,7 @@ inDomainOfMapSingleton {
 Choices: {}}
 ```
 
-## inDomainOfMapUpdate
+## ${t.displayName()}
 
 ```
 inDomainOfMapUpdate {
@@ -11039,7 +11039,7 @@ inDomainOfMapUpdate {
 Choices: {}}
 ```
 
-## inDomainOfSeq2Map
+## ${t.displayName()}
 
 ```
 inDomainOfSeq2Map {
@@ -11049,7 +11049,7 @@ inDomainOfSeq2Map {
 Choices: {}}
 ```
 
-## inEqSimp_and_antiSymm0
+## ${t.displayName()}
 
 ```
 inEqSimp_and_antiSymm0 {
@@ -11059,7 +11059,7 @@ inEqSimp_and_antiSymm0 {
 Choices: {}}
 ```
 
-## inEqSimp_and_antiSymm1
+## ${t.displayName()}
 
 ```
 inEqSimp_and_antiSymm1 {
@@ -11069,7 +11069,7 @@ inEqSimp_and_antiSymm1 {
 Choices: {}}
 ```
 
-## inEqSimp_and_contradInEq0
+## ${t.displayName()}
 
 ```
 inEqSimp_and_contradInEq0 {
@@ -11079,7 +11079,7 @@ inEqSimp_and_contradInEq0 {
 Choices: {}}
 ```
 
-## inEqSimp_and_contradInEq1
+## ${t.displayName()}
 
 ```
 inEqSimp_and_contradInEq1 {
@@ -11089,7 +11089,7 @@ inEqSimp_and_contradInEq1 {
 Choices: {}}
 ```
 
-## inEqSimp_and_strengthen0
+## ${t.displayName()}
 
 ```
 inEqSimp_and_strengthen0 {
@@ -11099,7 +11099,7 @@ inEqSimp_and_strengthen0 {
 Choices: {}}
 ```
 
-## inEqSimp_and_strengthen1
+## ${t.displayName()}
 
 ```
 inEqSimp_and_strengthen1 {
@@ -11109,7 +11109,7 @@ inEqSimp_and_strengthen1 {
 Choices: {}}
 ```
 
-## inEqSimp_and_strengthen2
+## ${t.displayName()}
 
 ```
 inEqSimp_and_strengthen2 {
@@ -11119,7 +11119,7 @@ inEqSimp_and_strengthen2 {
 Choices: {}}
 ```
 
-## inEqSimp_and_strengthen3
+## ${t.displayName()}
 
 ```
 inEqSimp_and_strengthen3 {
@@ -11129,7 +11129,7 @@ inEqSimp_and_strengthen3 {
 Choices: {}}
 ```
 
-## inEqSimp_and_subsumption0
+## ${t.displayName()}
 
 ```
 inEqSimp_and_subsumption0 {
@@ -11139,7 +11139,7 @@ inEqSimp_and_subsumption0 {
 Choices: {}}
 ```
 
-## inEqSimp_and_subsumption1
+## ${t.displayName()}
 
 ```
 inEqSimp_and_subsumption1 {
@@ -11149,7 +11149,7 @@ inEqSimp_and_subsumption1 {
 Choices: {}}
 ```
 
-## inEqSimp_and_subsumption2
+## ${t.displayName()}
 
 ```
 inEqSimp_and_subsumption2 {
@@ -11159,7 +11159,7 @@ inEqSimp_and_subsumption2 {
 Choices: {}}
 ```
 
-## inEqSimp_and_subsumption3
+## ${t.displayName()}
 
 ```
 inEqSimp_and_subsumption3 {
@@ -11169,7 +11169,7 @@ inEqSimp_and_subsumption3 {
 Choices: {}}
 ```
 
-## inEqSimp_and_subsumption4
+## ${t.displayName()}
 
 ```
 inEqSimp_and_subsumption4 {
@@ -11179,7 +11179,7 @@ inEqSimp_and_subsumption4 {
 Choices: {}}
 ```
 
-## inEqSimp_and_subsumption5
+## ${t.displayName()}
 
 ```
 inEqSimp_and_subsumption5 {
@@ -11189,7 +11189,7 @@ inEqSimp_and_subsumption5 {
 Choices: {}}
 ```
 
-## inEqSimp_and_subsumption6
+## ${t.displayName()}
 
 ```
 inEqSimp_and_subsumption6 {
@@ -11199,7 +11199,7 @@ inEqSimp_and_subsumption6 {
 Choices: {}}
 ```
 
-## inEqSimp_and_subsumption7
+## ${t.displayName()}
 
 ```
 inEqSimp_and_subsumption7 {
@@ -11209,7 +11209,7 @@ inEqSimp_and_subsumption7 {
 Choices: {}}
 ```
 
-## inEqSimp_antiSymm
+## ${t.displayName()}
 
 ```
 inEqSimp_antiSymm {
@@ -11220,7 +11220,7 @@ inEqSimp_antiSymm {
 Choices: {}}
 ```
 
-## inEqSimp_commuteGeq
+## ${t.displayName()}
 
 ```
 inEqSimp_commuteGeq {
@@ -11230,7 +11230,7 @@ inEqSimp_commuteGeq {
 Choices: {}}
 ```
 
-## inEqSimp_commuteLeq
+## ${t.displayName()}
 
 ```
 inEqSimp_commuteLeq {
@@ -11240,7 +11240,7 @@ inEqSimp_commuteLeq {
 Choices: {}}
 ```
 
-## inEqSimp_contradEq3
+## ${t.displayName()}
 
 ```
 inEqSimp_contradEq3 {
@@ -11251,7 +11251,7 @@ inEqSimp_contradEq3 {
 Choices: {}}
 ```
 
-## inEqSimp_contradEq7
+## ${t.displayName()}
 
 ```
 inEqSimp_contradEq7 {
@@ -11262,7 +11262,7 @@ inEqSimp_contradEq7 {
 Choices: {}}
 ```
 
-## inEqSimp_contradInEq0
+## ${t.displayName()}
 
 ```
 inEqSimp_contradInEq0 {
@@ -11273,7 +11273,7 @@ inEqSimp_contradInEq0 {
 Choices: {}}
 ```
 
-## inEqSimp_contradInEq1
+## ${t.displayName()}
 
 ```
 inEqSimp_contradInEq1 {
@@ -11284,7 +11284,7 @@ inEqSimp_contradInEq1 {
 Choices: {}}
 ```
 
-## inEqSimp_contradInEq2
+## ${t.displayName()}
 
 ```
 inEqSimp_contradInEq2 {
@@ -11295,7 +11295,7 @@ inEqSimp_contradInEq2 {
 Choices: {}}
 ```
 
-## inEqSimp_contradInEq3
+## ${t.displayName()}
 
 ```
 inEqSimp_contradInEq3 {
@@ -11306,7 +11306,7 @@ inEqSimp_contradInEq3 {
 Choices: {}}
 ```
 
-## inEqSimp_contradInEq4
+## ${t.displayName()}
 
 ```
 inEqSimp_contradInEq4 {
@@ -11317,7 +11317,7 @@ inEqSimp_contradInEq4 {
 Choices: {}}
 ```
 
-## inEqSimp_contradInEq5
+## ${t.displayName()}
 
 ```
 inEqSimp_contradInEq5 {
@@ -11328,7 +11328,7 @@ inEqSimp_contradInEq5 {
 Choices: {}}
 ```
 
-## inEqSimp_exactShadow0
+## ${t.displayName()}
 
 ```
 inEqSimp_exactShadow0 {
@@ -11339,7 +11339,7 @@ inEqSimp_exactShadow0 {
 Choices: {}}
 ```
 
-## inEqSimp_exactShadow1
+## ${t.displayName()}
 
 ```
 inEqSimp_exactShadow1 {
@@ -11350,7 +11350,7 @@ inEqSimp_exactShadow1 {
 Choices: {}}
 ```
 
-## inEqSimp_exactShadow2
+## ${t.displayName()}
 
 ```
 inEqSimp_exactShadow2 {
@@ -11361,7 +11361,7 @@ inEqSimp_exactShadow2 {
 Choices: {}}
 ```
 
-## inEqSimp_exactShadow3
+## ${t.displayName()}
 
 ```
 inEqSimp_exactShadow3 {
@@ -11372,7 +11372,7 @@ inEqSimp_exactShadow3 {
 Choices: {}}
 ```
 
-## inEqSimp_geqRight
+## ${t.displayName()}
 
 ```
 inEqSimp_geqRight {
@@ -11382,7 +11382,7 @@ inEqSimp_geqRight {
 Choices: {}}
 ```
 
-## inEqSimp_gtRight
+## ${t.displayName()}
 
 ```
 inEqSimp_gtRight {
@@ -11392,7 +11392,7 @@ inEqSimp_gtRight {
 Choices: {}}
 ```
 
-## inEqSimp_gtToGeq
+## ${t.displayName()}
 
 ```
 inEqSimp_gtToGeq {
@@ -11402,7 +11402,7 @@ inEqSimp_gtToGeq {
 Choices: {}}
 ```
 
-## inEqSimp_homoInEq0
+## ${t.displayName()}
 
 ```
 inEqSimp_homoInEq0 {
@@ -11412,7 +11412,7 @@ inEqSimp_homoInEq0 {
 Choices: {}}
 ```
 
-## inEqSimp_homoInEq1
+## ${t.displayName()}
 
 ```
 inEqSimp_homoInEq1 {
@@ -11422,7 +11422,7 @@ inEqSimp_homoInEq1 {
 Choices: {}}
 ```
 
-## inEqSimp_invertInEq0
+## ${t.displayName()}
 
 ```
 inEqSimp_invertInEq0 {
@@ -11432,7 +11432,7 @@ inEqSimp_invertInEq0 {
 Choices: {}}
 ```
 
-## inEqSimp_invertInEq1
+## ${t.displayName()}
 
 ```
 inEqSimp_invertInEq1 {
@@ -11442,7 +11442,7 @@ inEqSimp_invertInEq1 {
 Choices: {}}
 ```
 
-## inEqSimp_leqRight
+## ${t.displayName()}
 
 ```
 inEqSimp_leqRight {
@@ -11452,7 +11452,7 @@ inEqSimp_leqRight {
 Choices: {}}
 ```
 
-## inEqSimp_ltRight
+## ${t.displayName()}
 
 ```
 inEqSimp_ltRight {
@@ -11462,7 +11462,7 @@ inEqSimp_ltRight {
 Choices: {}}
 ```
 
-## inEqSimp_ltToLeq
+## ${t.displayName()}
 
 ```
 inEqSimp_ltToLeq {
@@ -11472,7 +11472,7 @@ inEqSimp_ltToLeq {
 Choices: {}}
 ```
 
-## inEqSimp_notGeq
+## ${t.displayName()}
 
 ```
 inEqSimp_notGeq {
@@ -11482,7 +11482,7 @@ inEqSimp_notGeq {
 Choices: {}}
 ```
 
-## inEqSimp_notLeq
+## ${t.displayName()}
 
 ```
 inEqSimp_notLeq {
@@ -11492,7 +11492,7 @@ inEqSimp_notLeq {
 Choices: {}}
 ```
 
-## inEqSimp_or_antiSymm0
+## ${t.displayName()}
 
 ```
 inEqSimp_or_antiSymm0 {
@@ -11502,7 +11502,7 @@ inEqSimp_or_antiSymm0 {
 Choices: {}}
 ```
 
-## inEqSimp_or_antiSymm1
+## ${t.displayName()}
 
 ```
 inEqSimp_or_antiSymm1 {
@@ -11512,7 +11512,7 @@ inEqSimp_or_antiSymm1 {
 Choices: {}}
 ```
 
-## inEqSimp_or_subsumption0
+## ${t.displayName()}
 
 ```
 inEqSimp_or_subsumption0 {
@@ -11522,7 +11522,7 @@ inEqSimp_or_subsumption0 {
 Choices: {}}
 ```
 
-## inEqSimp_or_subsumption1
+## ${t.displayName()}
 
 ```
 inEqSimp_or_subsumption1 {
@@ -11532,7 +11532,7 @@ inEqSimp_or_subsumption1 {
 Choices: {}}
 ```
 
-## inEqSimp_or_subsumption2
+## ${t.displayName()}
 
 ```
 inEqSimp_or_subsumption2 {
@@ -11542,7 +11542,7 @@ inEqSimp_or_subsumption2 {
 Choices: {}}
 ```
 
-## inEqSimp_or_subsumption3
+## ${t.displayName()}
 
 ```
 inEqSimp_or_subsumption3 {
@@ -11552,7 +11552,7 @@ inEqSimp_or_subsumption3 {
 Choices: {}}
 ```
 
-## inEqSimp_or_subsumption4
+## ${t.displayName()}
 
 ```
 inEqSimp_or_subsumption4 {
@@ -11562,7 +11562,7 @@ inEqSimp_or_subsumption4 {
 Choices: {}}
 ```
 
-## inEqSimp_or_subsumption5
+## ${t.displayName()}
 
 ```
 inEqSimp_or_subsumption5 {
@@ -11572,7 +11572,7 @@ inEqSimp_or_subsumption5 {
 Choices: {}}
 ```
 
-## inEqSimp_or_subsumption6
+## ${t.displayName()}
 
 ```
 inEqSimp_or_subsumption6 {
@@ -11582,7 +11582,7 @@ inEqSimp_or_subsumption6 {
 Choices: {}}
 ```
 
-## inEqSimp_or_subsumption7
+## ${t.displayName()}
 
 ```
 inEqSimp_or_subsumption7 {
@@ -11592,7 +11592,7 @@ inEqSimp_or_subsumption7 {
 Choices: {}}
 ```
 
-## inEqSimp_or_tautInEq0
+## ${t.displayName()}
 
 ```
 inEqSimp_or_tautInEq0 {
@@ -11602,7 +11602,7 @@ inEqSimp_or_tautInEq0 {
 Choices: {}}
 ```
 
-## inEqSimp_or_tautInEq1
+## ${t.displayName()}
 
 ```
 inEqSimp_or_tautInEq1 {
@@ -11612,7 +11612,7 @@ inEqSimp_or_tautInEq1 {
 Choices: {}}
 ```
 
-## inEqSimp_or_tautInEq2
+## ${t.displayName()}
 
 ```
 inEqSimp_or_tautInEq2 {
@@ -11622,7 +11622,7 @@ inEqSimp_or_tautInEq2 {
 Choices: {}}
 ```
 
-## inEqSimp_or_tautInEq3
+## ${t.displayName()}
 
 ```
 inEqSimp_or_tautInEq3 {
@@ -11632,7 +11632,7 @@ inEqSimp_or_tautInEq3 {
 Choices: {}}
 ```
 
-## inEqSimp_or_weaken0
+## ${t.displayName()}
 
 ```
 inEqSimp_or_weaken0 {
@@ -11642,7 +11642,7 @@ inEqSimp_or_weaken0 {
 Choices: {}}
 ```
 
-## inEqSimp_or_weaken1
+## ${t.displayName()}
 
 ```
 inEqSimp_or_weaken1 {
@@ -11652,7 +11652,7 @@ inEqSimp_or_weaken1 {
 Choices: {}}
 ```
 
-## inEqSimp_or_weaken2
+## ${t.displayName()}
 
 ```
 inEqSimp_or_weaken2 {
@@ -11662,7 +11662,7 @@ inEqSimp_or_weaken2 {
 Choices: {}}
 ```
 
-## inEqSimp_or_weaken3
+## ${t.displayName()}
 
 ```
 inEqSimp_or_weaken3 {
@@ -11672,7 +11672,7 @@ inEqSimp_or_weaken3 {
 Choices: {}}
 ```
 
-## inEqSimp_sepNegMonomial0
+## ${t.displayName()}
 
 ```
 inEqSimp_sepNegMonomial0 {
@@ -11682,7 +11682,7 @@ inEqSimp_sepNegMonomial0 {
 Choices: {}}
 ```
 
-## inEqSimp_sepNegMonomial1
+## ${t.displayName()}
 
 ```
 inEqSimp_sepNegMonomial1 {
@@ -11692,7 +11692,7 @@ inEqSimp_sepNegMonomial1 {
 Choices: {}}
 ```
 
-## inEqSimp_sepPosMonomial0
+## ${t.displayName()}
 
 ```
 inEqSimp_sepPosMonomial0 {
@@ -11702,7 +11702,7 @@ inEqSimp_sepPosMonomial0 {
 Choices: {}}
 ```
 
-## inEqSimp_sepPosMonomial1
+## ${t.displayName()}
 
 ```
 inEqSimp_sepPosMonomial1 {
@@ -11712,7 +11712,7 @@ inEqSimp_sepPosMonomial1 {
 Choices: {}}
 ```
 
-## inEqSimp_strengthen0
+## ${t.displayName()}
 
 ```
 inEqSimp_strengthen0 {
@@ -11723,7 +11723,7 @@ inEqSimp_strengthen0 {
 Choices: {}}
 ```
 
-## inEqSimp_strengthen1
+## ${t.displayName()}
 
 ```
 inEqSimp_strengthen1 {
@@ -11734,7 +11734,7 @@ inEqSimp_strengthen1 {
 Choices: {}}
 ```
 
-## inEqSimp_subsumption0
+## ${t.displayName()}
 
 ```
 inEqSimp_subsumption0 {
@@ -11745,7 +11745,7 @@ inEqSimp_subsumption0 {
 Choices: {}}
 ```
 
-## inEqSimp_subsumption1
+## ${t.displayName()}
 
 ```
 inEqSimp_subsumption1 {
@@ -11756,7 +11756,7 @@ inEqSimp_subsumption1 {
 Choices: {}}
 ```
 
-## inEqSimp_subsumption2
+## ${t.displayName()}
 
 ```
 inEqSimp_subsumption2 {
@@ -11767,7 +11767,7 @@ inEqSimp_subsumption2 {
 Choices: {}}
 ```
 
-## inEqSimp_subsumption4
+## ${t.displayName()}
 
 ```
 inEqSimp_subsumption4 {
@@ -11778,7 +11778,7 @@ inEqSimp_subsumption4 {
 Choices: {}}
 ```
 
-## inEqSimp_subsumption5
+## ${t.displayName()}
 
 ```
 inEqSimp_subsumption5 {
@@ -11789,7 +11789,7 @@ inEqSimp_subsumption5 {
 Choices: {}}
 ```
 
-## inEqSimp_subsumption6
+## ${t.displayName()}
 
 ```
 inEqSimp_subsumption6 {
@@ -11800,7 +11800,7 @@ inEqSimp_subsumption6 {
 Choices: {}}
 ```
 
-## inInt
+## ${t.displayName()}
 
 ```
 inInt {
@@ -11810,7 +11810,7 @@ inInt {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## inLong
+## ${t.displayName()}
 
 ```
 inLong {
@@ -11820,7 +11820,7 @@ inLong {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## inShort
+## ${t.displayName()}
 
 ```
 inShort {
@@ -11830,7 +11830,7 @@ inShort {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## indexOf
+## ${t.displayName()}
 
 ```
 indexOf {
@@ -11841,7 +11841,7 @@ indexOf {
 Choices: {Strings:on}}
 ```
 
-## indexOfSeqConcatFirst
+## ${t.displayName()}
 
 ```
 indexOfSeqConcatFirst {
@@ -11853,7 +11853,7 @@ indexOfSeqConcatFirst {
 Choices: {sequences:on}}
 ```
 
-## indexOfSeqConcatSecond
+## ${t.displayName()}
 
 ```
 indexOfSeqConcatSecond {
@@ -11865,7 +11865,7 @@ indexOfSeqConcatSecond {
 Choices: {sequences:on}}
 ```
 
-## indexOfSeqSingleton
+## ${t.displayName()}
 
 ```
 indexOfSeqSingleton {
@@ -11875,7 +11875,7 @@ indexOfSeqSingleton {
 Choices: {sequences:on}}
 ```
 
-## indexOfSeqSub
+## ${t.displayName()}
 
 ```
 indexOfSeqSub {
@@ -11887,7 +11887,7 @@ indexOfSeqSub {
 Choices: {sequences:on}}
 ```
 
-## indexOfStr
+## ${t.displayName()}
 
 ```
 indexOfStr {
@@ -11898,7 +11898,7 @@ indexOfStr {
 Choices: {Strings:on}}
 ```
 
-## ineffectiveCast
+## ${t.displayName()}
 
 ```
 ineffectiveCast {
@@ -11909,7 +11909,7 @@ ineffectiveCast {
 Choices: {}}
 ```
 
-## ineffectiveCast2
+## ${t.displayName()}
 
 ```
 ineffectiveCast2 {
@@ -11920,7 +11920,7 @@ ineffectiveCast2 {
 Choices: {}}
 ```
 
-## ineffectiveCast3
+## ${t.displayName()}
 
 ```
 ineffectiveCast3 {
@@ -11931,7 +11931,7 @@ ineffectiveCast3 {
 Choices: {}}
 ```
 
-## inequality comparison
+## ${t.displayName()}
 
 ```
 inequality_comparison_new {
@@ -11941,7 +11941,7 @@ inequality_comparison_new {
 Choices: {programRules:Java}}
 ```
 
-## inequality comparison
+## ${t.displayName()}
 
 ```
 inequality_comparison_simple {
@@ -11951,7 +11951,7 @@ inequality_comparison_simple {
 Choices: {programRules:Java}}
 ```
 
-## infiniteUnionUnused
+## ${t.displayName()}
 
 ```
 infiniteUnionUnused {
@@ -11962,7 +11962,7 @@ infiniteUnionUnused {
 Choices: {programRules:Java}}
 ```
 
-## initFullPermission
+## ${t.displayName()}
 
 ```
 initFullPermission {
@@ -11972,7 +11972,7 @@ initFullPermission {
 Choices: {permissions:on}}
 ```
 
-## initialized class is not erroneous
+## ${t.displayName()}
 
 ```
 initialized_class_is_not_erroneous {
@@ -11983,7 +11983,7 @@ initialized_class_is_not_erroneous {
 Choices: {programRules:Java}}
 ```
 
-## classes being initialized have been prepared
+## ${t.displayName()}
 
 ```
 initialized_class_is_prepared {
@@ -11994,7 +11994,7 @@ initialized_class_is_prepared {
 Choices: {programRules:Java}}
 ```
 
-## insertPermissionOwner
+## ${t.displayName()}
 
 ```
 insertPermissionOwner {
@@ -12005,7 +12005,7 @@ insertPermissionOwner {
 Choices: {permissions:on}}
 ```
 
-## insert_constant_string_value
+## ${t.displayName()}
 
 ```
 insert_constant_string_value {
@@ -12016,7 +12016,7 @@ insert_constant_string_value {
 Choices: {}}
 ```
 
-## insert_constant_value
+## ${t.displayName()}
 
 ```
 insert_constant_value {
@@ -12026,7 +12026,7 @@ insert_constant_value {
 Choices: {programRules:Java}}
 ```
 
-## insert_eq_all
+## ${t.displayName()}
 
 ```
 insert_eq_all {
@@ -12040,7 +12040,7 @@ Choices: {}}] \replacewith([]==>[])
 Choices: {}}
 ```
 
-## insert_eqv_lr
+## ${t.displayName()}
 
 ```
 insert_eqv_lr {
@@ -12054,7 +12054,7 @@ Choices: {}}]
 Choices: {}}
 ```
 
-## insert_eqv_once_lr
+## ${t.displayName()}
 
 ```
 insert_eqv_once_lr {
@@ -12068,7 +12068,7 @@ Choices: {}}]
 Choices: {}}
 ```
 
-## insert_eqv_once_rl
+## ${t.displayName()}
 
 ```
 insert_eqv_once_rl {
@@ -12082,7 +12082,7 @@ Choices: {}}]
 Choices: {}}
 ```
 
-## insert_eqv_rl
+## ${t.displayName()}
 
 ```
 insert_eqv_rl {
@@ -12096,7 +12096,7 @@ Choices: {}}]
 Choices: {}}
 ```
 
-## instAll
+## ${t.displayName()}
 
 ```
 instAll {
@@ -12107,7 +12107,7 @@ instAll {
 Choices: {}}
 ```
 
-## instEx
+## ${t.displayName()}
 
 ```
 instEx {
@@ -12118,7 +12118,7 @@ instEx {
 Choices: {}}
 ```
 
-## instanceCreation
+## ${t.displayName()}
 
 ```
 instanceCreation {
@@ -12129,7 +12129,7 @@ instanceCreation {
 Choices: {programRules:Java}}
 ```
 
-## instanceCreationAssignment
+## ${t.displayName()}
 
 ```
 instanceCreationAssignment {
@@ -12140,7 +12140,7 @@ instanceCreationAssignment {
 Choices: {programRules:Java}}
 ```
 
-## instanceCreationAssignmentUnfoldArguments
+## ${t.displayName()}
 
 ```
 instanceCreationAssignmentUnfoldArguments {
@@ -12150,7 +12150,7 @@ instanceCreationAssignmentUnfoldArguments {
 Choices: {programRules:Java}}
 ```
 
-## instanceCreationUnfoldArguments
+## ${t.displayName()}
 
 ```
 instanceCreationUnfoldArguments {
@@ -12160,7 +12160,7 @@ instanceCreationUnfoldArguments {
 Choices: {programRules:Java}}
 ```
 
-## instanceof_eval
+## ${t.displayName()}
 
 ```
 instanceof_eval {
@@ -12171,7 +12171,7 @@ instanceof_eval {
 Choices: {programRules:Java}}
 ```
 
-## instanceof_known_dynamic_type
+## ${t.displayName()}
 
 ```
 instanceof_known_dynamic_type {
@@ -12183,7 +12183,7 @@ instanceof_known_dynamic_type {
 Choices: {}}
 ```
 
-## instanceof_known_dynamic_type_2
+## ${t.displayName()}
 
 ```
 instanceof_known_dynamic_type_2 {
@@ -12195,7 +12195,7 @@ instanceof_known_dynamic_type_2 {
 Choices: {}}
 ```
 
-## instanceof disjoint type
+## ${t.displayName()}
 
 ```
 instanceof_not_compatible {
@@ -12206,7 +12206,7 @@ instanceof_not_compatible {
 Choices: {}}
 ```
 
-## instanceof disjoint type
+## ${t.displayName()}
 
 ```
 instanceof_not_compatible_2 {
@@ -12217,7 +12217,7 @@ instanceof_not_compatible_2 {
 Choices: {}}
 ```
 
-## instanceof disjoint type
+## ${t.displayName()}
 
 ```
 instanceof_not_compatible_3 {
@@ -12228,7 +12228,7 @@ instanceof_not_compatible_3 {
 Choices: {}}
 ```
 
-## instanceof disjoint type
+## ${t.displayName()}
 
 ```
 instanceof_not_compatible_4 {
@@ -12239,7 +12239,7 @@ instanceof_not_compatible_4 {
 Choices: {}}
 ```
 
-## instanceof disjoint type
+## ${t.displayName()}
 
 ```
 instanceof_not_compatible_5 {
@@ -12251,7 +12251,7 @@ instanceof_not_compatible_5 {
 Choices: {}}
 ```
 
-## instanceof static supertype
+## ${t.displayName()}
 
 ```
 instanceof_static_type {
@@ -12262,7 +12262,7 @@ instanceof_static_type {
 Choices: {}}
 ```
 
-## instanceof static supertype
+## ${t.displayName()}
 
 ```
 instanceof_static_type_2 {
@@ -12274,7 +12274,7 @@ instanceof_static_type_2 {
 Choices: {}}
 ```
 
-## int_diff_minus_eq
+## ${t.displayName()}
 
 ```
 int_diff_minus_eq {
@@ -12284,7 +12284,7 @@ int_diff_minus_eq {
 Choices: {}}
 ```
 
-## int_induction
+## ${t.displayName()}
 
 ```
 int_induction {
@@ -12295,7 +12295,7 @@ int_induction {
 Choices: {}}
 ```
 
-## intersectAllFieldsFreshLocs
+## ${t.displayName()}
 
 ```
 intersectAllFieldsFreshLocs {
@@ -12305,7 +12305,7 @@ intersectAllFieldsFreshLocs {
 Choices: {programRules:Java}}
 ```
 
-## intersectWithAllLocs
+## ${t.displayName()}
 
 ```
 intersectWithAllLocs {
@@ -12315,7 +12315,7 @@ intersectWithAllLocs {
 Choices: {programRules:Java}}
 ```
 
-## intersectWithAllLocs
+## ${t.displayName()}
 
 ```
 intersectWithAllLocsRight {
@@ -12325,7 +12325,7 @@ intersectWithAllLocsRight {
 Choices: {programRules:Java}}
 ```
 
-## intersectWithEmpty
+## ${t.displayName()}
 
 ```
 intersectWithEmpty {
@@ -12335,7 +12335,7 @@ intersectWithEmpty {
 Choices: {programRules:Java}}
 ```
 
-## intersectWithEmpty
+## ${t.displayName()}
 
 ```
 intersectWithEmptyRight {
@@ -12345,7 +12345,7 @@ intersectWithEmptyRight {
 Choices: {programRules:Java}}
 ```
 
-## intersectWithItself
+## ${t.displayName()}
 
 ```
 intersectWithItself {
@@ -12355,7 +12355,7 @@ intersectWithItself {
 Choices: {programRules:Java}}
 ```
 
-## intersectWithSingleton
+## ${t.displayName()}
 
 ```
 intersectWithSingleton {
@@ -12365,7 +12365,7 @@ intersectWithSingleton {
 Choices: {programRules:Java}}
 ```
 
-## intersectionSetMinusItself
+## ${t.displayName()}
 
 ```
 intersectionSetMinusItself {
@@ -12375,7 +12375,7 @@ intersectionSetMinusItself {
 Choices: {programRules:Java}}
 ```
 
-## intersectionSetMinusItself_2
+## ${t.displayName()}
 
 ```
 intersectionSetMinusItself_2 {
@@ -12385,7 +12385,7 @@ intersectionSetMinusItself_2 {
 Choices: {programRules:Java}}
 ```
 
-## isFiniteOfMapEmpty
+## ${t.displayName()}
 
 ```
 isFiniteOfMapEmpty {
@@ -12395,7 +12395,7 @@ isFiniteOfMapEmpty {
 Choices: {}}
 ```
 
-## isFiniteOfMapRemove
+## ${t.displayName()}
 
 ```
 isFiniteOfMapRemove {
@@ -12405,7 +12405,7 @@ isFiniteOfMapRemove {
 Choices: {}}
 ```
 
-## isFiniteOfMapSingleton
+## ${t.displayName()}
 
 ```
 isFiniteOfMapSingleton {
@@ -12415,7 +12415,7 @@ isFiniteOfMapSingleton {
 Choices: {}}
 ```
 
-## isFiniteOfMapUpdate
+## ${t.displayName()}
 
 ```
 isFiniteOfMapUpdate {
@@ -12425,7 +12425,7 @@ isFiniteOfMapUpdate {
 Choices: {}}
 ```
 
-## isFiniteOfSeq2Map
+## ${t.displayName()}
 
 ```
 isFiniteOfSeq2Map {
@@ -12435,7 +12435,7 @@ isFiniteOfSeq2Map {
 Choices: {}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 iterated_assignments_0 {
@@ -12445,7 +12445,7 @@ iterated_assignments_0 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 iterated_assignments_1 {
@@ -12455,7 +12455,7 @@ iterated_assignments_1 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 iterated_assignments_10 {
@@ -12465,7 +12465,7 @@ iterated_assignments_10 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 iterated_assignments_11 {
@@ -12475,7 +12475,7 @@ iterated_assignments_11 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 iterated_assignments_2 {
@@ -12485,7 +12485,7 @@ iterated_assignments_2 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 iterated_assignments_3 {
@@ -12495,7 +12495,7 @@ iterated_assignments_3 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 iterated_assignments_4 {
@@ -12505,7 +12505,7 @@ iterated_assignments_4 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 iterated_assignments_5 {
@@ -12515,7 +12515,7 @@ iterated_assignments_5 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 iterated_assignments_6 {
@@ -12525,7 +12525,7 @@ iterated_assignments_6 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 iterated_assignments_7 {
@@ -12535,7 +12535,7 @@ iterated_assignments_7 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 iterated_assignments_8 {
@@ -12545,7 +12545,7 @@ iterated_assignments_8 {
 Choices: {programRules:Java}}
 ```
 
-## eval_order_iterated_assignments
+## ${t.displayName()}
 
 ```
 iterated_assignments_9 {
@@ -12555,7 +12555,7 @@ iterated_assignments_9 {
 Choices: {programRules:Java}}
 ```
 
-## javaShiftLeftIntDef
+## ${t.displayName()}
 
 ```
 javaShiftLeftIntDef {
@@ -12565,7 +12565,7 @@ javaShiftLeftIntDef {
 Choices: {}}
 ```
 
-## javaShiftLeftLongDef
+## ${t.displayName()}
 
 ```
 javaShiftLeftLongDef {
@@ -12575,7 +12575,7 @@ javaShiftLeftLongDef {
 Choices: {}}
 ```
 
-## javaShiftRightIntDef
+## ${t.displayName()}
 
 ```
 javaShiftRightIntDef {
@@ -12585,7 +12585,7 @@ javaShiftRightIntDef {
 Choices: {}}
 ```
 
-## javaShiftRightLongDef
+## ${t.displayName()}
 
 ```
 javaShiftRightLongDef {
@@ -12595,7 +12595,7 @@ javaShiftRightLongDef {
 Choices: {}}
 ```
 
-## jdiv_axiom
+## ${t.displayName()}
 
 ```
 jdiv_axiom {
@@ -12605,7 +12605,7 @@ jdiv_axiom {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## jdiv_axiom_inline
+## ${t.displayName()}
 
 ```
 jdiv_axiom_inline {
@@ -12615,7 +12615,7 @@ jdiv_axiom_inline {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## jmod_axiom
+## ${t.displayName()}
 
 ```
 jmod_axiom {
@@ -12625,7 +12625,7 @@ jmod_axiom {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## lastIndexOf
+## ${t.displayName()}
 
 ```
 lastIndexOf {
@@ -12636,7 +12636,7 @@ lastIndexOf {
 Choices: {Strings:on}}
 ```
 
-## lastIndexOfStr
+## ${t.displayName()}
 
 ```
 lastIndexOfStr {
@@ -12647,7 +12647,7 @@ lastIndexOfStr {
 Choices: {Strings:on}}
 ```
 
-## le1_add1_eq_le
+## ${t.displayName()}
 
 ```
 le1_add1_eq_le {
@@ -12657,7 +12657,7 @@ le1_add1_eq_le {
 Choices: {}}
 ```
 
-## left_add_mult_distrib
+## ${t.displayName()}
 
 ```
 left_add_mult_distrib {
@@ -12667,7 +12667,7 @@ left_add_mult_distrib {
 Choices: {}}
 ```
 
-## lenNonNegative
+## ${t.displayName()}
 
 ```
 lenNonNegative {
@@ -12677,7 +12677,7 @@ lenNonNegative {
 Choices: {sequences:on}}
 ```
 
-## lenOfArray2seq
+## ${t.displayName()}
 
 ```
 lenOfArray2seq {
@@ -12687,7 +12687,7 @@ lenOfArray2seq {
 Choices: {sequences:on}}
 ```
 
-## lenOfNPermInv
+## ${t.displayName()}
 
 ```
 lenOfNPermInv {
@@ -12697,7 +12697,7 @@ lenOfNPermInv {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## lenOfRemove
+## ${t.displayName()}
 
 ```
 lenOfRemove {
@@ -12707,7 +12707,7 @@ lenOfRemove {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## lenOfRemoveConcrete1
+## ${t.displayName()}
 
 ```
 lenOfRemoveConcrete1 {
@@ -12718,7 +12718,7 @@ lenOfRemoveConcrete1 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## lenOfRemoveConcrete2
+## ${t.displayName()}
 
 ```
 lenOfRemoveConcrete2 {
@@ -12729,7 +12729,7 @@ lenOfRemoveConcrete2 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## lenOfSeqConcat
+## ${t.displayName()}
 
 ```
 lenOfSeqConcat {
@@ -12739,7 +12739,7 @@ lenOfSeqConcat {
 Choices: {sequences:on}}
 ```
 
-## lenOfSeqConcat
+## ${t.displayName()}
 
 ```
 lenOfSeqConcatEQ {
@@ -12750,7 +12750,7 @@ lenOfSeqConcatEQ {
 Choices: {sequences:on}}
 ```
 
-## lenOfSeqDef
+## ${t.displayName()}
 
 ```
 lenOfSeqDef {
@@ -12760,7 +12760,7 @@ lenOfSeqDef {
 Choices: {sequences:on}}
 ```
 
-## lenOfSeqDef
+## ${t.displayName()}
 
 ```
 lenOfSeqDefEQ {
@@ -12771,7 +12771,7 @@ lenOfSeqDefEQ {
 Choices: {sequences:on}}
 ```
 
-## lenOfSeqEmpty
+## ${t.displayName()}
 
 ```
 lenOfSeqEmpty {
@@ -12781,7 +12781,7 @@ lenOfSeqEmpty {
 Choices: {sequences:on}}
 ```
 
-## lenOfSeqEmpty
+## ${t.displayName()}
 
 ```
 lenOfSeqEmptyEQ {
@@ -12792,7 +12792,7 @@ lenOfSeqEmptyEQ {
 Choices: {sequences:on}}
 ```
 
-## lenOfSeqReverse
+## ${t.displayName()}
 
 ```
 lenOfSeqReverse {
@@ -12802,7 +12802,7 @@ lenOfSeqReverse {
 Choices: {sequences:on}}
 ```
 
-## lenOfSeqReverse
+## ${t.displayName()}
 
 ```
 lenOfSeqReverseEQ {
@@ -12813,7 +12813,7 @@ lenOfSeqReverseEQ {
 Choices: {sequences:on}}
 ```
 
-## lenOfSeqSingleton
+## ${t.displayName()}
 
 ```
 lenOfSeqSingleton {
@@ -12823,7 +12823,7 @@ lenOfSeqSingleton {
 Choices: {sequences:on}}
 ```
 
-## lenOfSeqSingleton
+## ${t.displayName()}
 
 ```
 lenOfSeqSingletonEQ {
@@ -12834,7 +12834,7 @@ lenOfSeqSingletonEQ {
 Choices: {sequences:on}}
 ```
 
-## lenOfSeqSub
+## ${t.displayName()}
 
 ```
 lenOfSeqSub {
@@ -12844,7 +12844,7 @@ lenOfSeqSub {
 Choices: {sequences:on}}
 ```
 
-## lenOfSeqSub
+## ${t.displayName()}
 
 ```
 lenOfSeqSubEQ {
@@ -12855,7 +12855,7 @@ lenOfSeqSubEQ {
 Choices: {sequences:on}}
 ```
 
-## lenOfSwap
+## ${t.displayName()}
 
 ```
 lenOfSwap {
@@ -12865,7 +12865,7 @@ lenOfSwap {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## lengthReplace
+## ${t.displayName()}
 
 ```
 lengthReplace {
@@ -12875,7 +12875,7 @@ lengthReplace {
 Choices: {Strings:on}}
 ```
 
-## lengthReplaceEQ
+## ${t.displayName()}
 
 ```
 lengthReplaceEQ {
@@ -12886,7 +12886,7 @@ lengthReplaceEQ {
 Choices: {Strings:on}}
 ```
 
-## leq_add
+## ${t.displayName()}
 
 ```
 leq_add {
@@ -12897,7 +12897,7 @@ leq_add {
 Choices: {}}
 ```
 
-## leq_add_iff1
+## ${t.displayName()}
 
 ```
 leq_add_iff1 {
@@ -12907,7 +12907,7 @@ leq_add_iff1 {
 Choices: {}}
 ```
 
-## leq_add_iff2
+## ${t.displayName()}
 
 ```
 leq_add_iff2 {
@@ -12917,7 +12917,7 @@ leq_add_iff2 {
 Choices: {}}
 ```
 
-## leq_add_one
+## ${t.displayName()}
 
 ```
 leq_add_one {
@@ -12927,7 +12927,7 @@ leq_add_one {
 Choices: {}}
 ```
 
-## leq_diff1_eq
+## ${t.displayName()}
 
 ```
 leq_diff1_eq {
@@ -12937,7 +12937,7 @@ leq_diff1_eq {
 Choices: {}}
 ```
 
-## leq_diff_1
+## ${t.displayName()}
 
 ```
 leq_diff_1 {
@@ -12947,7 +12947,7 @@ leq_diff_1 {
 Choices: {}}
 ```
 
-## leq_iff_diff_leq_0
+## ${t.displayName()}
 
 ```
 leq_iff_diff_leq_0 {
@@ -12957,7 +12957,7 @@ leq_iff_diff_leq_0 {
 Choices: {}}
 ```
 
-## leq_literals
+## ${t.displayName()}
 
 ```
 leq_literals {
@@ -12967,7 +12967,7 @@ leq_literals {
 Choices: {}}
 ```
 
-## leq_to_geq
+## ${t.displayName()}
 
 ```
 leq_to_geq {
@@ -12977,7 +12977,7 @@ leq_to_geq {
 Choices: {}}
 ```
 
-## leq_to_gt
+## ${t.displayName()}
 
 ```
 leq_to_gt {
@@ -12987,7 +12987,7 @@ leq_to_gt {
 Choices: {}}
 ```
 
-## leq_to_gt_alt
+## ${t.displayName()}
 
 ```
 leq_to_gt_alt {
@@ -12997,7 +12997,7 @@ leq_to_gt_alt {
 Choices: {}}
 ```
 
-## leq_trans
+## ${t.displayName()}
 
 ```
 leq_trans {
@@ -13008,7 +13008,7 @@ leq_trans {
 Choices: {}}
 ```
 
-## less_1_mult
+## ${t.displayName()}
 
 ```
 less_1_mult {
@@ -13018,7 +13018,7 @@ less_1_mult {
 Choices: {}}
 ```
 
-## less_add
+## ${t.displayName()}
 
 ```
 less_add {
@@ -13029,7 +13029,7 @@ less_add {
 Choices: {}}
 ```
 
-## less_add_iff1
+## ${t.displayName()}
 
 ```
 less_add_iff1 {
@@ -13039,7 +13039,7 @@ less_add_iff1 {
 Choices: {}}
 ```
 
-## less_add_iff2
+## ${t.displayName()}
 
 ```
 less_add_iff2 {
@@ -13049,7 +13049,7 @@ less_add_iff2 {
 Choices: {}}
 ```
 
-## less_add_one
+## ${t.displayName()}
 
 ```
 less_add_one {
@@ -13059,7 +13059,7 @@ less_add_one {
 Choices: {}}
 ```
 
-## less_base
+## ${t.displayName()}
 
 ```
 less_base {
@@ -13069,7 +13069,7 @@ less_base {
 Choices: {}}
 ```
 
-## less-or-equal than distinction
+## ${t.displayName()}
 
 ```
 less_equal_than_comparison_new {
@@ -13079,7 +13079,7 @@ less_equal_than_comparison_new {
 Choices: {programRules:Java}}
 ```
 
-## less-or-equal than distinction
+## ${t.displayName()}
 
 ```
 less_equal_than_comparison_simple {
@@ -13089,7 +13089,7 @@ less_equal_than_comparison_simple {
 Choices: {programRules:Java}}
 ```
 
-## less_iff_diff_less_0
+## ${t.displayName()}
 
 ```
 less_iff_diff_less_0 {
@@ -13099,7 +13099,7 @@ less_iff_diff_less_0 {
 Choices: {}}
 ```
 
-## less_is_alternative_1
+## ${t.displayName()}
 
 ```
 less_is_alternative_1 {
@@ -13108,7 +13108,7 @@ less_is_alternative_1 {
 Choices: {}}
 ```
 
-## less_is_alternative_2
+## ${t.displayName()}
 
 ```
 less_is_alternative_2 {
@@ -13119,7 +13119,7 @@ less_is_alternative_2 {
 Choices: {}}
 ```
 
-## less_is_total
+## ${t.displayName()}
 
 ```
 less_is_total {
@@ -13131,7 +13131,7 @@ less_is_total {
 Choices: {}}
 ```
 
-## less_is_total_heu
+## ${t.displayName()}
 
 ```
 less_is_total_heu {
@@ -13140,7 +13140,7 @@ less_is_total_heu {
 Choices: {}}
 ```
 
-## less_literals
+## ${t.displayName()}
 
 ```
 less_literals {
@@ -13150,7 +13150,7 @@ less_literals {
 Choices: {}}
 ```
 
-## less_neg
+## ${t.displayName()}
 
 ```
 less_neg {
@@ -13160,7 +13160,7 @@ less_neg {
 Choices: {}}
 ```
 
-## less_plus
+## ${t.displayName()}
 
 ```
 less_plus {
@@ -13170,7 +13170,7 @@ less_plus {
 Choices: {}}
 ```
 
-## less_sub
+## ${t.displayName()}
 
 ```
 less_sub {
@@ -13180,7 +13180,7 @@ less_sub {
 Choices: {}}
 ```
 
-## lesser than distinction
+## ${t.displayName()}
 
 ```
 less_than_comparison_new {
@@ -13190,7 +13190,7 @@ less_than_comparison_new {
 Choices: {programRules:Java}}
 ```
 
-## lesser than distinction
+## ${t.displayName()}
 
 ```
 less_than_comparison_simple {
@@ -13200,7 +13200,7 @@ less_than_comparison_simple {
 Choices: {programRules:Java}}
 ```
 
-## less_trans
+## ${t.displayName()}
 
 ```
 less_trans {
@@ -13211,7 +13211,7 @@ less_trans {
 Choices: {}}
 ```
 
-## less_zero_is_total
+## ${t.displayName()}
 
 ```
 less_zero_is_total {
@@ -13223,7 +13223,7 @@ less_zero_is_total {
 Choices: {}}
 ```
 
-## local_cut
+## ${t.displayName()}
 
 ```
 local_cut {
@@ -13233,7 +13233,7 @@ local_cut {
 Choices: {}}
 ```
 
-## loopUnwind
+## ${t.displayName()}
 
 ```
 loopUnwind {
@@ -13247,7 +13247,7 @@ loopUnwind {
 Choices: {programRules:Java}}
 ```
 
-## lt_diff_1
+## ${t.displayName()}
 
 ```
 lt_diff_1 {
@@ -13257,7 +13257,7 @@ lt_diff_1 {
 Choices: {}}
 ```
 
-## lt_to_gt
+## ${t.displayName()}
 
 ```
 lt_to_gt {
@@ -13267,7 +13267,7 @@ lt_to_gt {
 Choices: {}}
 ```
 
-## lt_to_leq_1
+## ${t.displayName()}
 
 ```
 lt_to_leq_1 {
@@ -13277,7 +13277,7 @@ lt_to_leq_1 {
 Choices: {}}
 ```
 
-## lt_to_leq_2
+## ${t.displayName()}
 
 ```
 lt_to_leq_2 {
@@ -13288,7 +13288,7 @@ lt_to_leq_2 {
 Choices: {}}
 ```
 
-## make_insert_eq
+## ${t.displayName()}
 
 ```
 make_insert_eq {
@@ -13302,7 +13302,7 @@ Choices: {}}]
 Choices: {}}
 ```
 
-## make_insert_eq_nonrigid
+## ${t.displayName()}
 
 ```
 make_insert_eq_nonrigid {
@@ -13316,7 +13316,7 @@ Choices: {}}]
 Choices: {}}
 ```
 
-## mapEqualityRight
+## ${t.displayName()}
 
 ```
 mapEqualityRight {
@@ -13327,7 +13327,7 @@ mapEqualityRight {
 Choices: {}}
 ```
 
-## mapRemoveUnchanged
+## ${t.displayName()}
 
 ```
 mapRemoveUnchanged {
@@ -13337,7 +13337,7 @@ mapRemoveUnchanged {
 Choices: {}}
 ```
 
-## mapRemoveUnchanged2
+## ${t.displayName()}
 
 ```
 mapRemoveUnchanged2 {
@@ -13347,7 +13347,7 @@ mapRemoveUnchanged2 {
 Choices: {}}
 ```
 
-## mapSizeNotNegativeForFiniteMaps
+## ${t.displayName()}
 
 ```
 mapSizeNotNegativeForFiniteMaps {
@@ -13357,7 +13357,7 @@ mapSizeNotNegativeForFiniteMaps {
 Choices: {}}
 ```
 
-## mapUpdateUnchanged
+## ${t.displayName()}
 
 ```
 mapUpdateUnchanged {
@@ -13367,7 +13367,7 @@ mapUpdateUnchanged {
 Choices: {}}
 ```
 
-## mapUpdateUnchanged2
+## ${t.displayName()}
 
 ```
 mapUpdateUnchanged2 {
@@ -13377,7 +13377,7 @@ mapUpdateUnchanged2 {
 Choices: {}}
 ```
 
-## maxAxiom
+## ${t.displayName()}
 
 ```
 maxAxiom {
@@ -13389,7 +13389,7 @@ maxAxiom {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## measuredByCheck
+## ${t.displayName()}
 
 ```
 measuredByCheck {
@@ -13400,7 +13400,7 @@ measuredByCheck {
 Choices: {}}
 ```
 
-## measuredByCheckEmpty
+## ${t.displayName()}
 
 ```
 measuredByCheckEmpty {
@@ -13411,7 +13411,7 @@ measuredByCheckEmpty {
 Choices: {}}
 ```
 
-## memsetEmpty
+## ${t.displayName()}
 
 ```
 memsetEmpty {
@@ -13421,7 +13421,7 @@ memsetEmpty {
 Choices: {programRules:Java}}
 ```
 
-## methodBodyExpand
+## ${t.displayName()}
 
 ```
 methodBodyExpand {
@@ -13431,7 +13431,7 @@ methodBodyExpand {
 Choices: {programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 methodCall {
@@ -13443,7 +13443,7 @@ methodCall {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 methodCall {
@@ -13455,7 +13455,7 @@ methodCall {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 methodCall {
@@ -13466,7 +13466,7 @@ methodCall {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## methodCallEmpty
+## ${t.displayName()}
 
 ```
 methodCallEmpty {
@@ -13477,7 +13477,7 @@ methodCallEmpty {
 Choices: {programRules:Java}}
 ```
 
-## methodCallEmpty
+## ${t.displayName()}
 
 ```
 methodCallEmptyNoreturnBox {
@@ -13488,7 +13488,7 @@ methodCallEmptyNoreturnBox {
 Choices: {programRules:Java}}
 ```
 
-## methodCallReturn
+## ${t.displayName()}
 
 ```
 methodCallEmptyReturn {
@@ -13502,7 +13502,7 @@ methodCallEmptyReturn {
 Choices: {programRules:Java}}
 ```
 
-## methodCallThrow
+## ${t.displayName()}
 
 ```
 methodCallParamThrow {
@@ -13517,7 +13517,7 @@ methodCallParamThrow {
 Choices: {programRules:Java}}
 ```
 
-## methodCallReturn
+## ${t.displayName()}
 
 ```
 methodCallReturn {
@@ -13534,7 +13534,7 @@ methodCallReturn {
 Choices: {programRules:Java}}
 ```
 
-## methodCallReturn
+## ${t.displayName()}
 
 ```
 methodCallReturnIgnoreResult {
@@ -13548,7 +13548,7 @@ methodCallReturnIgnoreResult {
 Choices: {programRules:Java}}
 ```
 
-## methodCallSuper
+## ${t.displayName()}
 
 ```
 methodCallSuper {
@@ -13558,7 +13558,7 @@ methodCallSuper {
 Choices: {programRules:Java}}
 ```
 
-## methodCallThrow
+## ${t.displayName()}
 
 ```
 methodCallThrow {
@@ -13573,7 +13573,7 @@ methodCallThrow {
 Choices: {programRules:Java}}
 ```
 
-## methodCallUnfoldArguments
+## ${t.displayName()}
 
 ```
 methodCallUnfoldArguments {
@@ -13583,7 +13583,7 @@ methodCallUnfoldArguments {
 Choices: {programRules:Java}}
 ```
 
-## methodCallUnfoldTarget
+## ${t.displayName()}
 
 ```
 methodCallUnfoldTarget {
@@ -13594,7 +13594,7 @@ methodCallUnfoldTarget {
 Choices: {programRules:Java}}
 ```
 
-## methodCallWithAssignment
+## ${t.displayName()}
 
 ```
 methodCallWithAssignment {
@@ -13606,7 +13606,7 @@ methodCallWithAssignment {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## methodCallWithAssignment
+## ${t.displayName()}
 
 ```
 methodCallWithAssignment {
@@ -13618,7 +13618,7 @@ methodCallWithAssignment {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## methodCallWithAssignment
+## ${t.displayName()}
 
 ```
 methodCallWithAssignment {
@@ -13629,7 +13629,7 @@ methodCallWithAssignment {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## methodCallSuper
+## ${t.displayName()}
 
 ```
 methodCallWithAssignmentSuper {
@@ -13640,7 +13640,7 @@ methodCallWithAssignmentSuper {
 Choices: {programRules:Java}}
 ```
 
-## methodCallUnfoldArguments
+## ${t.displayName()}
 
 ```
 methodCallWithAssignmentUnfoldArguments {
@@ -13650,7 +13650,7 @@ methodCallWithAssignmentUnfoldArguments {
 Choices: {programRules:Java}}
 ```
 
-## methodCallUnfoldTarget
+## ${t.displayName()}
 
 ```
 methodCallWithAssignmentUnfoldTarget {
@@ -13661,7 +13661,7 @@ methodCallWithAssignmentUnfoldTarget {
 Choices: {programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 methodCallWithAssignmentWithinClass {
@@ -13672,7 +13672,7 @@ methodCallWithAssignmentWithinClass {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 methodCallWithAssignmentWithinClass {
@@ -13683,7 +13683,7 @@ methodCallWithAssignmentWithinClass {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 methodCallWithinClass {
@@ -13693,7 +13693,7 @@ methodCallWithinClass {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 methodCallWithinClass {
@@ -13703,7 +13703,7 @@ methodCallWithinClass {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## minAxiom
+## ${t.displayName()}
 
 ```
 minAxiom {
@@ -13715,7 +13715,7 @@ minAxiom {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## minus_distribute
+## ${t.displayName()}
 
 ```
 minus_distribute_1 {
@@ -13725,7 +13725,7 @@ minus_distribute_1 {
 Choices: {}}
 ```
 
-## minus_distribute
+## ${t.displayName()}
 
 ```
 minus_distribute_2 {
@@ -13735,7 +13735,7 @@ minus_distribute_2 {
 Choices: {}}
 ```
 
-## mod_axiom
+## ${t.displayName()}
 
 ```
 mod_axiom {
@@ -13745,7 +13745,7 @@ mod_axiom {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## mod_homoEq
+## ${t.displayName()}
 
 ```
 mod_homoEq {
@@ -13755,7 +13755,7 @@ mod_homoEq {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## moduloByteFixpoint
+## ${t.displayName()}
 
 ```
 moduloByteFixpoint {
@@ -13766,7 +13766,7 @@ moduloByteFixpoint {
 Choices: {intRules:javaSemantics}}
 ```
 
-## moduloByteFixpoint
+## ${t.displayName()}
 
 ```
 moduloByteFixpoint {
@@ -13777,7 +13777,7 @@ moduloByteFixpoint {
 Choices: {intRules:arithmeticSemanticsCheckingOF}}
 ```
 
-## moduloByteFixpointInline
+## ${t.displayName()}
 
 ```
 moduloByteFixpointInline {
@@ -13787,7 +13787,7 @@ moduloByteFixpointInline {
 Choices: {intRules:javaSemantics}}
 ```
 
-## moduloByteIsInByte
+## ${t.displayName()}
 
 ```
 moduloByteIsInByte {
@@ -13797,7 +13797,7 @@ moduloByteIsInByte {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## moduloCharFixpoint
+## ${t.displayName()}
 
 ```
 moduloCharFixpoint {
@@ -13808,7 +13808,7 @@ moduloCharFixpoint {
 Choices: {intRules:javaSemantics}}
 ```
 
-## moduloCharFixpoint
+## ${t.displayName()}
 
 ```
 moduloCharFixpoint {
@@ -13819,7 +13819,7 @@ moduloCharFixpoint {
 Choices: {intRules:arithmeticSemanticsCheckingOF}}
 ```
 
-## moduloCharFixpointInline
+## ${t.displayName()}
 
 ```
 moduloCharFixpointInline {
@@ -13829,7 +13829,7 @@ moduloCharFixpointInline {
 Choices: {intRules:javaSemantics}}
 ```
 
-## moduloCharIsInChar
+## ${t.displayName()}
 
 ```
 moduloCharIsInChar {
@@ -13839,7 +13839,7 @@ moduloCharIsInChar {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## moduloIntFixpoint
+## ${t.displayName()}
 
 ```
 moduloIntFixpoint {
@@ -13850,7 +13850,7 @@ moduloIntFixpoint {
 Choices: {intRules:javaSemantics}}
 ```
 
-## moduloIntFixpoint
+## ${t.displayName()}
 
 ```
 moduloIntFixpoint {
@@ -13861,7 +13861,7 @@ moduloIntFixpoint {
 Choices: {intRules:arithmeticSemanticsCheckingOF}}
 ```
 
-## moduloIntFixpointInline
+## ${t.displayName()}
 
 ```
 moduloIntFixpointInline {
@@ -13871,7 +13871,7 @@ moduloIntFixpointInline {
 Choices: {intRules:javaSemantics}}
 ```
 
-## moduloIntIsInInt
+## ${t.displayName()}
 
 ```
 moduloIntIsInInt {
@@ -13881,7 +13881,7 @@ moduloIntIsInInt {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## moduloLongFixpoint
+## ${t.displayName()}
 
 ```
 moduloLongFixpoint {
@@ -13892,7 +13892,7 @@ moduloLongFixpoint {
 Choices: {intRules:javaSemantics}}
 ```
 
-## moduloLongFixpoint
+## ${t.displayName()}
 
 ```
 moduloLongFixpoint {
@@ -13903,7 +13903,7 @@ moduloLongFixpoint {
 Choices: {intRules:arithmeticSemanticsCheckingOF}}
 ```
 
-## moduloLongFixpointInline
+## ${t.displayName()}
 
 ```
 moduloLongFixpointInline {
@@ -13913,7 +13913,7 @@ moduloLongFixpointInline {
 Choices: {intRules:javaSemantics}}
 ```
 
-## moduloLongIsInLong
+## ${t.displayName()}
 
 ```
 moduloLongIsInLong {
@@ -13923,7 +13923,7 @@ moduloLongIsInLong {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## moduloShortFixpoint
+## ${t.displayName()}
 
 ```
 moduloShortFixpoint {
@@ -13934,7 +13934,7 @@ moduloShortFixpoint {
 Choices: {intRules:javaSemantics}}
 ```
 
-## moduloShortFixpoint
+## ${t.displayName()}
 
 ```
 moduloShortFixpoint {
@@ -13945,7 +13945,7 @@ moduloShortFixpoint {
 Choices: {intRules:arithmeticSemanticsCheckingOF}}
 ```
 
-## moduloShortFixpointInline
+## ${t.displayName()}
 
 ```
 moduloShortFixpointInline {
@@ -13955,7 +13955,7 @@ moduloShortFixpointInline {
 Choices: {intRules:javaSemantics}}
 ```
 
-## moduloShortIsInShort
+## ${t.displayName()}
 
 ```
 moduloShortIsInShort {
@@ -13965,7 +13965,7 @@ moduloShortIsInShort {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## mul_assoc
+## ${t.displayName()}
 
 ```
 mul_assoc {
@@ -13975,7 +13975,7 @@ mul_assoc {
 Choices: {}}
 ```
 
-## mul_comm
+## ${t.displayName()}
 
 ```
 mul_comm {
@@ -13985,7 +13985,7 @@ mul_comm {
 Choices: {}}
 ```
 
-## multiply_distribute
+## ${t.displayName()}
 
 ```
 mul_distribute_4 {
@@ -13995,7 +13995,7 @@ mul_distribute_4 {
 Choices: {}}
 ```
 
-## multiply_distribute
+## ${t.displayName()}
 
 ```
 mul_distribute_5 {
@@ -14005,7 +14005,7 @@ mul_distribute_5 {
 Choices: {}}
 ```
 
-## mul_literals
+## ${t.displayName()}
 
 ```
 mul_literals {
@@ -14015,7 +14015,7 @@ mul_literals {
 Choices: {}}
 ```
 
-## mult_eq_1_iff
+## ${t.displayName()}
 
 ```
 mult_eq_1_iff {
@@ -14025,7 +14025,7 @@ mult_eq_1_iff {
 Choices: {}}
 ```
 
-## mult_eq_self_iff
+## ${t.displayName()}
 
 ```
 mult_eq_self_iff {
@@ -14035,7 +14035,7 @@ mult_eq_self_iff {
 Choices: {}}
 ```
 
-## mult_leq_0_iff
+## ${t.displayName()}
 
 ```
 mult_leq_0_iff {
@@ -14045,7 +14045,7 @@ mult_leq_0_iff {
 Choices: {}}
 ```
 
-## mult_less_0_iff
+## ${t.displayName()}
 
 ```
 mult_less_0_iff {
@@ -14055,7 +14055,7 @@ mult_less_0_iff {
 Choices: {}}
 ```
 
-## mult_neg
+## ${t.displayName()}
 
 ```
 mult_neg {
@@ -14065,7 +14065,7 @@ mult_neg {
 Choices: {}}
 ```
 
-## mult_pos
+## ${t.displayName()}
 
 ```
 mult_pos {
@@ -14075,7 +14075,7 @@ mult_pos {
 Choices: {}}
 ```
 
-## mult_pos_neg
+## ${t.displayName()}
 
 ```
 mult_pos_neg {
@@ -14085,7 +14085,7 @@ mult_pos_neg {
 Choices: {}}
 ```
 
-## multiply_2_inEq0
+## ${t.displayName()}
 
 ```
 multiply_2_inEq0 {
@@ -14096,7 +14096,7 @@ multiply_2_inEq0 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## multiply_2_inEq1
+## ${t.displayName()}
 
 ```
 multiply_2_inEq1 {
@@ -14107,7 +14107,7 @@ multiply_2_inEq1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## multiply_2_inEq2
+## ${t.displayName()}
 
 ```
 multiply_2_inEq2 {
@@ -14118,7 +14118,7 @@ multiply_2_inEq2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## multiply_2_inEq3
+## ${t.displayName()}
 
 ```
 multiply_2_inEq3 {
@@ -14129,7 +14129,7 @@ multiply_2_inEq3 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## multiply_distribute
+## ${t.displayName()}
 
 ```
 multiply_distribute_1 {
@@ -14139,7 +14139,7 @@ multiply_distribute_1 {
 Choices: {}}
 ```
 
-## multiply_distribute
+## ${t.displayName()}
 
 ```
 multiply_distribute_2 {
@@ -14149,7 +14149,7 @@ multiply_distribute_2 {
 Choices: {}}
 ```
 
-## multiply_distribute
+## ${t.displayName()}
 
 ```
 multiply_distribute_3 {
@@ -14159,7 +14159,7 @@ multiply_distribute_3 {
 Choices: {}}
 ```
 
-## multiply_eq
+## ${t.displayName()}
 
 ```
 multiply_eq {
@@ -14169,7 +14169,7 @@ multiply_eq {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## multiply_inEq0
+## ${t.displayName()}
 
 ```
 multiply_inEq0 {
@@ -14179,7 +14179,7 @@ multiply_inEq0 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## multiply_inEq1
+## ${t.displayName()}
 
 ```
 multiply_inEq1 {
@@ -14189,7 +14189,7 @@ multiply_inEq1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## narrowSelectArrayType
+## ${t.displayName()}
 
 ```
 narrowSelectArrayType {
@@ -14201,7 +14201,7 @@ narrowSelectArrayType {
 Choices: {programRules:Java}}
 ```
 
-## narrowSelectType
+## ${t.displayName()}
 
 ```
 narrowSelectType {
@@ -14213,7 +14213,7 @@ narrowSelectType {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingByteCastBigint {
@@ -14223,7 +14223,7 @@ narrowingByteCastBigint {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingByteCastInt {
@@ -14233,7 +14233,7 @@ narrowingByteCastInt {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingByteCastLong {
@@ -14243,7 +14243,7 @@ narrowingByteCastLong {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingByteCastShort {
@@ -14253,7 +14253,7 @@ narrowingByteCastShort {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingCharCastBigint {
@@ -14263,7 +14263,7 @@ narrowingCharCastBigint {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingCharCastByte {
@@ -14273,7 +14273,7 @@ narrowingCharCastByte {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingCharCastInt {
@@ -14283,7 +14283,7 @@ narrowingCharCastInt {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingCharCastLong {
@@ -14293,7 +14293,7 @@ narrowingCharCastLong {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingCharCastShort {
@@ -14303,7 +14303,7 @@ narrowingCharCastShort {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingIntCastBigint {
@@ -14313,7 +14313,7 @@ narrowingIntCastBigint {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingIntCastLong {
@@ -14323,7 +14323,7 @@ narrowingIntCastLong {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingLongCastBigint {
@@ -14333,7 +14333,7 @@ narrowingLongCastBigint {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingShortCastBigint {
@@ -14343,7 +14343,7 @@ narrowingShortCastBigint {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingShortCastInt {
@@ -14353,7 +14353,7 @@ narrowingShortCastInt {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 narrowingShortCastLong {
@@ -14363,7 +14363,7 @@ narrowingShortCastLong {
 Choices: {programRules:Java}}
 ```
 
-## neg_literal
+## ${t.displayName()}
 
 ```
 neg_literal {
@@ -14373,7 +14373,7 @@ neg_literal {
 Choices: {}}
 ```
 
-## neq_and
+## ${t.displayName()}
 
 ```
 neq_and {
@@ -14383,7 +14383,7 @@ neq_and {
 Choices: {}}
 ```
 
-## neq_and_2
+## ${t.displayName()}
 
 ```
 neq_and_2 {
@@ -14393,7 +14393,7 @@ neq_and_2 {
 Choices: {}}
 ```
 
-## neq_and_3
+## ${t.displayName()}
 
 ```
 neq_and_3 {
@@ -14403,7 +14403,7 @@ neq_and_3 {
 Choices: {}}
 ```
 
-## neq_and_4
+## ${t.displayName()}
 
 ```
 neq_and_4 {
@@ -14413,7 +14413,7 @@ neq_and_4 {
 Choices: {}}
 ```
 
-## neq_or
+## ${t.displayName()}
 
 ```
 neq_or {
@@ -14423,7 +14423,7 @@ neq_or {
 Choices: {}}
 ```
 
-## neq_or_2
+## ${t.displayName()}
 
 ```
 neq_or_2 {
@@ -14433,7 +14433,7 @@ neq_or_2 {
 Choices: {}}
 ```
 
-## neq_or_3
+## ${t.displayName()}
 
 ```
 neq_or_3 {
@@ -14443,7 +14443,7 @@ neq_or_3 {
 Choices: {}}
 ```
 
-## neq_or_4
+## ${t.displayName()}
 
 ```
 neq_or_4 {
@@ -14453,7 +14453,7 @@ neq_or_4 {
 Choices: {}}
 ```
 
-## newSym_eq
+## ${t.displayName()}
 
 ```
 newSym_eq {
@@ -14463,7 +14463,7 @@ newSym_eq {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## nnf_ex2all
+## ${t.displayName()}
 
 ```
 nnf_ex2all {
@@ -14473,7 +14473,7 @@ nnf_ex2all {
 Choices: {}}
 ```
 
-## nnf_imp2or
+## ${t.displayName()}
 
 ```
 nnf_imp2or {
@@ -14483,7 +14483,7 @@ nnf_imp2or {
 Choices: {}}
 ```
 
-## nnf_notAll
+## ${t.displayName()}
 
 ```
 nnf_notAll {
@@ -14493,7 +14493,7 @@ nnf_notAll {
 Choices: {}}
 ```
 
-## nnf_notAnd
+## ${t.displayName()}
 
 ```
 nnf_notAnd {
@@ -14503,7 +14503,7 @@ nnf_notAnd {
 Choices: {}}
 ```
 
-## nnf_notEqv
+## ${t.displayName()}
 
 ```
 nnf_notEqv {
@@ -14513,7 +14513,7 @@ nnf_notEqv {
 Choices: {}}
 ```
 
-## nnf_notEx
+## ${t.displayName()}
 
 ```
 nnf_notEx {
@@ -14523,7 +14523,7 @@ nnf_notEx {
 Choices: {}}
 ```
 
-## nnf_notOr
+## ${t.displayName()}
 
 ```
 nnf_notOr {
@@ -14533,7 +14533,7 @@ nnf_notOr {
 Choices: {}}
 ```
 
-## noElementOfSupersetImpliesNoElementOfSubset
+## ${t.displayName()}
 
 ```
 noElementOfSupersetImpliesNoElementOfSubset {
@@ -14544,7 +14544,7 @@ noElementOfSupersetImpliesNoElementOfSubset {
 Choices: {programRules:Java}}
 ```
 
-## nonEmptyPermission
+## ${t.displayName()}
 
 ```
 nonEmptyPermission {
@@ -14555,7 +14555,7 @@ nonEmptyPermission {
 Choices: {permissions:on}}
 ```
 
-## nonNull
+## ${t.displayName()}
 
 ```
 nonNull {
@@ -14566,7 +14566,7 @@ nonNull {
 Choices: {programRules:Java}}
 ```
 
-## nonNullZero
+## ${t.displayName()}
 
 ```
 nonNullZero {
@@ -14576,7 +14576,7 @@ nonNullZero {
 Choices: {programRules:Java}}
 ```
 
-## notInDomain
+## ${t.displayName()}
 
 ```
 notInDomain {
@@ -14586,7 +14586,7 @@ notInDomain {
 Choices: {}}
 ```
 
-## notLeft
+## ${t.displayName()}
 
 ```
 notLeft {
@@ -14596,7 +14596,7 @@ notLeft {
 Choices: {}}
 ```
 
-## notRight
+## ${t.displayName()}
 
 ```
 notRight {
@@ -14606,7 +14606,7 @@ notRight {
 Choices: {}}
 ```
 
-## nullCreated
+## ${t.displayName()}
 
 ```
 nullCreated {
@@ -14615,7 +14615,7 @@ nullCreated {
 Choices: {programRules:Java}}
 ```
 
-## nullString
+## ${t.displayName()}
 
 ```
 nullString {
@@ -14625,7 +14625,7 @@ nullString {
 Choices: {}}
 ```
 
-## null_can_always_be_stored_in_a_reference_type_array
+## ${t.displayName()}
 
 ```
 null_can_always_be_stored_in_a_reference_type_array {
@@ -14637,7 +14637,7 @@ null_can_always_be_stored_in_a_reference_type_array {
 Choices: {programRules:Java}}
 ```
 
-## onlyCreatedObjectsAreInLocSets
+## ${t.displayName()}
 
 ```
 onlyCreatedObjectsAreInLocSets {
@@ -14648,7 +14648,7 @@ onlyCreatedObjectsAreInLocSets {
 Choices: {programRules:Java}}
 ```
 
-## onlyCreatedObjectsAreInLocSetsEQ
+## ${t.displayName()}
 
 ```
 onlyCreatedObjectsAreInLocSetsEQ {
@@ -14659,7 +14659,7 @@ onlyCreatedObjectsAreInLocSetsEQ {
 Choices: {programRules:Java}}
 ```
 
-## onlyCreatedObjectsAreObserved
+## ${t.displayName()}
 
 ```
 onlyCreatedObjectsAreObserved {
@@ -14670,7 +14670,7 @@ onlyCreatedObjectsAreObserved {
 Choices: {programRules:Java}}
 ```
 
-## onlyCreatedObjectsAreObservedInLocSets
+## ${t.displayName()}
 
 ```
 onlyCreatedObjectsAreObservedInLocSets {
@@ -14681,7 +14681,7 @@ onlyCreatedObjectsAreObservedInLocSets {
 Choices: {programRules:Java}}
 ```
 
-## onlyCreatedObjectsAreObservedInLocSetsEQ
+## ${t.displayName()}
 
 ```
 onlyCreatedObjectsAreObservedInLocSetsEQ {
@@ -14693,7 +14693,7 @@ onlyCreatedObjectsAreObservedInLocSetsEQ {
 Choices: {programRules:Java}}
 ```
 
-## onlyCreatedObjectsAreReferenced
+## ${t.displayName()}
 
 ```
 onlyCreatedObjectsAreReferenced {
@@ -14704,7 +14704,7 @@ onlyCreatedObjectsAreReferenced {
 Choices: {programRules:Java}}
 ```
 
-## only_created_objects_are_reachable
+## ${t.displayName()}
 
 ```
 only_created_objects_are_reachable {
@@ -14715,7 +14715,7 @@ only_created_objects_are_reachable {
 Choices: {reach:on}}
 ```
 
-## optAxiom
+## ${t.displayName()}
 
 ```
 optAxiom {
@@ -14725,7 +14725,7 @@ optAxiom {
 Choices: {Strings:on}}
 ```
 
-## optEmpty
+## ${t.displayName()}
 
 ```
 optEmpty {
@@ -14735,7 +14735,7 @@ optEmpty {
 Choices: {Strings:on}}
 ```
 
-## orJIntDef
+## ${t.displayName()}
 
 ```
 orJIntDef {
@@ -14745,7 +14745,7 @@ orJIntDef {
 Choices: {}}
 ```
 
-## orJintInInt
+## ${t.displayName()}
 
 ```
 orJintInInt {
@@ -14755,7 +14755,7 @@ orJintInInt {
 Choices: {}}
 ```
 
-## orLeft
+## ${t.displayName()}
 
 ```
 orLeft {
@@ -14766,7 +14766,7 @@ orLeft {
 Choices: {}}
 ```
 
-## orRight
+## ${t.displayName()}
 
 ```
 orRight {
@@ -14776,7 +14776,7 @@ orRight {
 Choices: {}}
 ```
 
-## parallelWithSkip1
+## ${t.displayName()}
 
 ```
 parallelWithSkip1 {
@@ -14786,7 +14786,7 @@ parallelWithSkip1 {
 Choices: {}}
 ```
 
-## parallelWithSkip2
+## ${t.displayName()}
 
 ```
 parallelWithSkip2 {
@@ -14796,7 +14796,7 @@ parallelWithSkip2 {
 Choices: {}}
 ```
 
-## partition_inequation
+## ${t.displayName()}
 
 ```
 partition_inequation {
@@ -14807,7 +14807,7 @@ partition_inequation {
 Choices: {}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 passiveMethodCallStatic {
@@ -14817,7 +14817,7 @@ passiveMethodCallStatic {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 passiveMethodCallStaticWithAssignment {
@@ -14828,7 +14828,7 @@ passiveMethodCallStaticWithAssignment {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 passiveMethodCallWithAssignmentWithinClass {
@@ -14839,7 +14839,7 @@ passiveMethodCallWithAssignmentWithinClass {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 passiveMethodCallWithinClass {
@@ -14849,7 +14849,7 @@ passiveMethodCallWithinClass {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## permOwner1
+## ${t.displayName()}
 
 ```
 permOwner1 {
@@ -14859,7 +14859,7 @@ permOwner1 {
 Choices: {permissions:on}}
 ```
 
-## permOwner2
+## ${t.displayName()}
 
 ```
 permOwner2 {
@@ -14869,7 +14869,7 @@ permOwner2 {
 Choices: {permissions:on}}
 ```
 
-## permOwner3
+## ${t.displayName()}
 
 ```
 permOwner3 {
@@ -14879,7 +14879,7 @@ permOwner3 {
 Choices: {permissions:on}}
 ```
 
-## permOwner4
+## ${t.displayName()}
 
 ```
 permOwner4 {
@@ -14889,7 +14889,7 @@ permOwner4 {
 Choices: {permissions:on}}
 ```
 
-## permSlice1
+## ${t.displayName()}
 
 ```
 permSlice1 {
@@ -14899,7 +14899,7 @@ permSlice1 {
 Choices: {permissions:on}}
 ```
 
-## permSlice2
+## ${t.displayName()}
 
 ```
 permSlice2 {
@@ -14909,7 +14909,7 @@ permSlice2 {
 Choices: {permissions:on}}
 ```
 
-## permissionDefaultValue
+## ${t.displayName()}
 
 ```
 permissionDefaultValue {
@@ -14919,7 +14919,7 @@ permissionDefaultValue {
 Choices: {}}
 ```
 
-## permissionTransferReturnIdentity
+## ${t.displayName()}
 
 ```
 permissionTransferReturnIdentity {
@@ -14929,7 +14929,7 @@ permissionTransferReturnIdentity {
 Choices: {permissions:on}}
 ```
 
-## permissionTransferReturnIdentityEQ
+## ${t.displayName()}
 
 ```
 permissionTransferReturnIdentityEQ {
@@ -14940,7 +14940,7 @@ permissionTransferReturnIdentityEQ {
 Choices: {permissions:on}}
 ```
 
-## polyDiv_pullOut
+## ${t.displayName()}
 
 ```
 polyDiv_pullOut {
@@ -14950,7 +14950,7 @@ polyDiv_pullOut {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## polyDiv_zero
+## ${t.displayName()}
 
 ```
 polyDiv_zero {
@@ -14960,7 +14960,7 @@ polyDiv_zero {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## polyMod_pullOut
+## ${t.displayName()}
 
 ```
 polyMod_pullOut {
@@ -14970,7 +14970,7 @@ polyMod_pullOut {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## polyMod_zero
+## ${t.displayName()}
 
 ```
 polyMod_zero {
@@ -14980,7 +14980,7 @@ polyMod_zero {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## polySimp_addAssoc
+## ${t.displayName()}
 
 ```
 polySimp_addAssoc {
@@ -14990,7 +14990,7 @@ polySimp_addAssoc {
 Choices: {}}
 ```
 
-## polySimp_addComm0
+## ${t.displayName()}
 
 ```
 polySimp_addComm0 {
@@ -15000,7 +15000,7 @@ polySimp_addComm0 {
 Choices: {}}
 ```
 
-## polySimp_addComm1
+## ${t.displayName()}
 
 ```
 polySimp_addComm1 {
@@ -15010,7 +15010,7 @@ polySimp_addComm1 {
 Choices: {}}
 ```
 
-## polySimp_addLiterals
+## ${t.displayName()}
 
 ```
 polySimp_addLiterals {
@@ -15020,7 +15020,7 @@ polySimp_addLiterals {
 Choices: {}}
 ```
 
-## polySimp_critPair
+## ${t.displayName()}
 
 ```
 polySimp_critPair {
@@ -15031,7 +15031,7 @@ polySimp_critPair {
 Choices: {}}
 ```
 
-## polySimp_elimNeg
+## ${t.displayName()}
 
 ```
 polySimp_elimNeg {
@@ -15041,7 +15041,7 @@ polySimp_elimNeg {
 Choices: {}}
 ```
 
-## polySimp_elimOne
+## ${t.displayName()}
 
 ```
 polySimp_elimOne {
@@ -15051,7 +15051,7 @@ polySimp_elimOne {
 Choices: {}}
 ```
 
-## polySimp_elimOneLeft0
+## ${t.displayName()}
 
 ```
 polySimp_elimOneLeft0 {
@@ -15061,7 +15061,7 @@ polySimp_elimOneLeft0 {
 Choices: {}}
 ```
 
-## polySimp_elimOneLeft1
+## ${t.displayName()}
 
 ```
 polySimp_elimOneLeft1 {
@@ -15071,7 +15071,7 @@ polySimp_elimOneLeft1 {
 Choices: {}}
 ```
 
-## polySimp_elimSub
+## ${t.displayName()}
 
 ```
 polySimp_elimSub {
@@ -15081,7 +15081,7 @@ polySimp_elimSub {
 Choices: {}}
 ```
 
-## polySimp_homoEq
+## ${t.displayName()}
 
 ```
 polySimp_homoEq {
@@ -15091,7 +15091,7 @@ polySimp_homoEq {
 Choices: {}}
 ```
 
-## polySimp_invertEq
+## ${t.displayName()}
 
 ```
 polySimp_invertEq {
@@ -15101,7 +15101,7 @@ polySimp_invertEq {
 Choices: {}}
 ```
 
-## polySimp_mulAssoc
+## ${t.displayName()}
 
 ```
 polySimp_mulAssoc {
@@ -15111,7 +15111,7 @@ polySimp_mulAssoc {
 Choices: {}}
 ```
 
-## polySimp_mulComm0
+## ${t.displayName()}
 
 ```
 polySimp_mulComm0 {
@@ -15121,7 +15121,7 @@ polySimp_mulComm0 {
 Choices: {}}
 ```
 
-## polySimp_mulComm1
+## ${t.displayName()}
 
 ```
 polySimp_mulComm1 {
@@ -15131,7 +15131,7 @@ polySimp_mulComm1 {
 Choices: {}}
 ```
 
-## polySimp_mulLiterals
+## ${t.displayName()}
 
 ```
 polySimp_mulLiterals {
@@ -15141,7 +15141,7 @@ polySimp_mulLiterals {
 Choices: {}}
 ```
 
-## polySimp_pullOutFactor0
+## ${t.displayName()}
 
 ```
 polySimp_pullOutFactor0 {
@@ -15151,7 +15151,7 @@ polySimp_pullOutFactor0 {
 Choices: {}}
 ```
 
-## polySimp_pullOutFactor0b
+## ${t.displayName()}
 
 ```
 polySimp_pullOutFactor0b {
@@ -15161,7 +15161,7 @@ polySimp_pullOutFactor0b {
 Choices: {}}
 ```
 
-## polySimp_pullOutFactor1
+## ${t.displayName()}
 
 ```
 polySimp_pullOutFactor1 {
@@ -15171,7 +15171,7 @@ polySimp_pullOutFactor1 {
 Choices: {}}
 ```
 
-## polySimp_pullOutFactor1b
+## ${t.displayName()}
 
 ```
 polySimp_pullOutFactor1b {
@@ -15181,7 +15181,7 @@ polySimp_pullOutFactor1b {
 Choices: {}}
 ```
 
-## polySimp_pullOutFactor2
+## ${t.displayName()}
 
 ```
 polySimp_pullOutFactor2 {
@@ -15191,7 +15191,7 @@ polySimp_pullOutFactor2 {
 Choices: {}}
 ```
 
-## polySimp_pullOutFactor2b
+## ${t.displayName()}
 
 ```
 polySimp_pullOutFactor2b {
@@ -15201,7 +15201,7 @@ polySimp_pullOutFactor2b {
 Choices: {}}
 ```
 
-## polySimp_pullOutFactor3
+## ${t.displayName()}
 
 ```
 polySimp_pullOutFactor3 {
@@ -15211,7 +15211,7 @@ polySimp_pullOutFactor3 {
 Choices: {}}
 ```
 
-## polySimp_pullOutFactor3b
+## ${t.displayName()}
 
 ```
 polySimp_pullOutFactor3b {
@@ -15221,7 +15221,7 @@ polySimp_pullOutFactor3b {
 Choices: {}}
 ```
 
-## polySimp_rightDist
+## ${t.displayName()}
 
 ```
 polySimp_rightDist {
@@ -15231,7 +15231,7 @@ polySimp_rightDist {
 Choices: {}}
 ```
 
-## polySimp_sepNegMonomial
+## ${t.displayName()}
 
 ```
 polySimp_sepNegMonomial {
@@ -15241,7 +15241,7 @@ polySimp_sepNegMonomial {
 Choices: {}}
 ```
 
-## polySimp_sepPosMonomial
+## ${t.displayName()}
 
 ```
 polySimp_sepPosMonomial {
@@ -15251,7 +15251,7 @@ polySimp_sepPosMonomial {
 Choices: {}}
 ```
 
-## poolIsInjective
+## ${t.displayName()}
 
 ```
 poolIsInjective {
@@ -15261,7 +15261,7 @@ poolIsInjective {
 Choices: {}}
 ```
 
-## poolKeyIsContentOfValue
+## ${t.displayName()}
 
 ```
 poolKeyIsContentOfValue {
@@ -15271,7 +15271,7 @@ poolKeyIsContentOfValue {
 Choices: {}}
 ```
 
-## pos_mult_eq_1_iff
+## ${t.displayName()}
 
 ```
 pos_mult_eq_1_iff {
@@ -15281,7 +15281,7 @@ pos_mult_eq_1_iff {
 Choices: {}}
 ```
 
-## postdecrement
+## ${t.displayName()}
 
 ```
 postdecrement {
@@ -15291,7 +15291,7 @@ postdecrement {
 Choices: {programRules:Java}}
 ```
 
-## postdecrement_array
+## ${t.displayName()}
 
 ```
 postdecrement_array {
@@ -15302,7 +15302,7 @@ postdecrement_array {
 Choices: {programRules:Java}}
 ```
 
-## postdecrement_assignment
+## ${t.displayName()}
 
 ```
 postdecrement_assignment {
@@ -15313,7 +15313,7 @@ postdecrement_assignment {
 Choices: {programRules:Java}}
 ```
 
-## postdecrement_assignment_array
+## ${t.displayName()}
 
 ```
 postdecrement_assignment_array {
@@ -15324,7 +15324,7 @@ postdecrement_assignment_array {
 Choices: {programRules:Java}}
 ```
 
-## postdecrement_assignment_attribute
+## ${t.displayName()}
 
 ```
 postdecrement_assignment_attribute {
@@ -15335,7 +15335,7 @@ postdecrement_assignment_attribute {
 Choices: {programRules:Java}}
 ```
 
-## postdecrement_attribute
+## ${t.displayName()}
 
 ```
 postdecrement_attribute {
@@ -15346,7 +15346,7 @@ postdecrement_attribute {
 Choices: {programRules:Java}}
 ```
 
-## postincrement
+## ${t.displayName()}
 
 ```
 postincrement {
@@ -15356,7 +15356,7 @@ postincrement {
 Choices: {programRules:Java}}
 ```
 
-## postincrement_array
+## ${t.displayName()}
 
 ```
 postincrement_array {
@@ -15367,7 +15367,7 @@ postincrement_array {
 Choices: {programRules:Java}}
 ```
 
-## postincrement_assignment
+## ${t.displayName()}
 
 ```
 postincrement_assignment {
@@ -15378,7 +15378,7 @@ postincrement_assignment {
 Choices: {programRules:Java}}
 ```
 
-## postincrement_assignment_array
+## ${t.displayName()}
 
 ```
 postincrement_assignment_array {
@@ -15389,7 +15389,7 @@ postincrement_assignment_array {
 Choices: {programRules:Java}}
 ```
 
-## postincrement_assignment_attribute
+## ${t.displayName()}
 
 ```
 postincrement_assignment_attribute {
@@ -15400,7 +15400,7 @@ postincrement_assignment_attribute {
 Choices: {programRules:Java}}
 ```
 
-## postincrement_attribute
+## ${t.displayName()}
 
 ```
 postincrement_attribute {
@@ -15411,7 +15411,7 @@ postincrement_attribute {
 Choices: {programRules:Java}}
 ```
 
-## powDef
+## ${t.displayName()}
 
 ```
 powDef {
@@ -15422,7 +15422,7 @@ powDef {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## pow_literals
+## ${t.displayName()}
 
 ```
 pow_literals {
@@ -15432,7 +15432,7 @@ pow_literals {
 Choices: {}}
 ```
 
-## precOfInt
+## ${t.displayName()}
 
 ```
 precOfInt {
@@ -15442,7 +15442,7 @@ precOfInt {
 Choices: {}}
 ```
 
-## precOfIntPair
+## ${t.displayName()}
 
 ```
 precOfIntPair {
@@ -15452,7 +15452,7 @@ precOfIntPair {
 Choices: {}}
 ```
 
-## precOfPair
+## ${t.displayName()}
 
 ```
 precOfPair {
@@ -15462,7 +15462,7 @@ precOfPair {
 Choices: {}}
 ```
 
-## precOfPairInt
+## ${t.displayName()}
 
 ```
 precOfPairInt {
@@ -15472,7 +15472,7 @@ precOfPairInt {
 Choices: {}}
 ```
 
-## precOfSeq
+## ${t.displayName()}
 
 ```
 precOfSeq {
@@ -15483,7 +15483,7 @@ precOfSeq {
 Choices: {}}
 ```
 
-## predecrement
+## ${t.displayName()}
 
 ```
 predecrement {
@@ -15493,7 +15493,7 @@ predecrement {
 Choices: {programRules:Java}}
 ```
 
-## predecrement_array
+## ${t.displayName()}
 
 ```
 predecrement_array {
@@ -15504,7 +15504,7 @@ predecrement_array {
 Choices: {programRules:Java}}
 ```
 
-## predecrement_assignment
+## ${t.displayName()}
 
 ```
 predecrement_assignment {
@@ -15514,7 +15514,7 @@ predecrement_assignment {
 Choices: {programRules:Java}}
 ```
 
-## predecrement_assignment_array
+## ${t.displayName()}
 
 ```
 predecrement_assignment_array {
@@ -15525,7 +15525,7 @@ predecrement_assignment_array {
 Choices: {programRules:Java}}
 ```
 
-## predecrement_assignment_attribute
+## ${t.displayName()}
 
 ```
 predecrement_assignment_attribute {
@@ -15536,7 +15536,7 @@ predecrement_assignment_attribute {
 Choices: {programRules:Java}}
 ```
 
-## predecrement_attribute
+## ${t.displayName()}
 
 ```
 predecrement_attribute {
@@ -15547,7 +15547,7 @@ predecrement_attribute {
 Choices: {programRules:Java}}
 ```
 
-## preincrement
+## ${t.displayName()}
 
 ```
 preincrement {
@@ -15557,7 +15557,7 @@ preincrement {
 Choices: {programRules:Java}}
 ```
 
-## preincrement_array
+## ${t.displayName()}
 
 ```
 preincrement_array {
@@ -15568,7 +15568,7 @@ preincrement_array {
 Choices: {programRules:Java}}
 ```
 
-## preincrement_assignment
+## ${t.displayName()}
 
 ```
 preincrement_assignment {
@@ -15578,7 +15578,7 @@ preincrement_assignment {
 Choices: {programRules:Java}}
 ```
 
-## preincrement_assignment_array
+## ${t.displayName()}
 
 ```
 preincrement_assignment_array {
@@ -15589,7 +15589,7 @@ preincrement_assignment_array {
 Choices: {programRules:Java}}
 ```
 
-## preincrement_assignment_attribute
+## ${t.displayName()}
 
 ```
 preincrement_assignment_attribute {
@@ -15600,7 +15600,7 @@ preincrement_assignment_attribute {
 Choices: {programRules:Java}}
 ```
 
-## preincrement_attribute
+## ${t.displayName()}
 
 ```
 preincrement_attribute {
@@ -15611,7 +15611,7 @@ preincrement_attribute {
 Choices: {programRules:Java}}
 ```
 
-## prod_empty
+## ${t.displayName()}
 
 ```
 prod_empty {
@@ -15621,7 +15621,7 @@ prod_empty {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## prod_one
+## ${t.displayName()}
 
 ```
 prod_one {
@@ -15631,7 +15631,7 @@ prod_one {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## pullOut
+## ${t.displayName()}
 
 ```
 pullOut {
@@ -15641,7 +15641,7 @@ pullOut {
 Choices: {}}
 ```
 
-## pullOutSelect
+## ${t.displayName()}
 
 ```
 pullOutSelect {
@@ -15651,7 +15651,7 @@ pullOutSelect {
 Choices: {programRules:Java}}
 ```
 
-## pullOutbsum1
+## ${t.displayName()}
 
 ```
 pullOutbsum1 {
@@ -15661,7 +15661,7 @@ pullOutbsum1 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## pullOutbsum2
+## ${t.displayName()}
 
 ```
 pullOutbsum2 {
@@ -15671,7 +15671,7 @@ pullOutbsum2 {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## pull_out_minus
+## ${t.displayName()}
 
 ```
 pull_out_neg_1 {
@@ -15681,7 +15681,7 @@ pull_out_neg_1 {
 Choices: {}}
 ```
 
-## pull_out_minus
+## ${t.displayName()}
 
 ```
 pull_out_neg_2 {
@@ -15691,7 +15691,7 @@ pull_out_neg_2 {
 Choices: {}}
 ```
 
-## qeq_literals
+## ${t.displayName()}
 
 ```
 qeq_literals {
@@ -15701,7 +15701,7 @@ qeq_literals {
 Choices: {}}
 ```
 
-## reachAddOne
+## ${t.displayName()}
 
 ```
 reachAddOne {
@@ -15712,7 +15712,7 @@ reachAddOne {
 Choices: {reach:on}}
 ```
 
-## reachAddOne2
+## ${t.displayName()}
 
 ```
 reachAddOne2 {
@@ -15723,7 +15723,7 @@ reachAddOne2 {
 Choices: {reach:on}}
 ```
 
-## reachDefinition
+## ${t.displayName()}
 
 ```
 reachDefinition {
@@ -15734,7 +15734,7 @@ reachDefinition {
 Choices: {reach:on}}
 ```
 
-## reachDependenciesAnon
+## ${t.displayName()}
 
 ```
 reachDependenciesAnon {
@@ -15746,7 +15746,7 @@ reachDependenciesAnon {
 Choices: {reach:on}}
 ```
 
-## reachDependenciesAnonCoarse
+## ${t.displayName()}
 
 ```
 reachDependenciesAnonCoarse {
@@ -15758,7 +15758,7 @@ reachDependenciesAnonCoarse {
 Choices: {reach:on}}
 ```
 
-## reachDependenciesStore
+## ${t.displayName()}
 
 ```
 reachDependenciesStore {
@@ -15770,7 +15770,7 @@ reachDependenciesStore {
 Choices: {reach:on}}
 ```
 
-## reachDependenciesStoreEQ
+## ${t.displayName()}
 
 ```
 reachDependenciesStoreEQ {
@@ -15783,7 +15783,7 @@ reachDependenciesStoreEQ {
 Choices: {reach:on}}
 ```
 
-## reachDependenciesStoreSimple
+## ${t.displayName()}
 
 ```
 reachDependenciesStoreSimple {
@@ -15794,7 +15794,7 @@ reachDependenciesStoreSimple {
 Choices: {reach:on}}
 ```
 
-## reachDependenciesStoreSimpleEQ
+## ${t.displayName()}
 
 ```
 reachDependenciesStoreSimpleEQ {
@@ -15806,7 +15806,7 @@ reachDependenciesStoreSimpleEQ {
 Choices: {reach:on}}
 ```
 
-## reachDoesNotDependOnCreatedness
+## ${t.displayName()}
 
 ```
 reachDoesNotDependOnCreatedness {
@@ -15816,7 +15816,7 @@ reachDoesNotDependOnCreatedness {
 Choices: {reach:on}}
 ```
 
-## reachEndOfUniquePath
+## ${t.displayName()}
 
 ```
 reachEndOfUniquePath {
@@ -15828,7 +15828,7 @@ reachEndOfUniquePath {
 Choices: {reach:on}}
 ```
 
-## reachEndOfUniquePath2
+## ${t.displayName()}
 
 ```
 reachEndOfUniquePath2 {
@@ -15840,7 +15840,7 @@ reachEndOfUniquePath2 {
 Choices: {reach:on}}
 ```
 
-## reachNull
+## ${t.displayName()}
 
 ```
 reachNull {
@@ -15850,7 +15850,7 @@ reachNull {
 Choices: {reach:on}}
 ```
 
-## reachNull2
+## ${t.displayName()}
 
 ```
 reachNull2 {
@@ -15860,7 +15860,7 @@ reachNull2 {
 Choices: {reach:on}}
 ```
 
-## reachOne
+## ${t.displayName()}
 
 ```
 reachOne {
@@ -15870,7 +15870,7 @@ reachOne {
 Choices: {reach:on}}
 ```
 
-## reachUniquePathSameSteps
+## ${t.displayName()}
 
 ```
 reachUniquePathSameSteps {
@@ -15882,7 +15882,7 @@ reachUniquePathSameSteps {
 Choices: {reach:on}}
 ```
 
-## reachZero
+## ${t.displayName()}
 
 ```
 reachZero {
@@ -15892,7 +15892,7 @@ reachZero {
 Choices: {reach:on}}
 ```
 
-## reach_does_not_depend_on_fresh_locs
+## ${t.displayName()}
 
 ```
 reach_does_not_depend_on_fresh_locs {
@@ -15904,7 +15904,7 @@ reach_does_not_depend_on_fresh_locs {
 Choices: {reach:on}}
 ```
 
-## reach_does_not_depend_on_fresh_locs_EQ
+## ${t.displayName()}
 
 ```
 reach_does_not_depend_on_fresh_locs_EQ {
@@ -15916,7 +15916,7 @@ reach_does_not_depend_on_fresh_locs_EQ {
 Choices: {reach:on}}
 ```
 
-## readPermission
+## ${t.displayName()}
 
 ```
 readPermission {
@@ -15926,7 +15926,7 @@ readPermission {
 Choices: {}}
 ```
 
-## readPermissionAfterTransferRead
+## ${t.displayName()}
 
 ```
 readPermissionAfterTransferRead {
@@ -15937,7 +15937,7 @@ readPermissionAfterTransferRead {
 Choices: {permissions:on}}
 ```
 
-## readPermissionAfterTransferReadEQ
+## ${t.displayName()}
 
 ```
 readPermissionAfterTransferReadEQ {
@@ -15948,7 +15948,7 @@ readPermissionAfterTransferReadEQ {
 Choices: {permissions:on}}
 ```
 
-## readPermissionAfterTransferWrite
+## ${t.displayName()}
 
 ```
 readPermissionAfterTransferWrite {
@@ -15959,7 +15959,7 @@ readPermissionAfterTransferWrite {
 Choices: {permissions:on}}
 ```
 
-## readPermissionAfterTransferWriteEQ
+## ${t.displayName()}
 
 ```
 readPermissionAfterTransferWriteEQ {
@@ -15970,7 +15970,7 @@ readPermissionAfterTransferWriteEQ {
 Choices: {permissions:on}}
 ```
 
-## readPermissionEmpty
+## ${t.displayName()}
 
 ```
 readPermissionEmpty {
@@ -15980,7 +15980,7 @@ readPermissionEmpty {
 Choices: {permissions:on}}
 ```
 
-## readPermissionObject
+## ${t.displayName()}
 
 ```
 readPermissionObject {
@@ -15990,7 +15990,7 @@ readPermissionObject {
 Choices: {permissions:off}}
 ```
 
-## readPermissionOwe
+## ${t.displayName()}
 
 ```
 readPermissionOwe {
@@ -16001,7 +16001,7 @@ readPermissionOwe {
 Choices: {permissions:on}}
 ```
 
-## readPermissionOwe2
+## ${t.displayName()}
 
 ```
 readPermissionOwe2 {
@@ -16012,7 +16012,7 @@ readPermissionOwe2 {
 Choices: {permissions:on}}
 ```
 
-## readPermissionSlice
+## ${t.displayName()}
 
 ```
 readPermissionSlice {
@@ -16022,7 +16022,7 @@ readPermissionSlice {
 Choices: {permissions:on}}
 ```
 
-## reference_type_cast
+## ${t.displayName()}
 
 ```
 reference_type_cast {
@@ -16034,7 +16034,7 @@ reference_type_cast {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## reference_type_cast
+## ${t.displayName()}
 
 ```
 reference_type_cast {
@@ -16046,7 +16046,7 @@ reference_type_cast {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## reference_type_cast
+## ${t.displayName()}
 
 ```
 reference_type_cast {
@@ -16057,7 +16057,7 @@ reference_type_cast {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## referencedObjectIsCreatedRight
+## ${t.displayName()}
 
 ```
 referencedObjectIsCreatedRight {
@@ -16068,7 +16068,7 @@ referencedObjectIsCreatedRight {
 Choices: {programRules:Java}}
 ```
 
-## referencedObjectIsCreatedRightEQ
+## ${t.displayName()}
 
 ```
 referencedObjectIsCreatedRightEQ {
@@ -16079,7 +16079,7 @@ referencedObjectIsCreatedRightEQ {
 Choices: {programRules:Java}}
 ```
 
-## regExAxiom
+## ${t.displayName()}
 
 ```
 regExAxiom {
@@ -16089,7 +16089,7 @@ regExAxiom {
 Choices: {Strings:on}}
 ```
 
-## regExConcatAltLeft
+## ${t.displayName()}
 
 ```
 regExConcatAltLeft {
@@ -16099,7 +16099,7 @@ regExConcatAltLeft {
 Choices: {Strings:on}}
 ```
 
-## regExConcatAltRight
+## ${t.displayName()}
 
 ```
 regExConcatAltRight {
@@ -16109,7 +16109,7 @@ regExConcatAltRight {
 Choices: {Strings:on}}
 ```
 
-## regExConcatAxiom
+## ${t.displayName()}
 
 ```
 regExConcatAxiom {
@@ -16120,7 +16120,7 @@ regExConcatAxiom {
 Choices: {Strings:on}}
 ```
 
-## regExConcatConcreteStringLeft
+## ${t.displayName()}
 
 ```
 regExConcatConcreteStringLeft {
@@ -16130,7 +16130,7 @@ regExConcatConcreteStringLeft {
 Choices: {Strings:on}}
 ```
 
-## regExConcatConcreteStringRight
+## ${t.displayName()}
 
 ```
 regExConcatConcreteStringRight {
@@ -16140,7 +16140,7 @@ regExConcatConcreteStringRight {
 Choices: {Strings:on}}
 ```
 
-## regExConcatOptLeft
+## ${t.displayName()}
 
 ```
 regExConcatOptLeft {
@@ -16150,7 +16150,7 @@ regExConcatOptLeft {
 Choices: {Strings:on}}
 ```
 
-## regExConcatOptRight
+## ${t.displayName()}
 
 ```
 regExConcatOptRight {
@@ -16160,7 +16160,7 @@ regExConcatOptRight {
 Choices: {Strings:on}}
 ```
 
-## regExConcatRepeatLeft
+## ${t.displayName()}
 
 ```
 regExConcatRepeatLeft {
@@ -16171,7 +16171,7 @@ regExConcatRepeatLeft {
 Choices: {Strings:on}}
 ```
 
-## regExConcatRepeatRight
+## ${t.displayName()}
 
 ```
 regExConcatRepeatRight {
@@ -16182,7 +16182,7 @@ regExConcatRepeatRight {
 Choices: {Strings:on}}
 ```
 
-## removeZeros
+## ${t.displayName()}
 
 ```
 removeZeros {
@@ -16192,7 +16192,7 @@ removeZeros {
 Choices: {Strings:on}}
 ```
 
-## remove_parentheses
+## ${t.displayName()}
 
 ```
 remove_parentheses_attribute_left {
@@ -16202,7 +16202,7 @@ remove_parentheses_attribute_left {
 Choices: {programRules:Java}}
 ```
 
-## remove_parentheses
+## ${t.displayName()}
 
 ```
 remove_parentheses_lhs_left {
@@ -16212,7 +16212,7 @@ remove_parentheses_lhs_left {
 Choices: {programRules:Java}}
 ```
 
-## remove_parentheses_right
+## ${t.displayName()}
 
 ```
 remove_parentheses_right {
@@ -16222,7 +16222,7 @@ remove_parentheses_right {
 Choices: {programRules:Java}}
 ```
 
-## repeatAxiom
+## ${t.displayName()}
 
 ```
 repeatAxiom {
@@ -16233,7 +16233,7 @@ repeatAxiom {
 Choices: {Strings:on}}
 ```
 
-## repeatMatchEmpty
+## ${t.displayName()}
 
 ```
 repeatMatchEmpty {
@@ -16243,7 +16243,7 @@ repeatMatchEmpty {
 Choices: {Strings:on}}
 ```
 
-## repeatOnce
+## ${t.displayName()}
 
 ```
 repeatOnce {
@@ -16253,7 +16253,7 @@ repeatOnce {
 Choices: {Strings:on}}
 ```
 
-## repeatPlusAxiom
+## ${t.displayName()}
 
 ```
 repeatPlusAxiom {
@@ -16264,7 +16264,7 @@ repeatPlusAxiom {
 Choices: {Strings:on}}
 ```
 
-## repeatStarAxiom
+## ${t.displayName()}
 
 ```
 repeatStarAxiom {
@@ -16275,7 +16275,7 @@ repeatStarAxiom {
 Choices: {Strings:on}}
 ```
 
-## repeatZero
+## ${t.displayName()}
 
 ```
 repeatZero {
@@ -16285,7 +16285,7 @@ repeatZero {
 Choices: {Strings:on}}
 ```
 
-## replaceConcat
+## ${t.displayName()}
 
 ```
 replaceConcat {
@@ -16295,7 +16295,7 @@ replaceConcat {
 Choices: {Strings:on}}
 ```
 
-## replaceCons
+## ${t.displayName()}
 
 ```
 replaceCons {
@@ -16305,7 +16305,7 @@ replaceCons {
 Choices: {Strings:on}}
 ```
 
-## replaceDef
+## ${t.displayName()}
 
 ```
 replaceDef {
@@ -16316,7 +16316,7 @@ replaceDef {
 Choices: {Strings:on}}
 ```
 
-## replaceEmpty
+## ${t.displayName()}
 
 ```
 replaceEmpty {
@@ -16326,7 +16326,7 @@ replaceEmpty {
 Choices: {Strings:on}}
 ```
 
-## replaceSingleton
+## ${t.displayName()}
 
 ```
 replaceSingleton {
@@ -16336,7 +16336,7 @@ replaceSingleton {
 Choices: {Strings:on}}
 ```
 
-## replaceSubstring
+## ${t.displayName()}
 
 ```
 replaceSubstring {
@@ -16347,7 +16347,7 @@ replaceSubstring {
 Choices: {Strings:on}}
 ```
 
-## replace_byte_HALFRANGE
+## ${t.displayName()}
 
 ```
 replace_byte_HALFRANGE {
@@ -16357,7 +16357,7 @@ replace_byte_HALFRANGE {
 Choices: {}}
 ```
 
-## replace_byte_MAX
+## ${t.displayName()}
 
 ```
 replace_byte_MAX {
@@ -16367,7 +16367,7 @@ replace_byte_MAX {
 Choices: {}}
 ```
 
-## replace_byte_MIN
+## ${t.displayName()}
 
 ```
 replace_byte_MIN {
@@ -16377,7 +16377,7 @@ replace_byte_MIN {
 Choices: {}}
 ```
 
-## replace_byte_RANGE
+## ${t.displayName()}
 
 ```
 replace_byte_RANGE {
@@ -16387,7 +16387,7 @@ replace_byte_RANGE {
 Choices: {}}
 ```
 
-## replace_char_MAX
+## ${t.displayName()}
 
 ```
 replace_char_MAX {
@@ -16397,7 +16397,7 @@ replace_char_MAX {
 Choices: {}}
 ```
 
-## replace_char_MIN
+## ${t.displayName()}
 
 ```
 replace_char_MIN {
@@ -16407,7 +16407,7 @@ replace_char_MIN {
 Choices: {}}
 ```
 
-## replace_char_RANGE
+## ${t.displayName()}
 
 ```
 replace_char_RANGE {
@@ -16417,7 +16417,7 @@ replace_char_RANGE {
 Choices: {}}
 ```
 
-## replace_int_HALFRANGE
+## ${t.displayName()}
 
 ```
 replace_int_HALFRANGE {
@@ -16427,7 +16427,7 @@ replace_int_HALFRANGE {
 Choices: {}}
 ```
 
-## replace_int_MAX
+## ${t.displayName()}
 
 ```
 replace_int_MAX {
@@ -16437,7 +16437,7 @@ replace_int_MAX {
 Choices: {}}
 ```
 
-## replace_int_MIN
+## ${t.displayName()}
 
 ```
 replace_int_MIN {
@@ -16447,7 +16447,7 @@ replace_int_MIN {
 Choices: {}}
 ```
 
-## replace_int_RANGE
+## ${t.displayName()}
 
 ```
 replace_int_RANGE {
@@ -16457,7 +16457,7 @@ replace_int_RANGE {
 Choices: {}}
 ```
 
-## replace_known_left
+## ${t.displayName()}
 
 ```
 replace_known_left {
@@ -16468,7 +16468,7 @@ replace_known_left {
 Choices: {}}
 ```
 
-## replace_known_right
+## ${t.displayName()}
 
 ```
 replace_known_right {
@@ -16479,7 +16479,7 @@ replace_known_right {
 Choices: {}}
 ```
 
-## replace_long_HALFRANGE
+## ${t.displayName()}
 
 ```
 replace_long_HALFRANGE {
@@ -16489,7 +16489,7 @@ replace_long_HALFRANGE {
 Choices: {}}
 ```
 
-## replace_long_MAX
+## ${t.displayName()}
 
 ```
 replace_long_MAX {
@@ -16499,7 +16499,7 @@ replace_long_MAX {
 Choices: {}}
 ```
 
-## replace_long_MIN
+## ${t.displayName()}
 
 ```
 replace_long_MIN {
@@ -16509,7 +16509,7 @@ replace_long_MIN {
 Choices: {}}
 ```
 
-## replace_long_RANGE
+## ${t.displayName()}
 
 ```
 replace_long_RANGE {
@@ -16519,7 +16519,7 @@ replace_long_RANGE {
 Choices: {}}
 ```
 
-## replace_short_HALFRANGE
+## ${t.displayName()}
 
 ```
 replace_short_HALFRANGE {
@@ -16529,7 +16529,7 @@ replace_short_HALFRANGE {
 Choices: {}}
 ```
 
-## replace_short_MAX
+## ${t.displayName()}
 
 ```
 replace_short_MAX {
@@ -16539,7 +16539,7 @@ replace_short_MAX {
 Choices: {}}
 ```
 
-## replace_short_MIN
+## ${t.displayName()}
 
 ```
 replace_short_MIN {
@@ -16549,7 +16549,7 @@ replace_short_MIN {
 Choices: {}}
 ```
 
-## replace_short_RANGE
+## ${t.displayName()}
 
 ```
 replace_short_RANGE {
@@ -16559,7 +16559,7 @@ replace_short_RANGE {
 Choices: {}}
 ```
 
-## returnPermissionOwner
+## ${t.displayName()}
 
 ```
 returnPermissionOwner {
@@ -16570,7 +16570,7 @@ returnPermissionOwner {
 Choices: {permissions:on}}
 ```
 
-## returnPermission_empty
+## ${t.displayName()}
 
 ```
 returnPermission_empty {
@@ -16580,7 +16580,7 @@ returnPermission_empty {
 Choices: {permissions:on}}
 ```
 
-## returnPermission_slice
+## ${t.displayName()}
 
 ```
 returnPermission_slice {
@@ -16590,7 +16590,7 @@ returnPermission_slice {
 Choices: {permissions:on}}
 ```
 
-## returnPermission_slice_split
+## ${t.displayName()}
 
 ```
 returnPermission_slice_split {
@@ -16601,7 +16601,7 @@ returnPermission_slice_split {
 Choices: {permissions:on}}
 ```
 
-## returnUnfold
+## ${t.displayName()}
 
 ```
 returnUnfold {
@@ -16612,7 +16612,7 @@ returnUnfold {
 Choices: {programRules:Java}}
 ```
 
-## rotate_and
+## ${t.displayName()}
 
 ```
 rotate_and {
@@ -16622,7 +16622,7 @@ rotate_and {
 Choices: {}}
 ```
 
-## rotate_or
+## ${t.displayName()}
 
 ```
 rotate_or {
@@ -16632,7 +16632,7 @@ rotate_or {
 Choices: {}}
 ```
 
-## rotate_params
+## ${t.displayName()}
 
 ```
 rotate_params {
@@ -16642,7 +16642,7 @@ rotate_params {
 Choices: {}}
 ```
 
-## sameTypeFalse
+## ${t.displayName()}
 
 ```
 sameTypeFalse {
@@ -16654,7 +16654,7 @@ sameTypeFalse {
 Choices: {}}
 ```
 
-## sameTypeTrue
+## ${t.displayName()}
 
 ```
 sameTypeTrue {
@@ -16665,7 +16665,7 @@ sameTypeTrue {
 Choices: {}}
 ```
 
-## same_boxes_left
+## ${t.displayName()}
 
 ```
 same_boxes_left {
@@ -16676,7 +16676,7 @@ same_boxes_left {
 Choices: {programRules:Java}}
 ```
 
-## same_boxes_right
+## ${t.displayName()}
 
 ```
 same_boxes_right {
@@ -16687,7 +16687,7 @@ same_boxes_right {
 Choices: {programRules:Java}}
 ```
 
-## same_diamonds_left
+## ${t.displayName()}
 
 ```
 same_diamonds_left {
@@ -16698,7 +16698,7 @@ same_diamonds_left {
 Choices: {programRules:Java}}
 ```
 
-## same_diamonds_right
+## ${t.displayName()}
 
 ```
 same_diamonds_right {
@@ -16709,7 +16709,7 @@ same_diamonds_right {
 Choices: {programRules:Java}}
 ```
 
-## schiffl_lemma_2
+## ${t.displayName()}
 
 ```
 schiffl_lemma_2 {
@@ -16720,7 +16720,7 @@ schiffl_lemma_2 {
 Choices: {}}
 ```
 
-## schiffl_thm_1
+## ${t.displayName()}
 
 ```
 schiffl_thm_1 {
@@ -16730,7 +16730,7 @@ schiffl_thm_1 {
 Choices: {}}
 ```
 
-## secondOfPair
+## ${t.displayName()}
 
 ```
 secondOfPair {
@@ -16740,7 +16740,7 @@ secondOfPair {
 Choices: {}}
 ```
 
-## selectCreatedOfAnon
+## ${t.displayName()}
 
 ```
 selectCreatedOfAnon {
@@ -16750,7 +16750,7 @@ selectCreatedOfAnon {
 Choices: {programRules:Java}}
 ```
 
-## selectCreatedOfAnonAsFormula
+## ${t.displayName()}
 
 ```
 selectCreatedOfAnonAsFormula {
@@ -16760,7 +16760,7 @@ selectCreatedOfAnonAsFormula {
 Choices: {programRules:Java}}
 ```
 
-## selectCreatedOfAnonAsFormulaEQ
+## ${t.displayName()}
 
 ```
 selectCreatedOfAnonAsFormulaEQ {
@@ -16771,7 +16771,7 @@ selectCreatedOfAnonAsFormulaEQ {
 Choices: {programRules:Java}}
 ```
 
-## selectCreatedOfAnonEQ
+## ${t.displayName()}
 
 ```
 selectCreatedOfAnonEQ {
@@ -16782,7 +16782,7 @@ selectCreatedOfAnonEQ {
 Choices: {programRules:Java}}
 ```
 
-## selectOfAnon
+## ${t.displayName()}
 
 ```
 selectOfAnon {
@@ -16792,7 +16792,7 @@ selectOfAnon {
 Choices: {programRules:Java}}
 ```
 
-## selectOfAnonEQ
+## ${t.displayName()}
 
 ```
 selectOfAnonEQ {
@@ -16803,7 +16803,7 @@ selectOfAnonEQ {
 Choices: {programRules:Java}}
 ```
 
-## selectOfCreate
+## ${t.displayName()}
 
 ```
 selectOfCreate {
@@ -16814,7 +16814,7 @@ selectOfCreate {
 Choices: {programRules:Java}}
 ```
 
-## selectOfCreateEQ
+## ${t.displayName()}
 
 ```
 selectOfCreateEQ {
@@ -16826,7 +16826,7 @@ selectOfCreateEQ {
 Choices: {programRules:Java}}
 ```
 
-## selectOfMemset
+## ${t.displayName()}
 
 ```
 selectOfMemset {
@@ -16836,7 +16836,7 @@ selectOfMemset {
 Choices: {programRules:Java}}
 ```
 
-## selectOfMemsetEQ
+## ${t.displayName()}
 
 ```
 selectOfMemsetEQ {
@@ -16847,7 +16847,7 @@ selectOfMemsetEQ {
 Choices: {programRules:Java}}
 ```
 
-## selectOfStore
+## ${t.displayName()}
 
 ```
 selectOfStore {
@@ -16857,7 +16857,7 @@ selectOfStore {
 Choices: {programRules:Java}}
 ```
 
-## selectOfStoreEQ
+## ${t.displayName()}
 
 ```
 selectOfStoreEQ {
@@ -16868,7 +16868,7 @@ selectOfStoreEQ {
 Choices: {programRules:Java}}
 ```
 
-## seqConcatUnfold
+## ${t.displayName()}
 
 ```
 seqConcatUnfoldLeft {
@@ -16879,7 +16879,7 @@ seqConcatUnfoldLeft {
 Choices: {programRules:Java}}
 ```
 
-## seqConcatUnfold
+## ${t.displayName()}
 
 ```
 seqConcatUnfoldRight {
@@ -16890,7 +16890,7 @@ seqConcatUnfoldRight {
 Choices: {programRules:Java}}
 ```
 
-## seqConcatWithEmpty
+## ${t.displayName()}
 
 ```
 seqConcatWithSeqEmpty1 {
@@ -16900,7 +16900,7 @@ seqConcatWithSeqEmpty1 {
 Choices: {sequences:on}}
 ```
 
-## seqConcatWithEmpty
+## ${t.displayName()}
 
 ```
 seqConcatWithSeqEmpty2 {
@@ -16910,7 +16910,7 @@ seqConcatWithSeqEmpty2 {
 Choices: {sequences:on}}
 ```
 
-## seqDefOfSeq
+## ${t.displayName()}
 
 ```
 seqDefOfSeq {
@@ -16921,7 +16921,7 @@ seqDefOfSeq {
 Choices: {sequences:on}}
 ```
 
-## seqDef_empty
+## ${t.displayName()}
 
 ```
 seqDef_empty {
@@ -16933,7 +16933,7 @@ seqDef_empty {
 Choices: {sequences:on}}
 ```
 
-## seqDef_induction_lower
+## ${t.displayName()}
 
 ```
 seqDef_induction_lower {
@@ -16944,7 +16944,7 @@ seqDef_induction_lower {
 Choices: {sequences:on}}
 ```
 
-## seqDef_induction_lower_concrete
+## ${t.displayName()}
 
 ```
 seqDef_induction_lower_concrete {
@@ -16955,7 +16955,7 @@ seqDef_induction_lower_concrete {
 Choices: {sequences:on}}
 ```
 
-## seqDef_induction_upper
+## ${t.displayName()}
 
 ```
 seqDef_induction_upper {
@@ -16966,7 +16966,7 @@ seqDef_induction_upper {
 Choices: {sequences:on}}
 ```
 
-## seqDef_induction_upper_concrete
+## ${t.displayName()}
 
 ```
 seqDef_induction_upper_concrete {
@@ -16977,7 +16977,7 @@ seqDef_induction_upper_concrete {
 Choices: {sequences:on}}
 ```
 
-## seqDef_lower_equals_upper
+## ${t.displayName()}
 
 ```
 seqDef_lower_equals_upper {
@@ -16988,7 +16988,7 @@ seqDef_lower_equals_upper {
 Choices: {sequences:on}}
 ```
 
-## seqDef_one_summand
+## ${t.displayName()}
 
 ```
 seqDef_one_summand {
@@ -16999,7 +16999,7 @@ seqDef_one_summand {
 Choices: {sequences:on}}
 ```
 
-## seqDef_split
+## ${t.displayName()}
 
 ```
 seqDef_split {
@@ -17010,7 +17010,7 @@ seqDef_split {
 Choices: {sequences:on}}
 ```
 
-## seqDef_split_in_three
+## ${t.displayName()}
 
 ```
 seqDef_split_in_three {
@@ -17022,7 +17022,7 @@ seqDef_split_in_three {
 Choices: {sequences:on}}
 ```
 
-## seqGetAlphaCast
+## ${t.displayName()}
 
 ```
 seqGetAlphaCast {
@@ -17032,7 +17032,7 @@ seqGetAlphaCast {
 Choices: {sequences:on}}
 ```
 
-## seqGetSInvS
+## ${t.displayName()}
 
 ```
 seqGetSInvS {
@@ -17043,7 +17043,7 @@ seqGetSInvS {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqGetUnfold
+## ${t.displayName()}
 
 ```
 seqGetUnfoldLeft {
@@ -17054,7 +17054,7 @@ seqGetUnfoldLeft {
 Choices: {programRules:Java}}
 ```
 
-## seqGetUnfold
+## ${t.displayName()}
 
 ```
 seqGetUnfoldRight {
@@ -17065,7 +17065,7 @@ seqGetUnfoldRight {
 Choices: {programRules:Java}}
 ```
 
-## seqIndexOf
+## ${t.displayName()}
 
 ```
 seqIndexOf {
@@ -17076,7 +17076,7 @@ seqIndexOf {
 Choices: {sequences:on}}
 ```
 
-## seqIndexOfUnfold
+## ${t.displayName()}
 
 ```
 seqIndexOfUnfoldLeft {
@@ -17087,7 +17087,7 @@ seqIndexOfUnfoldLeft {
 Choices: {programRules:Java}}
 ```
 
-## seqIndexOfUnfold
+## ${t.displayName()}
 
 ```
 seqIndexOfUnfoldRight {
@@ -17098,7 +17098,7 @@ seqIndexOfUnfoldRight {
 Choices: {programRules:Java}}
 ```
 
-## seqLengthUnfold
+## ${t.displayName()}
 
 ```
 seqLengthUnfold {
@@ -17109,7 +17109,7 @@ seqLengthUnfold {
 Choices: {programRules:Java}}
 ```
 
-## seqNPermComp
+## ${t.displayName()}
 
 ```
 seqNPermComp {
@@ -17121,7 +17121,7 @@ seqNPermComp {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqNPermDefLeft
+## ${t.displayName()}
 
 ```
 seqNPermDefLeft {
@@ -17132,7 +17132,7 @@ seqNPermDefLeft {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqNPermDefReplace
+## ${t.displayName()}
 
 ```
 seqNPermDefReplace {
@@ -17143,7 +17143,7 @@ seqNPermDefReplace {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqNPermEmpty
+## ${t.displayName()}
 
 ```
 seqNPermEmpty {
@@ -17153,7 +17153,7 @@ seqNPermEmpty {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqNPermInjective
+## ${t.displayName()}
 
 ```
 seqNPermInjective {
@@ -17164,7 +17164,7 @@ seqNPermInjective {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqNPermInvNPermLeft
+## ${t.displayName()}
 
 ```
 seqNPermInvNPermLeft {
@@ -17174,7 +17174,7 @@ seqNPermInvNPermLeft {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqNPermInvNPermReplace
+## ${t.displayName()}
 
 ```
 seqNPermInvNPermReplace {
@@ -17184,7 +17184,7 @@ seqNPermInvNPermReplace {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqNPermRange
+## ${t.displayName()}
 
 ```
 seqNPermRange {
@@ -17195,7 +17195,7 @@ seqNPermRange {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqNPermRight
+## ${t.displayName()}
 
 ```
 seqNPermRight {
@@ -17206,7 +17206,7 @@ seqNPermRight {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqNPermSingleton
+## ${t.displayName()}
 
 ```
 seqNPermSingleton {
@@ -17216,7 +17216,7 @@ seqNPermSingleton {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqNPermSingletonConrete
+## ${t.displayName()}
 
 ```
 seqNPermSingletonConrete {
@@ -17226,7 +17226,7 @@ seqNPermSingletonConrete {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqNPermSwapNPerm
+## ${t.displayName()}
 
 ```
 seqNPermSwapNPerm {
@@ -17237,7 +17237,7 @@ seqNPermSwapNPerm {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqOutsideValue
+## ${t.displayName()}
 
 ```
 seqOutsideValue {
@@ -17247,7 +17247,7 @@ seqOutsideValue {
 Choices: {sequences:on}}
 ```
 
-## seqPermConcatBW
+## ${t.displayName()}
 
 ```
 seqPermConcatBW {
@@ -17258,7 +17258,7 @@ seqPermConcatBW {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqPermConcatFW
+## ${t.displayName()}
 
 ```
 seqPermConcatFW {
@@ -17269,7 +17269,7 @@ seqPermConcatFW {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqPermDef
+## ${t.displayName()}
 
 ```
 seqPermDef {
@@ -17280,7 +17280,7 @@ seqPermDef {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqPermDefLeft
+## ${t.displayName()}
 
 ```
 seqPermDefLeft {
@@ -17291,7 +17291,7 @@ seqPermDefLeft {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqPermEmpty
+## ${t.displayName()}
 
 ```
 seqPermEmpty1 {
@@ -17301,7 +17301,7 @@ seqPermEmpty1 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqPermEmpty
+## ${t.displayName()}
 
 ```
 seqPermEmpty2 {
@@ -17311,7 +17311,7 @@ seqPermEmpty2 {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqPermFromSwap
+## ${t.displayName()}
 
 ```
 seqPermFromSwap {
@@ -17323,7 +17323,7 @@ seqPermFromSwap {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqPermRefl
+## ${t.displayName()}
 
 ```
 seqPermRefl {
@@ -17333,7 +17333,7 @@ seqPermRefl {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqPermSym
+## ${t.displayName()}
 
 ```
 seqPermSym {
@@ -17343,7 +17343,7 @@ seqPermSym {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqPermTrans
+## ${t.displayName()}
 
 ```
 seqPermTrans {
@@ -17354,7 +17354,7 @@ seqPermTrans {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## seqReverseOfSeqEmpty
+## ${t.displayName()}
 
 ```
 seqReverseOfSeqEmpty {
@@ -17364,7 +17364,7 @@ seqReverseOfSeqEmpty {
 Choices: {sequences:on}}
 ```
 
-## seqReverseUnfold
+## ${t.displayName()}
 
 ```
 seqReverseUnfold {
@@ -17375,7 +17375,7 @@ seqReverseUnfold {
 Choices: {programRules:Java}}
 ```
 
-## seqSelfDefinition
+## ${t.displayName()}
 
 ```
 seqSelfDefinition {
@@ -17385,7 +17385,7 @@ seqSelfDefinition {
 Choices: {sequences:on}}
 ```
 
-## seqSelfDefinition
+## ${t.displayName()}
 
 ```
 seqSelfDefinitionEQ2 {
@@ -17397,7 +17397,7 @@ seqSelfDefinitionEQ2 {
 Choices: {sequences:on}}
 ```
 
-## seqSingletonUnfold
+## ${t.displayName()}
 
 ```
 seqSingletonUnfold {
@@ -17408,7 +17408,7 @@ seqSingletonUnfold {
 Choices: {programRules:Java}}
 ```
 
-## seqSubUnfold
+## ${t.displayName()}
 
 ```
 seqSubUnfoldLeft {
@@ -17419,7 +17419,7 @@ seqSubUnfoldLeft {
 Choices: {programRules:Java}}
 ```
 
-## seqSubUnfold
+## ${t.displayName()}
 
 ```
 seqSubUnfoldMiddle {
@@ -17430,7 +17430,7 @@ seqSubUnfoldMiddle {
 Choices: {programRules:Java}}
 ```
 
-## seqSubUnfold
+## ${t.displayName()}
 
 ```
 seqSubUnfoldRight {
@@ -17441,7 +17441,7 @@ seqSubUnfoldRight {
 Choices: {programRules:Java}}
 ```
 
-## seqnormalizeDef
+## ${t.displayName()}
 
 ```
 seqnormalizeDef {
@@ -17452,7 +17452,7 @@ seqnormalizeDef {
 Choices: {moreSeqRules:on,sequences:on}}
 ```
 
-## sequentialToParallel1
+## ${t.displayName()}
 
 ```
 sequentialToParallel1 {
@@ -17462,7 +17462,7 @@ sequentialToParallel1 {
 Choices: {}}
 ```
 
-## sequentialToParallel2
+## ${t.displayName()}
 
 ```
 sequentialToParallel2 {
@@ -17472,7 +17472,7 @@ sequentialToParallel2 {
 Choices: {}}
 ```
 
-## sequentialToParallel3
+## ${t.displayName()}
 
 ```
 sequentialToParallel3 {
@@ -17482,7 +17482,7 @@ sequentialToParallel3 {
 Choices: {}}
 ```
 
-## setIntersectUnfold
+## ${t.displayName()}
 
 ```
 setIntersectUnfoldLeft {
@@ -17493,7 +17493,7 @@ setIntersectUnfoldLeft {
 Choices: {programRules:Java}}
 ```
 
-## setIntersectUnfold
+## ${t.displayName()}
 
 ```
 setIntersectUnfoldRight {
@@ -17504,7 +17504,7 @@ setIntersectUnfoldRight {
 Choices: {programRules:Java}}
 ```
 
-## setJavaCardTransient
+## ${t.displayName()}
 
 ```
 setJavaCardTransient {
@@ -17516,7 +17516,7 @@ setJavaCardTransient {
 Choices: {JavaCard:on,programRules:Java}}
 ```
 
-## setMinusItself
+## ${t.displayName()}
 
 ```
 setMinusItself {
@@ -17526,7 +17526,7 @@ setMinusItself {
 Choices: {programRules:Java}}
 ```
 
-## setMinusOfUnion
+## ${t.displayName()}
 
 ```
 setMinusOfUnion {
@@ -17536,7 +17536,7 @@ setMinusOfUnion {
 Choices: {programRules:Java}}
 ```
 
-## setMinusOfUnionEQ
+## ${t.displayName()}
 
 ```
 setMinusOfUnionEQ {
@@ -17547,7 +17547,7 @@ setMinusOfUnionEQ {
 Choices: {programRules:Java}}
 ```
 
-## setMinusSingleton
+## ${t.displayName()}
 
 ```
 setMinusSingleton {
@@ -17558,7 +17558,7 @@ setMinusSingleton {
 Choices: {programRules:Java}}
 ```
 
-## setMinusUnfold
+## ${t.displayName()}
 
 ```
 setMinusUnfoldLeft {
@@ -17569,7 +17569,7 @@ setMinusUnfoldLeft {
 Choices: {programRules:Java}}
 ```
 
-## setMinusUnfold
+## ${t.displayName()}
 
 ```
 setMinusUnfoldRight {
@@ -17580,7 +17580,7 @@ setMinusUnfoldRight {
 Choices: {programRules:Java}}
 ```
 
-## setMinusWithAllLocs
+## ${t.displayName()}
 
 ```
 setMinusWithAllLocs {
@@ -17590,7 +17590,7 @@ setMinusWithAllLocs {
 Choices: {programRules:Java}}
 ```
 
-## setMinusWithEmpty
+## ${t.displayName()}
 
 ```
 setMinusWithEmpty1 {
@@ -17600,7 +17600,7 @@ setMinusWithEmpty1 {
 Choices: {programRules:Java}}
 ```
 
-## setMinusWithEmpty
+## ${t.displayName()}
 
 ```
 setMinusWithEmpty2 {
@@ -17610,7 +17610,7 @@ setMinusWithEmpty2 {
 Choices: {programRules:Java}}
 ```
 
-## setUnionUnfold
+## ${t.displayName()}
 
 ```
 setUnionUnfoldLeft {
@@ -17621,7 +17621,7 @@ setUnionUnfoldLeft {
 Choices: {programRules:Java}}
 ```
 
-## setUnionUnfold
+## ${t.displayName()}
 
 ```
 setUnionUnfoldRight {
@@ -17632,7 +17632,7 @@ setUnionUnfoldRight {
 Choices: {programRules:Java}}
 ```
 
-## shiftLeftDef
+## ${t.displayName()}
 
 ```
 shiftLeftDef {
@@ -17642,7 +17642,7 @@ shiftLeftDef {
 Choices: {}}
 ```
 
-## shiftRightDef
+## ${t.displayName()}
 
 ```
 shiftRightDef {
@@ -17652,7 +17652,7 @@ shiftRightDef {
 Choices: {}}
 ```
 
-## shift_paren_and
+## ${t.displayName()}
 
 ```
 shift_paren_and {
@@ -17662,7 +17662,7 @@ shift_paren_and {
 Choices: {}}
 ```
 
-## shift_paren_or
+## ${t.displayName()}
 
 ```
 shift_paren_or {
@@ -17672,7 +17672,7 @@ shift_paren_or {
 Choices: {}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 shiftleft_literals {
@@ -17682,7 +17682,7 @@ shiftleft_literals {
 Choices: {}}
 ```
 
-## shift
+## ${t.displayName()}
 
 ```
 shiftright_literals {
@@ -17692,7 +17692,7 @@ shiftright_literals {
 Choices: {}}
 ```
 
-## sign_case_distinction
+## ${t.displayName()}
 
 ```
 sign_case_distinction {
@@ -17703,51 +17703,51 @@ sign_case_distinction {
 Choices: {}}
 ```
 
-## simplifyIfThenElse
+## ${t.displayName()}
 
 ```
 simplifyIfThenElseUpdate1 {
 \find(if-then-else(phi,update-application(u1,t),update-application(u2,t)))
-\varcond(de.uka.ilkd.key.rule.conditions.SimplifyIfThenElseUpdateCondition@ba291a3, )
+\varcond(de.uka.ilkd.key.rule.conditions.SimplifyIfThenElseUpdateCondition@2c43ac3, )
 \replacewith(result) 
 
 Choices: {}}
 ```
 
-## simplifyIfThenElse
+## ${t.displayName()}
 
 ```
 simplifyIfThenElseUpdate2 {
 \find(if-then-else(phi,t,update-application(u2,t)))
-\varcond(de.uka.ilkd.key.rule.conditions.SimplifyIfThenElseUpdateCondition@28ad0ed8, )
+\varcond(de.uka.ilkd.key.rule.conditions.SimplifyIfThenElseUpdateCondition@1611c135, )
 \replacewith(result) 
 
 Choices: {}}
 ```
 
-## simplifyIfThenElse
+## ${t.displayName()}
 
 ```
 simplifyIfThenElseUpdate3 {
 \find(if-then-else(phi,update-application(u1,t),t))
-\varcond(de.uka.ilkd.key.rule.conditions.SimplifyIfThenElseUpdateCondition@49dddd6d, )
+\varcond(de.uka.ilkd.key.rule.conditions.SimplifyIfThenElseUpdateCondition@2d505df7, )
 \replacewith(result) 
 
 Choices: {}}
 ```
 
-## simplifyIfThenElse
+## ${t.displayName()}
 
 ```
 simplifyIfThenElseUpdate4 {
 \find(if-then-else(phi,t,t))
-\varcond(de.uka.ilkd.key.rule.conditions.SimplifyIfThenElseUpdateCondition@59f4f0de, )
+\varcond(de.uka.ilkd.key.rule.conditions.SimplifyIfThenElseUpdateCondition@13029db4, )
 \replacewith(result) 
 
 Choices: {}}
 ```
 
-## simplifySelectOfAnon
+## ${t.displayName()}
 
 ```
 simplifySelectOfAnon {
@@ -17761,7 +17761,7 @@ Choices: {}}] \replacewith([equals(if-then-else(or(and(elementOf(o,f,s),not(equa
 Choices: {programRules:Java}}
 ```
 
-## simplifySelectOfAnonEQ
+## ${t.displayName()}
 
 ```
 simplifySelectOfAnonEQ {
@@ -17776,7 +17776,7 @@ Choices: {}}] \replacewith([equals(if-then-else(or(and(elementOf(o,f,s),not(equa
 Choices: {programRules:Java}}
 ```
 
-## simplifySelectOfCreate
+## ${t.displayName()}
 
 ```
 simplifySelectOfCreate {
@@ -17795,7 +17795,7 @@ Choices: {}}] \replacewith([equals(if-then-else(and(and(equals(o,o2),not(equals(
 Choices: {programRules:Java}}
 ```
 
-## simplifySelectOfCreateEQ
+## ${t.displayName()}
 
 ```
 simplifySelectOfCreateEQ {
@@ -17815,7 +17815,7 @@ Choices: {}}] \replacewith([equals(if-then-else(and(and(equals(o,o2),not(equals(
 Choices: {programRules:Java}}
 ```
 
-## simplifySelectOfMemset
+## ${t.displayName()}
 
 ```
 simplifySelectOfMemset {
@@ -17829,7 +17829,7 @@ Choices: {}}] \replacewith([equals(if-then-else(and(elementOf(o,f,s),not(equals(
 Choices: {programRules:Java}}
 ```
 
-## simplifySelectOfMemsetEQ
+## ${t.displayName()}
 
 ```
 simplifySelectOfMemsetEQ {
@@ -17844,7 +17844,7 @@ Choices: {}}] \replacewith([equals(if-then-else(and(elementOf(o,f,s),not(equals(
 Choices: {programRules:Java}}
 ```
 
-## simplifySelectOfStore
+## ${t.displayName()}
 
 ```
 simplifySelectOfStore {
@@ -17858,7 +17858,7 @@ Choices: {}}] \replacewith([equals(if-then-else(and(and(equals(o,o2),equals(f,f2
 Choices: {programRules:Java}}
 ```
 
-## simplifySelectOfStoreEQ
+## ${t.displayName()}
 
 ```
 simplifySelectOfStoreEQ {
@@ -17873,7 +17873,7 @@ Choices: {}}] \replacewith([equals(if-then-else(and(and(equals(o,o2),equals(f,f2
 Choices: {programRules:Java}}
 ```
 
-## simplifyUpdate1
+## ${t.displayName()}
 
 ```
 simplifyUpdate1 {
@@ -17884,7 +17884,7 @@ simplifyUpdate1 {
 Choices: {}}
 ```
 
-## simplifyUpdate2
+## ${t.displayName()}
 
 ```
 simplifyUpdate2 {
@@ -17895,7 +17895,7 @@ simplifyUpdate2 {
 Choices: {}}
 ```
 
-## simplifyUpdate3
+## ${t.displayName()}
 
 ```
 simplifyUpdate3 {
@@ -17906,7 +17906,7 @@ simplifyUpdate3 {
 Choices: {}}
 ```
 
-## singletonAssignment
+## ${t.displayName()}
 
 ```
 singletonAssignment {
@@ -17916,7 +17916,7 @@ singletonAssignment {
 Choices: {programRules:Java}}
 ```
 
-## singletonEqualsEmpty
+## ${t.displayName()}
 
 ```
 singletonEqualsEmpty {
@@ -17926,7 +17926,7 @@ singletonEqualsEmpty {
 Choices: {programRules:Java}}
 ```
 
-## singletonUnfold
+## ${t.displayName()}
 
 ```
 singletonUnfold {
@@ -17937,7 +17937,7 @@ singletonUnfold {
 Choices: {programRules:Java}}
 ```
 
-## sizeOfMapEmpty
+## ${t.displayName()}
 
 ```
 sizeOfMapEmpty {
@@ -17947,7 +17947,7 @@ sizeOfMapEmpty {
 Choices: {}}
 ```
 
-## sizeOfMapRemove
+## ${t.displayName()}
 
 ```
 sizeOfMapRemove {
@@ -17957,7 +17957,7 @@ sizeOfMapRemove {
 Choices: {}}
 ```
 
-## sizeOfMapSingleton
+## ${t.displayName()}
 
 ```
 sizeOfMapSingleton {
@@ -17967,7 +17967,7 @@ sizeOfMapSingleton {
 Choices: {}}
 ```
 
-## sizeOfMapUpdate
+## ${t.displayName()}
 
 ```
 sizeOfMapUpdate {
@@ -17977,7 +17977,7 @@ sizeOfMapUpdate {
 Choices: {}}
 ```
 
-## sizeOfSeq2Map
+## ${t.displayName()}
 
 ```
 sizeOfSeq2Map {
@@ -17987,7 +17987,7 @@ sizeOfSeq2Map {
 Choices: {}}
 ```
 
-## skip assert
+## ${t.displayName()}
 
 ```
 skipAssert {
@@ -17997,7 +17997,7 @@ skipAssert {
 Choices: {assertions:off,programRules:Java}}
 ```
 
-## skip assert
+## ${t.displayName()}
 
 ```
 skipAssert_2 {
@@ -18007,7 +18007,7 @@ skipAssert_2 {
 Choices: {assertions:off,programRules:Java}}
 ```
 
-## sortsDisjoint1
+## ${t.displayName()}
 
 ```
 sortsDisjoint1 {
@@ -18018,7 +18018,7 @@ sortsDisjoint1 {
 Choices: {}}
 ```
 
-## sortsDisjoint2
+## ${t.displayName()}
 
 ```
 sortsDisjoint2 {
@@ -18029,7 +18029,7 @@ sortsDisjoint2 {
 Choices: {}}
 ```
 
-## sortsDisjointModuloNull
+## ${t.displayName()}
 
 ```
 sortsDisjointModuloNull {
@@ -18040,7 +18040,7 @@ sortsDisjointModuloNull {
 Choices: {}}
 ```
 
-## special_constructor_call
+## ${t.displayName()}
 
 ```
 special_constructor_call {
@@ -18050,7 +18050,7 @@ special_constructor_call {
 Choices: {programRules:Java}}
 ```
 
-## splitEquation
+## ${t.displayName()}
 
 ```
 splitEquation {
@@ -18060,7 +18060,7 @@ splitEquation {
 Choices: {}}
 ```
 
-## splitEquationSucc
+## ${t.displayName()}
 
 ```
 splitEquationSucc {
@@ -18071,7 +18071,7 @@ splitEquationSucc {
 Choices: {}}
 ```
 
-## split_or_strong
+## ${t.displayName()}
 
 ```
 split_or_strong {
@@ -18082,7 +18082,7 @@ split_or_strong {
 Choices: {}}
 ```
 
-## square_nonneg
+## ${t.displayName()}
 
 ```
 square_nonneg {
@@ -18092,7 +18092,7 @@ square_nonneg {
 Choices: {}}
 ```
 
-## startsWith
+## ${t.displayName()}
 
 ```
 startsWith {
@@ -18102,7 +18102,7 @@ startsWith {
 Choices: {Strings:on}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 staticMethodCall {
@@ -18113,7 +18113,7 @@ staticMethodCall {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 staticMethodCall {
@@ -18124,7 +18124,7 @@ staticMethodCall {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 staticMethodCallStaticViaTypereference {
@@ -18134,7 +18134,7 @@ staticMethodCallStaticViaTypereference {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 staticMethodCallStaticViaTypereference {
@@ -18144,7 +18144,7 @@ staticMethodCallStaticViaTypereference {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 staticMethodCallStaticWithAssignmentViaTypereference {
@@ -18155,7 +18155,7 @@ staticMethodCallStaticWithAssignmentViaTypereference {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 staticMethodCallStaticWithAssignmentViaTypereference {
@@ -18166,7 +18166,7 @@ staticMethodCallStaticWithAssignmentViaTypereference {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 staticMethodCallWithAssignment {
@@ -18177,7 +18177,7 @@ staticMethodCallWithAssignment {
 Choices: {initialisation:disableStaticInitialisation,programRules:Java}}
 ```
 
-## methodCall
+## ${t.displayName()}
 
 ```
 staticMethodCallWithAssignment {
@@ -18188,7 +18188,7 @@ staticMethodCallWithAssignment {
 Choices: {initialisation:enableStaticInitialisation,programRules:Java}}
 ```
 
-## stringAssignment
+## ${t.displayName()}
 
 ```
 stringAssignment {
@@ -18198,7 +18198,7 @@ stringAssignment {
 Choices: {}}
 ```
 
-## stringConcat
+## ${t.displayName()}
 
 ```
 stringConcat {
@@ -18208,7 +18208,7 @@ stringConcat {
 Choices: {}}
 ```
 
-## stringConcatBooleanLeft
+## ${t.displayName()}
 
 ```
 stringConcatBooleanLeft {
@@ -18218,7 +18218,7 @@ stringConcatBooleanLeft {
 Choices: {}}
 ```
 
-## stringConcatBooleanRight
+## ${t.displayName()}
 
 ```
 stringConcatBooleanRight {
@@ -18228,7 +18228,7 @@ stringConcatBooleanRight {
 Choices: {}}
 ```
 
-## stringConcatCharExpLeft
+## ${t.displayName()}
 
 ```
 stringConcatCharExpLeft {
@@ -18238,7 +18238,7 @@ stringConcatCharExpLeft {
 Choices: {}}
 ```
 
-## stringConcatCharExpRight
+## ${t.displayName()}
 
 ```
 stringConcatCharExpRight {
@@ -18248,7 +18248,7 @@ stringConcatCharExpRight {
 Choices: {}}
 ```
 
-## stringConcatIntExpLeft
+## ${t.displayName()}
 
 ```
 stringConcatIntExpLeft {
@@ -18258,7 +18258,7 @@ stringConcatIntExpLeft {
 Choices: {}}
 ```
 
-## stringConcatIntExpRight
+## ${t.displayName()}
 
 ```
 stringConcatIntExpRight {
@@ -18268,7 +18268,7 @@ stringConcatIntExpRight {
 Choices: {}}
 ```
 
-## stringConcatObjectLeft
+## ${t.displayName()}
 
 ```
 stringConcatObjectLeft {
@@ -18279,7 +18279,7 @@ stringConcatObjectLeft {
 Choices: {}}
 ```
 
-## stringConcatObjectRight
+## ${t.displayName()}
 
 ```
 stringConcatObjectRight {
@@ -18290,7 +18290,7 @@ stringConcatObjectRight {
 Choices: {}}
 ```
 
-## sub
+## ${t.displayName()}
 
 ```
 sub {
@@ -18300,7 +18300,7 @@ sub {
 Choices: {}}
 ```
 
-## subSeqComplete
+## ${t.displayName()}
 
 ```
 subSeqComplete {
@@ -18310,7 +18310,7 @@ subSeqComplete {
 Choices: {sequences:on}}
 ```
 
-## subSeqCompleteSeqDef
+## ${t.displayName()}
 
 ```
 subSeqCompleteSeqDef {
@@ -18320,7 +18320,7 @@ subSeqCompleteSeqDef {
 Choices: {sequences:on}}
 ```
 
-## subSeqCompleteSeqDefEQ
+## ${t.displayName()}
 
 ```
 subSeqCompleteSeqDefEQ {
@@ -18331,7 +18331,7 @@ subSeqCompleteSeqDefEQ {
 Choices: {sequences:on}}
 ```
 
-## subSeqConcat
+## ${t.displayName()}
 
 ```
 subSeqConcat {
@@ -18341,7 +18341,7 @@ subSeqConcat {
 Choices: {sequences:on}}
 ```
 
-## subSeqConcatEQ
+## ${t.displayName()}
 
 ```
 subSeqConcatEQ {
@@ -18352,7 +18352,7 @@ subSeqConcatEQ {
 Choices: {sequences:on}}
 ```
 
-## subSeqEmpty
+## ${t.displayName()}
 
 ```
 subSeqEmpty {
@@ -18362,7 +18362,7 @@ subSeqEmpty {
 Choices: {sequences:on}}
 ```
 
-## subSeqHeadSeqDef
+## ${t.displayName()}
 
 ```
 subSeqHeadSeqDef {
@@ -18372,7 +18372,7 @@ subSeqHeadSeqDef {
 Choices: {sequences:on}}
 ```
 
-## subSeqHeadSeqDefEQ
+## ${t.displayName()}
 
 ```
 subSeqHeadSeqDefEQ {
@@ -18383,7 +18383,7 @@ subSeqHeadSeqDefEQ {
 Choices: {sequences:on}}
 ```
 
-## subSeqSingleton
+## ${t.displayName()}
 
 ```
 subSeqSingleton {
@@ -18393,7 +18393,7 @@ subSeqSingleton {
 Choices: {sequences:on}}
 ```
 
-## subSeqSingleton2
+## ${t.displayName()}
 
 ```
 subSeqSingleton2 {
@@ -18403,7 +18403,7 @@ subSeqSingleton2 {
 Choices: {sequences:on}}
 ```
 
-## subSeqSingleton2EQ
+## ${t.displayName()}
 
 ```
 subSeqSingleton2EQ {
@@ -18414,7 +18414,7 @@ subSeqSingleton2EQ {
 Choices: {sequences:on}}
 ```
 
-## subSeqSingletonEQ
+## ${t.displayName()}
 
 ```
 subSeqSingletonEQ {
@@ -18425,7 +18425,7 @@ subSeqSingletonEQ {
 Choices: {sequences:on}}
 ```
 
-## subSeqTail
+## ${t.displayName()}
 
 ```
 subSeqTailEQL {
@@ -18436,7 +18436,7 @@ subSeqTailEQL {
 Choices: {sequences:on}}
 ```
 
-## subSeqTail
+## ${t.displayName()}
 
 ```
 subSeqTailEQR {
@@ -18447,7 +18447,7 @@ subSeqTailEQR {
 Choices: {sequences:on}}
 ```
 
-## subSeqTail
+## ${t.displayName()}
 
 ```
 subSeqTailL {
@@ -18457,7 +18457,7 @@ subSeqTailL {
 Choices: {sequences:on}}
 ```
 
-## subSeqTail
+## ${t.displayName()}
 
 ```
 subSeqTailR {
@@ -18467,7 +18467,7 @@ subSeqTailR {
 Choices: {sequences:on}}
 ```
 
-## sub_equations_left
+## ${t.displayName()}
 
 ```
 sub_equations_left {
@@ -18478,7 +18478,7 @@ sub_equations_left {
 Choices: {}}
 ```
 
-## sub_equations_right
+## ${t.displayName()}
 
 ```
 sub_equations_right {
@@ -18489,7 +18489,7 @@ sub_equations_right {
 Choices: {}}
 ```
 
-## sub_literals
+## ${t.displayName()}
 
 ```
 sub_literals {
@@ -18499,7 +18499,7 @@ sub_literals {
 Choices: {}}
 ```
 
-## sub_sub_elim
+## ${t.displayName()}
 
 ```
 sub_sub_elim {
@@ -18509,7 +18509,7 @@ sub_sub_elim {
 Choices: {}}
 ```
 
-## sub_zero_1
+## ${t.displayName()}
 
 ```
 sub_zero_1 {
@@ -18519,7 +18519,7 @@ sub_zero_1 {
 Choices: {}}
 ```
 
-## sub_zero_2
+## ${t.displayName()}
 
 ```
 sub_zero_2 {
@@ -18529,7 +18529,7 @@ sub_zero_2 {
 Choices: {}}
 ```
 
-## subsetOfEmpty
+## ${t.displayName()}
 
 ```
 subsetOfEmpty {
@@ -18539,7 +18539,7 @@ subsetOfEmpty {
 Choices: {programRules:Java}}
 ```
 
-## subsetOfIntersectWithItSelf1
+## ${t.displayName()}
 
 ```
 subsetOfIntersectWithItSelf1 {
@@ -18549,7 +18549,7 @@ subsetOfIntersectWithItSelf1 {
 Choices: {programRules:Java}}
 ```
 
-## subsetOfIntersectWithItSelf2
+## ${t.displayName()}
 
 ```
 subsetOfIntersectWithItSelf2 {
@@ -18559,7 +18559,7 @@ subsetOfIntersectWithItSelf2 {
 Choices: {programRules:Java}}
 ```
 
-## subsetOfIntersectWithItSelfEQ1
+## ${t.displayName()}
 
 ```
 subsetOfIntersectWithItSelfEQ1 {
@@ -18570,7 +18570,7 @@ subsetOfIntersectWithItSelfEQ1 {
 Choices: {programRules:Java}}
 ```
 
-## subsetOfIntersectWithItSelfEQ2
+## ${t.displayName()}
 
 ```
 subsetOfIntersectWithItSelfEQ2 {
@@ -18581,7 +18581,7 @@ subsetOfIntersectWithItSelfEQ2 {
 Choices: {programRules:Java}}
 ```
 
-## subsetOfItself
+## ${t.displayName()}
 
 ```
 subsetOfItself {
@@ -18591,7 +18591,7 @@ subsetOfItself {
 Choices: {programRules:Java}}
 ```
 
-## subsetOfUnionWithItSelf1
+## ${t.displayName()}
 
 ```
 subsetOfUnionWithItSelf1 {
@@ -18601,7 +18601,7 @@ subsetOfUnionWithItSelf1 {
 Choices: {programRules:Java}}
 ```
 
-## subsetOfUnionWithItSelf2
+## ${t.displayName()}
 
 ```
 subsetOfUnionWithItSelf2 {
@@ -18611,7 +18611,7 @@ subsetOfUnionWithItSelf2 {
 Choices: {programRules:Java}}
 ```
 
-## subsetOfUnionWithItSelfEQ1
+## ${t.displayName()}
 
 ```
 subsetOfUnionWithItSelfEQ1 {
@@ -18622,7 +18622,7 @@ subsetOfUnionWithItSelfEQ1 {
 Choices: {programRules:Java}}
 ```
 
-## subsetOfUnionWithItSelfEQ2
+## ${t.displayName()}
 
 ```
 subsetOfUnionWithItSelfEQ2 {
@@ -18633,7 +18633,7 @@ subsetOfUnionWithItSelfEQ2 {
 Choices: {programRules:Java}}
 ```
 
-## subsetSingletonLeft
+## ${t.displayName()}
 
 ```
 subsetSingletonLeft {
@@ -18643,7 +18643,7 @@ subsetSingletonLeft {
 Choices: {programRules:Java}}
 ```
 
-## subsetSingletonLeftEQ
+## ${t.displayName()}
 
 ```
 subsetSingletonLeftEQ {
@@ -18654,7 +18654,7 @@ subsetSingletonLeftEQ {
 Choices: {programRules:Java}}
 ```
 
-## subsetSingletonRight
+## ${t.displayName()}
 
 ```
 subsetSingletonRight {
@@ -18664,7 +18664,7 @@ subsetSingletonRight {
 Choices: {programRules:Java}}
 ```
 
-## subsetSingletonRightEQ
+## ${t.displayName()}
 
 ```
 subsetSingletonRightEQ {
@@ -18675,7 +18675,7 @@ subsetSingletonRightEQ {
 Choices: {programRules:Java}}
 ```
 
-## subsetToElementOf
+## ${t.displayName()}
 
 ```
 subsetToElementOf {
@@ -18686,7 +18686,7 @@ subsetToElementOf {
 Choices: {programRules:Java}}
 ```
 
-## subsetToElementOfRight
+## ${t.displayName()}
 
 ```
 subsetToElementOfRight {
@@ -18697,7 +18697,7 @@ subsetToElementOfRight {
 Choices: {programRules:Java}}
 ```
 
-## subsetUnionLeft
+## ${t.displayName()}
 
 ```
 subsetUnionLeft {
@@ -18707,7 +18707,7 @@ subsetUnionLeft {
 Choices: {programRules:Java}}
 ```
 
-## subsetUnionLeftEQ
+## ${t.displayName()}
 
 ```
 subsetUnionLeftEQ {
@@ -18718,7 +18718,7 @@ subsetUnionLeftEQ {
 Choices: {programRules:Java}}
 ```
 
-## subsetOfAllLocs
+## ${t.displayName()}
 
 ```
 subsetWithAllLocs {
@@ -18728,7 +18728,7 @@ subsetWithAllLocs {
 Choices: {programRules:Java}}
 ```
 
-## subsetWithAllLocs
+## ${t.displayName()}
 
 ```
 subsetWithAllLocs2 {
@@ -18738,7 +18738,7 @@ subsetWithAllLocs2 {
 Choices: {programRules:Java}}
 ```
 
-## subsetWithEmpty
+## ${t.displayName()}
 
 ```
 subsetWithEmpty {
@@ -18748,7 +18748,7 @@ subsetWithEmpty {
 Choices: {programRules:Java}}
 ```
 
-## subsetWithSetMinusLeft
+## ${t.displayName()}
 
 ```
 subsetWithSetMinusLeft {
@@ -18758,7 +18758,7 @@ subsetWithSetMinusLeft {
 Choices: {programRules:Java}}
 ```
 
-## subsetWithSetMinusLeftEQ
+## ${t.displayName()}
 
 ```
 subsetWithSetMinusLeftEQ {
@@ -18769,7 +18769,7 @@ subsetWithSetMinusLeftEQ {
 Choices: {programRules:Java}}
 ```
 
-## subst_to_eq
+## ${t.displayName()}
 
 ```
 subst_to_eq {
@@ -18779,7 +18779,7 @@ subst_to_eq {
 Choices: {}}
 ```
 
-## subst_to_eq
+## ${t.displayName()}
 
 ```
 subst_to_eq_for {
@@ -18789,7 +18789,7 @@ subst_to_eq_for {
 Choices: {}}
 ```
 
-## substringSubstring
+## ${t.displayName()}
 
 ```
 substringSubstring {
@@ -18799,7 +18799,7 @@ substringSubstring {
 Choices: {Strings:on}}
 ```
 
-## substringSubstring2
+## ${t.displayName()}
 
 ```
 substringSubstring2 {
@@ -18810,7 +18810,7 @@ substringSubstring2 {
 Choices: {Strings:on}}
 ```
 
-## sum_empty
+## ${t.displayName()}
 
 ```
 sum_empty {
@@ -18820,7 +18820,7 @@ sum_empty {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## sum_zero
+## ${t.displayName()}
 
 ```
 sum_zero {
@@ -18830,7 +18830,7 @@ sum_zero {
 Choices: {integerSimplificationRules:full}}
 ```
 
-## superclasses_of_initialized_classes_are_initialized
+## ${t.displayName()}
 
 ```
 superclasses_of_initialized_classes_are_initialized {
@@ -18842,7 +18842,7 @@ superclasses_of_initialized_classes_are_initialized {
 Choices: {programRules:Java}}
 ```
 
-## superclasses_of_initialized_classes_are_prepared
+## ${t.displayName()}
 
 ```
 superclasses_of_initialized_classes_are_prepared {
@@ -18854,7 +18854,7 @@ superclasses_of_initialized_classes_are_prepared {
 Choices: {programRules:Java}}
 ```
 
-## swapQuantifiersAll
+## ${t.displayName()}
 
 ```
 swapQuantifiersAll {
@@ -18864,7 +18864,7 @@ swapQuantifiersAll {
 Choices: {}}
 ```
 
-## swapQuantifiersEx
+## ${t.displayName()}
 
 ```
 swapQuantifiersEx {
@@ -18874,7 +18874,7 @@ swapQuantifiersEx {
 Choices: {}}
 ```
 
-## switch
+## ${t.displayName()}
 
 ```
 switch {
@@ -18884,7 +18884,7 @@ switch {
 Choices: {programRules:Java}}
 ```
 
-## switch_brackets
+## ${t.displayName()}
 
 ```
 switch_brackets {
@@ -18894,7 +18894,7 @@ switch_brackets {
 Choices: {}}
 ```
 
-## switch_params
+## ${t.displayName()}
 
 ```
 switch_params {
@@ -18904,7 +18904,7 @@ switch_params {
 Choices: {}}
 ```
 
-## synchronizedBlockEmpty
+## ${t.displayName()}
 
 ```
 synchronizedBlockEmpty {
@@ -18916,7 +18916,7 @@ synchronizedBlockEmpty {
 Choices: {runtimeExceptions:ban,programRules:Java}}
 ```
 
-## synchronizedBlockEmpty
+## ${t.displayName()}
 
 ```
 synchronizedBlockEmpty {
@@ -18927,7 +18927,7 @@ synchronizedBlockEmpty {
 Choices: {runtimeExceptions:ignore,programRules:Java}}
 ```
 
-## synchronizedBlockEmpty
+## ${t.displayName()}
 
 ```
 synchronizedBlockEmpty {
@@ -18941,7 +18941,7 @@ synchronizedBlockEmpty {
 Choices: {runtimeExceptions:allow,programRules:Java}}
 ```
 
-## synchronizedBlockEmpty
+## ${t.displayName()}
 
 ```
 synchronizedBlockEmpty2 {
@@ -18951,7 +18951,7 @@ synchronizedBlockEmpty2 {
 Choices: {programRules:Java}}
 ```
 
-## synchronizedBlockEvalSync
+## ${t.displayName()}
 
 ```
 synchronizedBlockEvalSync {
@@ -18962,7 +18962,7 @@ synchronizedBlockEvalSync {
 Choices: {programRules:Java}}
 ```
 
-## theorem_of_archimedes
+## ${t.displayName()}
 
 ```
 theorem_of_archimedes {
@@ -18973,7 +18973,7 @@ theorem_of_archimedes {
 Choices: {}}
 ```
 
-## throwBox
+## ${t.displayName()}
 
 ```
 throwBox {
@@ -18983,7 +18983,7 @@ throwBox {
 Choices: {programRules:Java}}
 ```
 
-## throwDiamond
+## ${t.displayName()}
 
 ```
 throwDiamond {
@@ -18993,7 +18993,7 @@ throwDiamond {
 Choices: {programRules:Java}}
 ```
 
-## throwLabel
+## ${t.displayName()}
 
 ```
 throwLabel {
@@ -19003,7 +19003,7 @@ throwLabel {
 Choices: {programRules:Java}}
 ```
 
-## throwLabelBlock
+## ${t.displayName()}
 
 ```
 throwLabelBlock {
@@ -19013,7 +19013,7 @@ throwLabelBlock {
 Choices: {programRules:Java}}
 ```
 
-## throwNull
+## ${t.displayName()}
 
 ```
 throwNull {
@@ -19023,7 +19023,7 @@ throwNull {
 Choices: {programRules:Java}}
 ```
 
-## throwUnfold
+## ${t.displayName()}
 
 ```
 throwUnfold {
@@ -19034,7 +19034,7 @@ throwUnfold {
 Choices: {programRules:Java}}
 ```
 
-## throwUnfold
+## ${t.displayName()}
 
 ```
 throwUnfoldMore {
@@ -19045,7 +19045,7 @@ throwUnfoldMore {
 Choices: {programRules:Java}}
 ```
 
-## times_minus_one
+## ${t.displayName()}
 
 ```
 times_minus_one_1 {
@@ -19055,7 +19055,7 @@ times_minus_one_1 {
 Choices: {}}
 ```
 
-## times_minus_one
+## ${t.displayName()}
 
 ```
 times_minus_one_2 {
@@ -19065,7 +19065,7 @@ times_minus_one_2 {
 Choices: {}}
 ```
 
-## times_one
+## ${t.displayName()}
 
 ```
 times_one_1 {
@@ -19075,7 +19075,7 @@ times_one_1 {
 Choices: {}}
 ```
 
-## times_one
+## ${t.displayName()}
 
 ```
 times_one_2 {
@@ -19085,7 +19085,7 @@ times_one_2 {
 Choices: {}}
 ```
 
-## times_zero
+## ${t.displayName()}
 
 ```
 times_zero_1 {
@@ -19095,7 +19095,7 @@ times_zero_1 {
 Choices: {}}
 ```
 
-## times_zero
+## ${t.displayName()}
 
 ```
 times_zero_2 {
@@ -19105,7 +19105,7 @@ times_zero_2 {
 Choices: {}}
 ```
 
-## transferPermission_empty
+## ${t.displayName()}
 
 ```
 transferPermission_empty {
@@ -19115,7 +19115,7 @@ transferPermission_empty {
 Choices: {permissions:on}}
 ```
 
-## transferPermission_slice
+## ${t.displayName()}
 
 ```
 transferPermission_slice {
@@ -19125,7 +19125,7 @@ transferPermission_slice {
 Choices: {permissions:on}}
 ```
 
-## translate#
+## ${t.displayName()}
 
 ```
 translate# {
@@ -19135,7 +19135,7 @@ translate# {
 Choices: {Strings:on}}
 ```
 
-## translate0
+## ${t.displayName()}
 
 ```
 translate0 {
@@ -19145,7 +19145,7 @@ translate0 {
 Choices: {Strings:on}}
 ```
 
-## translate1
+## ${t.displayName()}
 
 ```
 translate1 {
@@ -19155,7 +19155,7 @@ translate1 {
 Choices: {Strings:on}}
 ```
 
-## translate2
+## ${t.displayName()}
 
 ```
 translate2 {
@@ -19165,7 +19165,7 @@ translate2 {
 Choices: {Strings:on}}
 ```
 
-## translate3
+## ${t.displayName()}
 
 ```
 translate3 {
@@ -19175,7 +19175,7 @@ translate3 {
 Choices: {Strings:on}}
 ```
 
-## translate4
+## ${t.displayName()}
 
 ```
 translate4 {
@@ -19185,7 +19185,7 @@ translate4 {
 Choices: {Strings:on}}
 ```
 
-## translate5
+## ${t.displayName()}
 
 ```
 translate5 {
@@ -19195,7 +19195,7 @@ translate5 {
 Choices: {Strings:on}}
 ```
 
-## translate6
+## ${t.displayName()}
 
 ```
 translate6 {
@@ -19205,7 +19205,7 @@ translate6 {
 Choices: {Strings:on}}
 ```
 
-## translate7
+## ${t.displayName()}
 
 ```
 translate7 {
@@ -19215,7 +19215,7 @@ translate7 {
 Choices: {Strings:on}}
 ```
 
-## translate8
+## ${t.displayName()}
 
 ```
 translate8 {
@@ -19225,7 +19225,7 @@ translate8 {
 Choices: {Strings:on}}
 ```
 
-## translate9
+## ${t.displayName()}
 
 ```
 translate9 {
@@ -19235,7 +19235,7 @@ translate9 {
 Choices: {Strings:on}}
 ```
 
-## translateJavaAdd
+## ${t.displayName()}
 
 ```
 translateJavaAddInt {
@@ -19245,7 +19245,7 @@ translateJavaAddInt {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaAdd
+## ${t.displayName()}
 
 ```
 translateJavaAddInt {
@@ -19255,7 +19255,7 @@ translateJavaAddInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaAdd
+## ${t.displayName()}
 
 ```
 translateJavaAddInt {
@@ -19265,7 +19265,7 @@ translateJavaAddInt {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaAdd
+## ${t.displayName()}
 
 ```
 translateJavaAddLong {
@@ -19275,7 +19275,7 @@ translateJavaAddLong {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaAdd
+## ${t.displayName()}
 
 ```
 translateJavaAddLong {
@@ -19285,7 +19285,7 @@ translateJavaAddLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaAdd
+## ${t.displayName()}
 
 ```
 translateJavaAddLong {
@@ -19295,7 +19295,7 @@ translateJavaAddLong {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaBitwiseAnd
+## ${t.displayName()}
 
 ```
 translateJavaBitwiseAndInt {
@@ -19305,7 +19305,7 @@ translateJavaBitwiseAndInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaBitwiseAnd
+## ${t.displayName()}
 
 ```
 translateJavaBitwiseAndLong {
@@ -19315,7 +19315,7 @@ translateJavaBitwiseAndLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaUnaryMinus
+## ${t.displayName()}
 
 ```
 translateJavaBitwiseNegation {
@@ -19325,7 +19325,7 @@ translateJavaBitwiseNegation {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaBitwiseOr
+## ${t.displayName()}
 
 ```
 translateJavaBitwiseOrInt {
@@ -19335,7 +19335,7 @@ translateJavaBitwiseOrInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaBitwiseOr
+## ${t.displayName()}
 
 ```
 translateJavaBitwiseOrInt {
@@ -19345,7 +19345,7 @@ translateJavaBitwiseOrInt {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaBitwiseOr
+## ${t.displayName()}
 
 ```
 translateJavaBitwiseOrLong {
@@ -19355,7 +19355,7 @@ translateJavaBitwiseOrLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaBitwiseXOr
+## ${t.displayName()}
 
 ```
 translateJavaBitwiseXOrInt {
@@ -19365,7 +19365,7 @@ translateJavaBitwiseXOrInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaBitwiseXOr
+## ${t.displayName()}
 
 ```
 translateJavaBitwiseXOrLong {
@@ -19375,7 +19375,7 @@ translateJavaBitwiseXOrLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastByte {
@@ -19385,7 +19385,7 @@ translateJavaCastByte {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastByte {
@@ -19395,7 +19395,7 @@ translateJavaCastByte {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastByte {
@@ -19405,7 +19405,7 @@ translateJavaCastByte {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastChar {
@@ -19415,7 +19415,7 @@ translateJavaCastChar {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastChar {
@@ -19425,7 +19425,7 @@ translateJavaCastChar {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastChar {
@@ -19435,7 +19435,7 @@ translateJavaCastChar {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastInt {
@@ -19445,7 +19445,7 @@ translateJavaCastInt {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastInt {
@@ -19455,7 +19455,7 @@ translateJavaCastInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastInt {
@@ -19465,7 +19465,7 @@ translateJavaCastInt {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastLong {
@@ -19475,7 +19475,7 @@ translateJavaCastLong {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastLong {
@@ -19485,7 +19485,7 @@ translateJavaCastLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastLong {
@@ -19495,7 +19495,7 @@ translateJavaCastLong {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastShort {
@@ -19505,7 +19505,7 @@ translateJavaCastShort {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastShort {
@@ -19515,7 +19515,7 @@ translateJavaCastShort {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaCast
+## ${t.displayName()}
 
 ```
 translateJavaCastShort {
@@ -19525,7 +19525,7 @@ translateJavaCastShort {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaDiv
+## ${t.displayName()}
 
 ```
 translateJavaDivInt {
@@ -19535,7 +19535,7 @@ translateJavaDivInt {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaDiv
+## ${t.displayName()}
 
 ```
 translateJavaDivInt {
@@ -19545,7 +19545,7 @@ translateJavaDivInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaDiv
+## ${t.displayName()}
 
 ```
 translateJavaDivInt {
@@ -19555,7 +19555,7 @@ translateJavaDivInt {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaDiv
+## ${t.displayName()}
 
 ```
 translateJavaDivLong {
@@ -19565,7 +19565,7 @@ translateJavaDivLong {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaDiv
+## ${t.displayName()}
 
 ```
 translateJavaDivLong {
@@ -19575,7 +19575,7 @@ translateJavaDivLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaDiv
+## ${t.displayName()}
 
 ```
 translateJavaDivLong {
@@ -19585,7 +19585,7 @@ translateJavaDivLong {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaMod
+## ${t.displayName()}
 
 ```
 translateJavaMod {
@@ -19595,7 +19595,7 @@ translateJavaMod {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaMod
+## ${t.displayName()}
 
 ```
 translateJavaMod {
@@ -19605,7 +19605,7 @@ translateJavaMod {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaMod
+## ${t.displayName()}
 
 ```
 translateJavaMod {
@@ -19615,7 +19615,7 @@ translateJavaMod {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaMul
+## ${t.displayName()}
 
 ```
 translateJavaMulInt {
@@ -19625,7 +19625,7 @@ translateJavaMulInt {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaMul
+## ${t.displayName()}
 
 ```
 translateJavaMulInt {
@@ -19635,7 +19635,7 @@ translateJavaMulInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaMul
+## ${t.displayName()}
 
 ```
 translateJavaMulInt {
@@ -19645,7 +19645,7 @@ translateJavaMulInt {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaMul
+## ${t.displayName()}
 
 ```
 translateJavaMulLong {
@@ -19655,7 +19655,7 @@ translateJavaMulLong {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaMul
+## ${t.displayName()}
 
 ```
 translateJavaMulLong {
@@ -19665,7 +19665,7 @@ translateJavaMulLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaMul
+## ${t.displayName()}
 
 ```
 translateJavaMulLong {
@@ -19675,7 +19675,7 @@ translateJavaMulLong {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaShiftLeft
+## ${t.displayName()}
 
 ```
 translateJavaShiftLeftInt {
@@ -19685,7 +19685,7 @@ translateJavaShiftLeftInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaShiftLeft
+## ${t.displayName()}
 
 ```
 translateJavaShiftLeftLong {
@@ -19695,7 +19695,7 @@ translateJavaShiftLeftLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaShiftRight
+## ${t.displayName()}
 
 ```
 translateJavaShiftRightInt {
@@ -19705,7 +19705,7 @@ translateJavaShiftRightInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaShiftRight
+## ${t.displayName()}
 
 ```
 translateJavaShiftRightLong {
@@ -19715,7 +19715,7 @@ translateJavaShiftRightLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaSub
+## ${t.displayName()}
 
 ```
 translateJavaSubInt {
@@ -19725,7 +19725,7 @@ translateJavaSubInt {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaSub
+## ${t.displayName()}
 
 ```
 translateJavaSubInt {
@@ -19735,7 +19735,7 @@ translateJavaSubInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaSub
+## ${t.displayName()}
 
 ```
 translateJavaSubInt {
@@ -19745,7 +19745,7 @@ translateJavaSubInt {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaSub
+## ${t.displayName()}
 
 ```
 translateJavaSubLong {
@@ -19755,7 +19755,7 @@ translateJavaSubLong {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaSub
+## ${t.displayName()}
 
 ```
 translateJavaSubLong {
@@ -19765,7 +19765,7 @@ translateJavaSubLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaSub
+## ${t.displayName()}
 
 ```
 translateJavaSubLong {
@@ -19775,7 +19775,7 @@ translateJavaSubLong {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaUnaryMinus
+## ${t.displayName()}
 
 ```
 translateJavaUnaryMinusInt {
@@ -19785,7 +19785,7 @@ translateJavaUnaryMinusInt {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaUnaryMinus
+## ${t.displayName()}
 
 ```
 translateJavaUnaryMinusInt {
@@ -19795,7 +19795,7 @@ translateJavaUnaryMinusInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaUnaryMinus
+## ${t.displayName()}
 
 ```
 translateJavaUnaryMinusInt {
@@ -19805,7 +19805,7 @@ translateJavaUnaryMinusInt {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaUnaryMinus
+## ${t.displayName()}
 
 ```
 translateJavaUnaryMinusLong {
@@ -19815,7 +19815,7 @@ translateJavaUnaryMinusLong {
 Choices: {intRules:arithmeticSemanticsIgnoringOF,programRules:Java}}
 ```
 
-## translateJavaUnaryMinus
+## ${t.displayName()}
 
 ```
 translateJavaUnaryMinusLong {
@@ -19825,7 +19825,7 @@ translateJavaUnaryMinusLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaUnaryMinus
+## ${t.displayName()}
 
 ```
 translateJavaUnaryMinusLong {
@@ -19835,7 +19835,7 @@ translateJavaUnaryMinusLong {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaUnsignedShiftRight
+## ${t.displayName()}
 
 ```
 translateJavaUnsignedShiftRightInt {
@@ -19845,7 +19845,7 @@ translateJavaUnsignedShiftRightInt {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateJavaUnsignedShiftRight
+## ${t.displayName()}
 
 ```
 translateJavaUnsignedShiftRightInt {
@@ -19855,7 +19855,7 @@ translateJavaUnsignedShiftRightInt {
 Choices: {intRules:arithmeticSemanticsCheckingOF,programRules:Java}}
 ```
 
-## translateJavaUnsignedShiftRight
+## ${t.displayName()}
 
 ```
 translateJavaUnsignedShiftRightLong {
@@ -19865,7 +19865,7 @@ translateJavaUnsignedShiftRightLong {
 Choices: {intRules:javaSemantics,programRules:Java}}
 ```
 
-## translateNegLit
+## ${t.displayName()}
 
 ```
 translateNegLit {
@@ -19875,7 +19875,7 @@ translateNegLit {
 Choices: {Strings:on}}
 ```
 
-## true_left
+## ${t.displayName()}
 
 ```
 true_left {
@@ -19885,7 +19885,7 @@ true_left {
 Choices: {}}
 ```
 
-## true_to_not_false
+## ${t.displayName()}
 
 ```
 true_to_not_false {
@@ -19895,7 +19895,7 @@ true_to_not_false {
 Choices: {}}
 ```
 
-## tryBreak
+## ${t.displayName()}
 
 ```
 tryBreak {
@@ -19910,7 +19910,7 @@ tryBreak {
 Choices: {programRules:Java}}
 ```
 
-## tryBreak
+## ${t.displayName()}
 
 ```
 tryBreakLabel {
@@ -19925,7 +19925,7 @@ tryBreakLabel {
 Choices: {programRules:Java}}
 ```
 
-## tryCatchFinallyThrow
+## ${t.displayName()}
 
 ```
 tryCatchFinallyThrow {
@@ -19969,7 +19969,7 @@ tryCatchFinallyThrow {
 Choices: {programRules:Java}}
 ```
 
-## tryCatchThrow
+## ${t.displayName()}
 
 ```
 tryCatchThrow {
@@ -19998,7 +19998,7 @@ tryCatchThrow {
 Choices: {programRules:Java}}
 ```
 
-## tryEmpty
+## ${t.displayName()}
 
 ```
 tryEmpty {
@@ -20008,7 +20008,7 @@ tryEmpty {
 Choices: {programRules:Java}}
 ```
 
-## tryBreak
+## ${t.displayName()}
 
 ```
 tryFinallyBreak {
@@ -20025,7 +20025,7 @@ tryFinallyBreak {
 Choices: {programRules:Java}}
 ```
 
-## tryBreak
+## ${t.displayName()}
 
 ```
 tryFinallyBreakLabel {
@@ -20042,7 +20042,7 @@ tryFinallyBreakLabel {
 Choices: {programRules:Java}}
 ```
 
-## tryEmpty
+## ${t.displayName()}
 
 ```
 tryFinallyEmpty {
@@ -20055,7 +20055,7 @@ tryFinallyEmpty {
 Choices: {programRules:Java}}
 ```
 
-## tryReturn
+## ${t.displayName()}
 
 ```
 tryFinallyReturn {
@@ -20069,7 +20069,7 @@ tryFinallyReturn {
 Choices: {programRules:Java}}
 ```
 
-## tryReturn
+## ${t.displayName()}
 
 ```
 tryFinallyReturnNoValue {
@@ -20082,7 +20082,7 @@ tryFinallyReturnNoValue {
 Choices: {programRules:Java}}
 ```
 
-## tryFinallyThrow
+## ${t.displayName()}
 
 ```
 tryFinallyThrow {
@@ -20105,7 +20105,7 @@ tryFinallyThrow {
 Choices: {programRules:Java}}
 ```
 
-## tryCatchThrow
+## ${t.displayName()}
 
 ```
 tryMultipleCatchThrow {
@@ -20145,7 +20145,7 @@ tryMultipleCatchThrow {
 Choices: {programRules:Java}}
 ```
 
-## tryReturn
+## ${t.displayName()}
 
 ```
 tryReturn {
@@ -20155,7 +20155,7 @@ tryReturn {
 Choices: {programRules:Java}}
 ```
 
-## tryReturn
+## ${t.displayName()}
 
 ```
 tryReturnNoValue {
@@ -20165,7 +20165,7 @@ tryReturnNoValue {
 Choices: {programRules:Java}}
 ```
 
-## twoPermissions
+## ${t.displayName()}
 
 ```
 twoPermissions {
@@ -20176,7 +20176,7 @@ twoPermissions {
 Choices: {permissions:on}}
 ```
 
-## typeEq
+## ${t.displayName()}
 
 ```
 typeEq {
@@ -20186,7 +20186,7 @@ typeEq {
 Choices: {}}
 ```
 
-## typeEq
+## ${t.displayName()}
 
 ```
 typeEqDerived {
@@ -20197,7 +20197,7 @@ typeEqDerived {
 Choices: {}}
 ```
 
-## typeEq
+## ${t.displayName()}
 
 ```
 typeEqDerived2 {
@@ -20208,7 +20208,7 @@ typeEqDerived2 {
 Choices: {}}
 ```
 
-## typeStatic
+## ${t.displayName()}
 
 ```
 typeStatic {
@@ -20218,7 +20218,7 @@ typeStatic {
 Choices: {}}
 ```
 
-## unaryMinus
+## ${t.displayName()}
 
 ```
 unaryMinusBigint {
@@ -20228,7 +20228,7 @@ unaryMinusBigint {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## unaryMinus
+## ${t.displayName()}
 
 ```
 unaryMinusInt {
@@ -20238,7 +20238,7 @@ unaryMinusInt {
 Choices: {programRules:Java}}
 ```
 
-## unary_minus
+## ${t.displayName()}
 
 ```
 unaryMinusLong {
@@ -20248,7 +20248,7 @@ unaryMinusLong {
 Choices: {programRules:Java}}
 ```
 
-## unionEqualsEmpty
+## ${t.displayName()}
 
 ```
 unionEqualsEmpty {
@@ -20258,7 +20258,7 @@ unionEqualsEmpty {
 Choices: {programRules:Java}}
 ```
 
-## unionEqualsEmptyEQ
+## ${t.displayName()}
 
 ```
 unionEqualsEmptyEQ {
@@ -20269,7 +20269,7 @@ unionEqualsEmptyEQ {
 Choices: {programRules:Java}}
 ```
 
-## unionIntersectItself
+## ${t.displayName()}
 
 ```
 unionIntersectItself {
@@ -20279,7 +20279,7 @@ unionIntersectItself {
 Choices: {programRules:Java}}
 ```
 
-## unionIntersectItself_2
+## ${t.displayName()}
 
 ```
 unionIntersectItself_2 {
@@ -20289,7 +20289,7 @@ unionIntersectItself_2 {
 Choices: {programRules:Java}}
 ```
 
-## unionIntersectItself_3
+## ${t.displayName()}
 
 ```
 unionIntersectItself_3 {
@@ -20299,7 +20299,7 @@ unionIntersectItself_3 {
 Choices: {programRules:Java}}
 ```
 
-## unionIntersectItself_4
+## ${t.displayName()}
 
 ```
 unionIntersectItself_4 {
@@ -20309,7 +20309,7 @@ unionIntersectItself_4 {
 Choices: {programRules:Java}}
 ```
 
-## unionIntersectItself_5
+## ${t.displayName()}
 
 ```
 unionIntersectItself_5 {
@@ -20319,7 +20319,7 @@ unionIntersectItself_5 {
 Choices: {programRules:Java}}
 ```
 
-## unionIntersectItself_6
+## ${t.displayName()}
 
 ```
 unionIntersectItself_6 {
@@ -20329,7 +20329,7 @@ unionIntersectItself_6 {
 Choices: {programRules:Java}}
 ```
 
-## unionWithAllLocs
+## ${t.displayName()}
 
 ```
 unionWithAllLocs {
@@ -20339,7 +20339,7 @@ unionWithAllLocs {
 Choices: {programRules:Java}}
 ```
 
-## unionWithAllLocs
+## ${t.displayName()}
 
 ```
 unionWithAllLocsRight {
@@ -20349,7 +20349,7 @@ unionWithAllLocsRight {
 Choices: {programRules:Java}}
 ```
 
-## unionWithEmpty
+## ${t.displayName()}
 
 ```
 unionWithEmpty {
@@ -20359,7 +20359,7 @@ unionWithEmpty {
 Choices: {programRules:Java}}
 ```
 
-## unionWithEmpty
+## ${t.displayName()}
 
 ```
 unionWithEmptyRight {
@@ -20369,7 +20369,7 @@ unionWithEmptyRight {
 Choices: {programRules:Java}}
 ```
 
-## unionWithItself
+## ${t.displayName()}
 
 ```
 unionWithItself {
@@ -20379,7 +20379,7 @@ unionWithItself {
 Choices: {programRules:Java}}
 ```
 
-## unionWithSingletonEqualsUnionWithSingleton
+## ${t.displayName()}
 
 ```
 unionWithSingletonEqualsUnionWithSingleton {
@@ -20389,7 +20389,7 @@ unionWithSingletonEqualsUnionWithSingleton {
 Choices: {programRules:Java}}
 ```
 
-## unionWithSingletonEqualsUnionWithSingleton_2
+## ${t.displayName()}
 
 ```
 unionWithSingletonEqualsUnionWithSingleton_2 {
@@ -20399,7 +20399,7 @@ unionWithSingletonEqualsUnionWithSingleton_2 {
 Choices: {programRules:Java}}
 ```
 
-## unsignedShiftRightJintDef
+## ${t.displayName()}
 
 ```
 unsignedShiftRightJintDef {
@@ -20409,7 +20409,7 @@ unsignedShiftRightJintDef {
 Choices: {}}
 ```
 
-## unusedLabel
+## ${t.displayName()}
 
 ```
 unusedLabel {
@@ -20420,7 +20420,7 @@ unusedLabel {
 Choices: {programRules:Java}}
 ```
 
-## variableDeclaration
+## ${t.displayName()}
 
 ```
 variableDeclaration {
@@ -20430,7 +20430,7 @@ variableDeclaration {
 Choices: {programRules:Java}}
 ```
 
-## variableDeclaration
+## ${t.displayName()}
 
 ```
 variableDeclarationAssign {
@@ -20440,7 +20440,7 @@ variableDeclarationAssign {
 Choices: {programRules:Java}}
 ```
 
-## variableDeclaration
+## ${t.displayName()}
 
 ```
 variableDeclarationFinal {
@@ -20450,7 +20450,7 @@ variableDeclarationFinal {
 Choices: {programRules:Java}}
 ```
 
-## variableDeclaration
+## ${t.displayName()}
 
 ```
 variableDeclarationFinalAssign {
@@ -20460,7 +20460,7 @@ variableDeclarationFinalAssign {
 Choices: {programRules:Java}}
 ```
 
-## ghostDeclaration
+## ${t.displayName()}
 
 ```
 variableDeclarationGhost {
@@ -20470,7 +20470,7 @@ variableDeclarationGhost {
 Choices: {programRules:Java}}
 ```
 
-## ghostDeclaration
+## ${t.displayName()}
 
 ```
 variableDeclarationGhostAssign {
@@ -20480,7 +20480,7 @@ variableDeclarationGhostAssign {
 Choices: {programRules:Java}}
 ```
 
-## variableDeclaration
+## ${t.displayName()}
 
 ```
 variableDeclarationMult {
@@ -20490,7 +20490,7 @@ variableDeclarationMult {
 Choices: {programRules:Java}}
 ```
 
-## wd_Constant_Formula
+## ${t.displayName()}
 
 ```
 wd_Constant_Formula {
@@ -20501,7 +20501,7 @@ wd_Constant_Formula {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Constant_Term
+## ${t.displayName()}
 
 ```
 wd_Constant_Term {
@@ -20512,7 +20512,7 @@ wd_Constant_Term {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Equality_Pred
+## ${t.displayName()}
 
 ```
 wd_Equality_Pred {
@@ -20522,7 +20522,7 @@ wd_Equality_Pred {
 Choices: {wdChecks:on}}
 ```
 
-## wd_F_Logical_Op_And
+## ${t.displayName()}
 
 ```
 wd_F_Logical_Op_And {
@@ -20532,7 +20532,7 @@ wd_F_Logical_Op_And {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_F_Logical_Op_Cond_Form
+## ${t.displayName()}
 
 ```
 wd_F_Logical_Op_Cond_Form {
@@ -20542,7 +20542,7 @@ wd_F_Logical_Op_Cond_Form {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_F_Logical_Op_Eqv
+## ${t.displayName()}
 
 ```
 wd_F_Logical_Op_Eqv {
@@ -20552,7 +20552,7 @@ wd_F_Logical_Op_Eqv {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_F_Logical_Op_ExCond_Form
+## ${t.displayName()}
 
 ```
 wd_F_Logical_Op_ExCond_Form {
@@ -20563,7 +20563,7 @@ wd_F_Logical_Op_ExCond_Form {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_F_Logical_Op_Imp
+## ${t.displayName()}
 
 ```
 wd_F_Logical_Op_Imp {
@@ -20573,7 +20573,7 @@ wd_F_Logical_Op_Imp {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_F_Logical_Op_Neg
+## ${t.displayName()}
 
 ```
 wd_F_Logical_Op_Neg {
@@ -20583,7 +20583,7 @@ wd_F_Logical_Op_Neg {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_F_Logical_Op_Or
+## ${t.displayName()}
 
 ```
 wd_F_Logical_Op_Or {
@@ -20593,7 +20593,7 @@ wd_F_Logical_Op_Or {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_F_Logical_Quant_All
+## ${t.displayName()}
 
 ```
 wd_F_Logical_Quant_All {
@@ -20603,7 +20603,7 @@ wd_F_Logical_Quant_All {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_F_Logical_Quant_Exist
+## ${t.displayName()}
 
 ```
 wd_F_Logical_Quant_Exist {
@@ -20613,7 +20613,7 @@ wd_F_Logical_Quant_Exist {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_F_Resolve
+## ${t.displayName()}
 
 ```
 wd_F_Resolve {
@@ -20624,7 +20624,7 @@ wd_F_Resolve {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_F_Subst_Formula
+## ${t.displayName()}
 
 ```
 wd_F_Subst_Formula {
@@ -20634,7 +20634,7 @@ wd_F_Subst_Formula {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Heap_Anon
+## ${t.displayName()}
 
 ```
 wd_Heap_Anon {
@@ -20644,7 +20644,7 @@ wd_Heap_Anon {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Heap_ArrLength
+## ${t.displayName()}
 
 ```
 wd_Heap_ArrLength {
@@ -20655,7 +20655,7 @@ wd_Heap_ArrLength {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Heap_Create
+## ${t.displayName()}
 
 ```
 wd_Heap_Create {
@@ -20665,7 +20665,7 @@ wd_Heap_Create {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Heap_Memset
+## ${t.displayName()}
 
 ```
 wd_Heap_Memset {
@@ -20675,7 +20675,7 @@ wd_Heap_Memset {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Heap_Pred_ArrStoreValid
+## ${t.displayName()}
 
 ```
 wd_Heap_Pred_ArrStoreValid {
@@ -20685,7 +20685,7 @@ wd_Heap_Pred_ArrStoreValid {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Heap_Pred_NonNull
+## ${t.displayName()}
 
 ```
 wd_Heap_Pred_NonNull {
@@ -20695,7 +20695,7 @@ wd_Heap_Pred_NonNull {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Heap_Pred_WellFormed
+## ${t.displayName()}
 
 ```
 wd_Heap_Pred_WellFormed {
@@ -20705,7 +20705,7 @@ wd_Heap_Pred_WellFormed {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Heap_Reference
+## ${t.displayName()}
 
 ```
 wd_Heap_Reference {
@@ -20716,7 +20716,7 @@ wd_Heap_Reference {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Heap_Reference_Array
+## ${t.displayName()}
 
 ```
 wd_Heap_Reference_Array {
@@ -20727,7 +20727,7 @@ wd_Heap_Reference_Array {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Heap_Reference_Created
+## ${t.displayName()}
 
 ```
 wd_Heap_Reference_Created {
@@ -20737,7 +20737,7 @@ wd_Heap_Reference_Created {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Heap_Reference_Static
+## ${t.displayName()}
 
 ```
 wd_Heap_Reference_Static {
@@ -20748,7 +20748,7 @@ wd_Heap_Reference_Static {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Heap_Store
+## ${t.displayName()}
 
 ```
 wd_Heap_Store {
@@ -20758,7 +20758,7 @@ wd_Heap_Store {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_AllElemsArr
+## ${t.displayName()}
 
 ```
 wd_LocSet_AllElemsArr {
@@ -20769,7 +20769,7 @@ wd_LocSet_AllElemsArr {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_AllElemsArrLocsets
+## ${t.displayName()}
 
 ```
 wd_LocSet_AllElemsArrLocsets {
@@ -20780,7 +20780,7 @@ wd_LocSet_AllElemsArrLocsets {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_AllFields
+## ${t.displayName()}
 
 ```
 wd_LocSet_AllFields {
@@ -20791,7 +20791,7 @@ wd_LocSet_AllFields {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_AllFieldsArr
+## ${t.displayName()}
 
 ```
 wd_LocSet_AllFieldsArr {
@@ -20802,7 +20802,7 @@ wd_LocSet_AllFieldsArr {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_AllObjects
+## ${t.displayName()}
 
 ```
 wd_LocSet_AllObjects {
@@ -20812,7 +20812,7 @@ wd_LocSet_AllObjects {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_ArrRange
+## ${t.displayName()}
 
 ```
 wd_LocSet_ArrRange {
@@ -20823,7 +20823,7 @@ wd_LocSet_ArrRange {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_Diff
+## ${t.displayName()}
 
 ```
 wd_LocSet_Diff {
@@ -20833,7 +20833,7 @@ wd_LocSet_Diff {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_FreshLocs
+## ${t.displayName()}
 
 ```
 wd_LocSet_FreshLocs {
@@ -20843,7 +20843,7 @@ wd_LocSet_FreshLocs {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_InfiniteUnion
+## ${t.displayName()}
 
 ```
 wd_LocSet_InfiniteUnion {
@@ -20853,7 +20853,7 @@ wd_LocSet_InfiniteUnion {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_InfiniteUnion
+## ${t.displayName()}
 
 ```
 wd_LocSet_InfiniteUnion2 {
@@ -20863,7 +20863,7 @@ wd_LocSet_InfiniteUnion2 {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_Intersect
+## ${t.displayName()}
 
 ```
 wd_LocSet_Intersect {
@@ -20873,7 +20873,7 @@ wd_LocSet_Intersect {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_Pred_Disjoint
+## ${t.displayName()}
 
 ```
 wd_LocSet_Pred_Disjoint {
@@ -20883,7 +20883,7 @@ wd_LocSet_Pred_Disjoint {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_Pred_ElementOf
+## ${t.displayName()}
 
 ```
 wd_LocSet_Pred_ElementOf {
@@ -20894,7 +20894,7 @@ wd_LocSet_Pred_ElementOf {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_Pred_ElementOf_Static
+## ${t.displayName()}
 
 ```
 wd_LocSet_Pred_ElementOf_Static {
@@ -20905,7 +20905,7 @@ wd_LocSet_Pred_ElementOf_Static {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_Pred_InHeap
+## ${t.displayName()}
 
 ```
 wd_LocSet_Pred_InHeap {
@@ -20915,7 +20915,7 @@ wd_LocSet_Pred_InHeap {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_Pred_Subset
+## ${t.displayName()}
 
 ```
 wd_LocSet_Pred_Subset {
@@ -20925,7 +20925,7 @@ wd_LocSet_Pred_Subset {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_Singleton
+## ${t.displayName()}
 
 ```
 wd_LocSet_Singleton {
@@ -20936,7 +20936,7 @@ wd_LocSet_Singleton {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_Singleton_Arr
+## ${t.displayName()}
 
 ```
 wd_LocSet_Singleton_Arr {
@@ -20947,7 +20947,7 @@ wd_LocSet_Singleton_Arr {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_Singleton_Quant
+## ${t.displayName()}
 
 ```
 wd_LocSet_Singleton_Quant {
@@ -20958,7 +20958,7 @@ wd_LocSet_Singleton_Quant {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_Singleton_Static
+## ${t.displayName()}
 
 ```
 wd_LocSet_Singleton_Static {
@@ -20969,7 +20969,7 @@ wd_LocSet_Singleton_Static {
 Choices: {wdChecks:on}}
 ```
 
-## wd_LocSet_Union
+## ${t.displayName()}
 
 ```
 wd_LocSet_Union {
@@ -20979,7 +20979,7 @@ wd_LocSet_Union {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Logical_Op_And
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_And {
@@ -20990,7 +20990,7 @@ wd_Logical_Op_And {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Op_And
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_And {
@@ -21000,7 +21000,7 @@ wd_Logical_Op_And {
 Choices: {wdOperator:D,wdChecks:on}}
 ```
 
-## wd_Logical_Op_AndSC
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_AndSC {
@@ -21011,7 +21011,7 @@ wd_Logical_Op_AndSC {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Cond_Expr
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Cond_Expr {
@@ -21021,7 +21021,7 @@ wd_Logical_Op_Cond_Expr {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Cond_Expr
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Cond_Expr {
@@ -21031,7 +21031,7 @@ wd_Logical_Op_Cond_Expr {
 Choices: {wdOperator:D,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Cond_Expr
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Cond_Expr {
@@ -21041,7 +21041,7 @@ wd_Logical_Op_Cond_Expr {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Cond_Form
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Cond_Form {
@@ -21051,7 +21051,7 @@ wd_Logical_Op_Cond_Form {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Cond_Form
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Cond_Form {
@@ -21061,7 +21061,7 @@ wd_Logical_Op_Cond_Form {
 Choices: {wdOperator:D,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Eqv
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Eqv {
@@ -21071,7 +21071,7 @@ wd_Logical_Op_Eqv {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Eqv
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Eqv {
@@ -21081,7 +21081,7 @@ wd_Logical_Op_Eqv {
 Choices: {wdOperator:D,wdChecks:on}}
 ```
 
-## wd_Logical_Op_ExCond_Expr
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_ExCond_Expr {
@@ -21092,7 +21092,7 @@ wd_Logical_Op_ExCond_Expr {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Op_ExCond_Expr
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_ExCond_Expr {
@@ -21103,7 +21103,7 @@ wd_Logical_Op_ExCond_Expr {
 Choices: {wdOperator:D,wdChecks:on}}
 ```
 
-## wd_Logical_Op_ExCond_Expr
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_ExCond_Expr {
@@ -21114,7 +21114,7 @@ wd_Logical_Op_ExCond_Expr {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_Logical_Op_ExCond_Form
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_ExCond_Form {
@@ -21125,7 +21125,7 @@ wd_Logical_Op_ExCond_Form {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Op_ExCond_Form
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_ExCond_Form {
@@ -21136,7 +21136,7 @@ wd_Logical_Op_ExCond_Form {
 Choices: {wdOperator:D,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Imp
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Imp {
@@ -21146,7 +21146,7 @@ wd_Logical_Op_Imp {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Imp
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Imp {
@@ -21156,7 +21156,7 @@ wd_Logical_Op_Imp {
 Choices: {wdOperator:D,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Neg
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Neg {
@@ -21166,7 +21166,7 @@ wd_Logical_Op_Neg {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Neg
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Neg {
@@ -21176,7 +21176,7 @@ wd_Logical_Op_Neg {
 Choices: {wdOperator:D,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Or
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Or {
@@ -21187,7 +21187,7 @@ wd_Logical_Op_Or {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Op_Or
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_Or {
@@ -21197,7 +21197,7 @@ wd_Logical_Op_Or {
 Choices: {wdOperator:D,wdChecks:on}}
 ```
 
-## wd_Logical_Op_OrSC
+## ${t.displayName()}
 
 ```
 wd_Logical_Op_OrSC {
@@ -21208,7 +21208,7 @@ wd_Logical_Op_OrSC {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Quant_All
+## ${t.displayName()}
 
 ```
 wd_Logical_Quant_All {
@@ -21218,7 +21218,7 @@ wd_Logical_Quant_All {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Quant_All
+## ${t.displayName()}
 
 ```
 wd_Logical_Quant_All {
@@ -21228,7 +21228,7 @@ wd_Logical_Quant_All {
 Choices: {wdOperator:D,wdChecks:on}}
 ```
 
-## wd_Logical_Quant_Exist
+## ${t.displayName()}
 
 ```
 wd_Logical_Quant_Exist {
@@ -21238,7 +21238,7 @@ wd_Logical_Quant_Exist {
 Choices: {wdOperator:L,wdChecks:on}}
 ```
 
-## wd_Logical_Quant_Exist
+## ${t.displayName()}
 
 ```
 wd_Logical_Quant_Exist {
@@ -21248,7 +21248,7 @@ wd_Logical_Quant_Exist {
 Choices: {wdOperator:D,wdChecks:on}}
 ```
 
-## wd_Numerical_Cast
+## ${t.displayName()}
 
 ```
 wd_Numerical_Cast_Byte {
@@ -21258,7 +21258,7 @@ wd_Numerical_Cast_Byte {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Cast
+## ${t.displayName()}
 
 ```
 wd_Numerical_Cast_ByteOverFlow {
@@ -21268,7 +21268,7 @@ wd_Numerical_Cast_ByteOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Cast
+## ${t.displayName()}
 
 ```
 wd_Numerical_Cast_Char {
@@ -21278,7 +21278,7 @@ wd_Numerical_Cast_Char {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Cast
+## ${t.displayName()}
 
 ```
 wd_Numerical_Cast_CharOverFlow {
@@ -21288,7 +21288,7 @@ wd_Numerical_Cast_CharOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Cast
+## ${t.displayName()}
 
 ```
 wd_Numerical_Cast_Int {
@@ -21298,7 +21298,7 @@ wd_Numerical_Cast_Int {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Cast
+## ${t.displayName()}
 
 ```
 wd_Numerical_Cast_IntOverFlow {
@@ -21308,7 +21308,7 @@ wd_Numerical_Cast_IntOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Cast
+## ${t.displayName()}
 
 ```
 wd_Numerical_Cast_Long {
@@ -21318,7 +21318,7 @@ wd_Numerical_Cast_Long {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Cast
+## ${t.displayName()}
 
 ```
 wd_Numerical_Cast_LongOverFlow {
@@ -21328,7 +21328,7 @@ wd_Numerical_Cast_LongOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Cast
+## ${t.displayName()}
 
 ```
 wd_Numerical_Cast_Short {
@@ -21338,7 +21338,7 @@ wd_Numerical_Cast_Short {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Cast
+## ${t.displayName()}
 
 ```
 wd_Numerical_Cast_ShortOverFlow {
@@ -21348,7 +21348,7 @@ wd_Numerical_Cast_ShortOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Const
+## ${t.displayName()}
 
 ```
 wd_Numerical_Const {
@@ -21358,7 +21358,7 @@ wd_Numerical_Const {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Const
+## ${t.displayName()}
 
 ```
 wd_Numerical_Const_C {
@@ -21368,7 +21368,7 @@ wd_Numerical_Const_C {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Const
+## ${t.displayName()}
 
 ```
 wd_Numerical_Const_Z {
@@ -21378,7 +21378,7 @@ wd_Numerical_Const_Z {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Mod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Mod_Byte {
@@ -21388,7 +21388,7 @@ wd_Numerical_Mod_Byte {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Mod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Mod_Char {
@@ -21398,7 +21398,7 @@ wd_Numerical_Mod_Char {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Mod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Mod_Int {
@@ -21408,7 +21408,7 @@ wd_Numerical_Mod_Int {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Mod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Mod_Long {
@@ -21418,7 +21418,7 @@ wd_Numerical_Mod_Long {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Mod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Mod_Short {
@@ -21428,7 +21428,7 @@ wd_Numerical_Mod_Short {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Add
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_Add {
@@ -21438,7 +21438,7 @@ wd_Numerical_Op_Add {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Add
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_AddInt {
@@ -21448,7 +21448,7 @@ wd_Numerical_Op_AddInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Add
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_AddIntOverFlow {
@@ -21458,7 +21458,7 @@ wd_Numerical_Op_AddIntOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Add
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_AddJInt {
@@ -21468,7 +21468,7 @@ wd_Numerical_Op_AddJInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Add
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_AddJLong {
@@ -21478,7 +21478,7 @@ wd_Numerical_Op_AddJLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Add
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_AddLong {
@@ -21488,7 +21488,7 @@ wd_Numerical_Op_AddLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Add
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_AddLongOverFlow {
@@ -21498,7 +21498,7 @@ wd_Numerical_Op_AddLongOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_And
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_AndJInt {
@@ -21508,7 +21508,7 @@ wd_Numerical_Op_AndJInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_And
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_AndJLong {
@@ -21518,7 +21518,7 @@ wd_Numerical_Op_AndJLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_And
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_BitAndInt {
@@ -21528,7 +21528,7 @@ wd_Numerical_Op_BitAndInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_And
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_BitAndLong {
@@ -21538,7 +21538,7 @@ wd_Numerical_Op_BitAndLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Neg
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_BitNeg {
@@ -21548,7 +21548,7 @@ wd_Numerical_Op_BitNeg {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Or
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_BitOrInt {
@@ -21558,7 +21558,7 @@ wd_Numerical_Op_BitOrInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Or
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_BitOrLong {
@@ -21568,7 +21568,7 @@ wd_Numerical_Op_BitOrLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Xor
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_BitXOrInt {
@@ -21578,7 +21578,7 @@ wd_Numerical_Op_BitXOrInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Xor
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_BitXOrLong {
@@ -21588,7 +21588,7 @@ wd_Numerical_Op_BitXOrLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Div
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_Div {
@@ -21598,7 +21598,7 @@ wd_Numerical_Op_Div {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Div
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_DivInt {
@@ -21608,7 +21608,7 @@ wd_Numerical_Op_DivInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Div
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_DivIntOverFlow {
@@ -21618,7 +21618,7 @@ wd_Numerical_Op_DivIntOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Div
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_DivJInt {
@@ -21628,7 +21628,7 @@ wd_Numerical_Op_DivJInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Div
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_DivJLong {
@@ -21638,7 +21638,7 @@ wd_Numerical_Op_DivJLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Div
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_DivLong {
@@ -21648,7 +21648,7 @@ wd_Numerical_Op_DivLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Div
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_DivLongOverFlow {
@@ -21658,7 +21658,7 @@ wd_Numerical_Op_DivLongOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Div
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_JDiv {
@@ -21668,7 +21668,7 @@ wd_Numerical_Op_JDiv {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_JMod {
@@ -21678,7 +21678,7 @@ wd_Numerical_Op_JMod {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_JavaMod {
@@ -21688,7 +21688,7 @@ wd_Numerical_Op_JavaMod {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_JavaModOverFlow {
@@ -21698,7 +21698,7 @@ wd_Numerical_Op_JavaModOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_ShiftLeft
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_JavaShiftLeftInt {
@@ -21708,7 +21708,7 @@ wd_Numerical_Op_JavaShiftLeftInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_ShiftLeft
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_JavaShiftLeftLong {
@@ -21718,7 +21718,7 @@ wd_Numerical_Op_JavaShiftLeftLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_ShiftRight
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_JavaShiftRightInt {
@@ -21728,7 +21728,7 @@ wd_Numerical_Op_JavaShiftRightInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_ShiftRight
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_JavaShiftRightLong {
@@ -21738,7 +21738,7 @@ wd_Numerical_Op_JavaShiftRightLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_ShiftRight
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_JavaUnsignedShiftRightInt {
@@ -21748,7 +21748,7 @@ wd_Numerical_Op_JavaUnsignedShiftRightInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_ShiftRight
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_JavaUnsignedShiftRightLong {
@@ -21758,7 +21758,7 @@ wd_Numerical_Op_JavaUnsignedShiftRightLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Minus
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_MinusInt {
@@ -21768,7 +21768,7 @@ wd_Numerical_Op_MinusInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Minus
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_MinusIntOverFlow {
@@ -21778,7 +21778,7 @@ wd_Numerical_Op_MinusIntOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Minus
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_MinusJInt {
@@ -21788,7 +21788,7 @@ wd_Numerical_Op_MinusJInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Minus
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_MinusJLong {
@@ -21798,7 +21798,7 @@ wd_Numerical_Op_MinusJLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Minus
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_MinusLong {
@@ -21808,7 +21808,7 @@ wd_Numerical_Op_MinusLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Minus
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_MinusLongOverFlow {
@@ -21818,7 +21818,7 @@ wd_Numerical_Op_MinusLongOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_Mod {
@@ -21828,7 +21828,7 @@ wd_Numerical_Op_Mod {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_ModJInt {
@@ -21838,7 +21838,7 @@ wd_Numerical_Op_ModJInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_ModJLong {
@@ -21848,7 +21848,7 @@ wd_Numerical_Op_ModJLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mul
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_Mul {
@@ -21858,7 +21858,7 @@ wd_Numerical_Op_Mul {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mul
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_MulInt {
@@ -21868,7 +21868,7 @@ wd_Numerical_Op_MulInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mul
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_MulIntOverFlow {
@@ -21878,7 +21878,7 @@ wd_Numerical_Op_MulIntOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mul
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_MulJInt {
@@ -21888,7 +21888,7 @@ wd_Numerical_Op_MulJInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mul
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_MulJLong {
@@ -21898,7 +21898,7 @@ wd_Numerical_Op_MulJLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mul
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_MulLong {
@@ -21908,7 +21908,7 @@ wd_Numerical_Op_MulLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Mul
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_MulLongOverFlow {
@@ -21918,7 +21918,7 @@ wd_Numerical_Op_MulLongOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Neg
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_Neg {
@@ -21928,7 +21928,7 @@ wd_Numerical_Op_Neg {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Or
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_OrJInt {
@@ -21938,7 +21938,7 @@ wd_Numerical_Op_OrJInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Or
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_OrJLong {
@@ -21948,7 +21948,7 @@ wd_Numerical_Op_OrJLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_ShiftLeft
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_ShiftLeftInt {
@@ -21958,7 +21958,7 @@ wd_Numerical_Op_ShiftLeftInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_ShiftLeft
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_ShiftLeftLong {
@@ -21968,7 +21968,7 @@ wd_Numerical_Op_ShiftLeftLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_ShiftRight
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_ShiftRightInt {
@@ -21978,7 +21978,7 @@ wd_Numerical_Op_ShiftRightInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_ShiftRight
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_ShiftRightLong {
@@ -21988,7 +21988,7 @@ wd_Numerical_Op_ShiftRightLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Sub
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_Sub {
@@ -21998,7 +21998,7 @@ wd_Numerical_Op_Sub {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Sub
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_SubInt {
@@ -22008,7 +22008,7 @@ wd_Numerical_Op_SubInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Sub
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_SubIntOverFlow {
@@ -22018,7 +22018,7 @@ wd_Numerical_Op_SubIntOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Sub
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_SubJInt {
@@ -22028,7 +22028,7 @@ wd_Numerical_Op_SubJInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Sub
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_SubJLong {
@@ -22038,7 +22038,7 @@ wd_Numerical_Op_SubJLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Sub
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_SubLong {
@@ -22048,7 +22048,7 @@ wd_Numerical_Op_SubLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Sub
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_SubLongOverFlow {
@@ -22058,7 +22058,7 @@ wd_Numerical_Op_SubLongOverFlow {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_ShiftRight
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_UShiftRightInt {
@@ -22068,7 +22068,7 @@ wd_Numerical_Op_UShiftRightInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_ShiftRight
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_UShiftRightLong {
@@ -22078,7 +22078,7 @@ wd_Numerical_Op_UShiftRightLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Xor
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_XorJInt {
@@ -22088,7 +22088,7 @@ wd_Numerical_Op_XorJInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Op_Xor
+## ${t.displayName()}
 
 ```
 wd_Numerical_Op_XorJLong {
@@ -22098,7 +22098,7 @@ wd_Numerical_Op_XorJLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Pred_Geq
+## ${t.displayName()}
 
 ```
 wd_Numerical_Pred_Geq {
@@ -22108,7 +22108,7 @@ wd_Numerical_Pred_Geq {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Pred_Gt
+## ${t.displayName()}
 
 ```
 wd_Numerical_Pred_Gt {
@@ -22118,7 +22118,7 @@ wd_Numerical_Pred_Gt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Pred_InByte
+## ${t.displayName()}
 
 ```
 wd_Numerical_Pred_InByte {
@@ -22128,7 +22128,7 @@ wd_Numerical_Pred_InByte {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Pred_InChar
+## ${t.displayName()}
 
 ```
 wd_Numerical_Pred_InChar {
@@ -22138,7 +22138,7 @@ wd_Numerical_Pred_InChar {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Pred_InInt
+## ${t.displayName()}
 
 ```
 wd_Numerical_Pred_InInt {
@@ -22148,7 +22148,7 @@ wd_Numerical_Pred_InInt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Pred_InLong
+## ${t.displayName()}
 
 ```
 wd_Numerical_Pred_InLong {
@@ -22158,7 +22158,7 @@ wd_Numerical_Pred_InLong {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Pred_InShort
+## ${t.displayName()}
 
 ```
 wd_Numerical_Pred_InShort {
@@ -22168,7 +22168,7 @@ wd_Numerical_Pred_InShort {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Pred_Leq
+## ${t.displayName()}
 
 ```
 wd_Numerical_Pred_Leq {
@@ -22178,7 +22178,7 @@ wd_Numerical_Pred_Leq {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Pred_Lt
+## ${t.displayName()}
 
 ```
 wd_Numerical_Pred_Lt {
@@ -22188,7 +22188,7 @@ wd_Numerical_Pred_Lt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Pred_WellOrdered
+## ${t.displayName()}
 
 ```
 wd_Numerical_Pred_WellOrdered {
@@ -22198,7 +22198,7 @@ wd_Numerical_Pred_WellOrdered {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Quant_Bprod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Quant_Bprod {
@@ -22209,7 +22209,7 @@ wd_Numerical_Quant_Bprod {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Quant_Bsum
+## ${t.displayName()}
 
 ```
 wd_Numerical_Quant_Bsum {
@@ -22220,7 +22220,7 @@ wd_Numerical_Quant_Bsum {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Quant_Max
+## ${t.displayName()}
 
 ```
 wd_Numerical_Quant_Max {
@@ -22230,7 +22230,7 @@ wd_Numerical_Quant_Max {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Quant_Min
+## ${t.displayName()}
 
 ```
 wd_Numerical_Quant_Min {
@@ -22240,7 +22240,7 @@ wd_Numerical_Quant_Min {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Quant_Prod
+## ${t.displayName()}
 
 ```
 wd_Numerical_Quant_Prod {
@@ -22250,7 +22250,7 @@ wd_Numerical_Quant_Prod {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Numerical_Quant_Sum
+## ${t.displayName()}
 
 ```
 wd_Numerical_Quant_Sum {
@@ -22260,7 +22260,7 @@ wd_Numerical_Quant_Sum {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Pair
+## ${t.displayName()}
 
 ```
 wd_Pair {
@@ -22270,7 +22270,7 @@ wd_Pair {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Reach_Pred_Acc
+## ${t.displayName()}
 
 ```
 wd_Reach_Pred_Acc {
@@ -22280,7 +22280,7 @@ wd_Reach_Pred_Acc {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Reach_Pred_Reach
+## ${t.displayName()}
 
 ```
 wd_Reach_Pred_Reach {
@@ -22290,7 +22290,7 @@ wd_Reach_Pred_Reach {
 Choices: {wdChecks:on}}
 ```
 
-## wd_RegEx
+## ${t.displayName()}
 
 ```
 wd_RegEx {
@@ -22300,7 +22300,7 @@ wd_RegEx {
 Choices: {wdChecks:on}}
 ```
 
-## wd_RegEx_Alt
+## ${t.displayName()}
 
 ```
 wd_RegEx_Alt {
@@ -22310,7 +22310,7 @@ wd_RegEx_Alt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_RegEx_Concat
+## ${t.displayName()}
 
 ```
 wd_RegEx_Concat {
@@ -22320,7 +22320,7 @@ wd_RegEx_Concat {
 Choices: {wdChecks:on}}
 ```
 
-## wd_RegEx_Opt
+## ${t.displayName()}
 
 ```
 wd_RegEx_Opt {
@@ -22330,7 +22330,7 @@ wd_RegEx_Opt {
 Choices: {wdChecks:on}}
 ```
 
-## wd_RegEx_Plus
+## ${t.displayName()}
 
 ```
 wd_RegEx_Plus {
@@ -22340,7 +22340,7 @@ wd_RegEx_Plus {
 Choices: {wdChecks:on}}
 ```
 
-## wd_RegEx_Pred_Match
+## ${t.displayName()}
 
 ```
 wd_RegEx_Pred_Match {
@@ -22350,7 +22350,7 @@ wd_RegEx_Pred_Match {
 Choices: {wdChecks:on}}
 ```
 
-## wd_RegEx_Repeat
+## ${t.displayName()}
 
 ```
 wd_RegEx_Repeat {
@@ -22360,7 +22360,7 @@ wd_RegEx_Repeat {
 Choices: {wdChecks:on}}
 ```
 
-## wd_RegEx_Star
+## ${t.displayName()}
 
 ```
 wd_RegEx_Star {
@@ -22370,7 +22370,7 @@ wd_RegEx_Star {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_Concat
+## ${t.displayName()}
 
 ```
 wd_Seq_Concat {
@@ -22380,7 +22380,7 @@ wd_Seq_Concat {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_Def
+## ${t.displayName()}
 
 ```
 wd_Seq_Def {
@@ -22391,7 +22391,7 @@ wd_Seq_Def {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_Get
+## ${t.displayName()}
 
 ```
 wd_Seq_Get {
@@ -22401,7 +22401,7 @@ wd_Seq_Get {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_IndexOf
+## ${t.displayName()}
 
 ```
 wd_Seq_IndexOf {
@@ -22411,7 +22411,7 @@ wd_Seq_IndexOf {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_Length
+## ${t.displayName()}
 
 ```
 wd_Seq_Length {
@@ -22421,7 +22421,7 @@ wd_Seq_Length {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_NPermInv
+## ${t.displayName()}
 
 ```
 wd_Seq_NPermInv {
@@ -22431,7 +22431,7 @@ wd_Seq_NPermInv {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_Pred_NPerm
+## ${t.displayName()}
 
 ```
 wd_Seq_Pred_NPerm {
@@ -22441,7 +22441,7 @@ wd_Seq_Pred_NPerm {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_Pred_Perm
+## ${t.displayName()}
 
 ```
 wd_Seq_Pred_Perm {
@@ -22451,7 +22451,7 @@ wd_Seq_Pred_Perm {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_Remove
+## ${t.displayName()}
 
 ```
 wd_Seq_Remove {
@@ -22461,7 +22461,7 @@ wd_Seq_Remove {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_Reverse
+## ${t.displayName()}
 
 ```
 wd_Seq_Reverse {
@@ -22471,7 +22471,7 @@ wd_Seq_Reverse {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_Singleton
+## ${t.displayName()}
 
 ```
 wd_Seq_Singleton {
@@ -22481,7 +22481,7 @@ wd_Seq_Singleton {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_Sub
+## ${t.displayName()}
 
 ```
 wd_Seq_Sub {
@@ -22491,7 +22491,7 @@ wd_Seq_Sub {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Seq_Swap
+## ${t.displayName()}
 
 ```
 wd_Seq_Swap {
@@ -22501,7 +22501,7 @@ wd_Seq_Swap {
 Choices: {wdChecks:on}}
 ```
 
-## wd_String_Hash
+## ${t.displayName()}
 
 ```
 wd_String_Hash {
@@ -22511,7 +22511,7 @@ wd_String_Hash {
 Choices: {wdChecks:on}}
 ```
 
-## wd_String_IndexOfChar
+## ${t.displayName()}
 
 ```
 wd_String_IndexOfChar {
@@ -22521,7 +22521,7 @@ wd_String_IndexOfChar {
 Choices: {wdChecks:on}}
 ```
 
-## wd_String_IndexOfStr
+## ${t.displayName()}
 
 ```
 wd_String_IndexOfStr {
@@ -22531,7 +22531,7 @@ wd_String_IndexOfStr {
 Choices: {wdChecks:on}}
 ```
 
-## wd_String_LastIndexOfChar
+## ${t.displayName()}
 
 ```
 wd_String_LastIndexOfChar {
@@ -22541,7 +22541,7 @@ wd_String_LastIndexOfChar {
 Choices: {wdChecks:on}}
 ```
 
-## wd_String_LastIndexOfStr
+## ${t.displayName()}
 
 ```
 wd_String_LastIndexOfStr {
@@ -22551,7 +22551,7 @@ wd_String_LastIndexOfStr {
 Choices: {wdChecks:on}}
 ```
 
-## wd_String_Pred_Contains
+## ${t.displayName()}
 
 ```
 wd_String_Pred_Contains {
@@ -22561,7 +22561,7 @@ wd_String_Pred_Contains {
 Choices: {wdChecks:on}}
 ```
 
-## wd_String_Pred_EndsWith
+## ${t.displayName()}
 
 ```
 wd_String_Pred_EndsWith {
@@ -22571,7 +22571,7 @@ wd_String_Pred_EndsWith {
 Choices: {wdChecks:on}}
 ```
 
-## wd_String_Pred_StartsWith
+## ${t.displayName()}
 
 ```
 wd_String_Pred_StartsWith {
@@ -22581,7 +22581,7 @@ wd_String_Pred_StartsWith {
 Choices: {wdChecks:on}}
 ```
 
-## wd_String_Replace
+## ${t.displayName()}
 
 ```
 wd_String_Replace {
@@ -22591,7 +22591,7 @@ wd_String_Replace {
 Choices: {wdChecks:on}}
 ```
 
-## wd_String_RmvZeros
+## ${t.displayName()}
 
 ```
 wd_String_RmvZeros {
@@ -22601,7 +22601,7 @@ wd_String_RmvZeros {
 Choices: {wdChecks:on}}
 ```
 
-## wd_String_Translate
+## ${t.displayName()}
 
 ```
 wd_String_Translate {
@@ -22611,7 +22611,7 @@ wd_String_Translate {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Subst_Formula
+## ${t.displayName()}
 
 ```
 wd_Subst_Formula {
@@ -22621,7 +22621,7 @@ wd_Subst_Formula {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Subst_Term
+## ${t.displayName()}
 
 ```
 wd_Subst_Term {
@@ -22631,7 +22631,7 @@ wd_Subst_Term {
 Choices: {wdChecks:on}}
 ```
 
-## wd_T_Logical_Op_And
+## ${t.displayName()}
 
 ```
 wd_T_Logical_Op_And {
@@ -22641,7 +22641,7 @@ wd_T_Logical_Op_And {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_T_Logical_Op_Cond_Form
+## ${t.displayName()}
 
 ```
 wd_T_Logical_Op_Cond_Form {
@@ -22651,7 +22651,7 @@ wd_T_Logical_Op_Cond_Form {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_T_Logical_Op_Eqv
+## ${t.displayName()}
 
 ```
 wd_T_Logical_Op_Eqv {
@@ -22661,7 +22661,7 @@ wd_T_Logical_Op_Eqv {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_T_Logical_Op_ExCond_Form
+## ${t.displayName()}
 
 ```
 wd_T_Logical_Op_ExCond_Form {
@@ -22672,7 +22672,7 @@ wd_T_Logical_Op_ExCond_Form {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_T_Logical_Op_Imp
+## ${t.displayName()}
 
 ```
 wd_T_Logical_Op_Imp {
@@ -22682,7 +22682,7 @@ wd_T_Logical_Op_Imp {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_T_Logical_Op_Neg
+## ${t.displayName()}
 
 ```
 wd_T_Logical_Op_Neg {
@@ -22692,7 +22692,7 @@ wd_T_Logical_Op_Neg {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_T_Logical_Op_Or
+## ${t.displayName()}
 
 ```
 wd_T_Logical_Op_Or {
@@ -22702,7 +22702,7 @@ wd_T_Logical_Op_Or {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_T_Logical_Quant_All
+## ${t.displayName()}
 
 ```
 wd_T_Logical_Quant_All {
@@ -22712,7 +22712,7 @@ wd_T_Logical_Quant_All {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_T_Logical_Quant_Exist
+## ${t.displayName()}
 
 ```
 wd_T_Logical_Quant_Exist {
@@ -22722,7 +22722,7 @@ wd_T_Logical_Quant_Exist {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_T_Resolve
+## ${t.displayName()}
 
 ```
 wd_T_Resolve {
@@ -22733,7 +22733,7 @@ wd_T_Resolve {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wd_T_Subst_Formula
+## ${t.displayName()}
 
 ```
 wd_T_Subst_Formula {
@@ -22743,7 +22743,7 @@ wd_T_Subst_Formula {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Type_Cast
+## ${t.displayName()}
 
 ```
 wd_Type_Cast {
@@ -22753,7 +22753,7 @@ wd_Type_Cast {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Type_ExactInstance
+## ${t.displayName()}
 
 ```
 wd_Type_ExactInstance {
@@ -22763,7 +22763,7 @@ wd_Type_ExactInstance {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Type_Instance
+## ${t.displayName()}
 
 ```
 wd_Type_Instance {
@@ -22773,7 +22773,7 @@ wd_Type_Instance {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Undef_Formula
+## ${t.displayName()}
 
 ```
 wd_Undef_Formula {
@@ -22784,7 +22784,7 @@ wd_Undef_Formula {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Undef_Term
+## ${t.displayName()}
 
 ```
 wd_Undef_Term {
@@ -22795,7 +22795,7 @@ wd_Undef_Term {
 Choices: {wdChecks:on}}
 ```
 
-## wd_Y_Split
+## ${t.displayName()}
 
 ```
 wd_Y_Split {
@@ -22806,7 +22806,7 @@ wd_Y_Split {
 Choices: {wdOperator:Y,wdChecks:on}}
 ```
 
-## wellFormedAnon
+## ${t.displayName()}
 
 ```
 wellFormedAnon {
@@ -22816,7 +22816,7 @@ wellFormedAnon {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedAnonEQ
+## ${t.displayName()}
 
 ```
 wellFormedAnonEQ {
@@ -22827,7 +22827,7 @@ wellFormedAnonEQ {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedCreate
+## ${t.displayName()}
 
 ```
 wellFormedCreate {
@@ -22837,7 +22837,7 @@ wellFormedCreate {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedMemsetArrayObject
+## ${t.displayName()}
 
 ```
 wellFormedMemsetArrayObject {
@@ -22848,7 +22848,7 @@ wellFormedMemsetArrayObject {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedMemsetArrayPrimitive
+## ${t.displayName()}
 
 ```
 wellFormedMemsetArrayPrimitive {
@@ -22859,7 +22859,7 @@ wellFormedMemsetArrayPrimitive {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedMemsetLocSetEQ
+## ${t.displayName()}
 
 ```
 wellFormedMemsetLocSetEQ {
@@ -22870,7 +22870,7 @@ wellFormedMemsetLocSetEQ {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedMemsetObjectEQ
+## ${t.displayName()}
 
 ```
 wellFormedMemsetObjectEQ {
@@ -22881,7 +22881,7 @@ wellFormedMemsetObjectEQ {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedMemsetPrimitiveEQ
+## ${t.displayName()}
 
 ```
 wellFormedMemsetPrimitiveEQ {
@@ -22893,7 +22893,7 @@ wellFormedMemsetPrimitiveEQ {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedStoreArray
+## ${t.displayName()}
 
 ```
 wellFormedStoreArray {
@@ -22904,7 +22904,7 @@ wellFormedStoreArray {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedStoreLocSet
+## ${t.displayName()}
 
 ```
 wellFormedStoreLocSet {
@@ -22915,7 +22915,7 @@ wellFormedStoreLocSet {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedStoreLocSetEQ
+## ${t.displayName()}
 
 ```
 wellFormedStoreLocSetEQ {
@@ -22926,7 +22926,7 @@ wellFormedStoreLocSetEQ {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedStoreObject
+## ${t.displayName()}
 
 ```
 wellFormedStoreObject {
@@ -22937,7 +22937,7 @@ wellFormedStoreObject {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedStoreObjectEQ
+## ${t.displayName()}
 
 ```
 wellFormedStoreObjectEQ {
@@ -22948,7 +22948,7 @@ wellFormedStoreObjectEQ {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedStorePrimitive
+## ${t.displayName()}
 
 ```
 wellFormedStorePrimitive {
@@ -22959,7 +22959,7 @@ wellFormedStorePrimitive {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedStorePrimitiveArray
+## ${t.displayName()}
 
 ```
 wellFormedStorePrimitiveArray {
@@ -22970,7 +22970,7 @@ wellFormedStorePrimitiveArray {
 Choices: {programRules:Java}}
 ```
 
-## wellFormedStorePrimitiveEQ
+## ${t.displayName()}
 
 ```
 wellFormedStorePrimitiveEQ {
@@ -22982,7 +22982,7 @@ wellFormedStorePrimitiveEQ {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 widening_identity_cast_1 {
@@ -22992,7 +22992,7 @@ widening_identity_cast_1 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 widening_identity_cast_10 {
@@ -23002,7 +23002,7 @@ widening_identity_cast_10 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 widening_identity_cast_11 {
@@ -23012,7 +23012,7 @@ widening_identity_cast_11 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 widening_identity_cast_12 {
@@ -23022,7 +23022,7 @@ widening_identity_cast_12 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 widening_identity_cast_13 {
@@ -23032,7 +23032,7 @@ widening_identity_cast_13 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 widening_identity_cast_2 {
@@ -23042,7 +23042,7 @@ widening_identity_cast_2 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 widening_identity_cast_3 {
@@ -23052,7 +23052,7 @@ widening_identity_cast_3 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 widening_identity_cast_4 {
@@ -23062,7 +23062,7 @@ widening_identity_cast_4 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 widening_identity_cast_5 {
@@ -23072,7 +23072,7 @@ widening_identity_cast_5 {
 Choices: {programRules:Java}}
 ```
 
-## cast
+## ${t.displayName()}
 
 ```
 widening_identity_cast_bigint {
@@ -23082,7 +23082,7 @@ widening_identity_cast_bigint {
 Choices: {bigint:on,programRules:Java}}
 ```
 
-## writePermission
+## ${t.displayName()}
 
 ```
 writePermission {
@@ -23092,7 +23092,7 @@ writePermission {
 Choices: {}}
 ```
 
-## writePermissionAfterFullTransfer
+## ${t.displayName()}
 
 ```
 writePermissionAfterFullTransfer {
@@ -23103,7 +23103,7 @@ writePermissionAfterFullTransfer {
 Choices: {permissions:on}}
 ```
 
-## writePermissionAfterFullTransferEQ
+## ${t.displayName()}
 
 ```
 writePermissionAfterFullTransferEQ {
@@ -23114,7 +23114,7 @@ writePermissionAfterFullTransferEQ {
 Choices: {permissions:on}}
 ```
 
-## writePermissionAfterReturn
+## ${t.displayName()}
 
 ```
 writePermissionAfterReturn {
@@ -23125,7 +23125,7 @@ writePermissionAfterReturn {
 Choices: {permissions:on}}
 ```
 
-## writePermissionAfterReturnEQ
+## ${t.displayName()}
 
 ```
 writePermissionAfterReturnEQ {
@@ -23136,7 +23136,7 @@ writePermissionAfterReturnEQ {
 Choices: {permissions:on}}
 ```
 
-## writePermissionEmpty
+## ${t.displayName()}
 
 ```
 writePermissionEmpty {
@@ -23146,7 +23146,7 @@ writePermissionEmpty {
 Choices: {permissions:on}}
 ```
 
-## writePermissionImpliesReadPermission
+## ${t.displayName()}
 
 ```
 writePermissionImpliesReadPermission {
@@ -23157,7 +23157,7 @@ writePermissionImpliesReadPermission {
 Choices: {permissions:on}}
 ```
 
-## writePermissionObject
+## ${t.displayName()}
 
 ```
 writePermissionObject {
@@ -23167,7 +23167,7 @@ writePermissionObject {
 Choices: {permissions:off}}
 ```
 
-## writePermissionOtherNoPermissionCurrentRead
+## ${t.displayName()}
 
 ```
 writePermissionOtherNoPermissionCurrentRead {
@@ -23178,7 +23178,7 @@ writePermissionOtherNoPermissionCurrentRead {
 Choices: {permissions:on}}
 ```
 
-## writePermissionOtherNoPermissionCurrentWrite
+## ${t.displayName()}
 
 ```
 writePermissionOtherNoPermissionCurrentWrite {
@@ -23189,7 +23189,7 @@ writePermissionOtherNoPermissionCurrentWrite {
 Choices: {permissions:on}}
 ```
 
-## writePermissionSlice
+## ${t.displayName()}
 
 ```
 writePermissionSlice {
@@ -23199,7 +23199,7 @@ writePermissionSlice {
 Choices: {permissions:on}}
 ```
 
-## xorJIntDef
+## ${t.displayName()}
 
 ```
 xorJIntDef {
@@ -23209,7 +23209,7 @@ xorJIntDef {
 Choices: {}}
 ```
 
-## zadd_left_cancel0
+## ${t.displayName()}
 
 ```
 zadd_left_cancel0 {
@@ -23219,7 +23219,7 @@ zadd_left_cancel0 {
 Choices: {}}
 ```
 
-## zero_leq_mult_iff
+## ${t.displayName()}
 
 ```
 zero_leq_mult_iff {
@@ -23229,7 +23229,7 @@ zero_leq_mult_iff {
 Choices: {}}
 ```
 
-## zero_less_mult_iff
+## ${t.displayName()}
 
 ```
 zero_less_mult_iff {
