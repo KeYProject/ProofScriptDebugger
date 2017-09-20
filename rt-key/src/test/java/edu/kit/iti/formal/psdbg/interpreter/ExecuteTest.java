@@ -36,7 +36,7 @@ public class ExecuteTest {
         System.out.println(i.getCurrentState());
     }
 
-    //@Test
+    @Test
     public void testContrapositionManualWoBranching() throws IOException, ParseException {
         Execute execute = create(
                 getFile(getClass(), "contraposition/contraposition.key"),

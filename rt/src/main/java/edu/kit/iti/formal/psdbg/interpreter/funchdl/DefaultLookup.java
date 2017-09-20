@@ -53,16 +53,21 @@ public class DefaultLookup implements CommandLookup {
             if (b.handles(callStatement)) {
                 foundHandlers.add(b);
                 found = b;
-            } else {
-                //if a proof macro contains a "-" character, the proof script language does not support this.
-                // Therefore we have to check for both versions
-                if (mayBeEscapedMacro) {
-                    String command = callStatement.getCommand();
-                    callStatement.setCommand(command.replace("_", "-"));
-                    if (b.handles(callStatement)) {
-                        foundHandlers.add(b);
-                        found = b;
-                    }
+            }
+        }
+
+        if (found == null && mayBeEscapedMacro) {
+            //if a proof macro contains a "-" character, the proof script language does not support this.
+            // Therefore we have to check for both versions
+            //  if (mayBeEscapedMacro) {
+
+            String command = callStatement.getCommand();
+            callStatement.setCommand(command.replace("_", "-"));
+
+            for (CommandHandler b : builders) {
+                if (b.handles(callStatement)) {
+                    foundHandlers.add(b);
+                    found = b;
                 }
             }
         }

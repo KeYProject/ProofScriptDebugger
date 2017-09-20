@@ -59,7 +59,7 @@ public class InterpreterTest {
         return defaultLookup;
     }
 
-    //@Test
+    @Test
     public void testSimple() throws IOException {
         Interpreter<String> i = execute(getClass().getResourceAsStream("simple1.txt"));
         Assert.assertEquals(10, i.getCurrentState().getGoals().size());
@@ -85,8 +85,8 @@ public class InterpreterTest {
         @Override
         public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
             Map<Variable, Value> m = params.asMap();
-            Value exp = get(m, "exp", "expected", "#1");
-            Value act = get(m, "act", "actual", "#2");
+            Value exp = get(m, "exp", "expected", "#2");
+            Value act = get(m, "act", "actual", "#3");
             Value msg = get(m, "msg", "#4");
             if (msg == null)
                 Assert.assertEquals(exp, act);
@@ -104,8 +104,8 @@ public class InterpreterTest {
         @Override
         public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
             Map<Variable, Value> m = params.asMap();
-            Value<Boolean> exp = get(m, "val", "#1");
-            Value<String> msg = get(m, "msg", "#2");
+            Value<Boolean> exp = get(m, "val", "#2");
+            Value<String> msg = get(m, "msg", "#3");
             if (msg == null)
                 Assert.assertTrue(exp.getData());
             else
