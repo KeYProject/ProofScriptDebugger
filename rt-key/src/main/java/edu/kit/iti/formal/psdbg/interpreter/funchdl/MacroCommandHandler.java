@@ -6,6 +6,7 @@ import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.ProofMacroFinishedInfo;
 import de.uka.ilkd.key.proof.Goal;
+import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -18,6 +19,7 @@ import org.key_project.util.collection.ImmutableList;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -65,9 +67,22 @@ public class MacroCommandHandler implements CommandHandler<KeyData> {
                 ImmutableList<Goal> ngoals = expandedNode.getData().getProof().getSubtreeGoals(expandedNode.getData().getNode());
 
                 state.getGoals().remove(expandedNode);
-                for (Goal g : ngoals) {
-                    KeyData kdn = new KeyData(expandedNode.getData(), g.node());
-                    state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.isClosedNode()));
+                if (ngoals.isEmpty()) {
+                    Node start = expandedNode.getData().getNode();
+                    //start.leavesIterator()
+//                Goal s = kd.getProof().getGoal(start);
+                    Iterator<Node> nodeIterator = start.leavesIterator();
+                    while (nodeIterator.hasNext()) {
+                        Node n = nodeIterator.next();
+                        System.out.println(n.isClosed());
+                    }
+
+                } else {
+
+                    for (Goal g : ngoals) {
+                        KeyData kdn = new KeyData(expandedNode.getData(), g.node());
+                        state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.isClosedNode()));
+                    }
                 }
             }
         } catch (InterruptedException e) {

@@ -6,6 +6,7 @@ import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
 import de.uka.ilkd.key.macros.scripts.meta.ProofScriptArgument;
 import de.uka.ilkd.key.proof.Goal;
+import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -18,6 +19,7 @@ import org.key_project.util.collection.ImmutableList;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -62,13 +64,27 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
             Object cc = c.evaluateArguments(estate, map); //exception?
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
+            //what happens if this is empty -> meaning proof is closed
 
             ImmutableList<Goal> ngoals = kd.getProof().getSubtreeGoals(kd.getNode());
-            state.getGoals().remove(expandedNode);
-            for (Goal g : ngoals) {
-                KeyData kdn = new KeyData(kd, g.node());
-                state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.isClosedNode()));
+            if (ngoals.isEmpty()) {
+                Node start = expandedNode.getData().getNode();
+                //start.leavesIterator()
+//                Goal s = kd.getProof().getGoal(start);
+                Iterator<Node> nodeIterator = start.leavesIterator();
+                while (nodeIterator.hasNext()) {
+                    Node n = nodeIterator.next();
+                    System.out.println(n.isClosed());
+                }
+
+            } else {
+                for (Goal g : ngoals) {
+                    KeyData kdn = new KeyData(kd, g.node());
+                    state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.isClosedNode()));
+                }
             }
+            state.getGoals().remove(expandedNode);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

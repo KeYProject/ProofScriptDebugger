@@ -76,4 +76,17 @@ public class ExecuteTest {
 
 
     }
+
+    @Test
+    public void testLiarsville() throws IOException, ParseException, ParserException {
+        Execute execute = create(
+                getFile(getClass(), "testCasesKeYFiles/liarsville.key"),
+                "-s", getFile(getClass(), "testCasesKeYFiles/liarsvilleAuto.kps"));
+        Interpreter<KeyData> i = execute.run();
+        State<KeyData> currentState = i.getCurrentState();
+        System.out.println(currentState);
+        //This revealed a bug in the interpreter for body of a case
+
+
+    }
 }

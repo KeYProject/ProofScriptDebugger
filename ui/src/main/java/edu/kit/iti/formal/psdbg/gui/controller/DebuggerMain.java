@@ -27,6 +27,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
@@ -734,6 +735,8 @@ public class DebuggerMain implements Initializable {
 
     public void stopDebugMode(ActionEvent actionEvent) {
         scriptController.getDebugPositionHighlighter().remove();
+        Button stop = (Button) actionEvent.getSource();
+        stop.setText("Reload");
         //linenumberMainscript from model?
         //scriptController.getActiveScriptAreaTab().getScriptArea().removeHighlightStmt(lineNumberMainScript);
         //inspectionViewsController.getInspectionViewTab.clear();

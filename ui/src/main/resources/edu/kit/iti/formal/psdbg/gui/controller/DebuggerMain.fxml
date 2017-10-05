@@ -157,14 +157,14 @@
                             </tooltip>
                         </Button>
 
-                        <!--<Button onAction="#stopDebugMode" disable="${! controller.debugMode}">
+                        <Button onAction="#stopDebugMode" disable="${! controller.debugMode}">
                             <graphic>
                                 <MaterialDesignIconView glyphName="STOP" size="24.0"/>
                             </graphic>
                             <tooltip>
                                 <Tooltip text="Stop"/>
                             </tooltip>
-                        </Button>-->
+                        </Button>
                     </items>
                 </ToolBar>
             </children>
