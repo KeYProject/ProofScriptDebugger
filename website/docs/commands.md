@@ -2,7 +2,7 @@
 
 
 
-Generated on: Mon Sep 11 17:22:08 CEST 2017by `gendoc.groovy`.
+Generated on: Tue Sep 19 17:10:07 CEST 2017by `gendoc.groovy`.
 
 Covering the proof script commands of [KeY](http://key-project.org).
 
@@ -18,37 +18,29 @@ a formula #2 to which the command is applied
 
 **Arguments:**
 
-* `#2` :  *TERM* (*R*)
+* `#2` :  *TERM* (*R*)null
 
 ## auto
 > Synopsis: `auto [all=<BOOLEAN>] [steps=<INT>]`
 
 
-The AutoCommand invokes the automatic strategy "Auto"
-
 
 **Arguments:**
 
-* `all` :  *BOOLEAN* 
-* `steps` :  *INT* 
+* `all` :  *BOOLEAN* null
+* `steps` :  *INT* null
 
 ## cut
 > Synopsis: `cut <TERM>`
 
 
-* The command object CutCommand has as scriptcommand name "cut"
-* As parameters:
-* a formula with the id "#2"
-
 
 **Arguments:**
 
-* `#2` :  *TERM* (*R*)
+* `#2` :  *TERM* (*R*)null
 
 ## exit
 > Synopsis: `exit`
-
-
 
 
 
@@ -62,25 +54,22 @@ The AutoCommand invokes the automatic strategy "Auto"
 
 **Arguments:**
 
-* `#2` :  *SEQUENT* (*R*)
+* `#2` :  *SEQUENT* (*R*)null
 
 ## instantiate
-> Synopsis: `instantiate [formula=<TERM>] [var=<STRING>] [occ=<INT>] [<STRING>] [with=<TERM>]`
+> Synopsis: `instantiate formula=<TERM> var=<STRING> occ=<INT> with=<TERM>`
 
 
-instantiate var=a occ=2 with="a_8" hide
-<p>
-instantiate formula="\forall int a; phi(a)" with="a_8"
+
 
 
 
 **Arguments:**
 
-* `formula` :  *TERM* 
-* `var` :  *STRING* 
-* `occ` :  *INT* 
-* `#2` :  *STRING* 
-* `with` :  *TERM* 
+* `formula` :  *TERM* (*R*)null
+* `var` :  *STRING* (*R*)null
+* `occ` :  *INT* (*R*)null
+* `with` :  *TERM* (*R*)null
 
 ## javascript
 > Synopsis: `javascript <STRING>`
@@ -89,12 +78,10 @@ instantiate formula="\forall int a; phi(a)" with="a_8"
 
 **Arguments:**
 
-* `#2` :  *STRING* (*R*)
+* `#2` :  *STRING* (*R*)null
 
 ## leave
 > Synopsis: `leave`
-
-
 
 
 
@@ -103,8 +90,6 @@ instantiate formula="\forall int a; phi(a)" with="a_8"
 
 ## let
 > Synopsis: `let`
-
-
 
 
 
@@ -118,31 +103,20 @@ instantiate formula="\forall int a; phi(a)" with="a_8"
 
 **Arguments:**
 
-* `#2` :  *STRING* (*R*)
+* `#2` :  *STRING* (*R*)null
 
 ## rule
-> Synopsis: `rule <STRING> [on=<TERM>] [formula=<TERM>] [occ=<INT>]`
-
-
-* Command that applies a calculus rule
-* All parameters are passed as strings and converted by the command.
-* The parameters are:
-* <ol>
-*     <li>#2 = <String>rule name</String></li>
-*     <li>on= key.core.logic.Term on which the rule should be applied to as String (find part of the rule) </li>
-*     <li>formula= toplevel formula in which term appears in</li>
-*     <li>occ = occurrence number</li>
-*     <li>inst_= instantiation</li>
-* </ol>
+> Synopsis: `rule <STRING> [on=<TERM>] [formula=<TERM>] [occ=<INT>] [inst_=<TERM>]`
 
 
 
 **Arguments:**
 
-* `#2` :  *STRING* (*R*)
-* `on` :  *TERM* 
-* `formula` :  *TERM* 
-* `occ` :  *INT* 
+* `#2` :  *STRING* (*R*)null
+* `on` :  *TERM* null
+* `formula` :  *TERM* null
+* `occ` :  *INT* null
+* `inst_` :  *TERM* null
 
 ## schemaVar
 > Synopsis: `schemaVar <STRING> <STRING>`
@@ -151,8 +125,8 @@ instantiate formula="\forall int a; phi(a)" with="a_8"
 
 **Arguments:**
 
-* `#2` :  *STRING* (*R*)
-* `#3` :  *STRING* (*R*)
+* `#2` :  *STRING* (*R*)null
+* `#3` :  *STRING* (*R*)null
 
 ## script
 > Synopsis: `script <STRING>`
@@ -161,7 +135,7 @@ instantiate formula="\forall int a; phi(a)" with="a_8"
 
 **Arguments:**
 
-* `#2` :  *STRING* (*R*)
+* `#2` :  *STRING* (*R*)null
 
 ## select
 > Synopsis: `select formula=<TERM>`
@@ -170,16 +144,17 @@ instantiate formula="\forall int a; phi(a)" with="a_8"
 
 **Arguments:**
 
-* `formula` :  *TERM* (*R*)
+* `formula` :  *TERM* (*R*)null
 
 ## set
-> Synopsis: `set [oss=<BOOLEAN>]`
+> Synopsis: `set [oss=<BOOLEAN>] [=<STRING>]`
 
 
 
 **Arguments:**
 
-* `oss` :  *BOOLEAN* 
+* `oss` :  *BOOLEAN* null
+* `` :  *STRING* null
 
 ## skip
 > Synopsis: `skip`
@@ -196,15 +171,15 @@ instantiate formula="\forall int a; phi(a)" with="a_8"
 
 **Arguments:**
 
-* `solver` :  *STRING* (*R*)
+* `solver` :  *STRING* (*R*)null
 
 ## tryclose
-> Synopsis: `tryclose [steps=<INTEGER>] [<STRING>]`
+> Synopsis: `tryclose steps=<INTEGER> <STRING>`
 
 
 
 **Arguments:**
 
-* `steps` :  *INTEGER* 
-* `#2` :  *STRING* 
+* `steps` :  *INTEGER* (*R*)null
+* `#2` :  *STRING* (*R*)null
 

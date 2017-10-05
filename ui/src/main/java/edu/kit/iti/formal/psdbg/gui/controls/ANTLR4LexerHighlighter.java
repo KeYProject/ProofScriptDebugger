@@ -40,7 +40,7 @@ public class ANTLR4LexerHighlighter {
 
             return spansBuilder.create();
         } catch (StringIndexOutOfBoundsException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return null;
     }

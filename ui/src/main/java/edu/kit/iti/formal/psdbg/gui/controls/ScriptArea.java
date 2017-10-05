@@ -437,7 +437,7 @@ public class ScriptArea extends CodeArea {
 
         SequentFormula seqForm = tap.getPio().sequentFormula();
         //transform term to parsable string representation
-        String term = Utils.toPrettyTerm(seqForm.formula());
+        String term = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(seqForm.formula());
 
 
         String text = getText();

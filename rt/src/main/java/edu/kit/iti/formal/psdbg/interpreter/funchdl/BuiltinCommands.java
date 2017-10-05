@@ -3,10 +3,10 @@ package edu.kit.iti.formal.psdbg.interpreter.funchdl;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
-import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.Variable;
+import edu.kit.iti.formal.psdbg.parser.data.Value;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -53,7 +53,7 @@ public abstract class BuiltinCommands {
         @Override
         public void evaluate(Interpreter<String> interpreter, CallStatement call, VariableAssignment params) {
             Value<BigInteger> val = (Value<BigInteger>) params.getValues().getOrDefault(
-                    new Variable("#1"),
+                    new Variable("#2"),
                     Value.from(2));
             int num = val.getData().intValue();
             GoalNode<String> g = interpreter.getSelectedNode();

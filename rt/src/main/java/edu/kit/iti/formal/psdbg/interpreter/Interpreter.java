@@ -34,7 +34,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
     private Stack<State<T>> stateStack = new Stack<>();
-
+    //We now need thet stack of listeners to handle try statements scuh that listnersa re only informed if a try was sucessfull
     private Stack<List<Visitor>> entryListenerStack = new Stack<>();
     private Stack<List<Visitor>> exitListenerStack = new Stack<>();
 
@@ -488,7 +488,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         goalNode.enterScope(va);
         State<T> s = newState(goalNode);
         caseStmts.accept(this);
-        popState(s);
+        //popState(s); //This may be incorrect-> Bug? -> Cases Statement needs to pop, as goals need to be collected
         exitScope(caseStmts);
         return s;
     }
@@ -517,10 +517,12 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         try {
             functionLookup.callCommand(this, call, params);
         } catch (RuntimeException e) {
+            System.err.println("Call command not applicable");
+            throw e;
             //TODO handling of error state for each visit
-            State<T> newErrorState = newState(null, null);
-            newErrorState.setErrorState(true);
-            pushState(newErrorState);
+            //State<T> newErrorState = newState(null, null);
+            //newErrorState.setErrorState(true);
+            //pushState(newErrorState);
         }
         g.exitScope();
         exitScope(call);

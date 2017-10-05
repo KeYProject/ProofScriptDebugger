@@ -69,8 +69,8 @@ expression
 
 substExpressionList
     :
-    (scriptVar '/' expression
-        (',' scriptVar '/' expression)*
+    (scriptVar '\\' expression
+        (',' scriptVar '\\' expression)*
     )?
     ;
 

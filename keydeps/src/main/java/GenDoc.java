@@ -19,9 +19,26 @@ import java.util.stream.Collectors;
  * @version 1 (11.09.17)
  */
 public class GenDoc {
+    private static final Set<String> FORBBIDEN = new TreeSet<>();
+
+    static {
+        FORBBIDEN.add("exit");
+        FORBBIDEN.add("focus");
+        FORBBIDEN.add("javascript");
+        FORBBIDEN.add("leave");
+        FORBBIDEN.add("let \n");
+        /*TODO
+        script
+                schemaVar
+        select
+                set
+        skip
+              */
+    }
+
     private static File basedir = new File("..");
     private static File propertiesFile = new File(basedir, "rt-key/src/main/resources/edu/kit/iti/formal/psdbg/taclets.properties.xml");
-    private static File dummyFile = new File(basedir, "rt-key/src/test/resources/edu/kit/iti/formal/psdbg/interpreter/contraposition/contraposition.key");
+    private static File dummyFile = new File(".", "rt-key/src/test/resources/edu/kit/iti/formal/psdbg/interpreter/contraposition/contraposition.key");
     private static File websiteDoc = new File(basedir, "website/docs/");
 
 
@@ -58,7 +75,7 @@ public class GenDoc {
                     "\n\nCovering the *default* taclets of [KeY](http://key-project.org).");
 
             for (Taclet t : taclets) {
-                stream.write("\n\n## ${t.displayName()}\n\n");
+                stream.write("\n\n## " + t.displayName() + "\n\n");
                 stream.write("```\n" + t.toString() + "\n```");
             }
 
@@ -143,7 +160,8 @@ public class GenDoc {
             commands.sort(Comparator.comparing(ProofScriptCommand::getName));
 
             for (ProofScriptCommand t : commands) {
-                stream.write(helpForCommand(t) + "\n\n");
+                if (!FORBBIDEN.contains(t.getName()))
+                    stream.write(helpForCommand(t) + "\n\n");
             }
             stream.close();
         } catch (IOException e) {

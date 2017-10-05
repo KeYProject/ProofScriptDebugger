@@ -31,7 +31,7 @@ termPattern :
     | termPattern OR termPattern                                #or
     | termPattern IMP termPattern                               #impl
     | termPattern XOR termPattern                               #xor
-    //|   termPattern EQUIV termPattern already covered by EQ/NEQ
+    | termPattern EQUIV termPattern                             #equivalence
     | MINUS termPattern                                         #exprNegate
     | NOT termPattern                                           #exprNot
     | '(' termPattern ')' bindClause?                                      #exprParen
@@ -61,6 +61,7 @@ EQ : '=' ;
 NEQ : '!=' ;
 GEQ : '>=' ;
 LEQ : '<=' ;
+EQUIV : '<->';
 GE : '>' ;
 LE : '<' ;
 AND : '&' ;

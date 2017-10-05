@@ -2,7 +2,7 @@ script t(){
     symbex;
     cases{
        case match `?X = 0 ==>`:
-            eqSymm on=`?X=0`[?X/?X];
+            eqSymm on=`?X=0`[];
 
     }
 

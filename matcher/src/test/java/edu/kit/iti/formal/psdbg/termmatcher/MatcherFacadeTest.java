@@ -216,7 +216,9 @@ public class MatcherFacadeTest {
                 "fint2(1,2), fint2(2,3), !p ==> pred(a), p",
                 "fint2(1, ?X), fint2(?X, ?Y) ==> p",
                 "[{EMPTY_MATCH=null, ?X=Z(2(#)), ?Y=Z(3(#))}]");
-        shouldMatchSeq("2 >= 1, h2(1,2) = h2(2,3), h2(2,3) = 0 ==> p, !p", "?X=0 ==>", "[{?X= h2(2,3)}]");
+        shouldMatchSeq("2 >= 1, h2(1,2) = h2(2,3), h2(2,3) = 0 ==> p, !p", "?X=0 ==>", "[{?X=h2(Z(2(#)),Z(3(#)))}]");
+
+        shouldMatchSeq("pred(a) <-> pred(b), pred(a), pred(b) ==> p", "?X <-> ?Y ==> ", "[{?X=pred(a), ?Y=pred(b)}]");
     }
 
     private void shouldMatchSeq(String seq, String seqPattern, String exp) throws ParserException {

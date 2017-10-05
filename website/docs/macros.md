@@ -53,15 +53,6 @@ It applies simplification rules (including the "unoptimized" select rules), One 
 
 
 
-## Integer Simplification (`simp-int`) 
-
-Simplification
-
-This macro performs simplification of integers and terms with integers.
-It applies only non-splitting simplification rules.
-
-
-
 ## Update Simplification Only (`simp-upd`) 
 
 Simplification

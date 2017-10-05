@@ -27,6 +27,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
@@ -279,6 +280,7 @@ public class DebuggerMain implements Initializable {
         }
     }
 
+
     /* public InspectionViewsController getInspectionViewsController() {
          return inspectionViewsController;
      }
@@ -287,11 +289,7 @@ public class DebuggerMain implements Initializable {
          return FACADE;
      }
 
-     public void showCodeDock(ActionEvent actionEvent) {
-         if (!javaAreaDock.isDocked()) {
-             javaAreaDock.dock(dockStation, DockPos.RIGHT);
-         }
-     }
+
  */
     //region Actions: Execution
 
@@ -500,6 +498,7 @@ public class DebuggerMain implements Initializable {
             ProgressBar bar = new ProgressBar();
             bar.progressProperty().bind(task.progressProperty());
             executorService.execute(task);
+            this.showActiveInspector(null);
         }
     }
 
@@ -736,6 +735,8 @@ public class DebuggerMain implements Initializable {
 
     public void stopDebugMode(ActionEvent actionEvent) {
         scriptController.getDebugPositionHighlighter().remove();
+        Button stop = (Button) actionEvent.getSource();
+        stop.setText("Reload");
         //linenumberMainscript from model?
         //scriptController.getActiveScriptAreaTab().getScriptArea().removeHighlightStmt(lineNumberMainScript);
         //inspectionViewsController.getInspectionViewTab.clear();
@@ -754,7 +755,8 @@ public class DebuggerMain implements Initializable {
     public void showActiveInspector(ActionEvent actionEvent) {
         if (!activeInspectorDock.isDocked() &&
                 !activeInspectorDock.isFloating()) {
-            activeInspectorDock.dock(dockStation, DockPos.CENTER);
+
+            activeInspectorDock.dock(dockStation, DockPos.RIGHT);
         }
     }
 

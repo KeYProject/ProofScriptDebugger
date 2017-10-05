@@ -1,19 +1,25 @@
 package edu.kit.iti.formal.psdbg.interpreter.funchdl;
 
+import de.uka.ilkd.key.api.KeYApi;
+import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
+import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.macros.ProofMacro;
+import de.uka.ilkd.key.macros.ProofMacroFinishedInfo;
+import de.uka.ilkd.key.proof.Goal;
+import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
-import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
-import edu.kit.iti.formal.psdbg.parser.ast.Parameters;
-import edu.kit.iti.formal.psdbg.parser.ast.StringLiteral;
-import edu.kit.iti.formal.psdbg.parser.ast.Variable;
-import edu.kit.iti.formal.psdbg.parser.data.Value;
+import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
+import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
-import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
+import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.key_project.util.collection.ImmutableList;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -21,8 +27,9 @@ import java.util.Map;
  * @version 1 (21.05.17)
  */
 @RequiredArgsConstructor
-public class MacroCommandHandler implements CommandHandler {
-    @Getter private final Map<String, ProofMacro> macros;
+public class MacroCommandHandler implements CommandHandler<KeyData> {
+    @Getter
+    private final Map<String, ProofMacro> macros;
 
     public MacroCommandHandler() {
         macros = new HashMap<>();
@@ -40,20 +47,48 @@ public class MacroCommandHandler implements CommandHandler {
     }
 
     @Override
-    public void evaluate(Interpreter interpreter,
+    public void evaluate(Interpreter<KeyData> interpreter,
                          CallStatement call,
                          VariableAssignment params) {
         //ProofMacro m = macros.get(call.getCommand());
-        Parameters p = new Parameters();
-        p.put(new Variable("#2"), new StringLiteral(call.getCommand()));
-        CallStatement macroCall = new CallStatement("macro", p);
-        macroCall.setRuleContext(call.getRuleContext());
-        VariableAssignment newParam = new VariableAssignment(null);
-        newParam.declare("#2", SimpleType.STRING);
-        newParam.assign("#2", Value.from(call.getCommand()));
-        //macro proofscript command
-        interpreter.getFunctionLookup().callCommand(interpreter, macroCall, newParam);
+        ProofMacro macro = KeYApi.getMacroApi().getMacro(call.getCommand());
+        ProofMacroFinishedInfo info = ProofMacroFinishedInfo.getDefaultInfo(macro,
+                interpreter.getCurrentState().getSelectedGoalNode().getData().getProof());
 
-        //TODO change MacroCommand.Parameters to public
+        State<KeyData> state = interpreter.getCurrentState();
+        GoalNode<KeyData> expandedNode = state.getSelectedGoalNode();
+
+
+        try {
+            //uiControl.taskStarted(new DefaultTaskStartedInfo(TaskStartedInfo.TaskKind.Macro, macro.getName(), 0));
+            synchronized (macro) {
+                AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
+                info = macro.applyTo(uiControl, expandedNode.getData().getNode(), null, uiControl);
+                ImmutableList<Goal> ngoals = expandedNode.getData().getProof().getSubtreeGoals(expandedNode.getData().getNode());
+
+                state.getGoals().remove(expandedNode);
+                if (ngoals.isEmpty()) {
+                    Node start = expandedNode.getData().getNode();
+                    //start.leavesIterator()
+//                Goal s = kd.getProof().getGoal(start);
+                    Iterator<Node> nodeIterator = start.leavesIterator();
+                    while (nodeIterator.hasNext()) {
+                        Node n = nodeIterator.next();
+                        System.out.println(n.isClosed());
+                    }
+
+                } else {
+
+                    for (Goal g : ngoals) {
+                        KeyData kdn = new KeyData(expandedNode.getData(), g.node());
+                        state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.isClosedNode()));
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

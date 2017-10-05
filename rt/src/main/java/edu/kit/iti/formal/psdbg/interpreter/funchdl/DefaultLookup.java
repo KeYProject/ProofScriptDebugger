@@ -53,35 +53,27 @@ public class DefaultLookup implements CommandLookup {
             if (b.handles(callStatement)) {
                 foundHandlers.add(b);
                 found = b;
-                /*if (found == null) {
-                    found = b;
-                } else {
-                    found = b; //CUTCommand
-                    System.out.println(b.getClass());
-                    System.out.println(found.getClass());
-                    if (callStatement.getCommand().equals("cut")) {
-                        System.out.println("Cut Case");
-                    }
-                    //throw new IllegalStateException("Call on line" + callStatement + " is ambigue.");
-                }*/
-            } else {
-                if (mayBeEscapedMacro) {
-                    String command = callStatement.getCommand();
-                    callStatement.setCommand(command.replace("_", "-"));
-                    if (b.handles(callStatement)) {
-                        foundHandlers.add(b);
-                        found = b;
-                    }
-                }
             }
         }
 
-        if (foundHandlers.size() == 1) return foundHandlers.get(0);
-        if (foundHandlers.size() > 1) {
-            return foundHandlers.get(0);
-        } else {
-            throw new NoCallHandlerException(callStatement);
+        if (found == null && mayBeEscapedMacro) {
+            //if a proof macro contains a "-" character, the proof script language does not support this.
+            // Therefore we have to check for both versions
+            //  if (mayBeEscapedMacro) {
+
+            String command = callStatement.getCommand();
+            callStatement.setCommand(command.replace("_", "-"));
+
+            for (CommandHandler b : builders) {
+                if (b.handles(callStatement)) {
+                    foundHandlers.add(b);
+                    found = b;
+                }
+            }
         }
+        if (foundHandlers.size() >= 1) return foundHandlers.get(0);
+            throw new NoCallHandlerException(callStatement);
+
     }
 
     @Override
