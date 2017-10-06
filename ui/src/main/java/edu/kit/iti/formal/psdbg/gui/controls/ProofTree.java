@@ -112,7 +112,14 @@ public class ProofTree extends BorderPane {
                 } else {
                    return object.name();
                 }*/
-                return object.sequent().toString();
+                String nodeLabel;
+                if (object.getAppliedRuleApp() != null) {
+                    nodeLabel = object.getAppliedRuleApp().rule().displayName();
+                } else {
+                    nodeLabel = object.isClosed() ? "Closed Goal" : "Open Goal";
+                }
+                return nodeLabel;
+                // return object.sequent().toString();
             }
 
             @Override

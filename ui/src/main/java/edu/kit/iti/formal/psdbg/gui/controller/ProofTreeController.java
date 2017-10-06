@@ -200,8 +200,14 @@ public class ProofTreeController {
         PTreeNode nextNode = stateGraphWrapper.getStepOver(currentPointer);
         //if nextnode is null ask interpreter to execute next statement and compute next state
         if (nextNode != null) {
+            State<KeyData> lastState = this.statePointer.getState();
             this.statePointer = nextNode;
-            setNewState(statePointer.getState());
+            State<KeyData> state = this.statePointer.getState();
+            if (state.getGoals().isEmpty()) {
+                setNewState(lastState);
+            } else {
+                setNewState(state);
+            }
             //  setHighlightStmt(this.statePointer.getScriptstmt().getStartPosition(), this.statePointer.getScriptstmt().getStartPosition());
         } else {
             //no next node is present yet
