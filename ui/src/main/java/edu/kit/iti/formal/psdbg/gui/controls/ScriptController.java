@@ -58,12 +58,14 @@ public class ScriptController {
     @Subscribe
     public void handle(Events.NewNodeExecuted newNode) {
         logger.debug("Handling new node added event!");
+
         ASTNode scriptNode = newNode.getCorrespondingASTNode();
         ScriptArea editor = findEditor(scriptNode);
         editor.removeExecutionMarker();
         LineMapping lm = new LineMapping(editor.getText());
         int pos = lm.getLineEnd(scriptNode.getStartPosition().getLineNumber() - 1);
-        editor.insertExecutionMarker(pos);
+        System.out.println(pos);
+        //    editor.insertExecutionMarker(pos);
     }
 
     private ScriptArea findEditor(ASTNode node) {

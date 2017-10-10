@@ -145,7 +145,6 @@ public class DebuggerMain implements Initializable {
                 }
         );
 
-
         //Debugging
         Utils.addDebugListener(javaCode);
         Utils.addDebugListener(executeNotPossible, "executeNotPossible");
@@ -202,9 +201,6 @@ public class DebuggerMain implements Initializable {
         });
 
         imodel.goalsProperty().addListener((observable, oldValue, newValue) -> statusBar.setNumberOfGoals(newValue.size()));
-
-
-
 
       /*proofTreeController.currentExecutionEndProperty().addListener((observable, oldValue, newValue) -> {
                     scriptController.getMainScript().getScriptArea().removeExecutionMarker();
@@ -281,90 +277,21 @@ public class DebuggerMain implements Initializable {
     }
 
 
-    /* public InspectionViewsController getInspectionViewsController() {
-         return inspectionViewsController;
-     }
 
-     public KeYProofFacade getFacade() {
-         return FACADE;
-     }
-
-
- */
     //region Actions: Execution
 
     /**
      * When play button is used
      */
-    @FXML
-    public void executeScript() {
-        executorHelper();
-    }
 
-    private void executorHelper() {
-        if (proofTreeController.isAlreadyExecuted()) {
-            File file;
-            boolean isKeyfile = false;
-            if (getJavaFile() != null) {
-                file = getJavaFile();
-            } else {
-                isKeyfile = true;
-                file = getKeyFile();
-            }
-
-
-            Task<Void> reloading = reloadEnvironment(file, isKeyfile);
-            reloading.setOnSucceeded(event -> {
-                statusBar.publishMessage("Cleared and Reloaded Environment");
-                executeScript(FACADE.buildInterpreter(), false);
-            });
-
-            reloading.setOnFailed(event -> {
-                event.getSource().exceptionProperty().get();
-                Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment",
-                        (Throwable) event.getSource().exceptionProperty().get()
-                );
-            });
-
-            ProgressBar bar = new ProgressBar();
-            bar.progressProperty().bind(reloading.progressProperty());
-            executorService.execute(reloading);
-        } else {
-
-            executeScript(FACADE.buildInterpreter(), false);
-        }
-
-    }
 
     public File getJavaFile() {
         return javaFile.get();
     }
 
     //region Actions: Menu
-   /* @FXML
-    public void closeProgram() {
-        System.exit(0);
-    }*/
 
- /*   @FXML
-    public void openScript() {
-        File scriptFile = openFileChooserOpenDialog("Select Script File",
-                "Proof Script File", "kps");
-        if (scriptFile != null) {
-            openScript(scriptFile);
-        }
-    }*/
-
-
-   /* private void saveScript(File scriptFile) {
-        try {
-            scriptController.saveCurrentScriptAs(scriptFile);
-        } catch (IOException e) {
-            Utils.showExceptionDialog("Could not save file", "Saving File Error", "Could not save to file " + scriptFile.getName(), e);
-        }
-    }
-
-    @FXML
+    /*@FXML
     public void saveAsScript() throws IOException {
         File f = openFileChooserSaveDialog("Save script", "Save Script files", "kps");
         if (f != null) {
@@ -375,17 +302,7 @@ public class DebuggerMain implements Initializable {
         }
     }*/
 
-  /*  public void openScript(File scriptFile) {
-        assert scriptFile != null;
-        setInitialDirectory(scriptFile.getParentFile());
-        try {
-            String code = FileUtils.readFileToString(scriptFile, Charset.defaultCharset());
-            ScriptArea area = scriptController.createNewTab(scriptFile);
-        } catch (IOException e) {
-            Utils.showExceptionDialog("Exception occured", "",
-                    "Could not load sourceName " + scriptFile, e);
-        }
-    }*/
+
 
     public void setJavaFile(File javaFile) {
         this.javaFile.set(javaFile);
@@ -423,20 +340,62 @@ public class DebuggerMain implements Initializable {
         return task;
     }
 
+    @FXML
+    public void executeScript() {
+        executorHelper(false);
+    }
+
+    private void executorHelper(boolean addInitBreakpoint) {
+
+        if (proofTreeController.isAlreadyExecuted()) {
+            File file;
+            boolean isKeyfile = false;
+            if (getJavaFile() != null) {
+                file = getJavaFile();
+            } else {
+                isKeyfile = true;
+                file = getKeyFile();
+            }
+
+
+            Task<Void> reloading = reloadEnvironment(file, isKeyfile);
+            reloading.setOnSucceeded(event -> {
+                statusBar.publishMessage("Cleared and Reloaded Environment");
+                executeScript(FACADE.buildInterpreter(), addInitBreakpoint);
+            });
+
+            reloading.setOnFailed(event -> {
+                event.getSource().exceptionProperty().get();
+                Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment",
+                        (Throwable) event.getSource().exceptionProperty().get()
+                );
+            });
+
+            ProgressBar bar = new ProgressBar();
+            bar.progressProperty().bind(reloading.progressProperty());
+            executorService.execute(reloading);
+        } else {
+
+            executeScript(FACADE.buildInterpreter(), addInitBreakpoint);
+        }
+
+    }
+
     /**
      * Execute the script that with using the interpreter that is build using the interpreterbuilder
      *
      * @param ib
-     * @param debugMode
+     * @param
      */
-    private void executeScript(InterpreterBuilder ib, boolean debugMode) {
+    private void executeScript(InterpreterBuilder ib, boolean addInitBreakpoint) {
 
         Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
 
         if (proofTreeController.isAlreadyExecuted()) {
             proofTreeController.saveGraphs();
         }
-        this.debugMode.set(debugMode);
+
+        this.debugMode.set(addInitBreakpoint);
         statusBar.publishMessage("Parse ...");
         try {
 
@@ -460,6 +419,7 @@ public class DebuggerMain implements Initializable {
                 }
             }
 
+
             statusBar.publishMessage("Creating new Interpreter instance ...");
             ib.setScripts(scripts);
             KeyInterpreter currentInterpreter = ib.build();
@@ -468,13 +428,31 @@ public class DebuggerMain implements Initializable {
             proofTreeController.setMainScript(scripts.get(n));
 
             statusBar.publishMessage("Executing script " + scripts.get(n).getName());
-
+            if (addInitBreakpoint) {
+                breakpoints.add(new Breakpoint(scriptController.getMainScript().getScriptArea().getFilePath(), scriptController.getMainScript().getLineNumber()));
+            }
             proofTreeController.executeScript(this.debugMode.get(), statusBar, breakpoints);
             //highlight signature of main script
             //scriptController.setDebugMark(scripts.get(0).getStartPosition().getLineNumber());
         } catch (RecognitionException e) {
             Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
+    }
+
+    @FXML
+    public void executeStepwise() {
+        executorHelper(true);
+        //executeScript(FACADE.buildInterpreter(), true);
+    }
+
+    @FXML
+    public void executeToBreakpoint() {
+        Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
+        if (breakpoints.size() == 0) {
+            System.out.println(scriptController.mainScriptProperty().get().getLineNumber());
+            //we need to add breakpoint at end if no breakpoint exists
+        }
+        executorHelper(false);
     }
 
     public void openKeyFile(File keyFile) {
@@ -510,41 +488,21 @@ public class DebuggerMain implements Initializable {
         }
     }
 
-    /*    @FXML
-        protected void loadKeYFile() {
-            File keyFile = openFileChooserOpenDialog("Select KeY File", "KeY Files", "key", "kps");
-            openKeyFile(keyFile);
-        }
-    */
-
     @FXML
-    public void executeToBreakpoint() {
-        Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
-        if (breakpoints.size() == 0) {
-            //we need to add breakpoint at end if no breakpoint exists
-        }
-        executorHelper();
+    protected void loadKeYFile() {
+        File keyFile = openFileChooserOpenDialog("Select KeY File", "KeY Files", "key", "kps");
+            openKeyFile(keyFile);
     }
+
+
 
 
     //endregion
 
     //region Santa's Little Helper
 
-    @FXML
-    public void executeInDebugMode() {
-        executeScript(FACADE.buildInterpreter(), true);
-    }
 
-    @FXML
-    public void saveScript() {
-        try {
-            scriptController.saveCurrentScript();
-        } catch (IOException e) {
-            Utils.showExceptionDialog("Could not save file", "Saving File Error", "Could not save current script", e);
 
-        }
-    }
 
     public void openJavaFile() {
         loadJavaFile();
@@ -629,7 +587,7 @@ public class DebuggerMain implements Initializable {
         }
     }
 
-    /*   @FXML
+    @FXML
        public void saveScript() {
            try {
                scriptController.saveCurrentScript();
@@ -638,7 +596,7 @@ public class DebuggerMain implements Initializable {
 
            }
        }
-   */
+
     @FXML
     public void saveAsScript() throws IOException {
         File f = openFileChooserSaveDialog("Save script", "Save Script files", "kps");
@@ -675,11 +633,6 @@ public class DebuggerMain implements Initializable {
         }
     }
 
-    @FXML
-    protected void loadKeYFile() {
-        File keyFile = openFileChooserOpenDialog("Select KeY File", "KeY Files", "key", "kps");
-        openKeyFile(keyFile);
-    }
 
     /**
      * Save KeY proof as proof file

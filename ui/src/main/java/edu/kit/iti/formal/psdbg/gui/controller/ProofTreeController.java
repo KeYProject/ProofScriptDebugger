@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.graph.MutableValueGraph;
 import edu.kit.iti.formal.psdbg.InterpretingService;
 import edu.kit.iti.formal.psdbg.gui.controls.DebuggerStatusBar;
+import edu.kit.iti.formal.psdbg.gui.controls.Utils;
 import edu.kit.iti.formal.psdbg.gui.model.Breakpoint;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
@@ -270,11 +271,11 @@ public class ProofTreeController {
         blocker.deinstall();
         blocker.install(currentInterpreter);
 
-        if (!debugMode) {
+/*        if (!debugMode) {
             statusBar.setText("Starting in execution mode for script " + mainScript.getName());
             statusBar.indicateProgress();
             blocker.getStepUntilBlock().set(-1);
-        } else {
+        } else {*/
             statusBar.setText("Starting in debug mode for script " + mainScript.getName());
             statusBar.indicateProgress();
             setCurrentHighlightNode(mainScript.get());
@@ -287,8 +288,7 @@ public class ProofTreeController {
             this.stateGraphWrapper.install(currentInterpreter);
             this.stateGraphWrapper.addChangeListener(graphChangedListener);
             statusBar.stopProgress();
-            blocker.getStepUntilBlock().set(1);
-        }
+        //}
 
         //create interpreter service and start
         if (interpreterService.getState() == Worker.State.SUCCEEDED
@@ -302,6 +302,10 @@ public class ProofTreeController {
         interpreterService.start();
         interpreterService.setOnSucceeded(event -> {
             statusBar.setText("Executed until end of script.");
+            //TODO is this the right position??
+            if (currentGoals.isEmpty()) {
+                Utils.showClosedProofDialog(mainScript.get().getName());
+            }
             statusBar.stopProgress();
         });
         interpreterService.setOnFailed(event -> {

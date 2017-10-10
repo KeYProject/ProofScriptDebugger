@@ -99,7 +99,7 @@
 
                                 <MenuItem
                                         text="Execute Script Stepwise From Start"
-                                        onAction="#executeInDebugMode"
+                                        onAction="#executeStepwise"
                                         disable="${controller.executeNotPossible}">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="PLAY_PAUSE" size="24.0"/>
