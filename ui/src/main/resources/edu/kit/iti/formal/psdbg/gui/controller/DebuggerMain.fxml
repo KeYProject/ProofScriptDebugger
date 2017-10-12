@@ -118,7 +118,7 @@
                         </SplitMenuButton>
 
 
-                        <Button disable="${! controller.debugMode}">
+                        <Button>
                             <graphic>
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_INTO" size="24.0"/>
                             </graphic>
@@ -127,8 +127,7 @@
                             </tooltip>
                         </Button>
 
-                        <Button onAction="#stepOver"
-                                disable="${! controller.debugMode}">
+                        <Button onAction="#stepOver">
                             <graphic>
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0"/>
                             </graphic>
@@ -137,8 +136,7 @@
                             </tooltip>
                         </Button>
 
-                        <Button onAction="#stepBack"
-                                disable="${! controller.debugMode}">
+                        <Button onAction="#stepBack">
                             <graphic>
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0" scaleX="-1"/>
                             </graphic>
@@ -148,7 +146,7 @@
                         </Button>
 
 
-                        <Button disable="${! controller.debugMode}">
+                        <Button>
                             <graphic>
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_OUT" size="24.0"/>
                             </graphic>
@@ -157,7 +155,8 @@
                             </tooltip>
                         </Button>
 
-                        <Button onAction="#stopDebugMode" disable="${! controller.debugMode}">
+                        <Button onAction="#stopDebugMode">
+                            <!--disable="${! controller.debugMode}"-->
                             <graphic>
                                 <MaterialDesignIconView glyphName="STOP" size="24.0"/>
                             </graphic>
