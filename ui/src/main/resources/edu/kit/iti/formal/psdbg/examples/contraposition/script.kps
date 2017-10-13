@@ -1,6 +1,23 @@
 // Please select one of the following scripts.
 //
+script test(){
 
+}
+
+script test1(){
+  impRight;
+}
+script test2(){
+impRight;
+impLeft;
+cases{
+    case match `?X -> ?Y ==> not(?Z)`:
+      notLeft;
+    default:
+      notRight;
+}
+
+}
 script cpClosable(){
     impRight;
     impRight;

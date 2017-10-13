@@ -118,7 +118,7 @@
                         </SplitMenuButton>
 
 
-                        <Button>
+                        <Button disable="${controller.stepNotPossible}">
                             <graphic>
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_INTO" size="24.0"/>
                             </graphic>
@@ -127,7 +127,7 @@
                             </tooltip>
                         </Button>
 
-                        <Button onAction="#stepOver">
+                        <Button onAction="#stepOver" disable="${controller.stepNotPossible}">
                             <graphic>
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0"/>
                             </graphic>
@@ -136,7 +136,7 @@
                             </tooltip>
                         </Button>
 
-                        <Button onAction="#stepBack">
+                        <Button onAction="#stepBack" disable="${controller.stepNotPossible}">
                             <graphic>
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0" scaleX="-1"/>
                             </graphic>
@@ -146,7 +146,7 @@
                         </Button>
 
 
-                        <Button>
+                        <Button disable="${controller.stepNotPossible}">
                             <graphic>
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_OUT" size="24.0"/>
                             </graphic>
@@ -155,7 +155,7 @@
                             </tooltip>
                         </Button>
 
-                        <Button onAction="#stopDebugMode">
+                        <Button onAction="#stopDebugMode" disable="${controller.stepNotPossible}">
                             <!--disable="${! controller.debugMode}"-->
                             <graphic>
                                 <MaterialDesignIconView glyphName="STOP" size="24.0"/>

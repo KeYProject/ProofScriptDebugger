@@ -137,15 +137,19 @@ public class ProofTreeController {
         });
         blocker.currentGoalsProperty().addListener((observable, oldValue, newValue) -> {
             Platform.runLater(() -> {
-                this.setCurrentGoals(newValue);
+                if (newValue != null) {
+                    this.setCurrentGoals(newValue);
+                }
             });
         });
 
         //add listener to nextcomputed node, that is updated whenever a new node is added to the stategraph
         nextComputedNode.addListener((observable, oldValue, newValue) -> {
             //update statepointer
-            this.statePointer = newValue;
-            setNewState(this.statePointer.getState());
+            if (newValue != null) {
+                this.statePointer = newValue;
+                setNewState(this.statePointer.getState());
+            }
 
         });
 
@@ -419,4 +423,7 @@ public class ProofTreeController {
         return alreadyExecuted.get();
     }
 
+   /* public ReadOnlyBooleanProperty stepNotPossibleProperty() {
+
+    }*/
 }

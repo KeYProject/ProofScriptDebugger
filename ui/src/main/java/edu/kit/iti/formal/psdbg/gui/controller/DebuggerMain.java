@@ -107,6 +107,7 @@ public class DebuggerMain implements Initializable {
      */
     private ObservableBooleanValue executeNotPossible = proofTreeController.executeNotPossibleProperty().or(FACADE.readyToExecuteProperty().not());
 
+    // private ObservableBooleanValue stepNotPossible = proofTreeController.stepNotPossibleProperty();
     /**
      *
      */
@@ -398,8 +399,9 @@ public class DebuggerMain implements Initializable {
         this.debugMode.set(addInitBreakpoint);
         statusBar.publishMessage("Parse ...");
         try {
-
+            //parsing
             List<ProofScript> scripts = scriptController.getCombinedAST();
+            System.out.println("Parsed Scripts");
             int n = 0;
             if (scriptController.getMainScript() == null) {
                 MainScriptIdentifier msi = new MainScriptIdentifier();
@@ -646,7 +648,7 @@ public class DebuggerMain implements Initializable {
 
     /**
      * Perform a step over
-     *
+     *TODO Uebergabe des selctirkten Knotens damit richtiges ausgewählt
      * @param actionEvent
      */
     public void stepOver(ActionEvent actionEvent) {
@@ -656,7 +658,7 @@ public class DebuggerMain implements Initializable {
 
     /**
      * Perform a step back
-     *
+     *TODO Uebergabe des selctirkten Knotens damit richtiges ausgewählt
      * @param actionEvent
      */
     public void stepBack(ActionEvent actionEvent) {
