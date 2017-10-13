@@ -312,9 +312,14 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         CasesStatement cases = new CasesStatement();
         ctx.casesList().forEach(c -> cases.getCases().add((CaseStatement) c.accept(this)));
         if (ctx.DEFAULT() != null) {
-            cases.setDefaultCase((Statements)
+           /* cases.setDefaultCase((Statements)
                     ctx.defList.accept(this)
-            );
+            );*/
+            DefaultCaseStatement defCase = new DefaultCaseStatement();
+            defCase.setRuleContext(ctx.defList);
+            defCase.setBody((Statements) ctx.defList.accept(this));
+            //  defCase.setClosedStmt(false);
+            cases.setDefCaseStmt(defCase);
         }
         cases.setRuleContext(ctx);
         return cases;

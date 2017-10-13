@@ -132,6 +132,12 @@ public class ASTChanger extends DefaultASTVisitor<ASTNode> {
     }
 
     @Override
+    public ASTNode visit(DefaultCaseStatement defCase) {
+        defCase.getBody().accept(this);
+        return defCase;
+    }
+
+    @Override
     public CaseStatement visit(CaseStatement caseStatement) {
         //caseStatement.getGuard().accept(this);
         //caseStatement.getBody().accept(this);
@@ -189,4 +195,6 @@ public class ASTChanger extends DefaultASTVisitor<ASTNode> {
         e.setExpression((Expression) e.getExpression().accept(this));
         return e;
     }
+
+
 }

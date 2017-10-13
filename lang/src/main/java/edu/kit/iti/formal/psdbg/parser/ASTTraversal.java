@@ -188,4 +188,10 @@ public interface ASTTraversal<T> extends Visitor<T> {
         closesCase.getBody().accept(this);
         return null;
     }
+
+    @Override
+    default T visit(DefaultCaseStatement defCase) {
+        defCase.getBody().accept(this);
+        return null;
+    }
 }

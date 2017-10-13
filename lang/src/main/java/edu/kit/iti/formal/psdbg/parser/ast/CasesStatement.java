@@ -39,7 +39,9 @@ import java.util.List;
 @Data
 public class CasesStatement extends Statement<ScriptLanguageParser.CasesStmtContext> {
     @NonNull private final List<CaseStatement> cases = new ArrayList<>();
-    @NonNull private Statements defaultCase = new Statements();
+    // @NonNull private Statements defaultCase = new Statements();
+    @NonNull
+    private DefaultCaseStatement defCaseStmt = new DefaultCaseStatement();
 
     /**
      * {@inheritDoc}
@@ -54,8 +56,10 @@ public class CasesStatement extends Statement<ScriptLanguageParser.CasesStmtCont
     @Override public CasesStatement copy() {
         CasesStatement c = new CasesStatement();
         cases.forEach(caseStatement -> c.cases.add(caseStatement.copy()));
-        if (defaultCase != null)
-            c.defaultCase = defaultCase.copy();
+        //  if (defaultCase != null)
+        //      c.defaultCase = defaultCase.copy();
+        if (defCaseStmt != null)
+            c.defCaseStmt = defCaseStmt.copy();
         return c;
     }
 }

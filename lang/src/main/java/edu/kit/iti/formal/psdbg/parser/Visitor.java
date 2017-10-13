@@ -51,6 +51,8 @@ public interface Visitor<T> {
 
     T visit(CasesStatement cases);
 
+    T visit(DefaultCaseStatement defCase);
+
     //T visit(CaseStatement case_);
 
     T visit(CallStatement call);

@@ -223,12 +223,15 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         }
 
 
-        //for all remaining goals execute default
+        //for all remaining goals execute default case
+        //we need an entry/exit listener for default case
         if (!toMatch.isEmpty()) {
             VariableAssignment va = new VariableAssignment();
-            Statements defaultCase = casesStatement.getDefaultCase();
+            //Statements defaultCase = casesStatement.getDefaultCase();
+            DefaultCaseStatement defCaseStmt = casesStatement.getDefCaseStmt();
             for (GoalNode<T> goal : toMatch) {
-                resultingGoals.addAll(executeBody(defaultCase, goal, va).getGoals());
+                resultingGoals.addAll(executeDefaultCase(defCaseStmt, goal, va).getGoals());
+                // resultingGoals.addAll(executeBody(defaultCase, goal, va).getGoals());
             }
         }
 
@@ -251,6 +254,13 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         //stateStack.peek().getGoals().removeAll(beforeCases.getGoals());
         exitScope(casesStatement);
         return null;
+    }
+
+    private State<T> executeDefaultCase(DefaultCaseStatement defCaseStmt, GoalNode<T> goal, VariableAssignment va) {
+        enterScope(defCaseStmt);
+        State<T> newState = executeBody(defCaseStmt.getBody(), goal, va);
+        exitScope(defCaseStmt);
+        return newState;
     }
 
     @Override

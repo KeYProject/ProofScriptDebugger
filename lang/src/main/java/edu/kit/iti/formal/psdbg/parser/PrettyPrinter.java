@@ -23,13 +23,13 @@ package edu.kit.iti.formal.psdbg.parser;
  */
 
 
+import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Iterator;
 import java.util.Map;
-import edu.kit.iti.formal.psdbg.parser.ast.*;
 
 
 /**
@@ -144,12 +144,19 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
             c.accept(this);
             nl();
         }
-        if (casesStatement.getDefaultCase() != null) {
+     /*   if (casesStatement.getDefaultCase() != null) {
             s.append("default {");
             casesStatement.getDefaultCase().accept(this);
             cl();
             s.append("}");
+        }*/
+        if (casesStatement.getDefCaseStmt() != null) {
+            s.append("default {");
+            casesStatement.getDefCaseStmt().accept(this);
+            cl();
+            s.append("}");
         }
+
         decrementIndent();
         cl();
         s.append("}");

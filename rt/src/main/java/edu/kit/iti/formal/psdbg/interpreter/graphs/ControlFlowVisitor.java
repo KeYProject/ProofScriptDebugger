@@ -214,8 +214,19 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
                 graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
             //           }
         }
-        if (casesStatement.getDefaultCase() != null) {
-            Statements defaultCase = casesStatement.getDefaultCase();
+        //casesStatement.getDefaultCase()
+        if (casesStatement.getDefCaseStmt() != null) {
+            DefaultCaseStatement defCase = casesStatement.getDefCaseStmt();
+            ControlFlowNode caseNode = new ControlFlowNode(defCase);
+            mappingOfNodes.put(defCase, caseNode);
+            graph.addNode(caseNode);
+            //System.out.println("\n" + caseNode + "\n");
+            graph.putEdgeValue(currentNode, caseNode, EdgeTypes.STEP_OVER); //??is this right?
+            graph.putEdgeValue(caseNode, currentNode, EdgeTypes.STEP_BACK);
+            lastNode = caseNode;
+            defCase.getBody().accept(this);
+            graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
+            /*Statements defaultCase = defCase.getBody();
 
             ControlFlowNode caseNode = new ControlFlowNode(defaultCase);
             mappingOfNodes.put(defaultCase, caseNode);
@@ -225,7 +236,7 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
             graph.putEdgeValue(caseNode, currentNode, EdgeTypes.STEP_BACK);
             lastNode = caseNode;
             defaultCase.accept(this);
-            graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
+            graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);*/
         }
         lastNode = currentNode;
         return null;

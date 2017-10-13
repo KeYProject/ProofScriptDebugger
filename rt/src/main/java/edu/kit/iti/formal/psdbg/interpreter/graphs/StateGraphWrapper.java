@@ -74,7 +74,8 @@ public class StateGraphWrapper<T> {
         this.cfgVisitor = cfgVisitor;
         this.mainScript = mainScript;
 
-        // createRootNode(null);
+
+        createRootNode(this.mainScript);
 
     }
 
@@ -294,7 +295,9 @@ public class StateGraphWrapper<T> {
             if (root.get() == null) {
                 createRootNode(proofScript);
             } else {
-                createNewNode(proofScript);
+                if (!root.get().getScriptstmt().equals(proofScript)) {
+                    createNewNode(proofScript);
+                }
             }
             return null;
         }
@@ -349,9 +352,15 @@ public class StateGraphWrapper<T> {
         public Void visit(ClosesCase closesCase) {
             return createNewNode(closesCase);
         }
+
+        @Override
+        public Void visit(DefaultCaseStatement defCase) {
+            return createNewNode(defCase);
+        }
     }
 
     private class ExitListener extends DefaultASTVisitor<Void> {
+
         @Override
         public Void visit(AssignmentStatement assignment) {
             return addState(assignment);
@@ -366,6 +375,11 @@ public class StateGraphWrapper<T> {
         public Void visit(CaseStatement caseStatement) {
             return addState(caseStatement);
         }*/
+
+        @Override
+        public Void visit(DefaultCaseStatement defCase) {
+            return addState(defCase);
+        }
 
         @Override
         public Void visit(CallStatement call) {
