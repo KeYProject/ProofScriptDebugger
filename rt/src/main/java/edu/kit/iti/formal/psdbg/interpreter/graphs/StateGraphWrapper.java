@@ -200,8 +200,8 @@ public class StateGraphWrapper<T> {
     public Void addState(ASTNode node) {
         PTreeNode newStateNode = addedNodes.get(node);
         State<T> currentState = currentInterpreter.getCurrentState().copy();
-
         newStateNode.setState(currentState);
+        newStateNode.setExtendedState(currentState);
         return null;
     }
 

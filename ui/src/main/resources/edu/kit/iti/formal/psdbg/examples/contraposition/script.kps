@@ -1,5 +1,17 @@
 // Please select one of the following scripts.
 //
+script test2(){
+impRight;
+impLeft;
+cases{
+    case match `q==> `:
+      impRight;
+    default:
+      impRight;
+      notRight;
+}
+
+
 script test(){
 
 }
