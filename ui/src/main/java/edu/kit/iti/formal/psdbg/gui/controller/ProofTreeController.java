@@ -61,7 +61,7 @@ public class ProofTreeController {
     private ReadOnlyBooleanProperty executeNotPossible = interpreterService.runningProperty();
 
     /**
-     * Node that is updated whenever a new node is added to the stategraph (this can only happen in debug mode when stepover is invoked)
+     * Node that is updated whenever a new node is added to the stategraph
      */
     private SimpleObjectProperty<PTreeNode> nextComputedNode = new SimpleObjectProperty<>();
 
@@ -96,6 +96,7 @@ public class ProofTreeController {
      * The mainscipt that is executed
      */
     private SimpleObjectProperty<ProofScript> mainScript = new SimpleObjectProperty<>();
+
     /**
      * Add a change listener for the stategraph, whenever a new node is added it receives an event
      */
@@ -199,11 +200,11 @@ public class ProofTreeController {
             //ask for root
             currentPointer = stateGraphWrapper.rootProperty().get();
             statePointer = currentPointer;
-
         }
         //get next node
         PTreeNode nextNode = stateGraphWrapper.getStepOver(currentPointer);
         //if nextnode is null ask interpreter to execute next statement and compute next state
+
         if (nextNode != null) {
             State<KeyData> lastState = this.statePointer.getState();
             this.statePointer = nextNode;
@@ -219,6 +220,7 @@ public class ProofTreeController {
             //let interpreter run for one step and let listener handle updating the statepointer
             blocker.getStepUntilBlock().addAndGet(1);
             blocker.unlock();
+
         }
         return statePointer;
     }
@@ -308,6 +310,7 @@ public class ProofTreeController {
             statusBar.setText("Executed until end of script.");
             //TODO is this the right position??
             if (currentGoals.isEmpty()) {
+
                 Utils.showClosedProofDialog(mainScript.get().getName());
             }
             statusBar.stopProgress();

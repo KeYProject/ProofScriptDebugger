@@ -658,7 +658,7 @@ public class DebuggerMain implements Initializable {
 
     /**
      * Perform a step back
-     *TODO Uebergabe des selctirkten Knotens damit richtiges ausgewählt
+     *TODO Uebergabe des selctierten Knotens damit richtiges ausgewählt
      * @param actionEvent
      */
     public void stepBack(ActionEvent actionEvent) {

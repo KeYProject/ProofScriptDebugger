@@ -3,7 +3,6 @@ package edu.kit.iti.formal.psdbg.interpreter.graphs;
 import edu.kit.iti.formal.psdbg.interpreter.data.InterpreterExtendedState;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
-import edu.kit.iti.formal.psdbg.parser.ast.CaseStatement;
 
 import java.util.LinkedList;
 
@@ -66,11 +65,8 @@ public class PTreeNode<T> {
         return extendedState;
     }
 
-    public void setExtendedState(State<T> state) {
-        this.extendedState = new InterpreterExtendedState<>(state.getGoals(), state.getSelectedGoalNode());
-        if (getScriptstmt() instanceof CaseStatement) {
-
-        }
+    public void setExtendedState(InterpreterExtendedState<T> extendedState) {
+        this.extendedState = extendedState;
     }
 
     public String toString() {
@@ -95,6 +91,7 @@ public class PTreeNode<T> {
     }
 
 
-
-
+    public String extendedStateToString() {
+        return this.extendedState.toString();
+    }
 }

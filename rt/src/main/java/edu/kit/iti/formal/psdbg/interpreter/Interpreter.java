@@ -100,9 +100,10 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
      */
     @Override
     public Object visit(ProofScript proofScript) {
-        enterScope(proofScript);
+
         //add vars
         visit(proofScript.getSignature());
+        enterScope(proofScript);
         proofScript.getBody().accept(this);
         exitScope(proofScript);
         return null;
@@ -519,6 +520,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     @Override
     public Object visit(CallStatement call) {
         enterScope(call);
+        // System.out.println(stateStack.peek().hashCode());
         //neuer VarScope
         //enter new variable scope
         VariableAssignment params = evaluateParameters(call.getParameters());
@@ -535,6 +537,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             //pushState(newErrorState);
         }
         g.exitScope();
+        //  System.out.println(stateStack.peek().hashCode());
         exitScope(call);
         return null;
     }
@@ -614,11 +617,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     @Override
     public Object visit(Signature signature) {
-        exitScope(signature);
+        //  enterScope(signature);
         GoalNode<T> node = getSelectedNode();
         node.enterScope();
         signature.forEach(node::declareVariable);
-        enterScope(signature);
+        // exitScope(signature);
         return null;
     }
 

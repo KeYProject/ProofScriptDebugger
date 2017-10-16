@@ -1,12 +1,10 @@
 // Please select one of the following scripts.
 //
-script test2(){
+script test23(){
 impRight;
 impLeft;
 cases{
-    case match `q==> `:
-      impRight;
-    default:
+    case match `==>`:
       impRight;
       notRight;
 }
@@ -17,6 +15,7 @@ script test(){
 }
 
 script test1(){
+  impRight;
   impRight;
 }
 script test2(){

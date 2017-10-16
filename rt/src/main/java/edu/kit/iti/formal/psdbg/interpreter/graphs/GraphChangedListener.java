@@ -10,4 +10,5 @@ public interface GraphChangedListener {
 
     abstract void graphChanged(NodeAddedEvent nodeAddedEvent);
 
+
 }

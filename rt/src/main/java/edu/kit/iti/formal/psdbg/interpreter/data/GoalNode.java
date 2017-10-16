@@ -112,4 +112,6 @@ public class GoalNode<T> {
         assignments = assignments.push(va);
         return assignments;
     }
+
+
 }
