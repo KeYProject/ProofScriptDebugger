@@ -15,13 +15,11 @@ import java.util.List;
 
 public class State<T> {
 
-
     /**
      * All goalnodes in this state
      */
     @Getter
     private List<GoalNode<T>> goals;
-
 
     /**
      * Currently selected GoalNode
@@ -34,13 +32,11 @@ public class State<T> {
     @Setter
     private boolean errorState;
 
-
     public State(Collection<GoalNode<T>> goals, GoalNode selected) {
         this.goals = new ArrayList<>(goals);
         this.selectedGoalNode = selected;
         assert selected == null || goals.contains(selected);
     }
-
 
     public State(List<GoalNode<T>> goals, int n) {
         this(goals, goals.get(n));

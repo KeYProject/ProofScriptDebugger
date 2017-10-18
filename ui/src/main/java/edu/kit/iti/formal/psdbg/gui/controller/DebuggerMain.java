@@ -14,8 +14,6 @@ import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
-import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
-import edu.kit.iti.formal.psdbg.interpreter.graphs.PTreeNode;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -196,6 +194,7 @@ public class DebuggerMain implements Initializable {
 
         proofTreeController.currentHighlightNodeProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
+                System.out.println("Highlight" + newValue);
                 scriptController.getDebugPositionHighlighter().highlight(newValue);
             }
 
@@ -648,12 +647,12 @@ public class DebuggerMain implements Initializable {
 
     /**
      * Perform a step over
-     *TODO Uebergabe des selctirkten Knotens damit richtiges ausgewählt
+     *TODO Uebergabe des selektierten Knotens damit richtiges ausgewählt
      * @param actionEvent
      */
     public void stepOver(ActionEvent actionEvent) {
         LOGGER.debug("DebuggerMain.stepOver");
-        PTreeNode newState = proofTreeController.stepOver();
+        proofTreeController.stepOver();
     }
 
     /**
@@ -663,7 +662,7 @@ public class DebuggerMain implements Initializable {
      */
     public void stepBack(ActionEvent actionEvent) {
         LOGGER.debug("DebuggerMain.stepBack");
-        PTreeNode<KeyData> newState = proofTreeController.stepBack();
+        proofTreeController.stepBack();
     }
 
     //region Property

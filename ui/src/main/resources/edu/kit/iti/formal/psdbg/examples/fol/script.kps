@@ -1,6 +1,9 @@
 // This file is not written yet!!
 script main() {
     impRight;
-    //instantiate with ...
+
+    //instantiate var=`x` with=`c`;
+    //allLeft formula=`\forall` with=`a`;
+    allLeft on=`\forall s x; f(f(x)) = f(x)` inst_t=`c`;
 
 }

@@ -50,15 +50,11 @@ public class InterpreterExtendedState<T> {
 
 
     public InterpreterExtendedState(InterpreterExtendedState<T> pred) {
-        if (pred == null) {
-            this.predecessor = null;
-        } else {
-            this.predecessor = pred;
-        }
+        this.predecessor = pred;
     }
 
-    public InterpreterExtendedState copy() {
-        InterpreterExtendedState ext = new InterpreterExtendedState();
+    public InterpreterExtendedState<T> copy() {
+        InterpreterExtendedState<T> ext = new InterpreterExtendedState<>();
         if (this.predecessor != null) {
             ext.setPredecessor(this.predecessor.copy());
         } else {
@@ -95,21 +91,19 @@ public class InterpreterExtendedState<T> {
 
     @Override
     public String toString() {
-
         StringBuilder sb = new StringBuilder("\n%%%%%%%%%%%%%%%%%%%%%\nExtended State ");
         if (getStmt() != null) {
             sb.append(getStmt().getNodeName() + ": \n");
         }
         sb.append("State before Statement: \n");
         if (stateBeforeStmt != null) {
-            stateBeforeStmt.getGoals().stream().map(tGoalNode -> tGoalNode.getData()).forEach(sb::append);
+            stateBeforeStmt.getGoals().stream().map(GoalNode::getData).forEach(sb::append);
         } else {
             sb.append("Before is Empty");
         }
         sb.append("\nAfter Statement:\n");
         if (stateAfterStmt != null) {
-
-            stateAfterStmt.getGoals().stream().map(tGoalNode -> tGoalNode.getData()).forEach(sb::append);
+            stateAfterStmt.getGoals().stream().map(GoalNode::getData).forEach(sb::append);
         } else {
             sb.append("After is empty");
         }

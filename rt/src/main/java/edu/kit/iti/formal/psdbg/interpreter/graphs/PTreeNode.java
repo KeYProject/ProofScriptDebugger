@@ -16,8 +16,8 @@ public class PTreeNode<T> {
      */
     private State<T> state;
 
+    private InterpreterExtendedState<T> extendedState = new InterpreterExtendedState<>();
 
-    private InterpreterExtendedState<T> extendedState;
     /**
      * Statement
      */
@@ -31,9 +31,7 @@ public class PTreeNode<T> {
 
     private boolean root;
 
-
-
-    public PTreeNode(ASTNode node) {
+    PTreeNode(ASTNode node) {
         this.setScriptstmt(node);
     }
 
@@ -49,7 +47,7 @@ public class PTreeNode<T> {
         return scriptstmt;
     }
 
-    public void setScriptstmt(ASTNode scriptstmt) {
+    private void setScriptstmt(ASTNode scriptstmt) {
         this.scriptstmt = scriptstmt;
     }
 
@@ -61,11 +59,11 @@ public class PTreeNode<T> {
         this.context = context;
     }
 
-    public InterpreterExtendedState<T> getExtendedState() {
+    InterpreterExtendedState<T> getExtendedState() {
         return extendedState;
     }
 
-    public void setExtendedState(InterpreterExtendedState<T> extendedState) {
+    void setExtendedState(InterpreterExtendedState<T> extendedState) {
         this.extendedState = extendedState;
     }
 
@@ -89,7 +87,6 @@ public class PTreeNode<T> {
     public boolean hasState() {
         return state != null;
     }
-
 
     public String extendedStateToString() {
         return this.extendedState.toString();

@@ -200,6 +200,14 @@ public class KeyData {
         return set;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Node with SerNr: ");
+        sb.append(this.getNode().serialNr() + " and sequent \n");
+        sb.append(this.getNode().sequent() + " and RuleLabels\n");
+        sb.append(this.getRuleLabel());
+        return sb.toString();
+    }
 
 
 }

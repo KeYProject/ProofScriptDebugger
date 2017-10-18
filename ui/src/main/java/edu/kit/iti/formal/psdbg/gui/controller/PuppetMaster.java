@@ -32,6 +32,20 @@ public class PuppetMaster {
      */
     private final SimpleObjectProperty<List<GoalNode<KeyData>>> currentGoals = new SimpleObjectProperty<>();
     private final SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoal = new SimpleObjectProperty<>();
+
+    private final SimpleObjectProperty<State<KeyData>> currentState = new SimpleObjectProperty<>();
+
+    public State<KeyData> getCurrentState() {
+        return currentState.get();
+    }
+
+    public void setCurrentState(State<KeyData> currentState) {
+        this.currentState.set(currentState);
+    }
+
+    public SimpleObjectProperty<State<KeyData>> currentStateProperty() {
+        return currentState;
+    }
     private KeyInterpreter puppet;
     private AtomicInteger stepUntilBlock = new AtomicInteger(-1);
     private HistoryListener historyLogger;
@@ -103,7 +117,7 @@ public class PuppetMaster {
 
                 //filter whether all goals are closed
                 Object[] arr = state.getGoals().stream().filter(keyDataGoalNode -> !keyDataGoalNode.isClosed()).toArray();
-
+                currentState.set(state);
                 if (state.getSelectedGoalNode() == null) {
                     if (arr.length == 0) {
                         currentGoals.set(Collections.emptyList());
@@ -123,6 +137,7 @@ public class PuppetMaster {
             //if puppet is null an empty state may be reached therefore state get goals etc returns null
 
             Platform.runLater(() -> {
+                setCurrentState(new State<KeyData>(Collections.emptyList(), null));
                 currentGoals.set(Collections.emptyList());
                 currentSelectedGoal.set(null);
             });
