@@ -91,7 +91,9 @@ public class InterpreterExtendedState<T> {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("\n%%%%%%%%%%%%%%%%%%%%%\nExtended State ");
+        StringBuilder sb = new StringBuilder();
+        //sb.append("\n%%%%%%%%%%%%%%%%%%%%%\n");
+        sb.append("Extended State ");
         if (getStmt() != null) {
             sb.append(getStmt().getNodeName() + ": \n");
         }
@@ -107,7 +109,14 @@ public class InterpreterExtendedState<T> {
         } else {
             sb.append("After is empty");
         }
-        sb.append("\n%%%%%%%%%%%%%%%%%%%%\n");
+        if (getMappingOfCaseToStates().containsKey(stmt)) {
+            sb.append("Case Stmt with");
+            getMappingOfCaseToStates().get(stmt).forEach(tGoalNode -> {
+                sb.append(tGoalNode.getData());
+            });
+        }
+
+        //sb.append("\n%%%%%%%%%%%%%%%%%%%%\n");
         return sb.toString();
 //            this.stateBeforeStmt.toString()+"\n"+this.stateAfterStmt.toString();
     }

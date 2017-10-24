@@ -18,6 +18,10 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -87,35 +91,7 @@ public class StateGraphWrapper<T> {
 
     }
 
-    /**
-     * Create the root Node for the state graph
-     * @param node
-     */
-    public void createRootNode(ASTNode node) {
-        LOGGER.info("Creating Root for State graph with statement {}@{}", node.getNodeName(), node.getStartPosition());
-        PTreeNode<T> newStateNode = new PTreeNode<>(node);
-        State<T> currentInterpreterStateCopy = currentInterpreter.getCurrentState().copy();
-        //copy current state before executing statement
-        newStateNode.setState(currentInterpreterStateCopy);
-
-        //create extended State
-        InterpreterExtendedState<T> extState = new InterpreterExtendedState<>();
-        extState.setStmt(node);
-        extState.setStateBeforeStmt(currentInterpreterStateCopy);
-        newStateNode.setExtendedState(extState);
-        //add node to state graph
-        boolean res = stateGraph.addNode(newStateNode);
-        if (!res) {
-            throw new StateGraphException("Could not create new state for ASTNode " + node + " and add it to the stategraph");
-        } else {
-            this.root.set(newStateNode);
-            //to keep track of added nodes
-            addedNodes.put(node, newStateNode);
-            //   fireNodeAdded(new NodeAddedEvent(null, newStateNode));
-            lastNode = newStateNode;
-        }
-
-    }
+    private static int counter = 0;
 
     public MutableValueGraph<PTreeNode<T>, EdgeTypes> getStateGraph() {
         return stateGraph;
@@ -207,6 +183,41 @@ public class StateGraphWrapper<T> {
         return createNewNode(node, false);
     }
 
+    private static Path graph = Paths.get("/tmp/test.dot");
+
+    /**
+     * Create the root Node for the state graph
+     *
+     * @param node
+     */
+    public void createRootNode(ASTNode node) {
+        LOGGER.info("Creating Root for State graph with statement {}@{}", node.getNodeName(), node.getStartPosition());
+        PTreeNode<T> newStateNode = new PTreeNode<>(node);
+        newStateNode.setContext(new Stack<>());
+        newStateNode.getContext().push(node);
+        State<T> currentInterpreterStateCopy = currentInterpreter.getCurrentState().copy();
+        //copy current state before executing statement
+        newStateNode.setState(currentInterpreterStateCopy);
+
+        //create extended State
+        InterpreterExtendedState<T> extState = new InterpreterExtendedState<>();
+        extState.setStmt(node);
+        extState.setStateBeforeStmt(currentInterpreterStateCopy);
+        newStateNode.setExtendedState(extState);
+        //add node to state graph
+        boolean res = stateGraph.addNode(newStateNode);
+        if (!res) {
+            throw new StateGraphException("Could not create new state for ASTNode " + node + " and add it to the stategraph");
+        } else {
+            this.root.set(newStateNode);
+            //to keep track of added nodes
+            addedNodes.put(node, newStateNode);
+            //   fireNodeAdded(new NodeAddedEvent(null, newStateNode));
+            lastNode = newStateNode;
+        }
+
+    }
+
     /**
      * Create a new node for the state graph and add edges to already existing nodes
      *
@@ -216,26 +227,49 @@ public class StateGraphWrapper<T> {
     private Void createNewNode(ASTNode node, boolean isCasesStmt) {
         LOGGER.info("Creating Node for State graph with statement {}@{}", node.getNodeName(), node.getStartPosition());
         //save old pointer of last node
-        State<T> lastState = lastNode.getState();
+        //State<T> lastState = lastNode.getState();
+        State<T> lastState;
+        // if(lastNode.getExtendedState().getStateAfterStmt() != null) {
+        //     lastState = lastNode.getExtendedState().getStateAfterStmt().copy();
+        // }else{
+        lastState = currentInterpreter.getCurrentState().copy();
+        // }
         //create a new ProofTreeNode in graph with ast node as parameter
         PTreeNode<T> newStateNode = new PTreeNode<>(node);
+        newStateNode.setContext(lastNode.getContext());
         //get the state before executing ast node to save it to the extended state
         //State<T> currentState = currentInterpreter.getCurrentState().copy();
 
         InterpreterExtendedState<T> extState;
 
         if (isCasesStmt) {
+            newStateNode.getContext().push(node);
             extState = new InterpreterExtendedState<>(lastNode.getExtendedState().copy());
             extState.setStmt(node);
-            extState.setStateBeforeStmt(lastState);
-            newStateNode.setState(lastState);
-            //TODO: implement special handling for cases stmts
-            //extState = null;
+            extState.setStateBeforeStmt(lastState.copy());
+            Map<CaseStatement, List<GoalNode<T>>> mappingOfCaseToStates = extState.getMappingOfCaseToStates();
+            CasesStatement cs = (CasesStatement) node;
+            //initialize the cases in the mapping map
+            cs.getCases().forEach(caseStatement -> {
+                mappingOfCaseToStates.put(caseStatement, Collections.emptyList());
+            });
+
+            extState.setMappingOfCaseToStates(mappingOfCaseToStates);
+            //TODO default case
+            newStateNode.setState(lastState.copy());
+
         } else {
+
             //set pointer to parent extended state
             extState = new InterpreterExtendedState<>(lastNode.getExtendedState().copy());
             extState.setStmt(node);
-            extState.setStateBeforeStmt(lastState);
+            //check whether case statement
+            if (extState.getMappingOfCaseToStates().containsKey(node)) {
+                extState.getMappingOfCaseToStates().get(node).add(lastState.getSelectedGoalNode().deepCopy());
+                extState.setStateBeforeStmt(new State<T>(extState.getMappingOfCaseToStates().get(node), lastState.getSelectedGoalNode().deepCopy()));
+            } else {
+                extState.setStateBeforeStmt(lastState);
+            }
         }
 
         newStateNode.setExtendedState(extState);
@@ -250,29 +284,13 @@ public class StateGraphWrapper<T> {
     }
 
     private void fireNodeAdded(NodeAddedEvent nodeAddedEvent) {
+        counter++;
+        System.out.println("XXXXXXXXXX counter = " + counter);
         changeListeners.forEach(list -> Platform.runLater(() -> {
             list.graphChanged(nodeAddedEvent);
-            LOGGER.debug("New StateGraphChange " + this.asdot());
+            //TODO
+            LOGGER.info("New StateGraphChange \n%%%%%%" + this.asdot() + "\n%%%%%%%");
         }));
-    }
-
-    private Void addState(ASTNode node) {
-        LOGGER.info("Adding a new state for statement {}@{}", node.getNodeName(), node.getStartPosition());
-        //get node from addedNodes Map
-        PTreeNode<T> newStateNode = addedNodes.get(node);
-        //copy Current Interpreter state
-        State<T> currentState = currentInterpreter.getCurrentState().copy();
-        //set the state
-        if (node != this.root.get().getScriptstmt()) {
-            newStateNode.setState(currentState);
-            newStateNode.getExtendedState().setStateAfterStmt(currentState);
-        } else {
-            //  newStateNode.setState(currentState);
-            newStateNode.getExtendedState().setStateAfterStmt(currentState);
-        }
-        fireStateAdded(new StateAddedEvent(newStateNode, currentState));
-        // LOGGER.info("\n%%%%%%%%%%%%%%%%%%\n Extended state for {} updated with {} \n%%%%%%%%%%%%%%%%%%\n", node.getStartPosition(), newStateNode.getExtendedState().toString());
-        return null;
     }
 
     public void install(Interpreter<T> interpreter) {
@@ -337,6 +355,7 @@ public class StateGraphWrapper<T> {
                     .append(n.getScriptstmt().getNodeName())
                     .append("@")
                     .append(n.getScriptstmt().getStartPosition().getLineNumber())
+                    .append(n.extendedStateToString())
                     .append("\"]\n");
         });
 
@@ -350,7 +369,45 @@ public class StateGraphWrapper<T> {
         });
 
         sb.append("}");
+
+        //TODO: debugging
+        try (java.io.BufferedWriter writer =
+                     java.nio.file.Files.newBufferedWriter(graph, StandardCharsets.UTF_8)
+        ) {
+            writer.write(sb.toString());
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //TODO: end debugging
+
         return sb.toString();
+    }
+
+    private Void addState(ASTNode node) {
+        LOGGER.info("Adding a new state for statement {}@{}", node.getNodeName(), node.getStartPosition());
+        //get node from addedNodes Map
+        PTreeNode<T> newStateNode = addedNodes.get(node);
+        //copy Current Interpreter state
+        State<T> currentState = currentInterpreter.getCurrentState().copy();
+        //set the state
+        if (node != this.root.get().getScriptstmt()) {
+            newStateNode.setState(currentState);
+            newStateNode.getExtendedState().setStateAfterStmt(currentState);
+            if (newStateNode.getContext().peek().equals(node)) {
+                newStateNode.getContext().pop();
+            }
+        } else {
+            //  newStateNode.setState(currentState);
+            newStateNode.getExtendedState().setStateAfterStmt(currentState);
+            if (newStateNode.getContext().peek().equals(node)) {
+                newStateNode.getContext().pop();
+            }
+        }
+        fireStateAdded(new StateAddedEvent(newStateNode, currentState, newStateNode.getExtendedState()));
+        LOGGER.debug("Extended state for {} updated with {} \n", node.getStartPosition(), newStateNode.getExtendedState().toString());
+        return null;
     }
 
     private class EntryListener extends DefaultASTVisitor<Void> {
@@ -431,11 +488,11 @@ public class StateGraphWrapper<T> {
             return addState(assignment);
         }
 
-        @Override
+      /*  @Override
         public Void visit(CasesStatement casesStatement) {
             return addState(casesStatement);
         }
-
+        */
         /*@Override
         public Void visit(CaseStatement caseStatement) {
             return addState(caseStatement);
@@ -472,10 +529,10 @@ public class StateGraphWrapper<T> {
             return addState(tryCase);
         }
 
-        @Override
+       /* @Override
         public Void visit(SimpleCaseStatement simpleCaseStatement) {
             return addState(simpleCaseStatement);
-        }
+        }*/
 
         @Override
         public Void visit(ClosesCase closesCase) {

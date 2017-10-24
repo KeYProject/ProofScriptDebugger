@@ -88,7 +88,7 @@ public class PuppetMaster {
         //<0 run
         if (stepUntilBlock.get() > 0)
             stepUntilBlock.decrementAndGet();
-
+        System.out.println("Blocker: " + stepUntilBlock.get());
         if (stepUntilBlock.get() == 0) {
             publishState();
             block();
@@ -111,6 +111,7 @@ public class PuppetMaster {
         if (puppet != null) {
 
             final State<KeyData> state = puppet.getCurrentState().copy();
+            this.setCurrentState(state);
 
             Platform.runLater(() -> {
 

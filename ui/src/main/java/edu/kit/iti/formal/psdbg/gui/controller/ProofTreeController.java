@@ -10,6 +10,7 @@ import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.NodeAddedEvent;
 import edu.kit.iti.formal.psdbg.interpreter.StateAddedEvent;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
+import edu.kit.iti.formal.psdbg.interpreter.data.InterpreterExtendedState;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.graphs.*;
@@ -118,12 +119,9 @@ public class ProofTreeController {
         @Override
         public void graphChanged(StateAddedEvent stateAddedEvent) {
             PTreeNode changedNode = stateAddedEvent.getChangedNode();
-            // if(changedNode.getScriptstmt().equals(statePointer.getScriptstmt())){
             LOGGER.info("Graph changed by adding a state to PTreeNode: {} and the statepointer points to {}", stateAddedEvent, statePointer);
             nextComputedNode.set(changedNode);
             Events.fire(new Events.NewNodeExecuted(changedNode.getScriptstmt()));
-            //  }
-
         }
 
     };
@@ -145,33 +143,9 @@ public class ProofTreeController {
      *  and bind properties
      */
     public ProofTreeController() {
-       /* blocker.currentStateProperty().addListener((observable, oldValue, newValue) ->
-        {
-            Platform.runLater(() -> {
-                if (newValue != null) {
-                    setNewState(newValue);
-                }
-
-            });
-        });*/
-
-        //get state from blocker, who communicates with interpreter
-        //this.currentSelectedGoal.bindBidirectional(blocker.currentSelectedGoalProperty());
-/*        blocker.currentSelectedGoalProperty().addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {
-                if (newValue != null) {
-                    this.setCurrentSelectedGoal(newValue);
-                }
-            });
+        blocker.currentStateProperty().addListener((observable, oldValue, newValue) -> {
+            LOGGER.info("The state in the Puppetmaster changed to " + newValue.toString());
         });
-        blocker.currentGoalsProperty().addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {
-                if (newValue != null) {
-                    this.setCurrentGoals(newValue);
-                }
-            });
-        });*/
-
         //add listener to nextcomputed node, that is updated whenever a new node is added to the stategraph
         nextComputedNode.addListener((observable, oldValue, newValue) -> {
             //update statepointer
@@ -192,7 +166,7 @@ public class ProofTreeController {
      * @param state
      */
     private void setNewState(State<KeyData> state) {
-        //  LOGGER.info("Setting new State "+state.toString());
+        LOGGER.info("Setting new State " + state.toString());
         //Statepointer null wenn anfangszustand?
         if (statePointer != null && state != null) {
             setCurrentHighlightNode(statePointer.getScriptstmt());
@@ -251,26 +225,21 @@ public class ProofTreeController {
         PTreeNode<KeyData> nextNode = stateGraphWrapper.getStepOver(currentPointer);
         //if nextnode is null ask interpreter to execute next statement and compute next state
 
-        if (nextNode != null) {
+        if (nextNode != null && nextNode.getExtendedState().getStateAfterStmt() != null) {
             PTreeNode<KeyData> lastNode = this.statePointer;
             PTreeNode<KeyData> possibleextNode = nextNode;
 
-            if (possibleextNode.getState().getGoals() == null || possibleextNode.getState().getGoals().isEmpty() || possibleextNode.getState() == null) {
+            InterpreterExtendedState<KeyData> extendedStateOfStmt = possibleextNode.getExtendedState();
+            //check whether we have reached an endpoint in the graph
+            if (lastNode.equals(nextNode)) {
                 nextComputedNode.setValue(lastNode);
             } else {
-                nextComputedNode.setValue(possibleextNode);
+                if (extendedStateOfStmt.getStateBeforeStmt() == null || extendedStateOfStmt.getStateBeforeStmt().getGoals() == null || extendedStateOfStmt.getStateBeforeStmt().getGoals().isEmpty()) {
+                    nextComputedNode.setValue(lastNode);
+                } else {
+                    nextComputedNode.setValue(possibleextNode);
+                }
             }
-           /* State<KeyData> lastState = this.statePointer.getState();
-            this.statePointer = nextNode;
-            //TODO: replace this code by firing a nodeChangedEvent
-            State<KeyData> state = this.statePointer.getState();
-            //if statepointer is at the end, the set of goals is empty therefore return old pointer
-            if (state.getGoals().isEmpty()) {
-                setNewState(lastState);
-            } else {
-                setNewState(state);
-            }*/
-            //  setHighlightStmt(this.statePointer.getScriptstmt().getStartPosition(), this.statePointer.getScriptstmt().getStartPosition());
         } else {
             //no next node is present yet
             //let interpreter run for one step and let listener handle updating the statepointer
@@ -328,24 +297,18 @@ public class ProofTreeController {
         blocker.deinstall();
         blocker.install(currentInterpreter);
 
-/*        if (!debugMode) {
-            statusBar.setText("Starting in execution mode for script " + mainScript.getName());
-            statusBar.indicateProgress();
-            blocker.getStepUntilBlock().set(-1);
-        } else {*/
-            statusBar.setText("Starting in debug mode for script " + mainScript.getName());
-            statusBar.indicateProgress();
-            setCurrentHighlightNode(mainScript.get());
+        statusBar.setText("Starting in debug mode for script " + mainScript.getName());
+        statusBar.indicateProgress();
+        setCurrentHighlightNode(mainScript.get());
 
-            //build CFG
-            buildControlFlowGraph(mainScript.get());
-            //build StateGraph
+        //build CFG
+        buildControlFlowGraph(mainScript.get());
+        //build StateGraph
         this.stateGraphWrapper = new StateGraphWrapper<>(currentInterpreter, mainScript.get(), this.controlFlowGraphVisitor);
 
-            this.stateGraphWrapper.install(currentInterpreter);
-            this.stateGraphWrapper.addChangeListener(graphChangedListener);
-            statusBar.stopProgress();
-        //}
+        this.stateGraphWrapper.install(currentInterpreter);
+        this.stateGraphWrapper.addChangeListener(graphChangedListener);
+        statusBar.stopProgress();
 
         //create interpreter service and start
         if (interpreterService.getState() == Worker.State.SUCCEEDED
@@ -370,7 +333,6 @@ public class ProofTreeController {
             statusBar.setText("Failed to execute script");
             statusBar.stopProgress();
         });
-
     }
 
     /**
@@ -418,11 +380,6 @@ public class ProofTreeController {
     public void setCurrentInterpreter(KeyInterpreter currentInterpreter) {
         this.currentInterpreter = currentInterpreter;
     }
-
-/*    public void setMainScript(ProofScript mainScript) {
-        this.mainScript = mainScript;
-
-    }*/
 
     public StateGraphWrapper getStateVisitor() {
         return this.stateGraphWrapper;

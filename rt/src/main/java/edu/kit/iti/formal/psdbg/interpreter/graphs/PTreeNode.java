@@ -4,7 +4,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.InterpreterExtendedState;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 
-import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  * Inner class representing nodes in the stategraph graph
@@ -27,7 +27,15 @@ public class PTreeNode<T> {
     /**
      * Call context
      */
-    private LinkedList<ASTNode> context = new LinkedList<>();
+    private Stack<ASTNode> context = new Stack<>();
+
+    public Stack<ASTNode> getContext() {
+        return context;
+    }
+
+    public void setContext(Stack<ASTNode> context) {
+        this.context = context;
+    }
 
     private boolean root;
 
@@ -51,19 +59,11 @@ public class PTreeNode<T> {
         this.scriptstmt = scriptstmt;
     }
 
-    public LinkedList<ASTNode> getContext() {
-        return context;
-    }
-
-    public void setContext(LinkedList<ASTNode> context) {
-        this.context = context;
-    }
-
-    InterpreterExtendedState<T> getExtendedState() {
+    public InterpreterExtendedState<T> getExtendedState() {
         return extendedState;
     }
 
-    void setExtendedState(InterpreterExtendedState<T> extendedState) {
+    public void setExtendedState(InterpreterExtendedState<T> extendedState) {
         this.extendedState = extendedState;
     }
 
@@ -75,10 +75,15 @@ public class PTreeNode<T> {
         } else {
             sb.append("Root Node");
         }
-        if (hasState()) {
+       /* if (hasState()) {
             sb.append("\nState " + state.getGoals() + "\n");
         } else {
             sb.append("No State yet");
+        }*/
+        if (extendedState != null) {
+            sb.append(extendedStateToString());
+        } else {
+            sb.append("No extended State yet");
         }
         sb.append("}");
         return sb.toString();
