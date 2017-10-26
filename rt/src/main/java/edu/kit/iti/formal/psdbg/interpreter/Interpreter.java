@@ -266,10 +266,12 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     @Override
     public Object visit(SimpleCaseStatement simpleCaseStatement) {
+
         Expression matchExpression = simpleCaseStatement.getGuard();
         State<T> currentStateToMatch = peekState();
         GoalNode<T> selectedGoal = currentStateToMatch.getSelectedGoalNode();
         VariableAssignment va = evaluateMatchInGoal(matchExpression, selectedGoal);
+
         if (va != null) {
             enterScope(simpleCaseStatement);
             executeBody(simpleCaseStatement.getBody(), selectedGoal, va);

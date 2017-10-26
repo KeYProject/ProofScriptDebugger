@@ -3,7 +3,6 @@ package edu.kit.iti.formal.psdbg.gui.controller;
 import edu.kit.iti.formal.psdbg.interpreter.HistoryListener;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
-import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
@@ -13,7 +12,6 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,8 +28,8 @@ public class PuppetMaster {
     /**
      * Properties that are changed, when new states are added using the blocker
      */
-    private final SimpleObjectProperty<List<GoalNode<KeyData>>> currentGoals = new SimpleObjectProperty<>();
-    private final SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoal = new SimpleObjectProperty<>();
+    //private final SimpleObjectProperty<List<GoalNode<KeyData>>> currentGoals = new SimpleObjectProperty<>();
+    //private final SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoal = new SimpleObjectProperty<>();
 
     private final SimpleObjectProperty<State<KeyData>> currentState = new SimpleObjectProperty<>();
 
@@ -46,6 +44,8 @@ public class PuppetMaster {
     public SimpleObjectProperty<State<KeyData>> currentStateProperty() {
         return currentState;
     }
+
+
     private KeyInterpreter puppet;
     private AtomicInteger stepUntilBlock = new AtomicInteger(-1);
     private HistoryListener historyLogger;
@@ -60,9 +60,9 @@ public class PuppetMaster {
         install(puppet);
     }
 
-    public SimpleObjectProperty<List<GoalNode<KeyData>>> currentGoalsProperty() {
+    /*public SimpleObjectProperty<List<GoalNode<KeyData>>> currentGoalsProperty() {
         return currentGoals;
-    }
+    }*/
 
     public HistoryListener getHistoryLogger() {
         return historyLogger;
@@ -90,13 +90,14 @@ public class PuppetMaster {
             stepUntilBlock.decrementAndGet();
         System.out.println("Blocker: " + stepUntilBlock.get());
         if (stepUntilBlock.get() == 0) {
-            publishState();
+            //publishState();
             block();
         }
 
         int lineNumber = node.getStartPosition().getLineNumber();
+
         if (brkpnts.contains(lineNumber)) {
-            publishState();
+            //publishState();
             block();
         }
         return null;
@@ -109,17 +110,20 @@ public class PuppetMaster {
         //("PuppetMaster.publishState");
         //puppet is null if successful interpreter state and publish state
         if (puppet != null) {
-
             final State<KeyData> state = puppet.getCurrentState().copy();
-            this.setCurrentState(state);
 
             Platform.runLater(() -> {
+                this.setCurrentState(state);
+            });
+
+          /*  Platform.runLater(() -> {
 
 
                 //filter whether all goals are closed
                 Object[] arr = state.getGoals().stream().filter(keyDataGoalNode -> !keyDataGoalNode.isClosed()).toArray();
-                currentState.set(state);
-                if (state.getSelectedGoalNode() == null) {
+                setCurrentState(state);
+                //currentState.set(state);
+                /*if (state.getSelectedGoalNode() == null) {
                     if (arr.length == 0) {
                         currentGoals.set(Collections.emptyList());
                         //currentSelectedGoal.set(state.getGoals().get(0));
@@ -133,14 +137,13 @@ public class PuppetMaster {
                     currentSelectedGoal.set(state.getSelectedGoalNode());
                 }
 
-            });
+            });*/
         } else {
             //if puppet is null an empty state may be reached therefore state get goals etc returns null
-
             Platform.runLater(() -> {
                 setCurrentState(new State<KeyData>(Collections.emptyList(), null));
-                currentGoals.set(Collections.emptyList());
-                currentSelectedGoal.set(null);
+                // currentGoals.set(Collections.emptyList());
+                // currentSelectedGoal.set(null);
             });
 
         }
@@ -175,7 +178,7 @@ public class PuppetMaster {
     }
 
 
-    public GoalNode<KeyData> getCurrentSelectedGoal() {
+   /* public GoalNode<KeyData> getCurrentSelectedGoal() {
         return currentSelectedGoal.get();
     }
 
@@ -227,6 +230,7 @@ public class PuppetMaster {
             return checkForHalt(assignment);
         }
 
+
         @Override
         public Void visit(CasesStatement casesStatement) {
             return checkForHalt(casesStatement);
@@ -238,8 +242,20 @@ public class PuppetMaster {
         }
 
         @Override
+        public Void visit(MatchExpression matchExpression) {
+//           System.out.println("Checkforhalt matchexpression");
+            return checkForHalt(matchExpression);
+        }
+
+        @Override
         public Void visit(CallStatement call) {
+            //          System.out.println("Checkforhalt callstatement");
             return checkForHalt(call);
+        }
+
+        @Override
+        public Void visit(SimpleCaseStatement simpleCaseStatement) {
+            return checkForHalt(simpleCaseStatement);
         }
 
         @Override

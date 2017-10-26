@@ -22,6 +22,9 @@ public class InterpretingService extends Service<State<KeyData>> {
      * The interpreter (with the appropriate KeY state) that is used to traverse and execute the script
      */
     private final SimpleObjectProperty<Interpreter<KeyData>> interpreter = new SimpleObjectProperty<>();
+    /**
+     * Statusbar for indication of progress
+     */
     private DebuggerStatusBar statusBar;
 
     /**
@@ -99,6 +102,7 @@ public class InterpretingService extends Service<State<KeyData>> {
             protected edu.kit.iti.formal.psdbg.interpreter.data.State<KeyData> call() throws Exception {
                 if (statusBar != null) {
                     statusBar.indicateProgress();
+                    statusBar.publishMessage("Interpreting " + ast.getName());
                 }
                 i.interpret(ast);
                 return i.peekState();

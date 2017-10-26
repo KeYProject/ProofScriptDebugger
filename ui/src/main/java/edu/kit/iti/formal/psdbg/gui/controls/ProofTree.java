@@ -102,6 +102,21 @@ public class ProofTree extends BorderPane {
         treeProof.refresh();
     }
 
+    /**
+     * From https://www.programcreek.com/java-api-examples/index.php?api=javafx.scene.control.TreeItem
+     *
+     * @param candidate
+     */
+    private static void expandRootToItem(TreeItem candidate) {
+        if (candidate != null) {
+            expandRootToItem(candidate.getParent());
+            if (!candidate.isLeaf()) {
+                candidate.setExpanded(true);
+            }
+        }
+    }
+
+
     private TreeCell<Node> cellFactory(TreeView<Node> nodeTreeView) {
         TextFieldTreeCell<Node> tftc = new TextFieldTreeCell<>();
         tftc.setConverter(new StringConverter<Node>() {
@@ -132,17 +147,25 @@ public class ProofTree extends BorderPane {
         return tftc;
     }
 
+    /**
+     *
+     * @param tftc
+     */
+
     private void repaint(TextFieldTreeCell<Node> tftc) {
         Node n = tftc.getItem();
         tftc.setStyle("");
         if (n != null) {
             if (n.isClosed()) {
-                tftc.setStyle("-fx-background-color: greenyellow");
+                colorOfNodes.putIfAbsent(n, "green");
+                //tftc.setStyle("-fx-background-color: greenyellow");
             }
             if (colorOfNodes.containsKey(n)) {
                 tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
             }
         }
+        expandRootToItem(tftc.getTreeItem());
+
     }
 
     public Object getColorOfNodes() {
@@ -181,6 +204,8 @@ public class ProofTree extends BorderPane {
         return proof;
     }
 }
+
+
 
 class TreeItemNode extends TreeItem<Node> {
     public TreeItemNode(Node value) {

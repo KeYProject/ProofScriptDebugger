@@ -4,9 +4,13 @@ script test23(){
 impRight;
 impLeft;
 cases{
+    case match `q==>`:
+      impRight;
+      notRight;
     case match `==>`:
       impRight;
       notRight;
+    }
 }
 
 
@@ -18,6 +22,17 @@ script test1(){
   impRight;
   impRight;
 }
+
+script test_2(){
+impRight;
+impLeft;
+cases{
+    case match `q ==> ?X -> ?Y`:
+      impRight;
+
+}
+
+
 script test2(){
 impRight;
 impLeft;

@@ -11,7 +11,8 @@ script main() {
 script proj() {
 impRight;
 eqSymm formula = `f(c) = f(f(f(c)))`;
-allLeft on =`\forall s x; f(f(x)) = f(x)` inst_t=`f(f(c))`;
+instantiate var=`x` with=`f(f(c))`;
+//allLeft on =`\forall s x; f(f(x)) = f(x)` inst_t=`f(f(c))`;
 allLeft on =`\forall s x; f(f(x)) = f(x)` inst_t=`c`;
 //applyEqRigid;
 //applyEq formula=`f(f(f(c))) = f(c)` occ=`f(f(c))`;

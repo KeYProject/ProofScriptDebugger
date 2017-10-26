@@ -14,5 +14,8 @@ public class RigidRuleCommandHandler implements CommandHandler<KeyData> {
     @Override
     public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params) {
 
+//        Evaluator evaluator = new Evaluator(g.getAssignments(), g);
+//        evaluator.setMatcher(interpreter.getMatcherApi());
+//taclet.getExecutor().apply(env.getLoadedProof().root(), env.getServices());
     }
 }

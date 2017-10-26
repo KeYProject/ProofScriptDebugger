@@ -71,16 +71,19 @@ public class StateGraphWrapper<T> {
     private ControlFlowVisitor cfgVisitor;
 
     private EntryListener entryListener = new EntryListener();
+
     private ExitListener exitListener = new ExitListener();
 
     private ProofScript mainScript;
 
+
     /**
+
      * Creates a new state graph and adds the root node with the root state
-     *
-     * @param inter
+     *  @param inter
      * @param mainScript
      * @param cfgVisitor
+     *
      */
     public StateGraphWrapper(Interpreter<T> inter, ProofScript mainScript, ControlFlowVisitor cfgVisitor) {
         stateGraph = ValueGraphBuilder.directed().build();
@@ -106,16 +109,10 @@ public class StateGraphWrapper<T> {
         return lastNode;
     }
 
-    public void setUpGraph() {
-        //create empty graph
-        stateGraph = ValueGraphBuilder.directed().build();
-
-    }
 
     //careful TODO look for right edges
     //TODO handle endpoint of graph
     public PTreeNode<T> getStepOver(PTreeNode statePointer) {
-
 
         if (statePointer == null) {
             LOGGER.info("Stepover requested for null, therefore returning root");
@@ -126,6 +123,7 @@ public class StateGraphWrapper<T> {
         Set<PTreeNode<T>> successors = this.stateGraph.successors(statePointer);
         //if there are no successors they have to be computed therefore return null, to trigger the proof tree controller
         if (successors.isEmpty()) {
+
             return null;
         } else {
             //if there are successors we want those which are connetced with State-Flow
@@ -227,19 +225,13 @@ public class StateGraphWrapper<T> {
     private Void createNewNode(ASTNode node, boolean isCasesStmt) {
         LOGGER.info("Creating Node for State graph with statement {}@{}", node.getNodeName(), node.getStartPosition());
         //save old pointer of last node
-        //State<T> lastState = lastNode.getState();
         State<T> lastState;
-        // if(lastNode.getExtendedState().getStateAfterStmt() != null) {
-        //     lastState = lastNode.getExtendedState().getStateAfterStmt().copy();
-        // }else{
         lastState = currentInterpreter.getCurrentState().copy();
-        // }
+
         //create a new ProofTreeNode in graph with ast node as parameter
         PTreeNode<T> newStateNode = new PTreeNode<>(node);
         newStateNode.setContext(lastNode.getContext());
         //get the state before executing ast node to save it to the extended state
-        //State<T> currentState = currentInterpreter.getCurrentState().copy();
-
         InterpreterExtendedState<T> extState;
 
         if (isCasesStmt) {
@@ -284,12 +276,12 @@ public class StateGraphWrapper<T> {
     }
 
     private void fireNodeAdded(NodeAddedEvent nodeAddedEvent) {
-        counter++;
-        System.out.println("XXXXXXXXXX counter = " + counter);
+        //counter++;
+        //System.out.println("XXXXXXXXXX counter = " + counter);
         changeListeners.forEach(list -> Platform.runLater(() -> {
             list.graphChanged(nodeAddedEvent);
             //TODO
-            LOGGER.info("New StateGraphChange \n%%%%%%" + this.asdot() + "\n%%%%%%%");
+            //  LOGGER.info("New StateGraphChange \n%%%%%%" + this.asdot() + "\n%%%%%%%");
         }));
     }
 
@@ -309,11 +301,8 @@ public class StateGraphWrapper<T> {
         this.root.set(root);
     }
 
-    private void fireStateAdded(StateAddedEvent stateAddedEvent) {
-        changeListeners.forEach(list -> Platform.runLater(() -> {
-            list.graphChanged(stateAddedEvent);
-            LOGGER.debug("New StateGraphChange " + this.asdot());
-        }));
+    private Void addState(ASTNode node) {
+        return addState(node, true);
     }
 
     public void addChangeListener(GraphChangedListener listener) {
@@ -385,7 +374,7 @@ public class StateGraphWrapper<T> {
         return sb.toString();
     }
 
-    private Void addState(ASTNode node) {
+    private Void addState(ASTNode node, boolean fireStateAdded) {
         LOGGER.info("Adding a new state for statement {}@{}", node.getNodeName(), node.getStartPosition());
         //get node from addedNodes Map
         PTreeNode<T> newStateNode = addedNodes.get(node);
@@ -405,9 +394,18 @@ public class StateGraphWrapper<T> {
                 newStateNode.getContext().pop();
             }
         }
-        fireStateAdded(new StateAddedEvent(newStateNode, currentState, newStateNode.getExtendedState()));
+        if (fireStateAdded) {
+            fireStateAdded(new StateAddedEvent(newStateNode, currentState, newStateNode.getExtendedState()));
+        }
         LOGGER.debug("Extended state for {} updated with {} \n", node.getStartPosition(), newStateNode.getExtendedState().toString());
         return null;
+    }
+
+    private void fireStateAdded(StateAddedEvent stateAddedEvent) {
+        changeListeners.forEach(list -> Platform.runLater(() -> {
+            list.graphChanged(stateAddedEvent);
+            // LOGGER.debug("New StateGraphChange " + this.asdot());
+        }));
     }
 
     private class EntryListener extends DefaultASTVisitor<Void> {
@@ -461,6 +459,11 @@ public class StateGraphWrapper<T> {
         }
 
         @Override
+        public Void visit(MatchExpression matchExpression) {
+            return createNewNode(matchExpression);
+        }
+
+        @Override
         public Void visit(TryCase tryCase) {
             return createNewNode(tryCase);
         }
@@ -488,14 +491,19 @@ public class StateGraphWrapper<T> {
             return addState(assignment);
         }
 
-      /*  @Override
-        public Void visit(CasesStatement casesStatement) {
-            return addState(casesStatement);
+        @Override
+        public Void visit(ProofScript proofScript) {
+            return addState(proofScript, false);
         }
-        */
+
+        @Override
+        public Void visit(CasesStatement casesStatement) {
+            return addState(casesStatement, false);
+        }
+
         /*@Override
         public Void visit(CaseStatement caseStatement) {
-            return addState(caseStatement);
+            return addState(caseStatement, false);
         }*/
 
         @Override
@@ -529,20 +537,17 @@ public class StateGraphWrapper<T> {
             return addState(tryCase);
         }
 
-       /* @Override
+        @Override
         public Void visit(SimpleCaseStatement simpleCaseStatement) {
-            return addState(simpleCaseStatement);
-        }*/
+            return addState(simpleCaseStatement, false);
+        }
 
         @Override
         public Void visit(ClosesCase closesCase) {
             return addState(closesCase);
         }
 
-       /* @Override
-        public Void visit(ProofScript proofScript) {
-            return addState(proofScript);
-        }*/
+
     }
 
 }

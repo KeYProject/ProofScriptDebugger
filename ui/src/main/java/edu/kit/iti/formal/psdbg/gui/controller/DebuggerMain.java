@@ -172,6 +172,7 @@ public class DebuggerMain implements Initializable {
     private void marriageProofTreeControllerWithActiveInspectionView() {
         InspectionModel imodel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
 
+
         //set all listeners
         proofTreeController.currentGoalsProperty().addListener((o, old, fresh) -> {
             if (fresh != null) {
@@ -495,24 +496,11 @@ public class DebuggerMain implements Initializable {
             openKeyFile(keyFile);
     }
 
-
-
-
-    //endregion
-
-    //region Santa's Little Helper
-
-
-
-
     public void openJavaFile() {
         loadJavaFile();
         showCodeDock(null);
     }
 
-    //endregion
-
-    //region Santa's Little Helper
     @FXML
     protected void loadJavaFile() {
         File javaFile = openFileChooserOpenDialog("Select Java File", "Java Files", "java");
