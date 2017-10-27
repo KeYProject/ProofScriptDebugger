@@ -285,14 +285,14 @@ public class StateGraphWrapper<T> {
         Collection<Pair<ControlFlowNode, EdgeTypes>> predecessorsAndTheirEdges = cfgVisitor.getPredecessorsAndTheirEdges(newStateNode.getScriptStmt());
 
         for (Pair<ControlFlowNode, EdgeTypes> predecessorsAndTheirEdge : predecessorsAndTheirEdges) {
-            if (predecessorsAndTheirEdge.getKey().equals(lastNode.getScriptStmt())) {
+            if (predecessorsAndTheirEdge.getKey().getScriptstmt().equals(lastNode.getScriptStmt())) {
                 stateGraph.putEdgeValue(lastNode, newStateNode, predecessorsAndTheirEdge.getValue());
             }
         }
 
         Collection<Pair<ControlFlowNode, EdgeTypes>> predecessorsAsTarget = cfgVisitor.getPredecessorsAsTarget(node);
         for (Pair<ControlFlowNode, EdgeTypes> predecessorAsTarget : predecessorsAsTarget) {
-            if (predecessorAsTarget.getKey().equals(lastNode.getScriptStmt())) {
+            if (predecessorAsTarget.getKey().getScriptstmt().equals(lastNode.getScriptStmt())) {
                 stateGraph.putEdgeValue(newStateNode, lastNode, predecessorAsTarget.getValue());
             }
 
