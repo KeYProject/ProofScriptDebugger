@@ -3,9 +3,7 @@ package edu.kit.iti.formal.psdbg.interpreter.data;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.CaseStatement;
 import lombok.Data;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,60 +14,45 @@ import java.util.Map;
 @Data
 public class InterpreterExtendedState<T> {
 
-    @Getter
-    @Setter
+    /**
+     * Null if root
+     */
+    private final InterpreterExtendedState<T> predecessor;
+
+    /**
+     * If we are in a case statement, this map defines which
+     */
     private Map<CaseStatement, List<GoalNode<T>>> mappingOfCaseToStates = new HashMap<>();
 
     /**
      * State before the statement;
      */
-    @Getter
-    @Setter
     private State<T> stateBeforeStmt;
 
     /**
      * State after execution of statement
      */
-    @Getter
-    @Setter
     private State<T> stateAfterStmt;
 
     /**
      * Statement
      */
-    @Getter
-    @Setter
     private ASTNode stmt;
 
-    /**
-     * Null if root
-     */
-    @Getter
-    @Setter
-    private InterpreterExtendedState<T> predecessor;
-
-
-    public InterpreterExtendedState(InterpreterExtendedState<T> pred) {
-        this.predecessor = pred;
-    }
-
     public InterpreterExtendedState<T> copy() {
-        InterpreterExtendedState<T> ext = new InterpreterExtendedState<>();
-        if (this.predecessor != null) {
-            ext.setPredecessor(this.predecessor.copy());
-        } else {
-            ext.predecessor = null;
-        }
+        InterpreterExtendedState<T> ext = new InterpreterExtendedState<>(
+                this.predecessor != null
+                        ? this.predecessor.copy()
+                        : null);
+
         ext.setStmt(stmt);
+
         if (stateAfterStmt != null) {
             ext.setStateAfterStmt(this.stateAfterStmt.copy());
-        } else {
-            ext.setStateAfterStmt(null);
         }
+
         if (stateBeforeStmt != null) {
             ext.setStateBeforeStmt(this.stateBeforeStmt.copy());
-        } else {
-            ext.setStateBeforeStmt(null);
         }
         return ext;
     }

@@ -1,7 +1,12 @@
+#!/bin/bash -x
+
+
 # Execute this in this folder.
 
 # Set to key/key/deployment/components/
 COMPONENTS=${COMPONENTS:-/home/sarah/Documents/KIT_Mitarbeiter/KeYDevelopment/KeYGitDir/key/key/deployment/components/}
+COMPONENTS=$HOME/work/key/key/deployment/components/
+
 
 
 mvn install:install-file -Dfile=$COMPONENTS/key.core.jar \

@@ -770,7 +770,5 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         assert !exitListenerStack.empty() && !entryListenerStack.empty();
         entryListenerStack.pop();
         exitListenerStack.pop();
-
-
     }
 }

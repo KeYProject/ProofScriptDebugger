@@ -3,6 +3,9 @@ package edu.kit.iti.formal.psdbg.interpreter.graphs;
 import edu.kit.iti.formal.psdbg.interpreter.data.InterpreterExtendedState;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Stack;
 
@@ -10,57 +13,32 @@ import java.util.Stack;
  * Inner class representing nodes in the stategraph graph
  * A node contains a reference to the ASTNode and a reference to the corresponding interpreter state if this state is already interpreted, null otherwise.
  */
+@Data
 public class PTreeNode<T> {
     /**
      * State  after statement
      */
-    private State<T> state;
+    //private State<T> state;
 
-    private InterpreterExtendedState<T> extendedState = new InterpreterExtendedState<>();
+    private InterpreterExtendedState<T> extendedState = new InterpreterExtendedState<>(null);
 
     /**
      * Statement
      */
-    private ASTNode scriptstmt;
+    private ASTNode scriptStmt;
 
 
     /**
      * Call context
      */
+    @Getter
+    @Setter
     private Stack<ASTNode> context = new Stack<>();
-
-    public Stack<ASTNode> getContext() {
-        return context;
-    }
-
-    public void setContext(Stack<ASTNode> context) {
-        this.context = context;
-    }
 
     private boolean root;
 
     PTreeNode(ASTNode node) {
-        this.setScriptstmt(node);
-    }
-
-    public State<T> getState() {
-        return state;
-    }
-
-    public void setState(State<T> state) {
-        this.state = state;
-    }
-
-    public ASTNode getScriptstmt() {
-        return scriptstmt;
-    }
-
-    private void setScriptstmt(ASTNode scriptstmt) {
-        this.scriptstmt = scriptstmt;
-    }
-
-    public InterpreterExtendedState<T> getExtendedState() {
-        return extendedState;
+        this.setScriptStmt(node);
     }
 
     public void setExtendedState(InterpreterExtendedState<T> extendedState) {
@@ -70,8 +48,8 @@ public class PTreeNode<T> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Node {");
-        if (scriptstmt != null) {
-            sb.append(scriptstmt.getNodeName() + "\n");
+        if (scriptStmt != null) {
+            sb.append(scriptStmt.getNodeName() + "\n");
         } else {
             sb.append("Root Node");
         }
@@ -89,9 +67,6 @@ public class PTreeNode<T> {
         return sb.toString();
     }
 
-    public boolean hasState() {
-        return state != null;
-    }
 
     public String extendedStateToString() {
         return this.extendedState.toString();

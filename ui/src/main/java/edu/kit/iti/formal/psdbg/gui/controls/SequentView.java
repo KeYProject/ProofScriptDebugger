@@ -9,9 +9,9 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
-import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
 import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
 import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
+import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -119,7 +119,7 @@ public class SequentView extends CodeArea {
         NamespaceSet nss = services.getNamespaces();
 
         Sequent sequent = node.get().sequent();
-        filter = new IdentitySequentPrintFilter(sequent);
+        filter = new IdentitySequentPrintFilter();
 
         ProgramPrinter prgPrinter = new ProgramPrinter(new StringWriter());
         this.backend = new LogicPrinter.PosTableStringBackend(80);
@@ -195,7 +195,7 @@ public class SequentView extends CodeArea {
         if (node.get().sequent() != null) {
             Matchings m = MatcherFacade.matches(pattern, node.get().sequent(), true);
             if (m.size() == 0) return false;
-             Map<String, MatchPath> va = m.first();
+            Map<String, MatchPath> va = m.first();
             System.out.println(va);//TODO remove
             for (MatchPath mp : va.values()) {
                 System.out.println(mp.pio());
@@ -209,7 +209,8 @@ public class SequentView extends CodeArea {
         if (backend == null) {
             return;
         }
-        ImmutableList<Integer> path = ImmutableSLList.singleton(1);
+
+        ImmutableList<Integer> path = ImmutableSLList.<Integer>nil().append(1);
         Range r = backend.getInitialPositionTable().rangeForPath(path);
         setStyle(r.start(), r.end(), Collections.singleton("search-highlight"));
     }

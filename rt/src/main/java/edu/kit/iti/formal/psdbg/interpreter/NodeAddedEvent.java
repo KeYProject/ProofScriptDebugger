@@ -20,7 +20,7 @@ public class NodeAddedEvent {
     }
 
     public String toString() {
-        return addedNode.getScriptstmt().getNodeName() + addedNode.getScriptstmt().getStartPosition();
+        return addedNode.getScriptStmt().getNodeName() + addedNode.getScriptStmt().getStartPosition();
     }
 
 

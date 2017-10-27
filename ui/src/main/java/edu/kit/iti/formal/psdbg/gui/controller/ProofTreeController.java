@@ -2,6 +2,7 @@ package edu.kit.iti.formal.psdbg.gui.controller;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.graph.MutableValueGraph;
+import de.uka.ilkd.key.proof.Goal;
 import edu.kit.iti.formal.psdbg.InterpretingService;
 import edu.kit.iti.formal.psdbg.gui.controls.ASTNodeHiglightListener;
 import edu.kit.iti.formal.psdbg.gui.controls.DebuggerStatusBar;
@@ -26,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Class controlling and maintaining proof tree structure for debugger and handling step functions for the debugger
@@ -39,8 +41,10 @@ public class ProofTreeController {
      * To control stepping
      */
     private final PuppetMaster blocker = new PuppetMaster();
+
     /**
      * Goals of the state which is referenced by the statePointer
+     * TODO: weigl I don't understand this.
      */
     private final ListProperty<GoalNode<KeyData>> currentGoals = new SimpleListProperty<>(FXCollections.observableArrayList());
 
@@ -123,10 +127,10 @@ public class ProofTreeController {
         @Override
         public void graphChanged(NodeAddedEvent nodeAddedEvent) {
             PTreeNode added = nodeAddedEvent.getAddedNode();
-            if (added.getState() != null) {
+            if (added.getExtendedState().getStateBeforeStmt() != null) {
                 LOGGER.info("Graph changed with the following PTreeNode: {} and the statepointer points to {}", nodeAddedEvent.getAddedNode(), statePointer);
                 nextComputedNode.setValue(nodeAddedEvent.getAddedNode());
-                // Events.fire(new Events.NewNodeExecuted(nodeAddedEvent.getAddedNode().getScriptstmt()));
+                // Events.fire(new Events.NewNodeExecuted(nodeAddedEvent.getAddedNode().getScriptStmt()));
             }
 
         }
@@ -136,28 +140,15 @@ public class ProofTreeController {
             PTreeNode changedNode = stateAddedEvent.getChangedNode();
             LOGGER.info("Graph changed by adding a state to PTreeNode: {} and the statepointer points to {}", stateAddedEvent, statePointer);
             nextComputedNode.set(changedNode);
-            //Events.fire(new Events.NewNodeExecuted(changedNode.getScriptstmt()));
+            //Events.fire(new Events.NewNodeExecuted(changedNode.getScriptStmt()));
 
         }
 
     };
 
-    public ProofScript getMainScript() {
-        return mainScript.get();
-    }
-
-    public void setMainScript(ProofScript mainScript) {
-        this.mainScript.set(mainScript);
-    }
-
-    public SimpleObjectProperty<ProofScript> mainScriptProperty() {
-        return mainScript;
-    }
-
-
     /**
-     *  Create a new ProofTreeController
-     *  and bind properties
+     * Create a new ProofTreeController
+     * and bind properties
      */
     public ProofTreeController() {
 
@@ -172,38 +163,61 @@ public class ProofTreeController {
         nextComputedNode.addListener((observable, oldValue, newValue) -> {
             //update statepointer
             if (newValue != null) {
-                LOGGER.info("New node {} was computed and the statepointer was set to {}", newValue.getScriptstmt(), newValue);
+                LOGGER.info("New node {} was computed and the statepointer was set to {}", newValue.getScriptStmt(), newValue);
                 this.statePointer = newValue;
 
                 //setNewState(blocker.currentStateProperty().get());
-                setNewState(newValue.getState());
+                setNewState(newValue.getExtendedState().getStateBeforeStmt());
             }
 
         });
 
 
+    }
+
+    private static boolean compareCtrlFlowNodes(ControlFlowNode newNode, ControlFlowNode oldNode) {
+        return newNode.getScriptstmt().getNodeName().equals(oldNode.getScriptstmt().getNodeName());
 
     }
 
+    private static boolean comparePTreeNodes(PTreeNode newTreeNode, PTreeNode oldTreeNode) {
+        return false;
+    }
+
+    public ProofScript getMainScript() {
+        return mainScript.get();
+    }
+
+    public void setMainScript(ProofScript mainScript) {
+        this.mainScript.set(mainScript);
+    }
+
+    //TODO handle endpoint
+
+    public SimpleObjectProperty<ProofScript> mainScriptProperty() {
+        return mainScript;
+    }
+
+    //TODO handle endpoint of graph
 
     /**
      * Sets the properties that may notify GUI about statechanges with new state values
      * CurrentGoalsProperty and SelectedGoal are both listened by InspectionViewModel
+     *
      * @param state
      */
     private void setNewState(State<KeyData> state) {
-
-        LOGGER.info("Setting new State " + state.toString());
         //Statepointer null wenn anfangszustand?
         if (statePointer != null && state != null) {
-            //setCurrentHighlightNode(statePointer.getScriptstmt());
+            LOGGER.info("Setting new State " + state.toString());
+            //setCurrentHighlightNode(statePointer.getScriptStmt());
             //get all goals that are open
-            Object[] arr = state.getGoals().stream().filter(keyDataGoalNode -> !keyDataGoalNode.isClosed()).toArray();
+            //List<GoalNode<KeyData>> arr = state.getGoals().stream().filter(keyDataGoalNode -> !keyDataGoalNode.isClosed()).collect(Collectors.toList());
             //if there is no selected goal node we might have reached
             //a closed proof
             if (state.getSelectedGoalNode() == null) {
                 setCurrentSelectedGoal(null);
-                setCurrentGoals(arr.length == 0 ? Collections.emptyList() : state.getGoals());
+                setCurrentGoals(state.getGoals());
 
             } else {
                 setCurrentGoals(state.getGoals());
@@ -212,26 +226,13 @@ public class ProofTreeController {
 
 
             LOGGER.debug("New State from this command: {}@{}",
-                    this.statePointer.getScriptstmt().getNodeName(),
-                    this.statePointer.getScriptstmt().getStartPosition());
+                    this.statePointer.getScriptStmt().getNodeName(),
+                    this.statePointer.getScriptStmt().getStartPosition());
         } else {
             throw new RuntimeException("The state pointer was null when setting new state");
         }
 
 
-    }
-
-    //TODO handle endpoint
-
-    private static boolean compareCtrlFlowNodes(ControlFlowNode newNode, ControlFlowNode oldNode) {
-        return newNode.getScriptstmt().getNodeName().equals(oldNode.getScriptstmt().getNodeName());
-
-    }
-
-    //TODO handle endpoint of graph
-
-    private static boolean comparePTreeNodes(PTreeNode newTreeNode, PTreeNode oldTreeNode) {
-        return false;
     }
 
     /**
@@ -254,7 +255,7 @@ public class ProofTreeController {
 
         //if nextnode is null ask interpreter to execute next statement and compute next state
         if (nextNode != null) {
-            //setCurrentHighlightNode(nextNode.getScriptstmt());
+            //setCurrentHighlightNode(nextNode.getScriptStmt());
         }
 
         if (nextNode != null && nextNode.getExtendedState().getStateAfterStmt() != null) {
@@ -290,7 +291,7 @@ public class ProofTreeController {
         if (current != null) {
             this.statePointer = stateGraphWrapper.getStepBack(current);
             if (this.statePointer != null) {
-                setNewState(statePointer.getState());
+                setNewState(statePointer.getExtendedState().getStateBeforeStmt());
             } else {
                 this.statePointer = current;
             }
@@ -307,6 +308,7 @@ public class ProofTreeController {
 
     /**
      * Execute script with breakpoints
+     *
      * @param debugMode
      * @param statusBar
      * @param breakpoints

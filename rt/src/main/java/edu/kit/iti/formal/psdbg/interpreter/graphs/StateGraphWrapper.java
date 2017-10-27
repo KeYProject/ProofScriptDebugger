@@ -94,8 +94,6 @@ public class StateGraphWrapper<T> {
 
     }
 
-    private static int counter = 0;
-
     public MutableValueGraph<PTreeNode<T>, EdgeTypes> getStateGraph() {
         return stateGraph;
     }
@@ -118,7 +116,7 @@ public class StateGraphWrapper<T> {
             LOGGER.info("Stepover requested for null, therefore returning root");
             return this.rootProperty().get();
         }
-        LOGGER.info("Stepover requested for node {}@{}", statePointer.getScriptstmt(), statePointer.getScriptstmt().getNodeName());
+        LOGGER.info("Stepover requested for node {}@{}", statePointer.getScriptStmt(), statePointer.getScriptStmt().getNodeName());
         //look for successors in the graph
         Set<PTreeNode<T>> successors = this.stateGraph.successors(statePointer);
         //if there are no successors they have to be computed therefore return null, to trigger the proof tree controller
@@ -195,10 +193,10 @@ public class StateGraphWrapper<T> {
         newStateNode.getContext().push(node);
         State<T> currentInterpreterStateCopy = currentInterpreter.getCurrentState().copy();
         //copy current state before executing statement
-        newStateNode.setState(currentInterpreterStateCopy);
+        //newStateNode.setState(currentInterpreterStateCopy);
 
         //create extended State
-        InterpreterExtendedState<T> extState = new InterpreterExtendedState<>();
+        InterpreterExtendedState<T> extState = new InterpreterExtendedState<>(null);
         extState.setStmt(node);
         extState.setStateBeforeStmt(currentInterpreterStateCopy);
         newStateNode.setExtendedState(extState);
@@ -236,7 +234,7 @@ public class StateGraphWrapper<T> {
 
         if (isCasesStmt) {
             newStateNode.getContext().push(node);
-            extState = new InterpreterExtendedState<>(lastNode.getExtendedState().copy());
+            extState = new InterpreterExtendedState<>(lastNode.getExtendedState());
             extState.setStmt(node);
             extState.setStateBeforeStmt(lastState.copy());
             Map<CaseStatement, List<GoalNode<T>>> mappingOfCaseToStates = extState.getMappingOfCaseToStates();
@@ -247,11 +245,7 @@ public class StateGraphWrapper<T> {
             });
 
             extState.setMappingOfCaseToStates(mappingOfCaseToStates);
-            //TODO default case
-            newStateNode.setState(lastState.copy());
-
         } else {
-
             //set pointer to parent extended state
             extState = new InterpreterExtendedState<>(lastNode.getExtendedState().copy());
             extState.setStmt(node);
@@ -321,7 +315,7 @@ public class StateGraphWrapper<T> {
     public PTreeNode<T> getNode(List<GoalNode<T>> newValue) {
         for (Map.Entry<ASTNode, PTreeNode<T>> next : addedNodes.entrySet()) {
             PTreeNode value = next.getValue();
-            if (value.getState().getGoals().equals(newValue)) {
+            if (value.getExtendedState().getStateBeforeStmt().getGoals().equals(newValue)) {
                 return value;
             }
         }
@@ -339,9 +333,9 @@ public class StateGraphWrapper<T> {
         stateGraph.nodes().forEach(n -> {
             sb.append(n.hashCode())
                     .append(" [label=\"")
-                    .append(n.getScriptstmt().getNodeName())
+                    .append(n.getScriptStmt().getNodeName())
                     .append("@")
-                    .append(n.getScriptstmt().getStartPosition().getLineNumber())
+                    .append(n.getScriptStmt().getStartPosition().getLineNumber())
                     .append(n.extendedStateToString())
                     .append("\"]\n");
         });
@@ -379,8 +373,8 @@ public class StateGraphWrapper<T> {
         //copy Current Interpreter state
         State<T> currentState = currentInterpreter.getCurrentState().copy();
         //set the state
-        if (node != this.root.get().getScriptstmt()) {
-            newStateNode.setState(currentState);
+        if (node != this.root.get().getScriptStmt()) {
+            //newStateNode.setState(currentState);
             newStateNode.getExtendedState().setStateAfterStmt(currentState);
             if (newStateNode.getContext().peek().equals(node)) {
                 newStateNode.getContext().pop();
@@ -412,7 +406,7 @@ public class StateGraphWrapper<T> {
             if (root.get() == null) {
                 createRootNode(proofScript);
             } else {
-                if (!root.get().getScriptstmt().equals(proofScript)) {
+                if (!root.get().getScriptStmt().equals(proofScript)) {
                     createNewNode(proofScript);
                 }
             }

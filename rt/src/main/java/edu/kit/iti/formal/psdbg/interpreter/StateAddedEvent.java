@@ -26,7 +26,7 @@ public class StateAddedEvent {
     }
 
     public String toString() {
-        return "State added to " + changedNode.getScriptstmt().getNodeName() + changedNode.getScriptstmt().getStartPosition();
+        return "State added to " + changedNode.getScriptStmt().getNodeName() + changedNode.getScriptStmt().getStartPosition();
     }
 
 }
