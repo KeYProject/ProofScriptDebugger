@@ -119,7 +119,7 @@ public class StateGraphWrapper<T> {
             LOGGER.info("Stepover requested for null, therefore returning root");
             return this.rootProperty().get();
         }
-        LOGGER.info("Stepover requested for node {}@{}", statePointer.getScriptstmt(), statePointer.getScriptstmt().getNodeName());
+        LOGGER.info("Stepover requested for node {}@{}", statePointer.getScriptStmt(), statePointer.getScriptStmt().getNodeName());
         //look for successors in the graph
         Set<PTreeNode<T>> successors = this.stateGraph.successors(statePointer);
         //if there are no successors they have to be computed therefore return null, to trigger the proof tree controller
@@ -209,10 +209,10 @@ public class StateGraphWrapper<T> {
         newStateNode.getContext().push(node);
         State<T> currentInterpreterStateCopy = currentInterpreter.getCurrentState().copy();
         //copy current state before executing statement
-        newStateNode.setState(currentInterpreterStateCopy);
+        //newStateNode.setState(currentInterpreterStateCopy);
 
         //create extended State
-        InterpreterExtendedState<T> extState = new InterpreterExtendedState<>();
+        InterpreterExtendedState<T> extState = new InterpreterExtendedState<>(null);
         extState.setStmt(node);
         extState.setStateBeforeStmt(currentInterpreterStateCopy);
         newStateNode.setExtendedState(extState);
@@ -263,7 +263,7 @@ public class StateGraphWrapper<T> {
             extState.setMappingOfCaseToStates(mappingOfCaseToStates);
             //TODO default case: missing datastructure of supertype CaseStatement at the moment
 
-            newStateNode.setState(lastState.copy());
+            // newStateNode.setState(lastState.copy());
 
         } else {
 
@@ -282,17 +282,17 @@ public class StateGraphWrapper<T> {
         newStateNode.setExtendedState(extState);
         stateGraph.addNode(newStateNode);
 
-        Collection<Pair<ControlFlowNode, EdgeTypes>> predecessorsAndTheirEdges = cfgVisitor.getPredecessorsAndTheirEdges(newStateNode.getScriptstmt());
+        Collection<Pair<ControlFlowNode, EdgeTypes>> predecessorsAndTheirEdges = cfgVisitor.getPredecessorsAndTheirEdges(newStateNode.getScriptStmt());
 
         for (Pair<ControlFlowNode, EdgeTypes> predecessorsAndTheirEdge : predecessorsAndTheirEdges) {
-            if (predecessorsAndTheirEdge.getKey().equals(lastNode.getScriptstmt())) {
+            if (predecessorsAndTheirEdge.getKey().equals(lastNode.getScriptStmt())) {
                 stateGraph.putEdgeValue(lastNode, newStateNode, predecessorsAndTheirEdge.getValue());
             }
         }
 
         Collection<Pair<ControlFlowNode, EdgeTypes>> predecessorsAsTarget = cfgVisitor.getPredecessorsAsTarget(node);
         for (Pair<ControlFlowNode, EdgeTypes> predecessorAsTarget : predecessorsAsTarget) {
-            if (predecessorAsTarget.getKey().equals(lastNode.getScriptstmt())) {
+            if (predecessorAsTarget.getKey().equals(lastNode.getScriptStmt())) {
                 stateGraph.putEdgeValue(newStateNode, lastNode, predecessorAsTarget.getValue());
             }
 
@@ -322,8 +322,8 @@ public class StateGraphWrapper<T> {
         //copy Current Interpreter state
         State<T> currentState = currentInterpreter.getCurrentState().copy();
         //set the state
-        if (node != this.root.get().getScriptstmt()) {
-            newStateNode.setState(currentState);
+        if (node != this.root.get().getScriptStmt()) {
+            // newStateNode.setState(currentState);
             newStateNode.getExtendedState().setStateAfterStmt(currentState);
             if (newStateNode.getContext().peek().equals(node)) {
                 newStateNode.getContext().pop();
@@ -394,7 +394,9 @@ public class StateGraphWrapper<T> {
     public PTreeNode<T> getNode(List<GoalNode<T>> newValue) {
         for (Map.Entry<ASTNode, PTreeNode<T>> next : addedNodes.entrySet()) {
             PTreeNode value = next.getValue();
-            if (value.getState().getGoals().equals(newValue)) {
+
+            //if (value.getState().getGoals().equals(newValue)) {
+            if (value.getExtendedState().getStateBeforeStmt().getGoals().equals(newValue)) {
                 return value;
             }
         }
@@ -422,9 +424,9 @@ public class StateGraphWrapper<T> {
         stateGraph.nodes().forEach(n -> {
             sb.append(n.hashCode())
                     .append(" [label=\"")
-                    .append(n.getScriptstmt().getNodeName())
+                    .append(n.getScriptStmt().getNodeName())
                     .append("@")
-                    .append(n.getScriptstmt().getStartPosition().getLineNumber())
+                    .append(n.getScriptStmt().getStartPosition().getLineNumber())
                     .append(n.extendedStateToString())
                     .append("\"]\n");
         });
@@ -463,7 +465,7 @@ public class StateGraphWrapper<T> {
             if (root.get() == null) {
                 createRootNode(proofScript);
             } else {
-                if (!root.get().getScriptstmt().equals(proofScript)) {
+                if (!root.get().getScriptStmt().equals(proofScript)) {
                     createNewNode(proofScript);
                 }
             }

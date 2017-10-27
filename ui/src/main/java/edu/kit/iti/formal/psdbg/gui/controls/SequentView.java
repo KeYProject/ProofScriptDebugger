@@ -119,7 +119,7 @@ public class SequentView extends CodeArea {
         NamespaceSet nss = services.getNamespaces();
 
         Sequent sequent = node.get().sequent();
-        filter = new IdentitySequentPrintFilter();
+        filter = new IdentitySequentPrintFilter(sequent);
 
         ProgramPrinter prgPrinter = new ProgramPrinter(new StringWriter());
         this.backend = new LogicPrinter.PosTableStringBackend(80);

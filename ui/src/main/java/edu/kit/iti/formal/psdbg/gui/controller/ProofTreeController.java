@@ -123,7 +123,7 @@ public class ProofTreeController {
         @Override
         public void graphChanged(NodeAddedEvent nodeAddedEvent) {
             PTreeNode added = nodeAddedEvent.getAddedNode();
-            if (added.getState() != null) {
+            if (added.getExtendedState() != null) {
                 LOGGER.info("Graph changed with the following PTreeNode: {} and the statepointer points to {}", nodeAddedEvent.getAddedNode(), statePointer);
                 nextComputedNode.setValue(nodeAddedEvent.getAddedNode());
                 // Events.fire(new Events.NewNodeExecuted(nodeAddedEvent.getAddedNode().getScriptstmt()));
@@ -172,11 +172,11 @@ public class ProofTreeController {
         nextComputedNode.addListener((observable, oldValue, newValue) -> {
             //update statepointer
             if (newValue != null) {
-                LOGGER.info("New node {} was computed and the statepointer was set to {}", newValue.getScriptstmt(), newValue);
+                LOGGER.info("New node {} was computed and the statepointer was set to {}", newValue.getScriptStmt(), newValue);
                 this.statePointer = newValue;
 
                 //setNewState(blocker.currentStateProperty().get());
-                setNewState(newValue.getState());
+                setNewState(newValue.getExtendedState().getStateAfterStmt());
             }
 
         });
@@ -212,8 +212,8 @@ public class ProofTreeController {
 
 
             LOGGER.debug("New State from this command: {}@{}",
-                    this.statePointer.getScriptstmt().getNodeName(),
-                    this.statePointer.getScriptstmt().getStartPosition());
+                    this.statePointer.getScriptStmt().getNodeName(),
+                    this.statePointer.getScriptStmt().getStartPosition());
         } else {
             throw new RuntimeException("The state pointer was null when setting new state");
         }
@@ -254,7 +254,7 @@ public class ProofTreeController {
 
         //if nextnode is null ask interpreter to execute next statement and compute next state
         if (nextNode != null) {
-            setCurrentHighlightNode(nextNode.getScriptstmt());
+            setCurrentHighlightNode(nextNode.getScriptStmt());
         }
 
         if (nextNode != null && nextNode.getExtendedState().getStateAfterStmt() != null) {
@@ -291,7 +291,7 @@ public class ProofTreeController {
             this.statePointer = stateGraphWrapper.getStepBack(current);
             if (this.statePointer != null) {
                 setNewState(statePointer.getExtendedState().getStateBeforeStmt());
-                setCurrentHighlightNode(statePointer.getScriptstmt());
+                setCurrentHighlightNode(statePointer.getScriptStmt());
             } else {
                 this.statePointer = current;
             }

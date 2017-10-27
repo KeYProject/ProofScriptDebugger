@@ -1,7 +1,6 @@
 package edu.kit.iti.formal.psdbg.interpreter.graphs;
 
 import edu.kit.iti.formal.psdbg.interpreter.data.InterpreterExtendedState;
-import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import lombok.Data;
 import lombok.Getter;
@@ -19,12 +18,15 @@ public class PTreeNode<T> {
      * State  after statement
      */
     //private State<T> state;
-
+    @Getter
+    @Setter
     private InterpreterExtendedState<T> extendedState = new InterpreterExtendedState<>(null);
 
     /**
      * Statement
      */
+    @Getter
+    @Setter
     private ASTNode scriptStmt;
 
 
