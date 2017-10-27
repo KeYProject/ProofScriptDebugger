@@ -18,11 +18,11 @@ andLeft;
 exLeft;
 andLeft;
 eqSymm formula = `agatha = butler`;
-nnf_imp2or on= `hates(agatha, w6) -> hates(butler, w6)`; 
+//nnf_imp2or on= `hates(agatha, w6) -> hates(butler, w6)`;
  
 //nnf_imp2or; -> wirft hier ScriptCommandNotApplicableException 
 //wirft ansonsten immer java.lang.RuntimeException: de.uka.ilkd.key.macros.scripts.meta.ConversionException: Could not convert value hates(agatha, w6) -> hates(butler, w6) to type interface de.uka.ilkd.key.logic.Term
-	at 
+//	at
 //nnf_imp2or formula= `hates(agatha, w6) -> hates(butler, w6)`;
 //nnf_imp2or on = `hates(agatha, w6) -> hates(butler, w6)` formula=` \forall S w6; (hates(agatha, w6) -> hates(butler, w6))`;
 }
