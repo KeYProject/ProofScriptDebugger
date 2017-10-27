@@ -226,7 +226,7 @@ public class ScriptArea extends CodeArea {
 
     private void highlightNonExecutionArea() {
         if (hasExecutionMarker()) {
-            System.out.println("getExecutionMarkerPosition() = " + getExecutionMarkerPosition());
+            LOGGER.debug("getExecutionMarkerPosition() = " + getExecutionMarkerPosition());
 
 
             UnaryOperator<Collection<String>> styleMapper = strings -> {

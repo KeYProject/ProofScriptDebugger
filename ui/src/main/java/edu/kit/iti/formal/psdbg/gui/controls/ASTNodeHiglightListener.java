@@ -3,8 +3,7 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
-import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
-import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
+import edu.kit.iti.formal.psdbg.parser.ast.Parameters;
 import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -54,15 +53,9 @@ public class ASTNodeHiglightListener<T> {
     }
 
     public class HighlightEntryListener extends DefaultASTVisitor<Void> {
-
         @Override
-        public Void visit(ProofScript proofScript) {
-            return defaultVisit(proofScript);
-        }
-
-        @Override
-        public Void visit(CallStatement proofScript) {
-            return defaultVisit(proofScript);
+        public Void visit(Parameters parameters) {
+            return null;
         }
 
         @Override
@@ -74,9 +67,6 @@ public class ASTNodeHiglightListener<T> {
         public Void defaultVisit(ASTNode node) {
             if (node != null) {
                 lastHighlightedNode = node;
-                System.out.println("nodeInHighlighter = " + node);
-                System.out.println("lastHighlightedNode = " + lastHighlightedNode);
-
                 Platform.runLater(() -> {
                     currentHighlightNode.setValue(lastHighlightedNode);
 

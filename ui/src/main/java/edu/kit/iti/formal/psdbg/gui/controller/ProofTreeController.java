@@ -254,7 +254,7 @@ public class ProofTreeController {
 
         //if nextnode is null ask interpreter to execute next statement and compute next state
         if (nextNode != null) {
-            //setCurrentHighlightNode(nextNode.getScriptstmt());
+            setCurrentHighlightNode(nextNode.getScriptstmt());
         }
 
         if (nextNode != null && nextNode.getExtendedState().getStateAfterStmt() != null) {
@@ -290,7 +290,8 @@ public class ProofTreeController {
         if (current != null) {
             this.statePointer = stateGraphWrapper.getStepBack(current);
             if (this.statePointer != null) {
-                setNewState(statePointer.getState());
+                setNewState(statePointer.getExtendedState().getStateBeforeStmt());
+                setCurrentHighlightNode(statePointer.getScriptstmt());
             } else {
                 this.statePointer = current;
             }
@@ -298,6 +299,8 @@ public class ProofTreeController {
     }
 
     public PTreeNode stepInto() {
+        PTreeNode current = this.statePointer;
+
         return null;
     }
 
@@ -390,7 +393,7 @@ public class ProofTreeController {
         this.controlFlowGraphVisitor = new ControlFlowVisitor(currentInterpreter.getFunctionLookup());
         mainScript.accept(controlFlowGraphVisitor);
         this.setMainScript(mainScript);
-        LOGGER.debug("CFG\n" + controlFlowGraphVisitor.asdot());
+        LOGGER.info("CFG\n" + controlFlowGraphVisitor.asdot());
 
     }
 
