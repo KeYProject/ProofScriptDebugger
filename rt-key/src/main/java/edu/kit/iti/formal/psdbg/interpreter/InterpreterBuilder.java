@@ -117,7 +117,7 @@ public class InterpreterBuilder {
     }
 
     public InterpreterBuilder onEntry(Visitor v) {
-        interpreter.getEntryListeners().add(v);
+        interpreter.getEntryListeners().add(0, v);
         return this;
     }
 

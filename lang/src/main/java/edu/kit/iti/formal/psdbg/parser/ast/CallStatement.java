@@ -63,6 +63,9 @@ public class CallStatement extends Statement<ScriptLanguageParser.ScriptCommandC
      */
     @Override
     public CallStatement copy() {
-        return new CallStatement(command, parameters.copy());
+
+        CallStatement s = new CallStatement(command, parameters.copy());
+        s.setRuleContext(this.getRuleContext());
+        return s;
     }
 }

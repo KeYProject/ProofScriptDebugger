@@ -4,7 +4,6 @@ import edu.kit.iti.formal.psdbg.interpreter.HistoryListener;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
-import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.BuiltinCommands;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.CommandHandler;
@@ -13,6 +12,8 @@ import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.TransformAst;
+import edu.kit.iti.formal.psdbg.parser.ast.*;
+import edu.kit.iti.formal.psdbg.parser.data.Value;
 import org.antlr.v4.runtime.CharStreams;
 
 import java.io.BufferedReader;
@@ -22,7 +23,6 @@ import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.function.BiConsumer;
-import edu.kit.iti.formal.psdbg.parser.ast.*;
 /**
  * @author Alexander Weigl
  * @version 1 (21.05.2017)
@@ -44,8 +44,8 @@ public class Debugger {
         history = new HistoryListener(interpreter);
         scripts = Facade.getAST(new File(file));
         interpreter.getEntryListeners().add(history);
-        interpreter.getEntryListeners().add(blocker);
         interpreter.getEntryListeners().add(new CommandLogger());
+        interpreter.getEntryListeners().add(blocker);
 
         registerDebuggerFunction("step", this::step);
         registerDebuggerFunction("b", this::setBreakpoint);

@@ -54,6 +54,8 @@ public class RepeatStatement extends GoalSelector<ScriptLanguageParser.RepeatStm
      */
     @Override
     public RepeatStatement copy() {
-        return new RepeatStatement(getBody().copy());
+        RepeatStatement rs = new RepeatStatement(getBody().copy());
+        rs.setRuleContext(this.ruleContext);
+        return rs;
     }
 }

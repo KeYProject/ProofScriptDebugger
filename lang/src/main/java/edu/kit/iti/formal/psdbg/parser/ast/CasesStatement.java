@@ -60,6 +60,7 @@ public class CasesStatement extends Statement<ScriptLanguageParser.CasesStmtCont
         //      c.defaultCase = defaultCase.copy();
         if (defCaseStmt != null)
             c.defCaseStmt = defCaseStmt.copy();
+        c.setRuleContext(this.ruleContext);
         return c;
     }
 }

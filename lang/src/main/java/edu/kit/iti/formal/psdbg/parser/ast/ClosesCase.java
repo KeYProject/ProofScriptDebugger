@@ -42,7 +42,9 @@ public class ClosesCase extends CaseStatement {
      */
     @Override
     public ClosesCase copy() {
-        return new ClosesCase(closesScript.copy(), body.copy());
+        ClosesCase cs = new ClosesCase(closesScript.copy(), body.copy());
+        cs.setRuleContext(this.ruleContext);
+        return cs;
     }
 
 }

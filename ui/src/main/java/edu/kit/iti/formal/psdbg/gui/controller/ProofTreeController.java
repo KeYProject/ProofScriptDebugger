@@ -3,6 +3,7 @@ package edu.kit.iti.formal.psdbg.gui.controller;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.graph.MutableValueGraph;
 import edu.kit.iti.formal.psdbg.InterpretingService;
+import edu.kit.iti.formal.psdbg.gui.controls.ASTNodeHiglightListener;
 import edu.kit.iti.formal.psdbg.gui.controls.DebuggerStatusBar;
 import edu.kit.iti.formal.psdbg.gui.controls.Utils;
 import edu.kit.iti.formal.psdbg.gui.model.Breakpoint;
@@ -195,7 +196,7 @@ public class ProofTreeController {
         LOGGER.info("Setting new State " + state.toString());
         //Statepointer null wenn anfangszustand?
         if (statePointer != null && state != null) {
-            setCurrentHighlightNode(statePointer.getScriptstmt());
+            //setCurrentHighlightNode(statePointer.getScriptstmt());
             //get all goals that are open
             Object[] arr = state.getGoals().stream().filter(keyDataGoalNode -> !keyDataGoalNode.isClosed()).toArray();
             //if there is no selected goal node we might have reached
@@ -253,7 +254,7 @@ public class ProofTreeController {
 
         //if nextnode is null ask interpreter to execute next statement and compute next state
         if (nextNode != null) {
-            setCurrentHighlightNode(nextNode.getScriptstmt());
+            //setCurrentHighlightNode(nextNode.getScriptstmt());
         }
 
         if (nextNode != null && nextNode.getExtendedState().getStateAfterStmt() != null) {
@@ -330,7 +331,7 @@ public class ProofTreeController {
 
         statusBar.setText("Starting to interpret script " + mainScript.getName());
         statusBar.indicateProgress();
-        setCurrentHighlightNode(mainScript.get());
+        //setCurrentHighlightNode(mainScript.get());
 
         //build CFG
         buildControlFlowGraph(mainScript.get());
@@ -340,6 +341,16 @@ public class ProofTreeController {
         this.stateGraphWrapper = new StateGraphWrapper(currentInterpreter, mainScript.get(), this.controlFlowGraphVisitor);
         this.stateGraphWrapper.install(currentInterpreter);
         this.stateGraphWrapper.addChangeListener(graphChangedListener);
+
+        ASTNodeHiglightListener astNodeHiglightListener = new ASTNodeHiglightListener(currentInterpreter);
+        astNodeHiglightListener.install(currentInterpreter);
+        astNodeHiglightListener.currentHighlightNodeProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                ASTNode astNode = (ASTNode) newValue;
+                setCurrentHighlightNode(astNode);
+                //this.setCurrentHighlightNode();
+            }
+        });
 
         statusBar.publishMessage("Stategraph was set up");
         statusBar.stopProgress();

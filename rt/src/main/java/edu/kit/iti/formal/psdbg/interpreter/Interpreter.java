@@ -37,6 +37,8 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     //We now need thet stack of listeners to handle try statements scuh that listnersa re only informed if a try was sucessfull
     private Stack<List<Visitor>> entryListenerStack = new Stack<>();
     private Stack<List<Visitor>> exitListenerStack = new Stack<>();
+    //there is at most one special listener that is allowed to block and that is invoked last when informing all listeners
+    private Visitor blockingEntryListener = new DefaultASTVisitor();
 
     //@Getter
     //private List<Visitor> entryListeners = new ArrayList<>(),
@@ -69,6 +71,14 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     @Override
     public List<Visitor> getEntryListeners() {
         return entryListenerStack.peek();
+    }
+
+    public void addBlockingEntryListener(Visitor v) {
+        blockingEntryListener = v;
+    }
+
+    public void removeBlockingEntryListener() {
+        blockingEntryListener = new DefaultASTVisitor();
     }
 
     /**

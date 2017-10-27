@@ -52,6 +52,8 @@ public class ForeachStatement extends GoalSelector<ScriptLanguageParser.ForEachS
      * {@inheritDoc}
      */
     @Override public ForeachStatement copy() {
-        return new ForeachStatement(getBody().copy());
+        ForeachStatement fs = new ForeachStatement(getBody().copy());
+        fs.setRuleContext(this.ruleContext);
+        return fs;
     }
 }

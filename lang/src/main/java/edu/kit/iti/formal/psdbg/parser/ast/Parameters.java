@@ -53,6 +53,7 @@ public class Parameters extends ASTNode<ScriptLanguageParser.ParametersContext> 
     @Override public Parameters copy() {
         Parameters p = new Parameters();
         forEach((k, v) -> p.put(k.copy(), v.copy()));
+        p.setRuleContext(this.getRuleContext());
         return p;
     }
 

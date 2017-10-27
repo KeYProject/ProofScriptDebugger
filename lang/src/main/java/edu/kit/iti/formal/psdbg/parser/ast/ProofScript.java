@@ -54,6 +54,7 @@ public class ProofScript extends ASTNode<ScriptLanguageParser.ScriptContext> {
         ps.setName(getName());
         ps.setBody(body.copy());
         ps.setSignature(signature.copy());
+        ps.setRuleContext(this.ruleContext);
         return ps;
     }
 

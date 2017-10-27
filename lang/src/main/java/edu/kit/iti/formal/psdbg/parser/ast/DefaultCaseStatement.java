@@ -31,7 +31,9 @@ public class DefaultCaseStatement extends Statement<ScriptLanguageParser.StmtLis
      */
     @Override
     public DefaultCaseStatement copy() {
-        return new DefaultCaseStatement(body.copy());
+        DefaultCaseStatement dcs = new DefaultCaseStatement(body.copy());
+        dcs.setRuleContext(this.ruleContext);
+        return dcs;
     }
 }
 

@@ -276,8 +276,6 @@ public class StateGraphWrapper<T> {
     }
 
     private void fireNodeAdded(NodeAddedEvent nodeAddedEvent) {
-        //counter++;
-        //System.out.println("XXXXXXXXXX counter = " + counter);
         changeListeners.forEach(list -> Platform.runLater(() -> {
             list.graphChanged(nodeAddedEvent);
             //TODO
@@ -287,8 +285,8 @@ public class StateGraphWrapper<T> {
 
     public void install(Interpreter<T> interpreter) {
         if (currentInterpreter != null) deinstall(interpreter);
-        interpreter.getEntryListeners().add(entryListener);
-        interpreter.getExitListeners().add(exitListener);
+        interpreter.getEntryListeners().add(0, entryListener);
+        interpreter.getExitListeners().add(0, exitListener);
         currentInterpreter = interpreter;
     }
 

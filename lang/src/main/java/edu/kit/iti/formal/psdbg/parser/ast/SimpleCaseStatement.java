@@ -33,7 +33,9 @@ public class SimpleCaseStatement extends CaseStatement {
      */
     @Override
     public SimpleCaseStatement copy() {
-        return new SimpleCaseStatement(guard.copy(), body.copy());
+        SimpleCaseStatement scs = new SimpleCaseStatement(guard.copy(), body.copy());
+        scs.setRuleContext(this.ruleContext);
+        return scs;
     }
 
 

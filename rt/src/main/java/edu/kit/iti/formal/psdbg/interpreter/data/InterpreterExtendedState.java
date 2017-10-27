@@ -60,7 +60,7 @@ public class InterpreterExtendedState<T> {
         } else {
             ext.predecessor = null;
         }
-        ext.setStmt(stmt.copy());
+        ext.setStmt(stmt);
         if (stateAfterStmt != null) {
             ext.setStateAfterStmt(this.stateAfterStmt.copy());
         } else {

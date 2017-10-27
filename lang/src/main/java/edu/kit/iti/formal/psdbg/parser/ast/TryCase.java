@@ -29,6 +29,8 @@ public class TryCase extends CaseStatement {
      */
     @Override
     public TryCase copy() {
-        return new TryCase(body.copy());
+        TryCase tc = new TryCase(body.copy());
+        tc.setRuleContext(this.getRuleContext());
+        return tc;
     }
 }

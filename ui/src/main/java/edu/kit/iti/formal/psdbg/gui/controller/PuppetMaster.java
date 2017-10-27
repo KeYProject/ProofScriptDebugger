@@ -83,12 +83,12 @@ public class PuppetMaster {
     }
 
     public Void checkForHalt(ASTNode node) {
-        System.out.println("node = [" + node + "]");
+        //("PuppetMaster CheckForHalt node = [" + node + "]");
 
         //<0 run
         if (stepUntilBlock.get() > 0)
             stepUntilBlock.decrementAndGet();
-        System.out.println("Blocker: " + stepUntilBlock.get());
+
         if (stepUntilBlock.get() == 0) {
             //publishState();
             block();

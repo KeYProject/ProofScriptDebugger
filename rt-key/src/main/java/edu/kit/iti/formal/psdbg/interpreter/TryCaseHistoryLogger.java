@@ -46,8 +46,8 @@ public class TryCaseHistoryLogger extends HistoryListener {
 
     public void install(Interpreter interpreter) {
         if (currentInterpreter != null) deinstall(interpreter);
-        interpreter.getEntryListeners().add(entryListener);
-        interpreter.getExitListeners().add(exitListener);
+        interpreter.getEntryListeners().add(0, entryListener);
+        interpreter.getExitListeners().add(0, exitListener);
         this.currentInterpreter = interpreter;
     }
 

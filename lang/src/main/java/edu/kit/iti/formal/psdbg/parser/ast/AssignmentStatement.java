@@ -61,6 +61,7 @@ public class AssignmentStatement
         s.lhs = lhs.copy();
         s.rhs = rhs.copy();
         s.type = type;
+        s.setRuleContext(this.ruleContext);
         return s;
     }
 

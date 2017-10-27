@@ -54,6 +54,8 @@ public class TheOnlyStatement extends GoalSelector<ScriptLanguageParser.TheOnlyS
      */
     @Override
     public TheOnlyStatement copy() {
-        return new TheOnlyStatement(getBody().copy());
+        TheOnlyStatement tos = new TheOnlyStatement(getBody().copy());
+        tos.setRuleContext(this.ruleContext);
+        return tos;
     }
 }

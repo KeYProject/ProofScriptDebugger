@@ -174,7 +174,12 @@ public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
 
     @Override public Statements copy() {
         Statements s = new Statements();
-        forEach(e -> s.add(e.copy()));
+        forEach(e -> {
+            Statement ecopy = e.copy();
+            ecopy.setRuleContext(e.getRuleContext());
+            s.add(ecopy);
+        });
+        s.setRuleContext(this.getRuleContext());
         return s;
     }
 }
