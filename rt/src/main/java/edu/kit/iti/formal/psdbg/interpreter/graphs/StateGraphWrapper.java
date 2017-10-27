@@ -345,14 +345,14 @@ public class StateGraphWrapper<T> {
     private void fireNodeAdded(NodeAddedEvent nodeAddedEvent) {
         changeListeners.forEach(list -> Platform.runLater(() -> {
             list.graphChanged(nodeAddedEvent);
-            LOGGER.info("New StateGraphChange \n" + this.asdot() + "\n");
+            // LOGGER.info("New StateGraphChange \n" + this.asdot() + "\n");
         }));
     }
 
     private void fireStateAdded(StateAddedEvent stateAddedEvent) {
         changeListeners.forEach(list -> Platform.runLater(() -> {
             list.graphChanged(stateAddedEvent);
-            LOGGER.debug("New StateGraphChange " + this.asdot());
+            //LOGGER.debug("New StateGraphChange " + this.asdot());
         }));
     }
 

@@ -122,23 +122,27 @@ public class ProofTreeController {
     private GraphChangedListener graphChangedListener = new GraphChangedListener() {
         @Override
         public void graphChanged(NodeAddedEvent nodeAddedEvent) {
-            PTreeNode added = nodeAddedEvent.getAddedNode();
-            if (added.getExtendedState() != null) {
-                LOGGER.info("Graph changed with the following PTreeNode: {} and the statepointer points to {}", nodeAddedEvent.getAddedNode(), statePointer);
-                nextComputedNode.setValue(nodeAddedEvent.getAddedNode());
-                // Events.fire(new Events.NewNodeExecuted(nodeAddedEvent.getAddedNode().getScriptstmt()));
+            if (nodeAddedEvent != null) {
+                PTreeNode added = nodeAddedEvent.getAddedNode();
+                if (added.getExtendedState() != null) {
+                    LOGGER.info("Graph changed with the following PTreeNode: {} and the statepointer points to {}", nodeAddedEvent.getAddedNode(), statePointer);
+                    nextComputedNode.setValue(nodeAddedEvent.getAddedNode());
+                    // Events.fire(new Events.NewNodeExecuted(nodeAddedEvent.getAddedNode().getScriptstmt()));
+                }
             }
 
         }
 
         @Override
         public void graphChanged(StateAddedEvent stateAddedEvent) {
-            PTreeNode changedNode = stateAddedEvent.getChangedNode();
-            LOGGER.info("Graph changed by adding a state to PTreeNode: {} and the statepointer points to {}", stateAddedEvent, statePointer);
-            nextComputedNode.set(changedNode);
-            //Events.fire(new Events.NewNodeExecuted(changedNode.getScriptstmt()));
-
+            if (stateAddedEvent != null) {
+                PTreeNode changedNode = stateAddedEvent.getChangedNode();
+                LOGGER.info("Graph changed by adding a state to PTreeNode: {} and the statepointer points to {}", stateAddedEvent, statePointer);
+                nextComputedNode.set(changedNode);
+                //Events.fire(new Events.NewNodeExecuted(changedNode.getScriptstmt()));
+            }
         }
+
 
     };
 
@@ -176,7 +180,7 @@ public class ProofTreeController {
                 this.statePointer = newValue;
 
                 //setNewState(blocker.currentStateProperty().get());
-                setNewState(newValue.getExtendedState().getStateAfterStmt());
+                setNewState(newValue.getExtendedState().getStateBeforeStmt());
             }
 
         });
@@ -193,9 +197,10 @@ public class ProofTreeController {
      */
     private void setNewState(State<KeyData> state) {
 
-        LOGGER.info("Setting new State " + state.toString());
+
         //Statepointer null wenn anfangszustand?
         if (statePointer != null && state != null) {
+            LOGGER.info("Setting new State " + state.toString());
             //setCurrentHighlightNode(statePointer.getScriptstmt());
             //get all goals that are open
             Object[] arr = state.getGoals().stream().filter(keyDataGoalNode -> !keyDataGoalNode.isClosed()).toArray();

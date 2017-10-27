@@ -79,7 +79,7 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         if (assocNode != null) {
             graph.edges().forEach(edge -> {
                 if (edge.target().equals(assocNode)) {
-                    allPreds.add(new Pair(edge.source(), edge));
+                    allPreds.add(new Pair(edge.source(), graph.edgeValue(edge.source(), edge.target())));
 
                 }
 
@@ -111,7 +111,7 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
 
             graph.edges().forEach(edge -> {
                 if (edge.source().equals(assocNode)) {
-                    allPreds.add(new Pair(edge.target(), edge));
+                    allPreds.add(new Pair(edge.target(), graph.edgeValue(edge.source(), edge.target())));
 
                 }
 
