@@ -36,11 +36,13 @@ import lombok.*;
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
-@Data
+
 @ToString(includeFieldNames = true)
 @NoArgsConstructor
 @RequiredArgsConstructor()
 @AllArgsConstructor
+@Getter
+@Setter
 public class AssignmentStatement
         extends Statement<ScriptLanguageParser.AssignmentContext> {
     @NonNull

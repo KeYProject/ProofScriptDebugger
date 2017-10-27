@@ -7,6 +7,7 @@ import edu.kit.iti.formal.psdbg.interpreter.funchdl.CommandLookup;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.ProofScriptHandler;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -44,6 +45,12 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         mappingOfNodes = new HashMap<>();
     }
 
+    /**
+     * Return all nodes that have the parameter node as target in the graph
+     *
+     * @param node
+     * @return
+     */
 
     public Set<EndpointPair<ControlFlowNode>> getAllEdgesForNodeAsTarget(ASTNode node) {
 
@@ -55,9 +62,9 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
                 if (e.target().equals(assocNode)) {
 
                     edges.add(e);
-                    System.out.println(e.target());
-                    System.out.println(e.source());
-                    System.out.println(graph.edgeValue(e.target(), e.source()));
+                    //System.out.println(e.target());
+                    //System.out.println(e.source());
+                    //System.out.println(graph.edgeValue(e.target(), e.source()));
                 }
             });
             return edges;
@@ -66,6 +73,54 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         }
     }
 
+    public Collection<Pair<ControlFlowNode, EdgeTypes>> getPredecessorsAndTheirEdges(ASTNode node) {
+        ControlFlowNode assocNode = getCorrespondingNode(node);
+        List<Pair<ControlFlowNode, EdgeTypes>> allPreds = new LinkedList<>();
+        if (assocNode != null) {
+            graph.edges().forEach(edge -> {
+                if (edge.target().equals(assocNode)) {
+                    allPreds.add(new Pair(edge.source(), edge));
+
+                }
+
+            });
+            return allPreds;
+        } else {
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+    public ControlFlowNode getCorrespondingNode(ASTNode node) {
+        ControlFlowNode ctrl = null;
+        for (ASTNode astNode : mappingOfNodes.keySet()) {
+            if (astNode.getStartPosition().equals(node.getStartPosition())
+                    && astNode.getEndPosition().equals(node.getEndPosition())) {
+                ctrl = mappingOfNodes.get(astNode);
+                break;
+            }
+        }
+
+        return ctrl;
+    }
+
+    public Collection<Pair<ControlFlowNode, EdgeTypes>> getPredecessorsAsTarget(ASTNode node) {
+        ControlFlowNode assocNode = getCorrespondingNode(node);
+        List<Pair<ControlFlowNode, EdgeTypes>> allPreds = new LinkedList<>();
+
+        if (assocNode != null) {
+
+            graph.edges().forEach(edge -> {
+                if (edge.source().equals(assocNode)) {
+                    allPreds.add(new Pair(edge.target(), edge));
+
+                }
+
+            });
+            return allPreds;
+        } else {
+            return Collections.EMPTY_LIST;
+        }
+    }
 
     @Override
     public Void visit(ProofScript proofScript) {
@@ -111,6 +166,7 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         }
         mappingOfNodes.put(call, currentNode);
         graph.addNode(currentNode);
+
         graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
         graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
 

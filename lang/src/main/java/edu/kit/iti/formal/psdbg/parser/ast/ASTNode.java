@@ -25,6 +25,7 @@ package edu.kit.iti.formal.psdbg.parser.ast;
 
 import edu.kit.iti.formal.psdbg.parser.Visitable;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -32,6 +33,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @author Alexander Weigl
  * @version 1 (27.04.17)
  */
+@EqualsAndHashCode
 public abstract class ASTNode<T extends ParserRuleContext>
         implements Visitable, Copyable<ASTNode<T>> {
     /**

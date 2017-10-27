@@ -14,6 +14,7 @@ import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.util.Pair;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -260,7 +261,8 @@ public class StateGraphWrapper<T> {
             });
 
             extState.setMappingOfCaseToStates(mappingOfCaseToStates);
-            //TODO default case
+            //TODO default case: missing datastructure of supertype CaseStatement at the moment
+
             newStateNode.setState(lastState.copy());
 
         } else {
@@ -278,8 +280,24 @@ public class StateGraphWrapper<T> {
         }
 
         newStateNode.setExtendedState(extState);
-
         stateGraph.addNode(newStateNode);
+
+        Collection<Pair<ControlFlowNode, EdgeTypes>> predecessorsAndTheirEdges = cfgVisitor.getPredecessorsAndTheirEdges(newStateNode.getScriptstmt());
+
+        for (Pair<ControlFlowNode, EdgeTypes> predecessorsAndTheirEdge : predecessorsAndTheirEdges) {
+            if (predecessorsAndTheirEdge.getKey().equals(lastNode.getScriptstmt())) {
+                stateGraph.putEdgeValue(lastNode, newStateNode, predecessorsAndTheirEdge.getValue());
+            }
+        }
+
+        Collection<Pair<ControlFlowNode, EdgeTypes>> predecessorsAsTarget = cfgVisitor.getPredecessorsAsTarget(node);
+        for (Pair<ControlFlowNode, EdgeTypes> predecessorAsTarget : predecessorsAsTarget) {
+            if (predecessorAsTarget.getKey().equals(lastNode.getScriptstmt())) {
+                stateGraph.putEdgeValue(newStateNode, lastNode, predecessorAsTarget.getValue());
+            }
+
+        }
+
 
         stateGraph.putEdgeValue(lastNode, newStateNode, EdgeTypes.STATE_FLOW);
 
@@ -324,18 +342,17 @@ public class StateGraphWrapper<T> {
         return null;
     }
 
-    private void fireStateAdded(StateAddedEvent stateAddedEvent) {
-        changeListeners.forEach(list -> Platform.runLater(() -> {
-            list.graphChanged(stateAddedEvent);
-            // LOGGER.debug("New StateGraphChange " + this.asdot());
-        }));
-    }
-
     private void fireNodeAdded(NodeAddedEvent nodeAddedEvent) {
         changeListeners.forEach(list -> Platform.runLater(() -> {
             list.graphChanged(nodeAddedEvent);
-            //TODO
-            //  LOGGER.info("New StateGraphChange \n%%%%%%" + this.asdot() + "\n%%%%%%%");
+            LOGGER.info("New StateGraphChange \n" + this.asdot() + "\n");
+        }));
+    }
+
+    private void fireStateAdded(StateAddedEvent stateAddedEvent) {
+        changeListeners.forEach(list -> Platform.runLater(() -> {
+            list.graphChanged(stateAddedEvent);
+            LOGGER.debug("New StateGraphChange " + this.asdot());
         }));
     }
 

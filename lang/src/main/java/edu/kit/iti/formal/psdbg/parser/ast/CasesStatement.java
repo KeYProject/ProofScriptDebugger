@@ -23,11 +23,12 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  */
 
 
-
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,9 @@ import java.util.List;
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
-@Data
+@Setter
+@Getter
+@RequiredArgsConstructor
 public class CasesStatement extends Statement<ScriptLanguageParser.CasesStmtContext> {
     @NonNull private final List<CaseStatement> cases = new ArrayList<>();
     // @NonNull private Statements defaultCase = new Statements();

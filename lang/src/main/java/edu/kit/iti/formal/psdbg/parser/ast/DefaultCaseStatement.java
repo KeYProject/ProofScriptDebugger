@@ -2,9 +2,11 @@ package edu.kit.iti.formal.psdbg.parser.ast;
 
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class DefaultCaseStatement extends Statement<ScriptLanguageParser.StmtListContext> {
 
     protected Statements body;
