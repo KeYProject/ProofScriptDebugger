@@ -186,6 +186,7 @@ public class DebuggerMain implements Initializable {
 
 
         proofTreeController.currentSelectedGoalProperty().addListener((observable, oldValue, newValue) -> {
+
             imodel.setCurrentInterpreterGoal(newValue);
             //also update the selected to be shown
             imodel.setSelectedGoalNodeToShow(newValue);

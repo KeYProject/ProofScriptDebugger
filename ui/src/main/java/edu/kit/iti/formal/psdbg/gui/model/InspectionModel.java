@@ -1,6 +1,7 @@
 package edu.kit.iti.formal.psdbg.gui.model;
 
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
+import edu.kit.iti.formal.psdbg.interpreter.data.InterpreterExtendedState;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import javafx.beans.property.*;
@@ -25,6 +26,9 @@ public class InspectionModel {
     private final ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShow = new SimpleObjectProperty<>(this, "selectedGoalNodeToShow");
     //aktuell im Interpreter aktives Goal
     private final ObjectProperty<GoalNode<KeyData>> currentInterpreterGoal = new SimpleObjectProperty<>(this, "currentInterpreterGoal");
+
+
+    private final SimpleObjectProperty<InterpreterExtendedState<KeyData>> currentExtendedState = new SimpleObjectProperty<>(this, "CurrentExtendedState");
 
     private final MapProperty<GoalNode, Color> colorofEachGoalNodeinListView = new SimpleMapProperty<>(FXCollections.observableHashMap());
     //private final StringProperty javaString = new SimpleStringProperty();
@@ -155,6 +159,18 @@ public class InspectionModel {
         return isInterpreterTab;
     }
 
+
+    public InterpreterExtendedState<KeyData> getCurrentExtendedState() {
+        return currentExtendedState.get();
+    }
+
+    public void setCurrentExtendedState(InterpreterExtendedState<KeyData> currentExtendedState) {
+        this.currentExtendedState.set(currentExtendedState);
+    }
+
+    public SimpleObjectProperty<InterpreterExtendedState<KeyData>> currentExtendedStateProperty() {
+        return currentExtendedState;
+    }
     enum Mode {
         LIVING, DEAD, POSTMORTEM,
     }
