@@ -724,7 +724,7 @@ public class ScriptArea extends CodeArea {
             Token node = Utils.findToken(getText(), pos.getInsertionIndex());
             onPostMortem.accept(node);
 
-            //TODO forward to ProofTreeController, it jumps to the node and this should be done via the callbacks.
+            //TODO forward to ProofTreeManager, it jumps to the node and this should be done via the callbacks.
 
             /*ScriptArea area = ScriptArea.this;
             int chrIdx = currentMouseOver.get().getCharacterIndex().orElse(0);

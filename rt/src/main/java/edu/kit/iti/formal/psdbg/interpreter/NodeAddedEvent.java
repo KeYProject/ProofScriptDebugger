@@ -1,6 +1,6 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
-import edu.kit.iti.formal.psdbg.interpreter.graphs.PTreeNode;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import lombok.Getter;
 
 /**

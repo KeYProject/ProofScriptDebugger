@@ -14,6 +14,7 @@ import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.ProofTreeManager;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -60,7 +61,7 @@ public class DebuggerMain implements Initializable {
     public static final KeYProofFacade FACADE = new KeYProofFacade();
     protected static final Logger LOGGER = LogManager.getLogger(DebuggerMain.class);
     public final ContractLoaderService contractLoaderService = new ContractLoaderService();
-    private final ProofTreeController proofTreeController = new ProofTreeController();
+    private final ProofTreeManager proofTreeController = new ProofTreeManager();
     private final InspectionViewsController inspectionViewsController = new InspectionViewsController();
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
     /**
@@ -756,7 +757,7 @@ public class DebuggerMain implements Initializable {
         return scriptController;
     }
 
-    public ProofTreeController getProofTreeController() {
+    public ProofTreeManager getProofTreeController() {
         return proofTreeController;
     }
 

@@ -1,4 +1,4 @@
-package edu.kit.iti.formal.psdbg.gui.controller;
+package edu.kit.iti.formal.psdbg.interpreter.dbg;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.graph.MutableValueGraph;
@@ -10,7 +10,6 @@ import edu.kit.iti.formal.psdbg.gui.model.Breakpoint;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.NodeAddedEvent;
 import edu.kit.iti.formal.psdbg.interpreter.StateAddedEvent;
-import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.InterpreterExtendedState;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
@@ -18,103 +17,32 @@ import edu.kit.iti.formal.psdbg.interpreter.graphs.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
 import javafx.concurrent.Worker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 /**
- * Class controlling and maintaining proof tree structure for debugger and handling step functions for the debugger
+ * Class controlling and maintaining proof tree structure for debugger
+ * and handling step functions for the debugger
  *
  * @author S. Grebing
  */
-public class ProofTreeController {
-    private static final Logger LOGGER = LogManager.getLogger(ProofTreeController.class);
+public class ProofTreeManager<T> {
+    private static final Logger LOGGER = LogManager.getLogger(ProofTreeManager.class);
+    private StateGraphWrapper<T> stateGraphWrapper;
 
-    /**
-     * To control stepping
-     */
-    private final PuppetMaster blocker = new PuppetMaster();
-    /**
-     * Goals of the state which is referenced by the statePointer
-     */
-    private final ListProperty<GoalNode<KeyData>> currentGoals = new SimpleListProperty<>(FXCollections.observableArrayList());
-
-    /**
-     * Selected Goal of the state which is referenced by the statePointer
-     */
-    private final SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoal = new SimpleObjectProperty<>();
-
-
-    /**
-     * Service to run interpreter in own thread
-     */
-    private InterpretingService interpreterService = new InterpretingService(blocker);
-
-
-    private ReadOnlyBooleanProperty alreadyExecuted = interpreterService.hasRunSucessfullyProperty();
-
-
-    /**
-     * To identify when interpreterservice is running
-     */
-    private ReadOnlyBooleanProperty executeNotPossible = interpreterService.runningProperty();
-
-
-    /**
-     * Node that is updated whenever a new node is added to the stategraph
-     */
-    private SimpleObjectProperty<PTreeNode> nextComputedNode = new SimpleObjectProperty<>();
-
-    /**
-     * Instead of start and end position.
-     */
-    private ObjectProperty<ASTNode> currentHighlightNode = new SimpleObjectProperty<>();
-
-
-    /**
-     * Visitor to retrieve state graph
-     */
-    private StateGraphWrapper<KeyData> stateGraphWrapper;
     /**
      * Graph that is computed on the fly in order to allow stepping
      */
-
     private ControlFlowVisitor controlFlowGraphVisitor;
-
-
-    /**
-     * Current interpreter
-     */
-    private KeyInterpreter currentInterpreter;
 
     /**
      * Pointer to current selected state in graph
      */
-    private PTreeNode<KeyData> statePointer = null;
-
-    /**
-     * The mainscipt that is executed
-     */
-    private SimpleObjectProperty<ProofScript> mainScript = new SimpleObjectProperty<>();
-
-    /*public State getBlockerState() {
-        return blockerState.get();
-    }
-
-    public SimpleObjectProperty<State> blockerStateProperty() {
-        return blockerState;
-    }
-
-    public void setBlockerState(State blockerState) {
-        this.blockerState.set(blockerState);
-    }
-*/
-    //  private SimpleObjectProperty<State> blockerState = new SimpleObjectProperty<>();
+    private PTreeNode<T> statePointer = null;
 
     /**
      * Add a change listener for the stategraph, whenever a new node is added it receives an event
@@ -156,10 +84,10 @@ public class ProofTreeController {
 
 
     /**
-     *  Create a new ProofTreeController
+     *  Create a new ProofTreeManager
      *  and bind properties
      */
-    public ProofTreeController() {
+    public ProofTreeManager() {
 
        /* blocker.currentStateProperty().addListener((observable, oldValue, newValue) -> {
             //setNewState(newValue);
@@ -191,7 +119,7 @@ public class ProofTreeController {
      * CurrentGoalsProperty and SelectedGoal are both listened by InspectionViewModel
      * @param state
      */
-    private void setNewState(State<KeyData> state) {
+    private void setNewState(State<T> state) {
 
         LOGGER.info("Setting new State " + state.toString());
         //Statepointer null wenn anfangszustand?
@@ -250,7 +178,7 @@ public class ProofTreeController {
             nextComputedNode.setValue(statePointer);
         }
         //get next node
-        PTreeNode<KeyData> nextNode = stateGraphWrapper.getStepOver(currentPointer);
+        PTreeNode<T> nextNode = stateGraphWrapper.getStepOver(currentPointer);
 
         //if nextnode is null ask interpreter to execute next statement and compute next state
         if (nextNode != null) {
@@ -258,10 +186,10 @@ public class ProofTreeController {
         }
 
         if (nextNode != null && nextNode.getExtendedState().getStateAfterStmt() != null) {
-            PTreeNode<KeyData> lastNode = this.statePointer;
-            PTreeNode<KeyData> possibleextNode = nextNode;
+            PTreeNode<T> lastNode = this.statePointer;
+            PTreeNode<T> possibleextNode = nextNode;
 
-            InterpreterExtendedState<KeyData> extendedStateOfStmt = possibleextNode.getExtendedState();
+            InterpreterExtendedState<T> extendedStateOfStmt = possibleextNode.getExtendedState();
             //check whether we have reached an endpoint in the graph
             if (lastNode.equals(nextNode)) {
                 nextComputedNode.setValue(lastNode);
@@ -404,7 +332,7 @@ public class ProofTreeController {
      */
     @Subscribe
     public void handle(Events.ScriptModificationEvent mod) {
-        LOGGER.debug("ProofTreeController.handleScriptModificationEvent");
+        LOGGER.debug("ProofTreeManager.handleScriptModificationEvent");
         System.out.println("Handling ScriptCommand");
         currentInterpreter.visit(mod.getCs());
         this.setCurrentSelectedGoal(currentInterpreter.getSelectedNode());
@@ -418,83 +346,4 @@ public class ProofTreeController {
         MutableValueGraph stateGraph = stateGraphWrapper.getStateGraph();
         MutableValueGraph ctrlFlow = controlFlowGraphVisitor.getGraph();
     }
-
-    /**************************************************************************************************************
-     *
-     *                                              Getter and Setter
-     *
-     *************************************************************************************************************
-     * @param currentInterpreter*/
-
-    public void setCurrentInterpreter(KeyInterpreter currentInterpreter) {
-        this.currentInterpreter = currentInterpreter;
-    }
-
-    public StateGraphWrapper getStateVisitor() {
-        return this.stateGraphWrapper;
-    }
-
-    public List<GoalNode<KeyData>> getCurrentGoals() {
-        return currentGoals.get();
-    }
-
-    public void setCurrentGoals(List<GoalNode<KeyData>> currentGoals) {
-        this.currentGoals.get().setAll(currentGoals);
-    }
-
-    public ListProperty<GoalNode<KeyData>> currentGoalsProperty() {
-        return currentGoals;
-    }
-
-    public GoalNode<KeyData> getCurrentSelectedGoal() {
-        return currentSelectedGoal.get();
-    }
-
-    public void setCurrentSelectedGoal(GoalNode<KeyData> currentSelectedGoal) {
-        this.currentSelectedGoal.set(currentSelectedGoal);
-    }
-
-    public SimpleObjectProperty<GoalNode<KeyData>> currentSelectedGoalProperty() {
-        return currentSelectedGoal;
-    }
-
-    public boolean isExecuteNotPossible() {
-        return executeNotPossible.get();
-    }
-
-    public ReadOnlyBooleanProperty executeNotPossibleProperty() {
-        return executeNotPossible;
-    }
-
-    public ASTNode getCurrentHighlightNode() {
-        return currentHighlightNode.get();
-    }
-
-    public void setCurrentHighlightNode(ASTNode currentHighlightNode) {
-        this.currentHighlightNode.set(currentHighlightNode);
-    }
-
-    public ObjectProperty<ASTNode> currentHighlightNodeProperty() {
-        return currentHighlightNode;
-    }
-
-
-    public boolean isAlreadyExecuted() {
-        return alreadyExecuted.get();
-    }
-
-    public PTreeNode getNextComputedNode() {
-        return nextComputedNode.get();
-    }
-
-    public void setNextComputedNode(PTreeNode nextComputedNode) {
-        this.nextComputedNode.set(nextComputedNode);
-    }
-
-    public SimpleObjectProperty<PTreeNode> nextComputedNodeProperty() {
-        return nextComputedNode;
-    }
-   /* public ReadOnlyBooleanProperty stepNotPossibleProperty() {
-
-    }*/
 }

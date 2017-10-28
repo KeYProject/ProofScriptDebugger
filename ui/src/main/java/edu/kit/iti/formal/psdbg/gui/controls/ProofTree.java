@@ -18,8 +18,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.BorderPane;
 import javafx.util.StringConverter;
-
-import java.util.stream.Collectors;
+import lombok.val;
 
 /**
  * KeY Proof Tree
@@ -96,12 +95,6 @@ public class ProofTree extends BorderPane {
         init();
     }
 
-    private void init() {
-        if (root.get() != null)
-            treeProof.setRoot(new TreeItemNode(root.get()));
-        treeProof.refresh();
-    }
-
     /**
      * From https://www.programcreek.com/java-api-examples/index.php?api=javafx.scene.control.TreeItem
      *
@@ -116,6 +109,11 @@ public class ProofTree extends BorderPane {
         }
     }
 
+    private void init() {
+        if (root.get() != null)
+            treeProof.setRoot(new TreeItemNode(root.get()));
+        treeProof.refresh();
+    }
 
     private TreeCell<Node> cellFactory(TreeView<Node> nodeTreeView) {
         TextFieldTreeCell<Node> tftc = new TextFieldTreeCell<>();
@@ -148,7 +146,6 @@ public class ProofTree extends BorderPane {
     }
 
     /**
-     *
      * @param tftc
      */
 
@@ -205,7 +202,8 @@ public class ProofTree extends BorderPane {
     }
 }
 
-
+class TreeItemNode extends TreeItem<Node> {
+}
 
 class TreeItemNode extends TreeItem<Node> {
     public TreeItemNode(Node value) {
@@ -214,14 +212,29 @@ class TreeItemNode extends TreeItem<Node> {
 
     @Override
     public boolean isLeaf() {
-        return getValue().leaf();
+        return value.get().childrenCount() <= 1;
     }
 
     @Override
     public ObservableList<TreeItem<Node>> getChildren() {
-        if (super.getChildren().size() != getValue().children().size())
-            super.getChildren().setAll(
-                    getValue().children().stream().map(TreeItemNode::new).collect(Collectors.toList()));
-        return super.getChildren();
+        ObservableList<TreeItemNode> list = FXCollections.observableArrayList();
+        if (isLeaf())
+            return list;
+
+        if (value.get().childrenCount() == 1) {
+            val node = value.get().child(0);
+            list.add(new TreeItemNode(node));
+            while (node.childrenCount() == 1) {
+                val node = node.child(0);
+                list.add(new TreeItemNode(node));
+            }
+        } else {
+            for (Node child : value.get().children()) {
+                val ti = new TreeItem<String>(child.getNodeInfo().getBranchLabel());
+                list.add(ti);
+                ti.getChildren().add(new TreeItemNode(child));
+            }
+        }
+        return list;
     }
 }

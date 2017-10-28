@@ -14,8 +14,10 @@ import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 import lombok.Getter;
 import lombok.Setter;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,13 +34,15 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     protected static Logger logger = Logger.getLogger("interpreter");
 
+    @Getter
+    public final AtomicBoolean hardStop = new AtomicBoolean(false);
+
     //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
     private Stack<State<T>> stateStack = new Stack<>();
-    //We now need thet stack of listeners to handle try statements scuh that listnersa re only informed if a try was sucessfull
+
+    //We now need the stack of listeners to handle try statements scuh that listnersa re only informed if a try was sucessfull
     private Stack<List<Visitor>> entryListenerStack = new Stack<>();
     private Stack<List<Visitor>> exitListenerStack = new Stack<>();
-    //there is at most one special listener that is allowed to block and that is invoked last when informing all listeners
-    private Visitor blockingEntryListener = new DefaultASTVisitor();
 
     //@Getter
     //private List<Visitor> entryListeners = new ArrayList<>(),
@@ -73,12 +77,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return entryListenerStack.peek();
     }
 
-    public void addBlockingEntryListener(Visitor v) {
-        blockingEntryListener = v;
-    }
-
-    public void removeBlockingEntryListener() {
-        blockingEntryListener = new DefaultASTVisitor();
+    @Override
+    public <T extends ParserRuleContext> void enterScope(ASTNode<T> node) {
+        if(hardStop.get())
+            throw new InterpreterRuntimeException("hard stop");
+        callListeners(getEntryListeners(),node);
     }
 
     /**
@@ -110,7 +113,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
      */
     @Override
     public Object visit(ProofScript proofScript) {
-
         //add vars
         visit(proofScript.getSignature());
         enterScope(proofScript);
@@ -213,7 +215,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         List<CaseStatement> cases = casesStatement.getCases();
 
         for (GoalNode<T> goal : allGoalsBeforeCases) {
-            newState(goal); //to allow the visit method for the case stmt to retrieve goal
+            newState(goal); //to allow the visit method for the case statement to retrieve goal
 
             boolean result = false;
             for (CaseStatement aCase : cases) {

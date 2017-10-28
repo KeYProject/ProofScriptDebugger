@@ -3,7 +3,7 @@ package edu.kit.iti.formal.psdbg.interpreter;
 
 import edu.kit.iti.formal.psdbg.interpreter.data.InterpreterExtendedState;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
-import edu.kit.iti.formal.psdbg.interpreter.graphs.PTreeNode;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import lombok.Getter;
 
 /**

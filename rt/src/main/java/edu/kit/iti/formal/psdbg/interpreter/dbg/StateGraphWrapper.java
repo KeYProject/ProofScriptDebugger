@@ -1,6 +1,8 @@
-package edu.kit.iti.formal.psdbg.interpreter.graphs;
+package edu.kit.iti.formal.psdbg.interpreter.dbg;
 
 
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
@@ -10,6 +12,8 @@ import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.InterpreterExtendedState;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.StateGraphException;
+import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowVisitor;
+import edu.kit.iti.formal.psdbg.interpreter.graphs.EdgeTypes;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import javafx.application.Platform;
@@ -27,81 +31,64 @@ import java.util.*;
 /**
  * State graph that is computed on the fly while stepping through script
  * A Node in the graph is a PTreeNode {@link PTreeNode}
- * Edges are computed on the fly while
+ * Edges are computed on the fly while.
  */
 public class StateGraphWrapper<T> {
     private static final Logger LOGGER = LogManager.getLogger(StateGraphWrapper.class);
-
+    private static Path graph = Paths.get("/tmp/test.dot");
     /**
      * Listeners getting informed when new node added to state graph
      */
     @Getter
-    private List<GraphChangedListener> changeListeners = new ArrayList<>();
-
+    private final List<GraphChangedListener> changeListeners = new ArrayList<>();
     /**
      * Interpreter
      */
-    private Interpreter<T> currentInterpreter;
-
-
+    private final Interpreter<T> currentInterpreter;
     /**
      * Graph that is computed on the fly in order to allow stepping
      */
-    private MutableValueGraph<PTreeNode<T>, EdgeTypes> stateGraph;
-
-
+    private final MutableValueGraph<PTreeNode<T>, EdgeTypes> stateGraph;
     /**
      * Root of state graph
      */
-    private SimpleObjectProperty<PTreeNode<T>> root = new SimpleObjectProperty<>();
-
+    private PTreeNode<T> root;
     /**
      * last added node
      */
     private PTreeNode<T> lastNode;
-
     /**
-     * Mapping ASTNode to PTreeNode for lookup
+     * Mapping ASTNode to PTreeNode for lookup.
      */
-    private HashMap<ASTNode, PTreeNode<T>> addedNodes = new LinkedHashMap<>();
+    private Multimap<ASTNode, PTreeNode<T>> addedNodes = LinkedListMultimap.create();
 
     /**
      * Visitor for control flow graph
      */
-    private ControlFlowVisitor cfgVisitor;
-
+    //private ControlFlowVisitor cfgVisitor;
     private EntryListener entryListener = new EntryListener();
-
     private ExitListener exitListener = new ExitListener();
 
-    private ProofScript mainScript;
-
-
     /**
-
      * Creates a new state graph and adds the root node with the root state
-     *  @param inter
+     *
+     * @param inter
      * @param mainScript
      * @param cfgVisitor
-     *
      */
     public StateGraphWrapper(Interpreter<T> inter, ProofScript mainScript, ControlFlowVisitor cfgVisitor) {
         stateGraph = ValueGraphBuilder.directed().build();
         this.currentInterpreter = inter;
-        this.cfgVisitor = cfgVisitor;
-        this.mainScript = mainScript;
-        createRootNode(this.mainScript);
-
+        //this.cfgVisitor = cfgVisitor;
+        createRootNode(mainScript);
     }
-
-    private static int counter = 0;
 
     public MutableValueGraph<PTreeNode<T>, EdgeTypes> getStateGraph() {
         return stateGraph;
     }
 
     /**
-     * Returns the PTreenNode which was added recently
+     * Returns the PTreeNode which was added recently
      *
      * @return
      */
@@ -109,29 +96,24 @@ public class StateGraphWrapper<T> {
         return lastNode;
     }
 
-
     //careful TODO look for right edges
     //TODO handle endpoint of graph
     public PTreeNode<T> getStepOver(PTreeNode statePointer) {
-
         if (statePointer == null) {
             LOGGER.info("Stepover requested for null, therefore returning root");
             return this.rootProperty().get();
         }
-        LOGGER.info("Stepover requested for node {}@{}", statePointer.getScriptstmt(), statePointer.getScriptstmt().getNodeName());
+        LOGGER.info("Stepover requested for node {}@{}", statePointer.getScriptStmt(), statePointer.getScriptStmt().getNodeName());
         //look for successors in the graph
         Set<PTreeNode<T>> successors = this.stateGraph.successors(statePointer);
         //if there are no successors they have to be computed therefore return null, to trigger the proof tree controller
         if (successors.isEmpty()) {
-
             return null;
         } else {
             //if there are successors we want those which are connetced with State-Flow
             Object[] sucs = successors.toArray();
             PTreeNode nodeWithEdgeTypeSO = getNodeWithEdgeType(statePointer, EdgeTypes.STEP_OVER);
             PTreeNode nodeWithEdgeTypeSF = getNodeWithEdgeType(statePointer, EdgeTypes.STATE_FLOW);
-
-            //return (PTreeNode<T>) sucs[0];
             return nodeWithEdgeTypeSO;
         }
 
@@ -163,7 +145,7 @@ public class StateGraphWrapper<T> {
             }
         });
         //chosenNodes.forEach(n -> System.out.println(n.toString()));
-        //stateGraph.edgeValue()
+        //stateGraph.edgreturn super.toString();eValue()
         return null;
     }
 
@@ -187,14 +169,9 @@ public class StateGraphWrapper<T> {
         //return statePointer;
     }
 
-
-
-
     private Void createNewNode(ASTNode node) {
         return createNewNode(node, false);
     }
-
-    private static Path graph = Paths.get("/tmp/test.dot");
 
     /**
      * Create the root Node for the state graph
@@ -208,7 +185,7 @@ public class StateGraphWrapper<T> {
         newStateNode.getContext().push(node);
         State<T> currentInterpreterStateCopy = currentInterpreter.getCurrentState().copy();
         //copy current state before executing statement
-        newStateNode.setState(currentInterpreterStateCopy);
+        //newStateNode.setState(currentInterpreterStateCopy);
 
         //create extended State
         InterpreterExtendedState<T> extState = new InterpreterExtendedState<>();
@@ -261,7 +238,7 @@ public class StateGraphWrapper<T> {
 
             extState.setMappingOfCaseToStates(mappingOfCaseToStates);
             //TODO default case
-            newStateNode.setState(lastState.copy());
+            //newStateNode.setState(lastState.copy());
 
         } else {
 
@@ -304,8 +281,8 @@ public class StateGraphWrapper<T> {
         //copy Current Interpreter state
         State<T> currentState = currentInterpreter.getCurrentState().copy();
         //set the state
-        if (node != this.root.get().getScriptstmt()) {
-            newStateNode.setState(currentState);
+        if (node != this.root.get().getScriptStmt()) {
+            //newStateNode.setState(currentState);
             newStateNode.getExtendedState().setStateAfterStmt(currentState);
             if (newStateNode.getContext().peek().equals(node)) {
                 newStateNode.getContext().pop();
@@ -396,6 +373,7 @@ public class StateGraphWrapper<T> {
 
     /**
      * Helper for debugging
+     *
      * @return
      */
     public String asdot() {
@@ -437,7 +415,6 @@ public class StateGraphWrapper<T> {
 
         return sb.toString();
     }
-
 
 
     private class EntryListener extends DefaultASTVisitor<Void> {
@@ -578,8 +555,5 @@ public class StateGraphWrapper<T> {
         public Void visit(ClosesCase closesCase) {
             return addState(closesCase);
         }
-
-
     }
-
 }
