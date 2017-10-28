@@ -25,6 +25,7 @@ package edu.kit.iti.formal.psdbg.parser;
 
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
+import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -38,19 +39,17 @@ import java.util.Map;
 
 /**
  * @author Alexander Weigl
- * @version 1 (27.04.17)
+ * @version 2 (29.10.17), introduction of parent
+ * version 1 (27.04.17)
  */
 public class TransformAst implements ScriptLanguageVisitor<Object> {
     /**
-     * Start Index for positional arguments for command calls
+     * Start index for positional arguments for command calls
      */
     public static final int KEY_START_INDEX_PARAMETER = 2;
 
-    private List<ProofScript> scripts = new ArrayList<>(10);
-
-    public List<ProofScript> getScripts() {
-        return scripts;
-    }
+    @Getter
+    private final List<ProofScript> scripts = new ArrayList<>(10);
 
     @Override
     public List<ProofScript> visitStart(ScriptLanguageParser.StartContext ctx) {
@@ -64,8 +63,11 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         ProofScript s = new ProofScript();
         s.setName(ctx.name.getText());
         s.setRuleContext(ctx);
-        if (ctx.signature != null)
-            s.setSignature((Signature) ctx.signature.accept(this));
+        if (ctx.signature != null) {
+            final Signature sig = (Signature) ctx.signature.accept(this);
+            sig.setParent(s);
+            s.setSignature(sig);
+        }
         s.setBody((Statements) ctx.body.accept(this));
         return s;
     }
@@ -74,8 +76,9 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     public Signature visitArgList(ScriptLanguageParser.ArgListContext ctx) {
         Signature signature = new Signature();
         for (ScriptLanguageParser.VarDeclContext decl : ctx.varDecl()) {
-            signature.put(new Variable(decl.name),
-                    TypeFacade.findType(decl.type.getText()));
+            Variable key = new Variable(decl.name);
+            key.setParent(signature);
+            signature.put(key, TypeFacade.findType(decl.type.getText()));
         }
         signature.setRuleContext(ctx);
         return signature;
@@ -100,7 +103,9 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     public Statements visitStmtList(ScriptLanguageParser.StmtListContext ctx) {
         Statements statements = new Statements();
         for (ScriptLanguageParser.StatementContext stmt : ctx.statement()) {
-            statements.add((Statement<ParserRuleContext>) stmt.accept(this));
+            Statement<ParserRuleContext> statement = (Statement<ParserRuleContext>) stmt.accept(this);
+            statement.setParent(statements);
+            statements.add(statement);
         }
         return statements;
     }
@@ -115,12 +120,16 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     public Object visitAssignment(ScriptLanguageParser.AssignmentContext ctx) {
         AssignmentStatement assign = new AssignmentStatement();
         assign.setRuleContext(ctx);
-        assign.setLhs(new Variable(ctx.variable));
+        Variable lhs = new Variable(ctx.variable);
+        lhs.setParent(assign);
+        assign.setLhs(lhs);
         if (ctx.type != null) {
             assign.setType(TypeFacade.findType(ctx.type.getText()));
         }
         if (ctx.expression() != null) {
-            assign.setRhs((Expression<ParserRuleContext>) ctx.expression().accept(this));
+            Expression<ParserRuleContext> rhs = (Expression<ParserRuleContext>) ctx.expression().accept(this);
+            rhs.setParent(assign);
+            assign.setRhs(rhs);
         }
         return assign;
     }
@@ -132,10 +141,11 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
 
     private BinaryExpression createBinaryExpression(ParserRuleContext ctx,
                                                     List<ScriptLanguageParser.ExpressionContext> expression, Operator op) {
-        BinaryExpression be = new BinaryExpression();
-        be.setLeft((Expression<ParserRuleContext>) expression.get(0).accept(this));
-        be.setRight((Expression<ParserRuleContext>) expression.get(1).accept(this));
-        be.setOperator(op);
+        Expression<ParserRuleContext> left = (Expression<ParserRuleContext>) expression.get(0).accept(this);
+        Expression<ParserRuleContext> right = (Expression<ParserRuleContext>) expression.get(1).accept(this);
+        BinaryExpression be = new BinaryExpression(left, op, right);
+        left.setParent(be);
+        right.setParent(be);
         return be;
     }
 
@@ -152,7 +162,9 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     private UnaryExpression createUnaryExpression(ParserRuleContext ctx, ScriptLanguageParser.ExpressionContext expression, Operator op) {
         UnaryExpression ue = new UnaryExpression();
         ue.setRuleContext(ctx);
-        ue.setExpression((Expression<ParserRuleContext>) expression.accept(this));
+        Expression<ParserRuleContext> expr = (Expression<ParserRuleContext>) expression.accept(this);
+        expr.setParent(ue);
+        ue.setExpression(expr);
         ue.setOperator(op);
         return ue;
     }
@@ -223,18 +235,18 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     @Override
     public Object visitExprSubst(ScriptLanguageParser.ExprSubstContext ctx) {
         SubstituteExpression se = new SubstituteExpression();
-        se.setSub((Expression) ctx.expression().accept(this));
-        se.setSubstitution(
-                (Map<String, Expression>) ctx.substExpressionList().accept(this));
+        Expression expr = (Expression) ctx.expression().accept(this);
+        Map<String, Expression> subs = (Map<String, Expression>) ctx.substExpressionList().accept(this);
+        subs.values().forEach(e -> e.setParent(se));
+        se.setSubstitution(subs);
+        se.setSub(expr);
+        expr.setParent(se);
         return se;
     }
-
-    //TODO implement
 
     @Override
     public Object visitExprDivision(ScriptLanguageParser.ExprDivisionContext ctx) {
         return createBinaryExpression(ctx, ctx.expression(), Operator.DIVISION);
-
     }
 
     @Override
@@ -284,13 +296,19 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
 
         if (ctx.derivable != null) {
             match.setDerivable(true);
-            match.setDerivableTerm((Expression<ParserRuleContext>) ctx.derivableExpression.accept(this));
+            Expression<ParserRuleContext> e = (Expression<ParserRuleContext>) ctx.derivableExpression.accept(this);
+            e.setParent(match);
+            match.setDerivableTerm(e);
         } else {
-            if (ctx.argList() != null)
-                match.setSignature((Signature) ctx.argList().accept(this));
-            match.setPattern((Expression<ParserRuleContext>) ctx.pattern.accept(this));
+            if (ctx.argList() != null) {
+                Signature signature = (Signature) ctx.argList().accept(this);
+                match.setSignature(signature);
+                signature.setParent(match);
+            }
+            Expression<ParserRuleContext> e = (Expression<ParserRuleContext>) ctx.pattern.accept(this);
+            match.setPattern(e);
+            e.setParent(match);
         }
-
         return match;
     }
 
@@ -303,7 +321,9 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     public Object visitRepeatStmt(ScriptLanguageParser.RepeatStmtContext ctx) {
         RepeatStatement rs = new RepeatStatement();
         rs.setRuleContext(ctx);
-        rs.setBody((Statements) ctx.stmtList().accept(this));
+        Statements body = (Statements) ctx.stmtList().accept(this);
+        rs.setBody(body);
+        body.setParent(rs);
         return rs;
     }
 
@@ -312,14 +332,13 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         CasesStatement cases = new CasesStatement();
         ctx.casesList().forEach(c -> cases.getCases().add((CaseStatement) c.accept(this)));
         if (ctx.DEFAULT() != null) {
-           /* cases.setDefaultCase((Statements)
-                    ctx.defList.accept(this)
-            );*/
             DefaultCaseStatement defCase = new DefaultCaseStatement();
             defCase.setRuleContext(ctx.defList);
-            defCase.setBody((Statements) ctx.defList.accept(this));
-            //  defCase.setClosedStmt(false);
+            Statements body = (Statements) ctx.defList.accept(this);
+            body.setParent(defCase);
+            defCase.setBody(body);
             cases.setDefCaseStmt(defCase);
+            defCase.setParent(cases);
         }
         cases.setRuleContext(ctx);
         return cases;
@@ -327,29 +346,26 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
 
     @Override
     public Object visitCasesList(ScriptLanguageParser.CasesListContext ctx) {
-
+        Statements accept = (Statements) ctx.body.accept(this);
+        CaseStatement cs = null;
         if (ctx.TRY() != null) {
-            TryCase TryCase = new TryCase();
-            TryCase.setRuleContext(ctx);
-            TryCase.setBody((Statements) ctx.body.accept(this));
-            return TryCase;
-        }
-        if (ctx.closesScript != null) {
-            ClosesCase closesCase = new ClosesCase();
-            closesCase.setClosedStmt(true);
-            closesCase.setRuleContext(ctx);
-
-            closesCase.setClosesScript((Statements) ctx.closesScript.accept(this));
-            closesCase.setBody((Statements) ctx.body.accept(this));
-            return closesCase;
-
+            cs = new TryCase();
+        } else if (ctx.closesScript != null) {
+            cs = new ClosesCase();
+            cs.setClosedStmt(true);
+            Statements closes = (Statements) ctx.closesScript.accept(this);
+            ((ClosesCase) cs).setClosesScript(closes);
+            closes.setParent(cs);
         } else {
-            SimpleCaseStatement caseStatement = new SimpleCaseStatement();
-            caseStatement.setRuleContext(ctx);
-            caseStatement.setGuard((Expression<ParserRuleContext>) ctx.expression().accept(this));
-            caseStatement.setBody((Statements) ctx.body.accept(this));
-            return caseStatement;
+            cs = new SimpleCaseStatement();
+            Expression<ParserRuleContext> guard = (Expression<ParserRuleContext>) ctx.expression().accept(this);
+            ((SimpleCaseStatement) cs).setGuard(guard);
         }
+
+        cs.setBody(accept);
+        accept.setParent(cs);
+        cs.setRuleContext(ctx);
+        return cs;
 
     }
 
@@ -358,7 +374,9 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     public Object visitForEachStmt(ScriptLanguageParser.ForEachStmtContext ctx) {
         ForeachStatement f = new ForeachStatement();
         f.setRuleContext(ctx);
-        f.setBody((Statements) ctx.stmtList().accept(this));
+        Statements body = (Statements) ctx.stmtList().accept(this);
+        f.setBody(body);
+        body.setParent(f);
         return f;
     }
 
@@ -366,7 +384,9 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     public Object visitTheOnlyStmt(ScriptLanguageParser.TheOnlyStmtContext ctx) {
         TheOnlyStatement f = new TheOnlyStatement();
         f.setRuleContext(ctx);
-        f.setBody((Statements) ctx.stmtList().accept(this));
+        Statements body = (Statements) ctx.stmtList().accept(this);
+        f.setBody(body);
+        body.setParent(f);
         return f;
     }
 
@@ -381,7 +401,9 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         }*/
         scs.setCommand(commandName);
         if (ctx.parameters() != null) {
-            scs.setParameters((Parameters) ctx.parameters().accept(this));
+            Parameters parameters = (Parameters) ctx.parameters().accept(this);
+            parameters.setParent(scs);
+            scs.setParameters(parameters);
         }
         return scs;
     }
@@ -395,6 +417,8 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         for (ScriptLanguageParser.ParameterContext pc : ctx.parameter()) {
             Expression expr = (Expression) pc.expr.accept(this);
             Variable key = pc.pname != null ? new Variable(pc.pname) : new Variable("#" + (i++));
+            key.setParent(params);
+            expr.setParent(params);
             params.put(key, expr);
         }
         return params;
@@ -402,7 +426,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
 
     @Override
     public Object visitParameter(ScriptLanguageParser.ParameterContext ctx) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override
