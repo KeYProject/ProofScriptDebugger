@@ -442,7 +442,7 @@ public class ScriptArea extends CodeArea {
 
         String text = getText();
 
-        //set new Command on position of execution marker
+        //set new DebuggerCommand on position of execution marker
         int posExecMarker = this.getExecutionMarkerPosition();
         setText(text.substring(0, posExecMarker) + "\n" + tapName + " formula=`" + term + "`;\n" + text.substring(posExecMarker + 1));
 

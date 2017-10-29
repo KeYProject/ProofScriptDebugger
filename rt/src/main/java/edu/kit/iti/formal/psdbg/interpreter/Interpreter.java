@@ -15,10 +15,11 @@ import edu.kit.iti.formal.psdbg.parser.types.Type;
 import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,22 +32,16 @@ import java.util.stream.Stream;
 public class Interpreter<T> extends DefaultASTVisitor<Object>
         implements ScopeObservable {
     private static final int MAX_ITERATIONS = 5;
-
-    protected static Logger logger = Logger.getLogger("interpreter");
+    protected static Logger logger = LogManager.getLogger(Interpreter.class);
 
     @Getter
     public final AtomicBoolean hardStop = new AtomicBoolean(false);
 
-    //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
     private Stack<State<T>> stateStack = new Stack<>();
 
-    //We now need the stack of listeners to handle try statements scuh that listnersa re only informed if a try was sucessfull
-    private Stack<List<Visitor>> entryListenerStack = new Stack<>();
-    private Stack<List<Visitor>> exitListenerStack = new Stack<>();
-
-    //@Getter
-    //private List<Visitor> entryListeners = new ArrayList<>(),
-    //        exitListeners = new ArrayList<>();
+    @Getter
+    protected List<Visitor> entryListeners = new ArrayList<>(),
+            exitListeners = new ArrayList<>();
 
     @Getter
     @Setter
@@ -60,28 +55,24 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     @Getter
     @Setter
     private VariableAssignmentHook<T> variableAssignmentHook = null;
+    @Getter
+    @Setter
+    private boolean suppressListeners = false;
 
     public Interpreter(CommandLookup lookup) {
         functionLookup = lookup;
-        entryListenerStack.push(new ArrayList<>());
-        exitListenerStack.push(new ArrayList<>());
-    }
-
-    @Override
-    public List<Visitor> getExitListeners() {
-        return exitListenerStack.peek();
-    }
-
-    @Override
-    public List<Visitor> getEntryListeners() {
-        return entryListenerStack.peek();
     }
 
     @Override
     public <T extends ParserRuleContext> void enterScope(ASTNode<T> node) {
-        if(hardStop.get())
+        if (hardStop.get())
             throw new InterpreterRuntimeException("hard stop");
-        callListeners(getEntryListeners(),node);
+        if(!suppressListeners) callListeners(getEntryListeners(), node);
+    }
+
+    @Override
+    public <T extends ParserRuleContext> void exitScope(ASTNode<T> node) {
+        if(!suppressListeners) callListeners(getExitListeners(), node);
     }
 
     /**
@@ -102,7 +93,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         script.accept(this);
     }
 
-
     /**
      * Visit a proof script (context is handled by the call of the script noch by visiting the script itself)
      * 1) visit its signature
@@ -115,9 +105,9 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     public Object visit(ProofScript proofScript) {
         //add vars
         visit(proofScript.getSignature());
-        enterScope(proofScript);
+        //weigl: disabled because it is strange enterScope(proofScript);
         proofScript.getBody().accept(this);
-        exitScope(proofScript);
+        //exitScope(proofScript);
         return null;
     }
 
@@ -162,21 +152,17 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return true;
     }
 
-
     private Value evaluate(Expression expr) {
         return evaluate(getSelectedNode(), expr);
     }
 
     private Value evaluate(GoalNode<T> g, Expression expr) {
         enterScope(expr);
-        Evaluator evaluator = new Evaluator(g.getAssignments(), g);
+        Evaluator<T> evaluator = new Evaluator<>(g.getAssignments(), g);
         evaluator.setMatcher(matcherApi);
-        evaluator.getEntryListeners().addAll(entryListenerStack.peek());
-        evaluator.getExitListeners().addAll(exitListenerStack.peek());
         exitScope(expr);
         return evaluator.eval(expr);
     }
-
 
     /**
      * Visiting a statement list results in visiting each statement
@@ -195,7 +181,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     }
 
     /**
-     *
      * @param casesStatement
      * @return
      */
@@ -294,14 +279,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         }
     }
 
-    @Override
-    public Object visit(TryCase TryCase) {
-        enterScope(TryCase);
-
-        exitScope(TryCase);
-        return false;
-    }
-
     /**
      * Computes which goals are handled by the different cases in the order the cases appear in the script
      * @param allGoalsBeforeCases
@@ -343,9 +320,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     /**
      * Match a set of goal nodes against a matchpattern of a case and return the matched goals together with instantiated variables
      *
-     * @param allGoalsBeforeCases
-     * @param aCase
-     * @return
      */
   /*  private Map<GoalNode<T>, VariableAssignment> matchGoal(Set<GoalNode<T>> allGoalsBeforeCases, CaseStatement aCase) {
 
@@ -391,10 +365,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         }
     }*/
 
-    /**
-     * @param casesStatement
-     * @return
-     */
 /*
     public Object visitOld(CasesStatement casesStatement) {
         enterScope(casesStatement);
@@ -447,6 +417,13 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         exitScope(casesStatement);
         return null;
     }*/
+    @Override
+    public Object visit(TryCase TryCase) {
+        enterScope(TryCase);
+
+        exitScope(TryCase);
+        return false;
+    }
 
     /**
      * Evaluate a match in a specific goal
@@ -458,8 +435,8 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     private VariableAssignment evaluateMatchInGoal(Expression matchExpression, GoalNode<T> goal) {
         enterScope(matchExpression);
         MatchEvaluator mEval = new MatchEvaluator(goal.getAssignments(), goal, matcherApi);
-        mEval.getEntryListeners().addAll(entryListenerStack.peek());
-        mEval.getExitListeners().addAll(exitListenerStack.peek());
+        mEval.getEntryListeners().addAll(getEntryListeners());
+        mEval.getExitListeners().addAll(getExitListeners());
         exitScope(matchExpression);
 
         List<VariableAssignment> matchResult = mEval.eval(matchExpression);
@@ -518,7 +495,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return s;
     }
 
-
     /**
      * Visiting a call statement results in:
      * 0) searching for the handler of the called command
@@ -555,7 +531,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         exitScope(call);
         return null;
     }
-
 
     public VariableAssignment evaluateParameters(Parameters parameters) {
         VariableAssignment va = new VariableAssignment();
@@ -647,7 +622,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             if (scrictSelectedGoalMode)
                 throw e;
 
-            logger.warning("No goal selected. Returning first goal!");
+            logger.warn("No goal selected. Returning first goal!");
             return getCurrentGoals().get(0);
         }
     }
@@ -746,6 +721,8 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return stateStack.peek();
     }
 
+    //endregion
+
     /**
      * Get goalnodes from current state
      *
@@ -755,22 +732,4 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return getCurrentState().getGoals();
     }
 
-    //endregion
-
-    /**
-     * Start a new context where already registered listeners are not informed
-     */
-    protected void startSideComputation() {
-        entryListenerStack.push(new ArrayList<>());
-        exitListenerStack.push(new ArrayList<>());
-    }
-
-    /**
-     * End side computation and restore listeners
-     */
-    protected void endSideComputation() {
-        assert !exitListenerStack.empty() && !entryListenerStack.empty();
-        entryListenerStack.pop();
-        exitListenerStack.pop();
-    }
 }

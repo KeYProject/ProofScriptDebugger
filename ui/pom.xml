@@ -13,7 +13,7 @@
     <packaging>jar</packaging>
 
 
-    <name>User Interface</name>
+    <name>ui</name>
 
 
     <dependencies>

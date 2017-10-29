@@ -114,4 +114,13 @@ public abstract class ASTNode<T extends ParserRuleContext>
     @Override
     public abstract ASTNode<T> copy();
 
+    public boolean isAncestor(ASTNode node){
+        ASTNode n = this;
+        do {
+            if (n.equals(node))
+                return true;
+            n = n.getParent();
+        } while (n != null);
+        return true;
+    }
 }

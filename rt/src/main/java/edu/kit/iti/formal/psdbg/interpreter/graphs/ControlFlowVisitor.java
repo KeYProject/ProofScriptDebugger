@@ -31,7 +31,7 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
     /**
      * Control Flow Graph
      */
-    private MutableValueGraph<ControlFlowNode, EdgeTypes> graph = ValueGraphBuilder.directed().allowsSelfLoops(true).build();
+    private MutableValueGraph<ControlFlowNode, ControlFlowTypes> graph = ValueGraphBuilder.directed().allowsSelfLoops(true).build();
 
     /**
      * Call context
@@ -69,7 +69,6 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
 
     @Override
     public Void visit(ProofScript proofScript) {
-
         ControlFlowNode scriptNode = new ControlFlowNode(proofScript);
         context.add(proofScript);
         mappingOfNodes.put(proofScript, scriptNode);
@@ -94,8 +93,8 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         //ControlFlowNode curLastNode = lastNode;
         for (Statement stmnt : statements) {
             stmnt.accept(this);
-            //graph.putEdgeValue(curLastNode, lastNode, EdgeTypes.STEP_OVER);
-            //graph.putEdgeValue(lastNode, curLastNode, EdgeTypes.STEP_BACK);
+            //graph.putEdgeValue(curLastNode, lastNode, ControlFlowTypes.STEP_OVER);
+            //graph.putEdgeValue(lastNode, curLastNode, ControlFlowTypes.STEP_BACK);
             //curLastNode = lastNode;
         }
         //lastNode = curLastNode;
@@ -107,12 +106,12 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
     public Void visit(CallStatement call) {
         ControlFlowNode currentNode = new ControlFlowNode(call);
         if (!context.isEmpty()) {
-            currentNode.setCallCtx(context);
+            currentNode.setCallCtx((ASTNode[]) context.toArray());
         }
         mappingOfNodes.put(call, currentNode);
         graph.addNode(currentNode);
-        graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
-        graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
+        graph.putEdgeValue(lastNode, currentNode, ControlFlowTypes.STEP_OVER);
+        graph.putEdgeValue(currentNode, lastNode, ControlFlowTypes.STEP_BACK);
 
         lastNode = currentNode;
         boolean atomic = functionLookup.isAtomic(call);
@@ -130,8 +129,8 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
             psh.getScript(call.getCommand()).getBody().accept(this);
 
             //verbinde letzten knoten aus auruf mit step return zu aktuellem knoten
-            graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
-            graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_INTO);
+            graph.putEdgeValue(lastNode, currentNode, ControlFlowTypes.STEP_RETURN);
+            graph.putEdgeValue(currentNode, lastNode, ControlFlowTypes.STEP_INTO);
 
             context.removeLast();
             //check if context is restored properly
@@ -150,11 +149,11 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         mappingOfNodes.put(foreach, currentNode);
         graph.addNode(currentNode);
         //System.out.println("\n" + currentNode + "\n");
-        graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
-        graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
+        graph.putEdgeValue(lastNode, currentNode, ControlFlowTypes.STEP_OVER);
+        graph.putEdgeValue(currentNode, lastNode, ControlFlowTypes.STEP_BACK);
         lastNode = currentNode;
         foreach.getBody().accept(this);
-        graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
+        graph.putEdgeValue(lastNode, currentNode, ControlFlowTypes.STEP_RETURN);
         //lastNode = currentNode; ??
         return null;
     }
@@ -165,11 +164,11 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         mappingOfNodes.put(theOnly, currentNode);
         graph.addNode(currentNode);
         //System.out.println("\n" + currentNode + "\n");
-        graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
-        graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
+        graph.putEdgeValue(lastNode, currentNode, ControlFlowTypes.STEP_OVER);
+        graph.putEdgeValue(currentNode, lastNode, ControlFlowTypes.STEP_BACK);
         lastNode = currentNode;
         theOnly.getBody().accept(this);
-        graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_RETURN);
+        graph.putEdgeValue(lastNode, currentNode, ControlFlowTypes.STEP_RETURN);
         //lastNode = currentNode; ??
         return null;
 
@@ -180,11 +179,11 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         ControlFlowNode currentNode = new ControlFlowNode(repeatStatement);
         mappingOfNodes.put(repeatStatement, currentNode);
         graph.addNode(currentNode);
-        graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
-        graph.putEdgeValue(currentNode, lastNode, EdgeTypes.STEP_BACK);
+        graph.putEdgeValue(lastNode, currentNode, ControlFlowTypes.STEP_OVER);
+        graph.putEdgeValue(currentNode, lastNode, ControlFlowTypes.STEP_BACK);
         lastNode = currentNode;
         repeatStatement.getBody().accept(this);
-        graph.putEdgeValue(lastNode, currentNode, EdgeTypes.STEP_OVER);
+        graph.putEdgeValue(lastNode, currentNode, ControlFlowTypes.STEP_OVER);
         lastNode = currentNode;
         return null;
     }
@@ -195,8 +194,8 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         mappingOfNodes.put(casesStatement, casesNode);
         graph.addNode(casesNode);
         //System.out.println("\n" + casesNode + "\n");
-        graph.putEdgeValue(lastNode, casesNode, EdgeTypes.STEP_OVER);
-        graph.putEdgeValue(casesNode, lastNode, EdgeTypes.STEP_BACK);
+        graph.putEdgeValue(lastNode, casesNode, ControlFlowTypes.STEP_OVER);
+        graph.putEdgeValue(casesNode, lastNode, ControlFlowTypes.STEP_BACK);
         List<CaseStatement> cases = casesStatement.getCases();
         for (CaseStatement aCase : cases) {
 
@@ -207,11 +206,11 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
                 mappingOfNodes.put(aCase, caseNode);
                 graph.addNode(caseNode);
             //TODO rethink
-            graph.putEdgeValue(casesNode, caseNode, EdgeTypes.STEP_INTO); //??is this right?
-            graph.putEdgeValue(caseNode, casesNode, EdgeTypes.STEP_BACK);
+            graph.putEdgeValue(casesNode, caseNode, ControlFlowTypes.STEP_INTO); //??is this right?
+            graph.putEdgeValue(caseNode, casesNode, ControlFlowTypes.STEP_BACK);
                 lastNode = caseNode;
                 aCase.getBody().accept(this);
-            graph.putEdgeValue(lastNode, casesNode, EdgeTypes.STEP_RETURN);
+            graph.putEdgeValue(lastNode, casesNode, ControlFlowTypes.STEP_RETURN);
             //           }
         }
         //casesStatement.getDefaultCase()
@@ -221,22 +220,22 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
             mappingOfNodes.put(defCase, caseNode);
             graph.addNode(caseNode);
 //TODO rethink
-            graph.putEdgeValue(casesNode, caseNode, EdgeTypes.STEP_INTO); //??is this right?
-            graph.putEdgeValue(caseNode, casesNode, EdgeTypes.STEP_BACK);
+            graph.putEdgeValue(casesNode, caseNode, ControlFlowTypes.STEP_INTO); //??is this right?
+            graph.putEdgeValue(caseNode, casesNode, ControlFlowTypes.STEP_BACK);
             lastNode = caseNode;
             defCase.getBody().accept(this);
-            graph.putEdgeValue(lastNode, casesNode, EdgeTypes.STEP_RETURN);
+            graph.putEdgeValue(lastNode, casesNode, ControlFlowTypes.STEP_RETURN);
             /*Statements defaultCase = defCase.getBody();
 
             ControlFlowNode caseNode = new ControlFlowNode(defaultCase);
             mappingOfNodes.put(defaultCase, caseNode);
             graph.addNode(caseNode);
             //System.out.println("\n" + caseNode + "\n");
-            graph.putEdgeValue(casesNode, caseNode, EdgeTypes.STEP_OVER); //??is this right?
-            graph.putEdgeValue(caseNode, casesNode, EdgeTypes.STEP_BACK);
+            graph.putEdgeValue(casesNode, caseNode, ControlFlowTypes.STEP_OVER); //??is this right?
+            graph.putEdgeValue(caseNode, casesNode, ControlFlowTypes.STEP_BACK);
             lastNode = caseNode;
             defaultCase.accept(this);
-            graph.putEdgeValue(lastNode, casesNode, EdgeTypes.STEP_RETURN);*/
+            graph.putEdgeValue(lastNode, casesNode, ControlFlowTypes.STEP_RETURN);*/
         }
         lastNode = casesNode;
         return null;
@@ -269,10 +268,8 @@ public class ControlFlowVisitor extends DefaultASTVisitor<Void> {
         return sb.toString();
     }
 
-    public MutableValueGraph<ControlFlowNode, EdgeTypes> getGraph() {
+    public MutableValueGraph<ControlFlowNode, ControlFlowTypes> getGraph() {
         return graph;
     }
-
-
 
 }

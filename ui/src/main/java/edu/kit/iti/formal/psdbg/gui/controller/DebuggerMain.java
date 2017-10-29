@@ -98,7 +98,7 @@ public class DebuggerMain implements Initializable {
     private BooleanProperty debugMode = new SimpleBooleanProperty(this, "debugMode", false);
 
     private CommandHelp commandHelp = new CommandHelp();
-    private DockNode commandHelpDock = new DockNode(commandHelp, "Command Help");
+    private DockNode commandHelpDock = new DockNode(commandHelp, "DebuggerCommand Help");
 
 
     /**

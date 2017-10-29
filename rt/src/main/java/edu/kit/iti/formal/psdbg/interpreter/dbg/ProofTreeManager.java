@@ -1,28 +1,17 @@
 package edu.kit.iti.formal.psdbg.interpreter.dbg;
 
-import com.google.common.eventbus.Subscribe;
 import com.google.common.graph.MutableValueGraph;
-import edu.kit.iti.formal.psdbg.InterpretingService;
-import edu.kit.iti.formal.psdbg.gui.controls.ASTNodeHiglightListener;
-import edu.kit.iti.formal.psdbg.gui.controls.DebuggerStatusBar;
-import edu.kit.iti.formal.psdbg.gui.controls.Utils;
-import edu.kit.iti.formal.psdbg.gui.model.Breakpoint;
-import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
-import edu.kit.iti.formal.psdbg.interpreter.NodeAddedEvent;
-import edu.kit.iti.formal.psdbg.interpreter.StateAddedEvent;
-import edu.kit.iti.formal.psdbg.interpreter.data.InterpreterExtendedState;
-import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
-import edu.kit.iti.formal.psdbg.interpreter.data.State;
-import edu.kit.iti.formal.psdbg.interpreter.graphs.*;
-import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
-import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
-import javafx.beans.property.*;
-import javafx.concurrent.Worker;
+import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowNode;
+import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowTypes;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Collections;
-import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Class controlling and maintaining proof tree structure for debugger
@@ -32,318 +21,142 @@ import java.util.Set;
  */
 public class ProofTreeManager<T> {
     private static final Logger LOGGER = LogManager.getLogger(ProofTreeManager.class);
-    private StateGraphWrapper<T> stateGraphWrapper;
+    @Getter
+    private final List<Consumer<PTreeNode<T>>> statePointerListener = new ArrayList<>(2);
 
-    /**
-     * Graph that is computed on the fly in order to allow stepping
-     */
-    private ControlFlowVisitor controlFlowGraphVisitor;
+    /*
+    @Nonnull
+    @Getter
+    private final MutableValueGraph<PTreeNode, ControlFlowTypes> graph =
+            ValueGraphBuilder.directed().allowsSelfLoops(false).build();
+    */
 
+    @Getter
+    @Setter
+    @Nullable
+    private final MutableValueGraph<ControlFlowNode, ControlFlowTypes> controlFlowGraph;
+    @Getter
+    private final Set<PTreeNode<T>> nodes = new HashSet<>();
+    @Getter @Setter
+    private boolean suppressStatePointerListener = false;
     /**
      * Pointer to current selected state in graph
      */
-    private PTreeNode<T> statePointer = null;
+    @Nullable
+    private PTreeNode<T> statePointer;
 
-    /**
-     * Add a change listener for the stategraph, whenever a new node is added it receives an event
-     */
-    private GraphChangedListener graphChangedListener = new GraphChangedListener() {
-        @Override
-        public void graphChanged(NodeAddedEvent nodeAddedEvent) {
-            PTreeNode added = nodeAddedEvent.getAddedNode();
-            if (added.getState() != null) {
-                LOGGER.info("Graph changed with the following PTreeNode: {} and the statepointer points to {}", nodeAddedEvent.getAddedNode(), statePointer);
-                nextComputedNode.setValue(nodeAddedEvent.getAddedNode());
-                // Events.fire(new Events.NewNodeExecuted(nodeAddedEvent.getAddedNode().getScriptstmt()));
-            }
+    private List<List<PTreeNode<T>>> context = new ArrayList<>(10);
 
-        }
-
-        @Override
-        public void graphChanged(StateAddedEvent stateAddedEvent) {
-            PTreeNode changedNode = stateAddedEvent.getChangedNode();
-            LOGGER.info("Graph changed by adding a state to PTreeNode: {} and the statepointer points to {}", stateAddedEvent, statePointer);
-            nextComputedNode.set(changedNode);
-            //Events.fire(new Events.NewNodeExecuted(changedNode.getScriptstmt()));
-
-        }
-
-    };
-
-    public ProofScript getMainScript() {
-        return mainScript.get();
-    }
-
-    public void setMainScript(ProofScript mainScript) {
-        this.mainScript.set(mainScript);
-    }
-
-    public SimpleObjectProperty<ProofScript> mainScriptProperty() {
-        return mainScript;
-    }
-
-
-    /**
-     *  Create a new ProofTreeManager
-     *  and bind properties
-     */
-    public ProofTreeManager() {
-
-       /* blocker.currentStateProperty().addListener((observable, oldValue, newValue) -> {
-            //setNewState(newValue);
-            setBlockerState(newValue);
-            LOGGER.info("The state in the Puppetmaster changed to " + newValue.toString());
-        });*/
-
-
-        //add listener to nextcomputed node, that is updated whenever a new node is added to the stategraph
-        nextComputedNode.addListener((observable, oldValue, newValue) -> {
-            //update statepointer
-            if (newValue != null) {
-                LOGGER.info("New node {} was computed and the statepointer was set to {}", newValue.getScriptstmt(), newValue);
-                this.statePointer = newValue;
-
-                //setNewState(blocker.currentStateProperty().get());
-                setNewState(newValue.getState());
-            }
-
-        });
-
-
-
-    }
-
-
-    /**
-     * Sets the properties that may notify GUI about statechanges with new state values
-     * CurrentGoalsProperty and SelectedGoal are both listened by InspectionViewModel
-     * @param state
-     */
-    private void setNewState(State<T> state) {
-
-        LOGGER.info("Setting new State " + state.toString());
-        //Statepointer null wenn anfangszustand?
-        if (statePointer != null && state != null) {
-            //setCurrentHighlightNode(statePointer.getScriptstmt());
-            //get all goals that are open
-            Object[] arr = state.getGoals().stream().filter(keyDataGoalNode -> !keyDataGoalNode.isClosed()).toArray();
-            //if there is no selected goal node we might have reached
-            //a closed proof
-            if (state.getSelectedGoalNode() == null) {
-                setCurrentSelectedGoal(null);
-                setCurrentGoals(arr.length == 0 ? Collections.emptyList() : state.getGoals());
-
-            } else {
-                setCurrentGoals(state.getGoals());
-                setCurrentSelectedGoal(state.getSelectedGoalNode());
-            }
-
-
-            LOGGER.debug("New State from this command: {}@{}",
-                    this.statePointer.getScriptstmt().getNodeName(),
-                    this.statePointer.getScriptstmt().getStartPosition());
-        } else {
-            throw new RuntimeException("The state pointer was null when setting new state");
-        }
-
-
-    }
-
-    //TODO handle endpoint
-
-    private static boolean compareCtrlFlowNodes(ControlFlowNode newNode, ControlFlowNode oldNode) {
-        return newNode.getScriptstmt().getNodeName().equals(oldNode.getScriptstmt().getNodeName());
-
-    }
-
-    //TODO handle endpoint of graph
-
-    private static boolean comparePTreeNodes(PTreeNode newTreeNode, PTreeNode oldTreeNode) {
-        return false;
+    public ProofTreeManager(MutableValueGraph<ControlFlowNode, ControlFlowTypes> controlFlowGraph) {
+        this.controlFlowGraph = controlFlowGraph;
+        pushContext();
     }
 
     /**
-     * StepOver and return the node to which the state pointer is pointing to
+     * This method handles the insertion of new nodes into graph.
      *
-     * @return
+     * @param node
      */
-    public void stepOver() {
-        //get current pointer into stategraph
-        PTreeNode currentPointer = statePointer;
-        //if pointer is null, we do not have a root yet
-        if (currentPointer == null) {
-            //ask for root
-            currentPointer = stateGraphWrapper.rootProperty().get();
-            statePointer = currentPointer;
-            nextComputedNode.setValue(statePointer);
-        }
-        //get next node
-        PTreeNode<T> nextNode = stateGraphWrapper.getStepOver(currentPointer);
+    public void receiveNode(@Nonnull PTreeNode<T> node) {
+        LOGGER.info("Tree received new node: {}", node);
+        //we got a deeper in the AST
+        int ctxLength = node.getContext().length;
 
-        //if nextnode is null ask interpreter to execute next statement and compute next state
-        if (nextNode != null) {
-            setCurrentHighlightNode(nextNode.getScriptstmt());
+        // We got a step deeper in the ASTNode stack.
+        // So we a caller
+        if (getContextDepth() < ctxLength) {
+            pushContext();
+            intoCurrentContext(node);
+            // step into happens
+            assert statePointer!=null : "We are in a sub context, so where had to be a statePointer!";
+            statePointer.connectStepInto(node);
         }
 
-        if (nextNode != null && nextNode.getExtendedState().getStateAfterStmt() != null) {
-            PTreeNode<T> lastNode = this.statePointer;
-            PTreeNode<T> possibleextNode = nextNode;
-
-            InterpreterExtendedState<T> extendedStateOfStmt = possibleextNode.getExtendedState();
-            //check whether we have reached an endpoint in the graph
-            if (lastNode.equals(nextNode)) {
-                nextComputedNode.setValue(lastNode);
-            } else {
-                if (extendedStateOfStmt.getStateBeforeStmt() == null || extendedStateOfStmt.getStateBeforeStmt().getGoals() == null || extendedStateOfStmt.getStateBeforeStmt().getGoals().isEmpty()) {
-                    nextComputedNode.setValue(lastNode);
-                } else {
-                    nextComputedNode.setValue(possibleextNode);
-                }
-            }
-        } else {
-            //no next node is present yet
-            //let interpreter run for one step and let listener handle updating the statepointer
-            blocker.getStepUntilBlock().addAndGet(1);
-            blocker.unlock();
-        }
-    }
-
-    /**
-     * Step Back one Node in the stategraph
-     *
-     * @return PTreeNode of current pointer
-     */
-    public void stepBack() {
-        PTreeNode current = this.statePointer;
-        if (current != null) {
-            this.statePointer = stateGraphWrapper.getStepBack(current);
-            if (this.statePointer != null) {
-                setNewState(statePointer.getExtendedState().getStateBeforeStmt());
-                setCurrentHighlightNode(statePointer.getScriptstmt());
-            } else {
-                this.statePointer = current;
+        // Same depth means, we are working on a StatementList
+        // all are connected at least by StepOver
+        //  // if the last ASTNode was atomic, this is also a StepInto
+        if (getContextDepth() == ctxLength) {
+            intoCurrentContext(node);
+            if (statePointer != null) {
+                statePointer.connectStepOver(node);
+                //if (statePointer.isAtomic())
+                //    statePointer.setStepInto(node);
             }
         }
-    }
 
-    public PTreeNode stepInto() {
-        PTreeNode current = this.statePointer;
+        // We became an level upwards, so we have left an context.
+        // Maintain, StepReturn and StepOver
+        if (getContextDepth() > ctxLength) {
+            popContext(node); // maintains StepReturn for every Node in popped context
+            assert statePointer != null : "Not possible, we are in a callee, so there must be a parent in the context";
 
-        return null;
-    }
+            /* The situation on the context stack:
 
-    public PTreeNode stepReturn() {
-        return null;
-    }
+                            __________ popped context
+               (ctx a b c d (ctx d e f) g
+                          ^          ^  ^ node
+                          |          | StatePointer
+                          | prevCtx, the ASTNode who creates the ctx (foreach, repeat, case,...)
+             */
 
-    /**
-     * Execute script with breakpoints
-     * @param debugMode
-     * @param statusBar
-     * @param breakpoints
-     */
-    public void executeScript(boolean debugMode, DebuggerStatusBar statusBar, Set<Breakpoint> breakpoints) {
-        breakpoints.forEach(breakpoint -> blocker.addBreakpoint(breakpoint.getLineNumber()));
-        executeScript(debugMode, statusBar);
-    }
+            statePointer.setStepOver(node);
+            //node.setStepBack(statePointer);
 
-    /**
-     * Execute the script that is identified by the mainscript.
-     * If this method is executed with debug mode true, it executes only statements after invoking the methods stepOver() and stepInto()
-     *
-     * @param debugMode
-     * @param statusBar
-     */
-    public void executeScript(boolean debugMode, DebuggerStatusBar statusBar) {
-        Events.register(this);
+            PTreeNode<T> prevCtx = getNodeOnContext(-1);
+            prevCtx.connectStepOver(node);
 
-        blocker.deinstall();
-        blocker.install(currentInterpreter);
-
-        statusBar.setText("Starting to interpret script " + mainScript.getName());
-        statusBar.indicateProgress();
-        //setCurrentHighlightNode(mainScript.get());
-
-        //build CFG
-        buildControlFlowGraph(mainScript.get());
-        statusBar.publishMessage("Controlflow graph ws build");
-
-        //build StateGraph
-        this.stateGraphWrapper = new StateGraphWrapper(currentInterpreter, mainScript.get(), this.controlFlowGraphVisitor);
-        this.stateGraphWrapper.install(currentInterpreter);
-        this.stateGraphWrapper.addChangeListener(graphChangedListener);
-
-        ASTNodeHiglightListener astNodeHiglightListener = new ASTNodeHiglightListener(currentInterpreter);
-        astNodeHiglightListener.install(currentInterpreter);
-        astNodeHiglightListener.currentHighlightNodeProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                ASTNode astNode = (ASTNode) newValue;
-                setCurrentHighlightNode(astNode);
-                //this.setCurrentHighlightNode();
-            }
-        });
-
-        statusBar.publishMessage("Stategraph was set up");
-        statusBar.stopProgress();
-
-        //create interpreter service and start
-        if (interpreterService.getState() == Worker.State.SUCCEEDED
-                || interpreterService.getState() == Worker.State.CANCELLED) {
-            interpreterService.reset();
+            /*if (statePointer.isAtomic())
+                statePointer.setStepInto(node);
+                */
         }
-        interpreterService.interpreterProperty().set(currentInterpreter);
 
-        interpreterService.mainScriptProperty().set(mainScript.get());
 
-        interpreterService.start();
-        interpreterService.setOnSucceeded(event -> {
-            statusBar.setText("Executed until end of script.");
-            System.out.println("Number of Goals " + currentGoals.get().size());
-            //TODO is this the right position??
-            if (currentGoals.isEmpty()) {
-
-                Utils.showClosedProofDialog(mainScript.get().getName());
-            }
-            statusBar.stopProgress();
-        });
-        interpreterService.setOnFailed(event -> {
-            statusBar.setText("Failed to execute script");
-            statusBar.stopProgress();
-        });
+        nodes.add(node);
+        setStatePointer(node);
     }
 
-    /**
-     * Build the control flow graph for looking up step-edges for the given script inligning called script commands
-     *
-     * @param mainScript
-     */
-    private void buildControlFlowGraph(ProofScript mainScript) {
-        this.controlFlowGraphVisitor = new ControlFlowVisitor(currentInterpreter.getFunctionLookup());
-        mainScript.accept(controlFlowGraphVisitor);
-        this.setMainScript(mainScript);
-        LOGGER.info("CFG\n" + controlFlowGraphVisitor.asdot());
-
+    //region context management
+    private PTreeNode<T> getNodeOnContext(int pos) {
+        return peekContext().get(pos < 0 ? peekContext().size() + pos : pos);
     }
 
-    /**
-     * Handle the event that the script was modified
-     *
-     * @param mod
-     */
-    @Subscribe
-    public void handle(Events.ScriptModificationEvent mod) {
-        LOGGER.debug("ProofTreeManager.handleScriptModificationEvent");
-        System.out.println("Handling ScriptCommand");
-        currentInterpreter.visit(mod.getCs());
-        this.setCurrentSelectedGoal(currentInterpreter.getSelectedNode());
-        this.setCurrentGoals(currentInterpreter.getCurrentGoals());
+    private List<PTreeNode<T>> peekContext() {
+        return context.get(context.size() - 1);
     }
 
-    /**
-     * Save all data structures to compare before reexecution
-     */
-    public void saveGraphs() {
-        MutableValueGraph stateGraph = stateGraphWrapper.getStateGraph();
-        MutableValueGraph ctrlFlow = controlFlowGraphVisitor.getGraph();
+    private void popContext(PTreeNode<T> node) {
+        for (PTreeNode<T> subs : context.get(context.size() - 1)) {
+            subs.setStepReturn(node);
+        }
+        context.remove(context.size() - 1);
+    }
+
+    private void intoCurrentContext(PTreeNode<T> node) {
+        context.get(context.size() - 1).add(node);
+    }
+
+    private void pushContext() {
+        List<PTreeNode<T>> nl = new LinkedList<>();
+        context.add(nl);
+    }
+
+    public int getContextDepth() {
+        return (getStatePointer() == null) ? 0 : getStatePointer().getContext().length;
+    }
+    //endregion
+
+    @Nullable
+    public PTreeNode<T> getStatePointer() {
+        return statePointer;
+    }
+
+    public void setStatePointer(@Nullable PTreeNode<T> statePointer) {
+        this.statePointer = statePointer;
+        fireStatePointerChanged();
+    }
+
+    protected void fireStatePointerChanged() {
+        if (!suppressStatePointerListener)
+            statePointerListener.forEach(l -> l.accept(statePointer));
     }
 }
