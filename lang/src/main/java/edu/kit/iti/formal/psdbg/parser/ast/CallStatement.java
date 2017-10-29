@@ -34,7 +34,8 @@ import lombok.*;
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @RequiredArgsConstructor
 @AllArgsConstructor

@@ -7,10 +7,15 @@ cases{
     case match `q==>`:
       impRight;
       notRight;
+
     case match `==>`:
       impRight;
       notRight;
+      close;
     }
+
+        auto;
+
 }
 
 
@@ -31,7 +36,7 @@ cases{
       impRight;
 
 }
-
+}
 
 script test2(){
 impRight;
