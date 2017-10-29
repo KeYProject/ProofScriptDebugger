@@ -1,10 +1,13 @@
 package edu.kit.iti.formal.psdbg.interpreter.dbg;
 
+import edu.kit.iti.formal.psdbg.interpreter.Evaluator;
+import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
+import edu.kit.iti.formal.psdbg.interpreter.exceptions.InterpreterRuntimeException;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
-import lombok.Data;
+import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.val;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -15,24 +18,41 @@ public abstract class Blocker {
     public interface BlockPredicate extends Predicate<ASTNode> {
     }
 
-    @Data
-    public static class Breakpoint {
-        private int line;
-        private String source;
-    }
 
-    public static class BreakpointLine implements BlockPredicate {
+    @RequiredArgsConstructor
+    public static class BreakpointLine<T> implements BlockPredicate {
         @Getter
-        @Setter
-        private final Set<Integer> lines = new TreeSet<>();
+        private final Interpreter<T> interpreter;
 
-        private final Breakpoint cmp = new Breakpoint();
+        @Getter
+        private final Set<Breakpoint> breakpoints = new TreeSet<>();
+
+        private final Breakpoint cmp = new Breakpoint(null, 0);
 
         @Override
         public boolean test(ASTNode node) {
-            cmp.line = node.getStartPosition().getLineNumber();
-            cmp.source = node.getOrigin();
-            return lines.contains(cmp);
+            Evaluator<T> evaluator = new Evaluator<>(interpreter.getSelectedNode().getAssignments(), interpreter.getSelectedNode());
+            for (Breakpoint brkpt : getBreakpoints()) {
+                // check file name
+                if (brkpt.getSourceName().equals(node.getOrigin())) {
+                    // check line
+                    if (brkpt.getLineNumber() == node.getStartPosition().getLineNumber()) {
+                        // if there is no condition
+                        if (brkpt.getConditionAst() == null) {
+                            return true; // no condition ==> trigger
+                        } else { // if there is a condition, we check:
+                            val v = evaluator.eval(brkpt.getConditionAst());
+                            if (v.getType() != SimpleType.BOOL)
+                                throw new InterpreterRuntimeException(
+                                        String.format("Condition %s of breakpoint %s returned type %s",
+                                                brkpt.getCondition(), brkpt, v.getType()));
+                            if (v.getData() == Boolean.TRUE)
+                                return true;
+                        }
+                    }
+                }
+            }
+            return breakpoints.contains(cmp);
         }
     }
 
@@ -46,10 +66,10 @@ public abstract class Blocker {
 
         @Override
         public boolean test(ASTNode astNode) {
-            if (stepUntilBlock.get() > 0) {
-                stepUntilBlock.decrementAndGet();
+            if (stepUntilBlock.get() >= 0) {
+                return 0 == stepUntilBlock.decrementAndGet();
             }
-            return stepUntilBlock.get() == 0;
+            return false;
         }
 
         public void deactivate() {

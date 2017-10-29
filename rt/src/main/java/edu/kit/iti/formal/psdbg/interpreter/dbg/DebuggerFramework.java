@@ -42,9 +42,14 @@ public class DebuggerFramework<T> {
     private final List<Consumer<PTreeNode<T>>> currentStatePointerListener = new LinkedList<>();
 
     private final ProofTreeManager<T> ptreeManager;
+
     private final Thread interpreterThread;
+
     private final BlockListener<T> blocker;
+
     private final StateWrapper<T> stateWrapper;
+
+    private Blocker.BreakpointLine<T> breakpointBlocker;
 
 
     public DebuggerFramework(@Nonnull Interpreter<T> interpreter,
@@ -52,6 +57,8 @@ public class DebuggerFramework<T> {
                              MutableValueGraph<ControlFlowNode, ControlFlowTypes> cfg) {
         this.interpreter = interpreter;
         blocker = new BlockListener<>(interpreter);
+        breakpointBlocker = new Blocker.BreakpointLine<>(interpreter);
+        blocker.getPredicates().add(breakpointBlocker);
         stateWrapper = new StateWrapper<>(interpreter);
         ptreeManager = new ProofTreeManager<>(cfg);
         stateWrapper.setEmitNode(ptreeManager::receiveNode);
@@ -116,7 +123,35 @@ public class DebuggerFramework<T> {
         blocker.unlock();
     }
 
+    /**
+     * Let the interpreter run, without adding any further blockers.
+     */
+    public void release() {
+        blocker.unlock();
+    }
+
+
+    /**
+     * Let the interpreter run, without adding any further blockers.
+     */
+    public void releaseForever() {
+        blocker.getPredicates().clear();
+        release();
+    }
+
+
     public Set<PTreeNode<T>> getStates() {
         return ptreeManager.getNodes();
+    }
+
+    /**
+     * Unregister all state pointer listeners.
+     */
+    public void unregister() {
+        ptreeManager.getStatePointerListener().clear();
+    }
+
+    public Set<Breakpoint> getBreakpoints() {
+        return breakpointBlocker.getBreakpoints();
     }
 }

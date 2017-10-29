@@ -1,6 +1,5 @@
 package edu.kit.iti.formal.psdbg;
 
-import com.google.common.graph.MutableValueGraph;
 import de.uka.ilkd.key.api.KeYApi;
 import de.uka.ilkd.key.api.ProofManagementApi;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
@@ -10,9 +9,6 @@ import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
-import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowNode;
-import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowTypes;
-import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowVisitor;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
@@ -62,10 +58,10 @@ public class InteractiveCLIDebugger {
                 .scriptSearchPath(new File("."));
         interpreter = ib.build();
 
-        ControlFlowVisitor cfgVistor = new ControlFlowVisitor(ib.getLookup());
-        MutableValueGraph<ControlFlowNode, ControlFlowTypes> cfg = cfgVistor.getGraph();
+        //ControlFlowVisitor cfgVistor = new ControlFlowVisitor(ib.getLookup());
+        //MutableValueGraph<ControlFlowNode, ControlFlowTypes> cfg = cfgVistor.getGraph();
 
-        df = new DebuggerFramework<>(interpreter, scripts.get(0), cfg);
+        df = new DebuggerFramework<>(interpreter, scripts.get(0), null);
         df.getStatePointerListener().add(this::printNode);
         //df.getBeforeExecutionListener().add(this::printNode);
         //df.getAfterExecutionListener().add(this::end);

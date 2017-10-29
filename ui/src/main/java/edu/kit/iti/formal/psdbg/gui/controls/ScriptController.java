@@ -4,8 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
-import edu.kit.iti.formal.psdbg.gui.model.Breakpoint;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
@@ -36,11 +36,17 @@ import java.util.*;
  */
 public class ScriptController {
     public static final String LINE_HIGHLIGHT_POSTMORTEM = "line-highlight-postmortem";
+
     private static Logger logger = LogManager.getLogger(ScriptController.class);
+
     private final DockPane parent;
+
     private final ObservableMap<ScriptArea, DockNode> openScripts = FXCollections.observableMap(new HashMap<>());
+
     private ObjectProperty<MainScriptIdentifier> mainScript = new SimpleObjectProperty<>();
+
     private ScriptArea lastScriptArea;
+
     private ASTNodeHighlighter postMortemHighlighter = new ASTNodeHighlighter(LINE_HIGHLIGHT_POSTMORTEM);
 
 
@@ -49,7 +55,8 @@ public class ScriptController {
         Events.register(this);
     }
 
-    @Subscribe public void handle(Events.FocusScriptArea fsa) {
+    @Subscribe
+    public void handle(Events.FocusScriptArea fsa) {
         logger.debug("FocusScriptArea handled!");
         openScripts.get(fsa.getScriptArea()).focus();
         fsa.getScriptArea().requestFocus();
@@ -176,6 +183,7 @@ public class ScriptController {
 
     /**
      * Get all breakpoints in the current area
+     *
      * @return set of all breakpoints in tab
      */
     public Set<Breakpoint> getBreakpoints() {
@@ -197,7 +205,8 @@ public class ScriptController {
     }
 
     /**
-     *  Open a new script with a random file name and load it into scriptarea
+     * Open a new script with a random file name and load it into scriptarea
+     *
      * @return reference to ScriptArea for new script
      */
     public ScriptArea newScript() {
@@ -247,6 +256,15 @@ public class ScriptController {
         return mainScript.get();
     }
 
+    public void setMainScript(ProofScript proofScript) {
+        MainScriptIdentifier msi = new MainScriptIdentifier();
+        msi.setLineNumber(proofScript.getStartPosition().getLineNumber());
+        msi.setScriptName(proofScript.getName());
+        msi.setSourceName(proofScript.getRuleContext().getStart().getInputStream().getSourceName());
+        msi.setScriptArea(findEditor(new File(proofScript.getOrigin())));
+        setMainScript(msi);
+    }
+
     public void setMainScript(MainScriptIdentifier mainScript) {
         this.mainScript.set(mainScript);
     }
@@ -257,7 +275,9 @@ public class ScriptController {
 
     public class ASTNodeHighlighter {
         public final String clazzName;
+
         private ScriptArea.RegionStyle lastRegion;
+
         private ScriptArea lastScriptArea;
 
         private ASTNodeHighlighter(String clazzName) {
@@ -292,8 +312,8 @@ public class ScriptController {
         private ScriptArea.RegionStyle asRegion(ASTNode node) {
             assert node != null;
             if (node.getRuleContext() != null)
-            return new ScriptArea.RegionStyle(node.getRuleContext().getStart().getStartIndex(),
-                    node.getRuleContext().getStop().getStopIndex(), clazzName);
+                return new ScriptArea.RegionStyle(node.getRuleContext().getStart().getStartIndex(),
+                        node.getRuleContext().getStop().getStopIndex(), clazzName);
             else return new ScriptArea.RegionStyle(0, 1, "");
         }
     }

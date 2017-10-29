@@ -83,7 +83,7 @@ public class InterpretingService extends Service<State<KeyData>> {
         if (statusBar != null) {
             statusBar.stopProgress();
         }
-        blocker.publishState();
+        //blocker.publishState();
     }
 
     @Override
