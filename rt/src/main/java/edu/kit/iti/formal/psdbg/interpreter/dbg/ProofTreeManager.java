@@ -11,7 +11,9 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Class controlling and maintaining proof tree structure for debugger
@@ -21,6 +23,7 @@ import java.util.function.Consumer;
  */
 public class ProofTreeManager<T> {
     private static final Logger LOGGER = LogManager.getLogger(ProofTreeManager.class);
+
     @Getter
     private final List<Consumer<PTreeNode<T>>> statePointerListener = new ArrayList<>(2);
 
@@ -35,10 +38,19 @@ public class ProofTreeManager<T> {
     @Setter
     @Nullable
     private final MutableValueGraph<ControlFlowNode, ControlFlowTypes> controlFlowGraph;
+
     @Getter
     private final Set<PTreeNode<T>> nodes = new HashSet<>();
+
     @Getter @Setter
     private boolean suppressStatePointerListener = false;
+
+    /**
+     * Counting the receive order of {@link PTreeNode}
+     */
+    @Getter @Setter
+    private AtomicInteger counter = new AtomicInteger();
+
     /**
      * Pointer to current selected state in graph
      */
@@ -58,6 +70,7 @@ public class ProofTreeManager<T> {
      * @param node
      */
     public void receiveNode(@Nonnull PTreeNode<T> node) {
+        node.setOrder(counter.incrementAndGet());
         LOGGER.info("Tree received new node: {}", node);
         //we got a deeper in the AST
         int ctxLength = node.getContext().length;
@@ -68,7 +81,7 @@ public class ProofTreeManager<T> {
             pushContext();
             intoCurrentContext(node);
             // step into happens
-            assert statePointer!=null : "We are in a sub context, so where had to be a statePointer!";
+            assert statePointer != null : "We are in a sub context, so where had to be a statePointer!";
             statePointer.connectStepInto(node);
         }
 
@@ -160,4 +173,26 @@ public class ProofTreeManager<T> {
             statePointerListener.forEach(l -> l.accept(statePointer));
     }
 
+
+    public List<PTreeNode<T>> getNarrowNodesToTextPosition(int textPosition) {
+        synchronized (nodes) {
+            List<PTreeNode<T>> candidates = nodes.stream()
+                    // filter by the context
+                    .filter(n ->
+                            n.getStatement().getRuleContext().start.getStartIndex() <= textPosition &&
+                                    textPosition <= n.getStatement().getRuleContext().stop.getStopIndex())
+                    .collect(Collectors.toList());
+
+            Comparator<PTreeNode<T>> widthCmp = Comparator.comparingInt(PTreeNode::getSyntaxWidth);
+            Comparator<PTreeNode<T>> orderCmp = Comparator.comparingInt(PTreeNode::getOrder);
+
+            candidates.sort((o1, o2) -> {
+                int cmp = widthCmp.compare(o1, o2);
+                if (cmp == 0)
+                    return orderCmp.compare(o1, o2);
+                return cmp;
+            });
+            return candidates;
+        }
+    }
 }

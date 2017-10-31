@@ -51,6 +51,8 @@ public class PTreeNode<T> {
     @Nullable
     private PTreeNode<T> stepReturn;
 
+    private int order;
+
     public void connectStepOver(PTreeNode<T> jumpOverTo) {
         setStepOver(jumpOverTo);
         jumpOverTo.setStepInvOver(this);
@@ -68,7 +70,8 @@ public class PTreeNode<T> {
     public List<PTreeNode<T>> getContextNodes() {
         List<PTreeNode<T>> contextNodes = new ArrayList<>(context.length);
         PTreeNode<T> cur = this;
-        outer : do {
+        outer:
+        do {
             // add the current node, and every node that can be reached by an inverse into pointer.
             contextNodes.add(cur);
 
@@ -96,4 +99,14 @@ public class PTreeNode<T> {
     public String toString() {
         return getSingleRepresentation();
     }
+
+    /**
+     * Calculate a span of bytes of the syntactical representation.
+     * @return
+     */
+    int getSyntaxWidth() {
+        return getStatement().getRuleContext().stop.getStopIndex()
+                - getStatement().getRuleContext().start.getStartIndex();
+    }
+
 }
