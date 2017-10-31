@@ -5,6 +5,8 @@
 <?import edu.kit.iti.formal.psdbg.gui.controls.DebuggerStatusBar?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.dockfx.DockPane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.112"
@@ -38,16 +40,22 @@
                     <menus>
                         <Menu fx:id="fileMenu" text="File">
                             <items>
-                                <MenuItem fx:id="newScriptMenuItem" onAction="#newScript" text="_New Script" accelerator="Shortcut+n"/>
-                                <MenuItem fx:id="openScriptFileMenuItem" onAction="#openScript" text="_Open Script" accelerator="Shortcut+o"/>
+                                <MenuItem fx:id="newScriptMenuItem" onAction="#newScript" text="_New Script"
+                                          accelerator="Shortcut+n"/>
+                                <MenuItem fx:id="openScriptFileMenuItem" onAction="#openScript" text="_Open Script"
+                                          accelerator="Shortcut+o"/>
                                 <SeparatorMenuItem/>
-                                <MenuItem fx:id="loadKeYFileMenuItem" onAction="#loadKeYFile" text="Load _KeY File" accelerator="Shortcut+Alt+o"/>
-                                <MenuItem fx:id="loadJavaFileMenuItem" onAction="#loadJavaFile" text="Load _Java File" accelerator="Shortcut+Shift+o"/>
+                                <MenuItem fx:id="loadKeYFileMenuItem" onAction="#loadKeYFile" text="Load _KeY File"
+                                          accelerator="Shortcut+Alt+o"/>
+                                <MenuItem fx:id="loadJavaFileMenuItem" onAction="#loadJavaFile" text="Load _Java File"
+                                          accelerator="Shortcut+Shift+o"/>
                                 <SeparatorMenuItem/>
                                 <MenuItem onAction="#saveScript" text="_Save Script" accelerator="Shortcut+s"/>
-                                <MenuItem onAction="#saveAsScript" text="Save Script _As ..." accelerator="Shortcut+Shift+s"/>
+                                <MenuItem onAction="#saveAsScript" text="Save Script _As ..."
+                                          accelerator="Shortcut+Shift+s"/>
                                 <MenuItem onAction="#saveProof" text="_Save Proof" accelerator="Shortcut+Alt+s"/>
-                                <MenuItem fx:id="closeMenuItem" onAction="#closeProgram" text="_Close" accelerator="Shortcut+q"/>
+                                <MenuItem fx:id="closeMenuItem" onAction="#closeProgram" text="_Close"
+                                          accelerator="Shortcut+q"/>
                             </items>
                         </Menu>
                         <Menu text="Edit">
@@ -57,11 +65,31 @@
                         </Menu>
                         <Menu text="View">
                             <items>
-                                <MenuItem onAction="#showCodeDock" text="Show Java Code window"/>
-                                <MenuItem onAction="#showWelcomeDock" text="Show Welcome window"/>
-                                <MenuItem onAction="#showActiveInspector" text="Show Active Inspector window"/>
-                                <MenuItem onAction="#showProofTree" text="Show Proof Tree"/>
-                                <MenuItem onAction="#showCommandHelp" text="Show Command Help"/>
+                                <MenuItem onAction="#showCodeDock" text="Show Java Code window">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="CODE_TAGS" size="24.0"/>
+                                    </graphic>
+                                </MenuItem>
+                                <MenuItem onAction="#showWelcomeDock" text="Show Welcome window">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="HELP_CIRCLE" size="24.0"/>
+                                    </graphic>
+                                </MenuItem>
+                                <MenuItem onAction="#showActiveInspector" text="Show Active Inspector window">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="MAGNIFY" size="24.0"/>
+                                    </graphic>
+                                </MenuItem>
+                                <MenuItem onAction="#showProofTree" text="Show Proof Tree">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="TREE" size="24.0"/>
+                                    </graphic>
+                                </MenuItem>
+                                <MenuItem onAction="#showCommandHelp" text="Show Command Help">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="STACKEXCHANGE" size="24.0"/>
+                                    </graphic>
+                                </MenuItem>
                             </items>
                         </Menu>
                         <Menu fx:id="examplesMenu" text="Examples">
@@ -78,7 +106,6 @@
                 </MenuBar>
                 <ToolBar fx:id="toolbar">
                     <items>
-
                         <SplitMenuButton fx:id="buttonStartInterpreter" onAction="#executeScript"
                                          disable="${controller.executeNotPossible}">
                             <graphic>
@@ -164,6 +191,50 @@
                                 <Tooltip text="Stop"/>
                             </tooltip>
                         </Button>
+
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Label text="Windows:"/>
+                        <ToggleButton onAction="#showCodeDock">
+                            <graphic>
+                                <MaterialDesignIconView glyphName="CODE_TAGS" size="24.0"/>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip text="Shows the Java Source Code"/>
+                            </tooltip>
+                        </ToggleButton>
+                        <ToggleButton onAction="#showWelcomeDock">
+                            <graphic>
+                                <MaterialDesignIconView glyphName="HELP_CIRCLE" size="24.0"/>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip text="Show Welcome window"/>
+                            </tooltip>
+                        </ToggleButton>
+                        <ToggleButton onAction="#showActiveInspector">
+                            <graphic>
+                                <MaterialDesignIconView glyphName="MAGNIFY" size="24.0"/>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip text="Show Active Inspector window"/>
+                            </tooltip>
+                        </ToggleButton>
+                        <ToggleButton onAction="#showProofTree">
+                            <graphic>
+                                <!-- FILE-TREE-->
+                                <MaterialDesignIconView glyphName="TREE" size="24.0"/>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip text="Show Proof Tree"/>
+                            </tooltip>
+                        </ToggleButton>
+                        <ToggleButton onAction="#showCommandHelp">
+                            <graphic>
+                                <MaterialDesignIconView glyphName="STACKEXCHANGE" size="24.0"/>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip text="Show Command Help"/>
+                            </tooltip>
+                        </ToggleButton>
                     </items>
                 </ToolBar>
             </children>

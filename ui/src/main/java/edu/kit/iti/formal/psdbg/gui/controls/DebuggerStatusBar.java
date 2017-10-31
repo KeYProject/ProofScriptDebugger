@@ -35,9 +35,9 @@ public class DebuggerStatusBar extends StatusBar {
         //listenOnField("psdbg");
 
         getRightItems().addAll(
-                lblMainscript,
-                lblCurrentNodes,
-                progressIndicator
+                lblMainscript
+                //lblCurrentNodes,
+                //progressIndicator
         );
 
         /*setOnMouseClicked(event -> {
