@@ -9,7 +9,6 @@ import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
-import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import org.apache.logging.log4j.LogManager;
@@ -82,7 +81,7 @@ public class InteractiveCLIDebugger {
         System.out.println("digraph G {");
         for (PTreeNode<KeyData> n : df.getStates()) {
             System.out.format("%d [label=\"%s@%s (G: %d)\"]%n", n.hashCode(),
-                    n.getStatement().accept(new CommandPrinter()),
+                    n.getStatement().accept(new ShortCommandPrinter()),
                     n.getStatement().getStartPosition().getLineNumber(),
                     n.getStateBeforeStmt().getGoals().size()
             );
@@ -154,7 +153,7 @@ public class InteractiveCLIDebugger {
     private void printNode(PTreeNode<KeyData> node) {
         System.out.format("%3d: %s%n",
                 node.getStatement().getStartPosition().getLineNumber(),
-                node.getStatement().accept(new CommandPrinter())
+                node.getStatement().accept(new ShortCommandPrinter())
         );
 
         for (GoalNode<KeyData> gn : node.getStateBeforeStmt().getGoals()) {
@@ -169,54 +168,5 @@ public class InteractiveCLIDebugger {
 
     public void setBreakpoint(int breakpoint) {
         //df.addBreakpoint(breakpoint);
-    }
-}
-
-class CommandPrinter extends DefaultASTVisitor<String> {
-    @Override
-    public String defaultVisit(ASTNode node) {
-        return (Facade.prettyPrint(node));
-    }
-
-    @Override
-    public String visit(ProofScript proofScript) {
-        return String.format("script %s (%s) {%n",
-                proofScript.getName(),
-                Facade.prettyPrint(proofScript.getSignature()));
-    }
-
-    @Override
-    public String visit(CasesStatement casesStatement) {
-        return "cases {";
-    }
-
-    @Override
-    public String visit(SimpleCaseStatement caseStatement) {
-        return "case " + Facade.prettyPrint(caseStatement.getGuard());
-    }
-
-    @Override
-    public String visit(TryCase tryCase) {
-        return "try " + Facade.prettyPrint(tryCase.getBody());
-    }
-
-    @Override
-    public String visit(ClosesCase closesCase) {
-        return "closes with {" + Facade.prettyPrint(closesCase.getClosesScript()) + "}";
-    }
-
-    @Override
-    public String visit(TheOnlyStatement theOnly) {
-        return "theonly {";
-    }
-
-    @Override
-    public String visit(ForeachStatement foreach) {
-        return "foreach {";
-    }
-
-    @Override
-    public String visit(RepeatStatement repeatStatement) {
-        return ("repeat {");
     }
 }

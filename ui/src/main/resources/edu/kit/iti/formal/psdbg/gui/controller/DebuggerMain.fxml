@@ -118,7 +118,7 @@
                         </SplitMenuButton>
 
 
-                        <Button disable="${controller.stepNotPossible}">
+                        <Button onAction="#stepInto" disable="${controller.stepNotPossible}">
                             <graphic>
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_INTO" size="24.0"/>
                             </graphic>

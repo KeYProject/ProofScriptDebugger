@@ -36,12 +36,19 @@ public class SequentView extends CodeArea {
     private Services services;
 
     private LogicPrinter lp;
+
     private IdentitySequentPrintFilter filter;
+
     private LogicPrinter.PosTableStringBackend backend;
+
     private SimpleObjectProperty<de.uka.ilkd.key.proof.Goal> goal = new SimpleObjectProperty<>();
+
     private SimpleObjectProperty<de.uka.ilkd.key.proof.Node> node = new SimpleObjectProperty<>();
+
     private ObservableBooleanValue rulesAvailable = goal.isNotNull();
+
     private KeYProofFacade keYProofFacade;
+
     private TacletContextMenu menu;
 
 
@@ -57,12 +64,15 @@ public class SequentView extends CodeArea {
         if (backend == null) return;
         CharacterHit hit = hit(mouseEvent.getX(), mouseEvent.getY());
         int insertionPoint = hit.getInsertionIndex();
-        PosInSequent pis = backend.getInitialPositionTable().getPosInSequent(insertionPoint, filter);
-        if (pis != null) {
-            Range r = backend.getPositionTable().rangeForIndex(insertionPoint, getLength());
-            hightlightRange(r.start(), r.end());
-        } else {
-            hightlightRange(0, 0);
+        try {
+            PosInSequent pis = backend.getInitialPositionTable().getPosInSequent(insertionPoint, filter);
+            if (pis != null) {
+                Range r = backend.getPositionTable().rangeForIndex(insertionPoint, getLength());
+                hightlightRange(r.start(), r.end());
+            } else {
+                hightlightRange(0, 0);
+            }
+        } catch (NullPointerException npe) {
         }
         mouseEvent.consume();
     }

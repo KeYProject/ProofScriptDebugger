@@ -1,17 +1,16 @@
 package edu.kit.iti.formal.psdbg.interpreter.dbg;
 
+import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.CaseStatement;
-import edu.kit.iti.formal.psdbg.parser.ast.Parameters;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * PTreeNode represents a node in the state graph.
@@ -23,29 +22,34 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 public class PTreeNode<T> {
     private final ASTNode statement;
 
     private Map<CaseStatement, List<GoalNode<T>>> mappingOfCaseToStates = new HashMap<>();
+
     private State<T> stateBeforeStmt;
+
     private State<T> stateAfterStmt;
+
     private ASTNode[] context;
 
     private boolean atomic;
 
     @Nullable
     private PTreeNode<T> stepInto;
+
     @Nullable
     private PTreeNode<T> stepOver;
+
     @Nullable
     private PTreeNode<T> stepInvOver;
+
     @Nullable
     private PTreeNode<T> stepInvInto;
+
     @Nullable
     private PTreeNode<T> stepReturn;
-    private Parameters goals;
 
     public void connectStepOver(PTreeNode<T> jumpOverTo) {
         setStepOver(jumpOverTo);
@@ -59,5 +63,37 @@ public class PTreeNode<T> {
 
     public List<GoalNode<T>> getActiveGoalsForCase(CaseStatement caseStmt) {
         return mappingOfCaseToStates.getOrDefault(caseStmt, Collections.emptyList());
+    }
+
+    public List<PTreeNode<T>> getContextNodes() {
+        List<PTreeNode<T>> contextNodes = new ArrayList<>(context.length);
+        PTreeNode<T> cur = this;
+        outer : do {
+            // add the current node, and every node that can be reached by an inverse into pointer.
+            contextNodes.add(cur);
+
+            // if the current node doesn't have an inverse into pointer, then trace
+            // inverse over pointer (same context)
+            while (cur.getStepInvInto() == null) {
+                cur = cur.getStepInvOver();
+                if (cur == null) break outer; // we could reach the beginning of execution
+            }
+            cur = cur.getStepInvInto();
+        } while (cur != null);
+        return contextNodes;
+    }
+
+    public String getSingleRepresentation() {
+        if (getStatement().getStartPosition() != null)
+            return String.format("%d: %s",
+                    getStatement().getStartPosition().getLineNumber(),
+                    getStatement().accept(new ShortCommandPrinter()));
+        else
+            return (String) getStatement().accept(new ShortCommandPrinter());
+    }
+
+    @Override
+    public String toString() {
+        return getSingleRepresentation();
     }
 }

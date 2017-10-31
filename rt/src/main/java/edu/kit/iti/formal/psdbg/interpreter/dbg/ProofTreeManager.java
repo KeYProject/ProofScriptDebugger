@@ -159,4 +159,5 @@ public class ProofTreeManager<T> {
         if (!suppressStatePointerListener)
             statePointerListener.forEach(l -> l.accept(statePointer));
     }
+
 }

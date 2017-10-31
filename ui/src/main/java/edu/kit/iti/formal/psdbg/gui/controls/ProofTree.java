@@ -94,7 +94,8 @@ public class ProofTree extends BorderPane {
             if (old != null) {
                 old.removeProofTreeListener(proofTreeListener);
             }
-            n.addProofTreeListener(proofTreeListener);
+            if (n != null)
+                n.addProofTreeListener(proofTreeListener);
         });
         init();
     }

@@ -4,11 +4,14 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.proof.init.ProofInputException;
+import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
+import edu.kit.iti.formal.psdbg.StepIntoCommand;
 import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
 import edu.kit.iti.formal.psdbg.gui.controls.*;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
+import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
@@ -105,18 +108,27 @@ public class DebuggerMain implements Initializable {
 
         //register the welcome dock in the center
         welcomePaneDock.dock(dockStation, DockPos.LEFT);
-        registerToolbarToStatusBar();
         //statusBar.publishMessage("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
         marriageJavaCode();
 
         //marriage key proof facade to proof tree
         getFacade().proofProperty().addListener(
                 (prop, o, n) -> {
-                    proofTree.setRoot(n.root());
+                    if (n == null) {
+                        proofTree.setRoot(null);
+                    } else {
+                        proofTree.setRoot(n.root());
+                        getInspectionViewsController().getActiveInspectionViewTab()
+                                .getModel().getGoals().setAll(FACADE.getPseudoGoals());
+                    }
                     proofTree.setProof(n);
-                    getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(FACADE.getPseudoGoals());
                 }
         );
+
+        //
+        model.statePointerProperty().addListener((prop, o, n) -> {
+            this.handleStatePointerUI(n);
+        });
 
         //Debugging
         Utils.addDebugListener(model.javaCodeProperty());
@@ -124,6 +136,7 @@ public class DebuggerMain implements Initializable {
         scriptController.mainScriptProperty().bindBidirectional(statusBar.mainScriptIdentifierProperty());
         initializeExamples();
     }
+
 
     /**
      * If the mouse moves other toolbar button, the help text should display in the status bar
@@ -137,12 +150,36 @@ public class DebuggerMain implements Initializable {
     }
 
     /**
-     * *Note:* This is executed in the Interpreter!
+     * <b>Note:</b> This is executed in the Interpreter Thread!
+     * You should listen to the {@link DebuggerMainModel#statePointerProperty}
      *
      * @param node
      */
     private void handleStatePointer(PTreeNode<KeyData> node) {
         Platform.runLater(() -> model.setStatePointer(node));
+    }
+
+    /**
+     * Handling of a new state in the {@link DebuggerFramework}, now in the JavaFX Thread
+     *
+     * @see {@link #handleStatePointer(PTreeNode)}
+     */
+    private void handleStatePointerUI(PTreeNode<KeyData> node) {
+        InspectionModel im = getInspectionViewsController().getActiveInspectionViewTab().getModel();
+
+        im.getGoals().setAll(
+                node.getStateBeforeStmt().getGoals()
+        );
+        im.setSelectedGoalNodeToShow(
+                node.getStateBeforeStmt().getSelectedGoalNode());
+
+        scriptController.getDebugPositionHighlighter().highlight(node.getStatement());
+
+        //Experimental
+        ComboBox<PTreeNode<KeyData>> frames = getInspectionViewsController().getActiveInspectionViewTab().getFrames();
+        List<PTreeNode<KeyData>> ctxn = node.getContextNodes();
+        frames.getItems().setAll(ctxn);
+        frames.getSelectionModel().select(node);
     }
 
     private void marriageJavaCode() {
@@ -217,30 +254,6 @@ public class DebuggerMain implements Initializable {
         }
     }
 
-    /**
-     * Reload the KeY environment, to execute the script again
-     * TODO: reload views
-     *
-     * @param file
-     * @param keyfile
-     * @return
-     */
-    public Task<Void> reloadEnvironment(File file, boolean keyfile) {
-        Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                FACADE.reloadEnvironment();
-                if (keyfile) {
-                    openKeyFile(file);
-                } else {
-                    openJavaFile(file);
-                }
-                return null;
-            }
-        };
-        return task;
-    }
-
     @FXML
     public void executeScript() {
         executeScript(false);
@@ -283,32 +296,25 @@ public class DebuggerMain implements Initializable {
 
         assert model.getDebuggerFramework() == null : "There should not be any interpreter running.";
 
-        File file;
-        boolean isKeyfile = false;
-        if (model.getJavaFile() != null) {
-            file = model.getJavaFile();
-        } else {
-            isKeyfile = true;
-            file = model.getKeyFile();
+        if (FACADE.getProofState() == KeYProofFacade.ProofState.EMPTY) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "No proof loaded!", ButtonType.OK);
+            alert.showAndWait();
+            return;
         }
 
+        if (FACADE.getProofState() == KeYProofFacade.ProofState.DIRTY) {
+            try {
+                FACADE.reload();
+            } catch (ProofInputException | ProblemLoaderException e) {
+                //TODO
+                Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment",
+                        e
+                );
+            }
+        }
 
-        Task<Void> reloading = reloadEnvironment(file, isKeyfile);
-        reloading.setOnSucceeded(event -> {
-            statusBar.publishMessage("Cleared and Reloaded Environment");
-            executeScript(FACADE.buildInterpreter(), addInitBreakpoint);
-        });
-
-        reloading.setOnFailed(event -> {
-            event.getSource().exceptionProperty().get();
-            Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment",
-                    (Throwable) event.getSource().exceptionProperty().get()
-            );
-        });
-
-        ProgressBar bar = new ProgressBar();
-        bar.progressProperty().bind(reloading.progressProperty());
-        executorService.execute(reloading);
+        // else getProofState() == VIRGIN!
+        executeScript(FACADE.buildInterpreter(), addInitBreakpoint);
     }
 
 
@@ -342,9 +348,10 @@ public class DebuggerMain implements Initializable {
             KeyInterpreter interpreter = ib.build();
             DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, ms, null);
             if (addInitBreakpoint) {
-                df.releaseUntil(new Blocker.CounterBlocker(0)); // just execute
+                df.releaseUntil(new Blocker.CounterBlocker(1)); // just execute
             }
             df.getBreakpoints().addAll(breakpoints);
+            df.getStatePointerListener().add(this::handleStatePointer);
             df.start();
 
             model.setDebuggerFramework(df);
@@ -363,7 +370,7 @@ public class DebuggerMain implements Initializable {
     public void executeToBreakpoint() {
         Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
         if (breakpoints.size() == 0) {
-            System.out.println(scriptController.mainScriptProperty().get().getLineNumber());
+            //System.out.println(scriptController.mainScriptProperty().get().getLineNumber());
             //we need to add breakpoint at end if no breakpoint exists
         }
         executeScript(false);
@@ -555,6 +562,21 @@ public class DebuggerMain implements Initializable {
         LOGGER.debug("DebuggerMain.stepOver");
         try {
             model.getDebuggerFramework().execute(new StepOverCommand<>());
+        } catch (DebuggerException e) {
+            Utils.showExceptionDialog("", "", "", e);
+            LOGGER.error(e);
+        }
+    }
+
+
+    /**
+     * Perform a step into
+     * @param actionEvent
+     */
+    public void stepInto(ActionEvent actionEvent) {
+        LOGGER.debug("DebuggerMain.stepOver");
+        try {
+            model.getDebuggerFramework().execute(new StepIntoCommand<>());
         } catch (DebuggerException e) {
             Utils.showExceptionDialog("", "", "", e);
             LOGGER.error(e);

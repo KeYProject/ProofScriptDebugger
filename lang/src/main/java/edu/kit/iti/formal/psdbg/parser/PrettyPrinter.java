@@ -41,12 +41,15 @@ import java.util.Map;
 public class PrettyPrinter extends DefaultASTVisitor<Void> {
 
     private final StringBuilder s = new StringBuilder();
+
     @Getter
     @Setter
     private int maxWidth = 80;
+
     @Getter
     @Setter
     private boolean unicode = true;
+
     private int indentation = 0;
 
     @Override
@@ -187,8 +190,11 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
 
     @Override
     public Void visit(CallStatement call) {
-        s.append(call.getCommand()).append(' ');
-        call.getParameters().accept(this);
+        s.append(call.getCommand());
+        if (call.getParameters().size() != 0) {
+            s.append(' ');
+            call.getParameters().accept(this);
+        }
         s.append(";");
         return null;
     }

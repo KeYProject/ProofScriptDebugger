@@ -120,7 +120,7 @@ public class ScriptArea extends CodeArea {
         textProperty().addListener((prop, oldValue, newValue) -> {
             dirty.set(true);
             if (newValue.isEmpty()) {
-                System.err.println("text cleared");
+                LOGGER.debug("text cleared");
             } else {
                 updateMainScriptMarker();
                 updateHighlight();

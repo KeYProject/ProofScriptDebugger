@@ -4,8 +4,7 @@
 <?import edu.kit.iti.formal.psdbg.gui.controls.SectionPane?>
 <?import edu.kit.iti.formal.psdbg.gui.controls.SequentView?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml"
          xmlns="http://javafx.com/javafx"
          type="javafx.scene.layout.BorderPane"
@@ -22,7 +21,14 @@
                         </Button>
                     </headerRight>
                     <center>
-                        <ListView fx:id="goalView"/>
+                        <VBox>
+                            <!--<BreadCrumbBar fx:id="frames"/>-->
+                            <HBox alignment="BASELINE_LEFT">
+                                <Label labelFor="$frames" text="Contexts:"  />
+                                <ComboBox fx:id="frames" />
+                            </HBox>
+                            <ListView fx:id="goalView"/>
+                        </VBox>
                     </center>
                 </SectionPane>
 

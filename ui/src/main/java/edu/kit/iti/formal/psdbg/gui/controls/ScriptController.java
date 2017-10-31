@@ -65,18 +65,21 @@ public class ScriptController {
     @Subscribe
     public void handle(Events.NewNodeExecuted newNode) {
         logger.debug("Handling new node added event!");
-
         ASTNode scriptNode = newNode.getCorrespondingASTNode();
-        ScriptArea editor = findEditor(scriptNode);
+        highlightASTNode(newNode.getCorrespondingASTNode());
+    }
+
+    public void highlightASTNode(ASTNode node) {
+        ScriptArea editor = findEditor(node);
         editor.removeExecutionMarker();
         LineMapping lm = new LineMapping(editor.getText());
-        int pos = lm.getLineEnd(scriptNode.getStartPosition().getLineNumber() - 1);
-        System.out.println(pos);
-        //    editor.insertExecutionMarker(pos);
+        int pos = lm.getLineEnd(node.getStartPosition().getLineNumber() - 1);
+        logger.debug("Highlight position: {}", pos);
+        // editor.insertExecutionMarker(pos);
     }
 
     private ScriptArea findEditor(ASTNode node) {
-        File f = new File(node.getRuleContext().getStart().getInputStream().getSourceName());
+        File f = new File(node.getOrigin());
         return findEditor(f);
     }
 

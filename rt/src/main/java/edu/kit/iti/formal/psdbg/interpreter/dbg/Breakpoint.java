@@ -3,9 +3,11 @@ package edu.kit.iti.formal.psdbg.interpreter.dbg;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.Expression;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.antlr.v4.runtime.CharStreams;
 
 @Data
+@EqualsAndHashCode(of = {"sourceName", "lineNumber"})
 public class Breakpoint {
     private String sourceName;
 

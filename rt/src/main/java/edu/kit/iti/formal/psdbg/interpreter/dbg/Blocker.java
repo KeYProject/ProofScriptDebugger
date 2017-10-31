@@ -9,8 +9,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
@@ -25,7 +25,7 @@ public abstract class Blocker {
         private final Interpreter<T> interpreter;
 
         @Getter
-        private final Set<Breakpoint> breakpoints = new TreeSet<>();
+        private final Set<Breakpoint> breakpoints = new HashSet<>();
 
         private final Breakpoint cmp = new Breakpoint(null, 0);
 
@@ -52,7 +52,7 @@ public abstract class Blocker {
                     }
                 }
             }
-            return breakpoints.contains(cmp);
+            return false;
         }
     }
 
@@ -66,8 +66,9 @@ public abstract class Blocker {
 
         @Override
         public boolean test(ASTNode astNode) {
-            if (stepUntilBlock.get() >= 0) {
-                return 0 == stepUntilBlock.decrementAndGet();
+            int value;
+            if ((value = stepUntilBlock.decrementAndGet()) >= 0) {
+                return 0 == value;
             }
             return false;
         }
