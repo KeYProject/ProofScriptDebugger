@@ -129,4 +129,14 @@ public abstract class ASTNode<T extends ParserRuleContext>
     public boolean eq(ASTNode other) {
         return equals(other);
     }
+
+    public int getDepth() {
+        int depth = 0;
+        ASTNode n = this;
+        do {
+            n = n.getParent();
+            depth++;
+        } while (n != null);
+        return depth;
+    }
 }

@@ -531,9 +531,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             //newErrorState.setErrorState(true);
             //pushState(newErrorState);
         }
-        g.exitScope();
-        //  System.out.println(stateStack.peek().hashCode());
-        exitScope(call);
+        finally {
+            g.exitScope();
+            //  System.out.println(stateStack.peek().hashCode());
+            exitScope(call);
+        }
         return null;
     }
 

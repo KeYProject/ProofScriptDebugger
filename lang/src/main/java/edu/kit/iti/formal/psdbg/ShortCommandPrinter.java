@@ -17,6 +17,11 @@ public class ShortCommandPrinter extends DefaultASTVisitor<String> {
     }
 
     @Override
+    public String visit(Statements statements) {
+        return "{ ... " + statements.size() + " ... }";
+    }
+
+    @Override
     public String visit(ProofScript proofScript) {
         return String.format("script %s (%s) {%n",
                 proofScript.getName(),

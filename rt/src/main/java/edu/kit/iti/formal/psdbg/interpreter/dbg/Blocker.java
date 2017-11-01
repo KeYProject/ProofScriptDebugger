@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public abstract class Blocker {
     public interface BlockPredicate extends Predicate<ASTNode> {
@@ -97,6 +98,18 @@ public abstract class Blocker {
         @Override
         public boolean test(ASTNode astNode) {
             return parent.equals(astNode.getParent());
+        }
+    }
+
+    @RequiredArgsConstructor
+    public static class SmallerContext implements BlockPredicate {
+        private final int depth;
+
+        private final Supplier<Integer> currenDepth;
+
+        @Override
+        public boolean test(ASTNode astNode) {
+            return currenDepth.get() <= depth;
         }
     }
 

@@ -1,5 +1,6 @@
 package edu.kit.iti.formal.psdbg.interpreter.dbg;
 
+import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
@@ -7,6 +8,7 @@ import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import edu.kit.iti.formal.psdbg.parser.ast.Statement;
+import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
@@ -87,6 +89,11 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
         lastNode.setStateAfterStmt(getInterpreterStateCopy());
         if (node.equals(peekContext())) {
             popContext();
+        } else {
+            LOGGER.error("Context mismatched, got {}, expected {}",
+                    node.accept(new ShortCommandPrinter()),
+                    peekContext().accept(new ShortCommandPrinter())
+            );
         }
     }
 
@@ -105,13 +112,19 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
 
         @Override
         public Void defaultVisit(ASTNode node) {
-            if (node instanceof Statement)
-                createNormalNode(node);
+            LOGGER.error("enter {}", node.accept(new ShortCommandPrinter()));
+            createNormalNode(node);
+            return null;
+        }
+
+        @Override
+        public Void visit(Statements statements) {
             return null;
         }
 
         @Override
         public Void visit(ProofScript proofScript) {
+            LOGGER.error("enter {}", proofScript.accept(new ShortCommandPrinter()));
             if (root) {
                 createRoot(proofScript);
                 root = false;
@@ -125,9 +138,15 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
     private class ExitListener extends DefaultASTVisitor<Void> {
         @Override
         public Void defaultVisit(ASTNode node) {
-            if (node instanceof Statement)
-                completeLastNode(node);
+            LOGGER.error("exit {}", node.accept(new ShortCommandPrinter()));
+            completeLastNode(node);
             return null;
         }
+
+        @Override
+        public Void visit(Statements statements) {
+            return null;
+        }
+
     }
 }
