@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  */
 public class Interpreter<T> extends DefaultASTVisitor<Object>
         implements ScopeObservable {
-    private static final int MAX_ITERATIONS = 5;
+    private static final int MAX_ITERATIONS = 10000;
 
     protected static Logger logger = LogManager.getLogger(Interpreter.class);
 
@@ -594,17 +594,21 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         enterScope(repeatStatement);
         int counter = 0;
         boolean b = false;
-        do {
-            counter++;
-            State<T> prev = getCurrentState();
-            repeatStatement.getBody().accept(this);
-            State<T> end = getCurrentState();
+        try {
+            do {
+                counter++;
+                State<T> prev = getCurrentState();
+                repeatStatement.getBody().accept(this);
+                State<T> end = getCurrentState();
 
-            Set<GoalNode<T>> prevNodes = new HashSet<>(prev.getGoals());
-            Set<GoalNode<T>> endNodes = new HashSet<>(end.getGoals());
-            b = prevNodes.equals(endNodes);
-            b = b && counter <= MAX_ITERATIONS;
-        } while (b);
+                Set<GoalNode<T>> prevNodes = new HashSet<>(prev.getGoals());
+                Set<GoalNode<T>> endNodes = new HashSet<>(end.getGoals());
+                b = prevNodes.equals(endNodes);
+                b = b && counter <= MAX_ITERATIONS;
+            } while (b);
+        }catch (InterpreterRuntimeException e) {
+            logger.debug("Catched!", e);
+        }
         exitScope(repeatStatement);
         return null;
     }

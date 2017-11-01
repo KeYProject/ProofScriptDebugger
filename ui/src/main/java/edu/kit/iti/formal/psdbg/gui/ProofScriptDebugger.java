@@ -2,11 +2,14 @@ package edu.kit.iti.formal.psdbg.gui;
 
 
 import de.uka.ilkd.key.util.KeYConstants;
+import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +28,9 @@ import java.util.Locale;
  */
 public class ProofScriptDebugger extends Application {
     public static final String NAME = "Proof Script Debugger";
+
     public static final String VERSION = "0.1";
+
     public static final String KEY_VERSION = KeYConstants.VERSION;
 
     private Logger logger = LogManager.getLogger("psdbg");
@@ -47,8 +52,42 @@ public class ProofScriptDebugger extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/edu/kit/iti/formal/psdbg/gui/controller/DebuggerMain.fxml"));
             //"/edu/kit/formal/psdb/gui/controller/DebuggerMain.fxml"));
             Parent root = fxmlLoader.load();
-            //DebuggerMain controller = fxmlLoader.<DebuggerMain>getController();
+            DebuggerMain controller = fxmlLoader.getController();
             Scene scene = new Scene(root);
+
+
+            scene.getAccelerators().put(
+                    new KeyCodeCombination(KeyCode.F1),
+                    () -> controller.showCommandHelp(null)
+            );
+
+            scene.getAccelerators().put(
+                    new KeyCodeCombination(KeyCode.F12),
+                    () -> controller.showWelcomeDock(null)
+            );
+
+            scene.getAccelerators().put(
+                    new KeyCodeCombination(KeyCode.F5),
+                    () -> controller.stepBack(null)
+            );
+
+            scene.getAccelerators().put(
+                    new KeyCodeCombination(KeyCode.F6),
+                    () -> controller.stepOver(null)
+            );
+
+
+            scene.getAccelerators().put(
+                    new KeyCodeCombination(KeyCode.F7),
+                    () -> controller.stepInto(null)
+            );
+
+            scene.getAccelerators().put(
+                    new KeyCodeCombination(KeyCode.F3),
+                    controller::executeStepwise
+            );
+
+
             primaryStage.setOnCloseRequest(event -> Platform.exit());
             scene.getStylesheets().addAll(
                     getClass().getResource("debugger-ui.css").toExternalForm(),

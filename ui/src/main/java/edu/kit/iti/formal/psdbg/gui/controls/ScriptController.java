@@ -15,6 +15,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.apache.commons.io.FileUtils;
@@ -295,10 +297,13 @@ public class ScriptController {
             logger.debug("Region for highlighting: {}", r);
 
             ScriptArea area = findEditor(node);
+            double scrollY = area.getEstimatedScrollY();
             area.getMarkedRegions().add(r);
 
             getDockNode(area).focus();
             area.requestFocus();
+            //area.scrollBy(new Point2D(0, scrollY));
+            area.selectRange(0, r.start, 0, r.stop);
 
             lastScriptArea = area;
             lastRegion = r;
