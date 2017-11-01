@@ -4,7 +4,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.api.VariableAssignments;
-import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
@@ -18,7 +17,6 @@ import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import edu.kit.iti.formal.psdbg.parser.ast.TryCase;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import lombok.Getter;
-import org.key_project.util.collection.ImmutableList;
 
 import java.util.List;
 
@@ -38,8 +36,6 @@ public class KeyInterpreter extends Interpreter<KeyData> {
                     .put(SimpleType.INT_ARRAY, VariableAssignments.VarType.INT_ARRAY)
                     .put(SimpleType.SEQ, VariableAssignments.VarType.SEQ)
                     .build();
-    @Getter
-    private ScriptApi scriptApi;
 
     public KeyInterpreter(CommandLookup lookup) {
         super(lookup);
@@ -48,15 +44,18 @@ public class KeyInterpreter extends Interpreter<KeyData> {
 
     @Override
     public Object visit(ClosesCase closesCase) {
+        /*
         State<KeyData> currentStateToMatch = peekState();
         State<KeyData> currentStateToMatchCopy = currentStateToMatch.copy(); //deepcopy
         GoalNode<KeyData> selectedGoalNode = currentStateToMatch.getSelectedGoalNode();
         GoalNode<KeyData> selectedGoalCopy = currentStateToMatch.getSelectedGoalNode().deepCopy(); //deepcopy
+        */
         enterScope(closesCase);
         //execute closesscript
-        executeBody(closesCase.getClosesScript(), selectedGoalNode, new VariableAssignment(selectedGoalNode.getAssignments()));
+        boolean closed = suspicionExecution(closesCase.getClosesGuard(), true);
+        //executeBody(closesCase.getClosesGuard(), selectedGoalNode, new VariableAssignment(selectedGoalNode.getAssignments()));
         //check whether script closed proof
-        State<KeyData> stateafterIsClosable = peekState();
+        /*State<KeyData> stateafterIsClosable = peekState();
         List<GoalNode<KeyData>> goals = stateafterIsClosable.getGoals();
         boolean allClosed = true;
         for (GoalNode<KeyData> goal : goals) {
@@ -75,39 +74,21 @@ public class KeyInterpreter extends Interpreter<KeyData> {
         pushState(currentStateToMatchCopy);
         exitScope(closesCase);
         return allClosed;
+        */
+        exitScope(closesCase);
+        return closed;
     }
 
     @Override
     public Object visit(TryCase tryCase) {
-        //historylistener for recording try
         enterScope(tryCase);
-        boolean b = suspicionExecution(tryCase.getBody());
+        boolean b = suspicionExecution(tryCase.getBody(), false);
         exitScope(tryCase);
         return b;
-
-        /*        //executeBody and if goal is closed afterwards return true
-        //else prune proof and return false
-
-        State<T> stateBeforeTry = peekState().copy();
-        State<T> tState = executeBody(tryCase.getBody(), peekState().getSelectedGoalNode(), peekState().getSelectedGoalNode().getAssignments());
-
-        boolean isClosed = tState.getGoals().stream().allMatch(tGoalNode -> tGoalNode.isClosed());
-
-
-        if(!isClosed){
-
-            exitScope(tryCase);
-            return false;
-        }else{
-
-            exitScope(tryCase);
-            return true;
-        }
-*/
     }
 
 
-    private boolean suspicionExecution(Statements statements) {
+    private boolean suspicionExecution(Statements statements, boolean alwaysPrune) {
         logger.debug(String.format("Beginning of suspicion execution of %s", statements));
         GoalNode<KeyData> goalNode = getSelectedNode();
         pushState(new State<>(goalNode.deepCopy())); // copy for later prove
@@ -124,7 +105,7 @@ public class KeyInterpreter extends Interpreter<KeyData> {
                     .allMatch(g -> g.getData().getNode().isClosed());
             logger.debug("Ended Side Computation");
 
-            if (!allGoalsClosed) {
+            if (!allGoalsClosed || alwaysPrune) {
                 logger.debug("Try was not successful, rolling back proof");
                 //Throw away the new state, and truncate the prove!
                 Proof currentKeYproof = goalNode.getData().getProof();

@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class TryCase extends CaseStatement {
-    private boolean isClosedStmt = true;
-
     public TryCase(Statements body) {
         this.body = body;
     }

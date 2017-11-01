@@ -11,11 +11,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SimpleCaseStatement extends CaseStatement {
+public class GuardedCaseStatement extends CaseStatement {
     private Expression guard;
-    private boolean isClosedStmt = false;
 
-    public SimpleCaseStatement(Expression guard, Statements body) {
+    public GuardedCaseStatement(Expression guard, Statements body) {
         this.guard = guard;
         this.body = body;
     }
@@ -32,8 +31,8 @@ public class SimpleCaseStatement extends CaseStatement {
      * {@inheritDoc}
      */
     @Override
-    public SimpleCaseStatement copy() {
-        SimpleCaseStatement scs = new SimpleCaseStatement(guard.copy(), body.copy());
+    public GuardedCaseStatement copy() {
+        GuardedCaseStatement scs = new GuardedCaseStatement(guard.copy(), body.copy());
         scs.setRuleContext(this.ruleContext);
         return scs;
     }

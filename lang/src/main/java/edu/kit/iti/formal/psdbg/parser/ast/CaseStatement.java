@@ -38,8 +38,7 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class CaseStatement extends Statement<ScriptLanguageParser.CasesListContext> {
-    public boolean isClosedStmt;
+public abstract class CaseStatement extends Statement<ScriptLanguageParser.CasesListContext> {
     protected Statements body;
 
     /**
@@ -52,9 +51,6 @@ public class CaseStatement extends Statement<ScriptLanguageParser.CasesListConte
     /**
      * {@inheritDoc}
      */
-    @Override public CaseStatement copy() {
-        CaseStatement cs = new CaseStatement(isClosedStmt, body.copy());
-        cs.setRuleContext(this.ruleContext);
-        return cs;
-    }
+    @Override public abstract CaseStatement copy();
+
 }

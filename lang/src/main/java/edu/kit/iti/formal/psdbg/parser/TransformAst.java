@@ -352,14 +352,13 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
             cs = new TryCase();
         } else if (ctx.closesScript != null) {
             cs = new ClosesCase();
-            cs.setClosedStmt(true);
             Statements closes = (Statements) ctx.closesScript.accept(this);
-            ((ClosesCase) cs).setClosesScript(closes);
+            ((ClosesCase) cs).setClosesGuard(closes);
             closes.setParent(cs);
         } else {
-            cs = new SimpleCaseStatement();
+            cs = new GuardedCaseStatement();
             Expression<ParserRuleContext> guard = (Expression<ParserRuleContext>) ctx.expression().accept(this);
-            ((SimpleCaseStatement) cs).setGuard(guard);
+            ((GuardedCaseStatement) cs).setGuard(guard);
         }
 
         cs.setBody(accept);

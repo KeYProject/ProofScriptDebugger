@@ -25,6 +25,39 @@ import java.util.function.Consumer;
  * <li>{@link StateWrapper}: signals the PTreeNodes</li>
  * <li></li>
  * </ol>
+ *<code><pre>
+ +------------------------------------------------------------------------------------------+
+ |                                                                                          |
+ |                               DebuggerFramework<T>                                       |
+ |                                                                                          +------------+
+ |                                                                                          |           execute(DebuggerCommand)
+ |                                                                                          |              Commands: StepOver, StepInto,
+ |    +------------------+       +-----------------+       +---------------------------+    |                        StepReturn, StepBack
+ |    |                  |       |                 |       |                           |    |
+ |    |  Interpreter<T>  +-------> StateWrapper<T> +------->  PTreeManager<T>          +--------->
+ |    |                  |       |                 |       |                           |    |
+ |    +---------+--------+       +-----------------+       +---------------------------+    |    statePointerChanged(PTreeNode<T>)
+ |              |                                                                           |
+ |              |         Listener                  emitNode                                |
+ |              |                                                                           |
+ |              |                                                                           |
+ |    +---------v------------+                                                              |
+ |    |                      <--------------------------------------------------------------------+  releaseForever()
+ |    |    BlockerListener   |                                                              |        release()
+ |    |                      |                                                              |        releaseUntil(BlockerPredicate)
+ |    +----------------------+                                                              |        getBreakpoints()
+ |                                                                                          |
+ |                                                                                          |
+ |    +----------------+      +---------------------+                                       |
+ |    |                |      |                     |                                       |
+ |    |   Breakpoint   |      |   BlockerPredicate  |                                       |
+ |    |                |      |                     |                                       |
+ |    +----------------+      +---------------------+                                       |
+ |                                                                                          |
+ +------------------------------------------------------------------------------------------+
+ </pre></code>
+ *
+ *
  *
  * @author Alexander Weigl
  * @version 1 (27.10.17)

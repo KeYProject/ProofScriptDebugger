@@ -29,7 +29,7 @@ public class ShortCommandPrinter extends DefaultASTVisitor<String> {
     }
 
     @Override
-    public String visit(SimpleCaseStatement caseStatement) {
+    public String visit(GuardedCaseStatement caseStatement) {
         return "case " + Facade.prettyPrint(caseStatement.getGuard());
     }
 
@@ -40,7 +40,7 @@ public class ShortCommandPrinter extends DefaultASTVisitor<String> {
 
     @Override
     public String visit(ClosesCase closesCase) {
-        return "closes with {" + Facade.prettyPrint(closesCase.getClosesScript()) + "}";
+        return "closes with {" + Facade.prettyPrint(closesCase.getClosesGuard()) + "}";
     }
 
     @Override

@@ -137,8 +137,8 @@ public class BlockListener<T> implements InterpreterObserver<T> {
         }
 
         @Override
-        public Void visit(SimpleCaseStatement simpleCaseStatement) {
-            return checkForHalt(simpleCaseStatement);
+        public Void visit(GuardedCaseStatement guardedCaseStatement) {
+            return checkForHalt(guardedCaseStatement);
         }
 
         @Override

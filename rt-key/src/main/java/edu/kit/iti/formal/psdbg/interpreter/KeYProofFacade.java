@@ -230,7 +230,18 @@ public class KeYProofFacade {
     }
 
     public enum ProofState {
-        EMPTY, VIRGIN, DIRTY;
+        /**
+         * There is no KeY Proof actually loaded.
+         */
+        EMPTY,
+        /**
+         * The loaded KeY Proof is untouched iff there is only one node --- the root.
+         */
+        VIRGIN,
+        /**
+         * The KeY Proof was ravished by Taclets and other stuff.
+         */
+        DIRTY;
     }
     //endregion
 }

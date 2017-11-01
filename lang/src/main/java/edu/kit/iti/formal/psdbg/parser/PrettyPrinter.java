@@ -178,7 +178,7 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
     }
 
     @Override
-    public Void visit(SimpleCaseStatement caseStatement) {
+    public Void visit(GuardedCaseStatement caseStatement) {
         s.append("case ");
         caseStatement.getGuard().accept(this);
         s.append(" {");
