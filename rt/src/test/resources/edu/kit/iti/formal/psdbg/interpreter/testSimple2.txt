@@ -6,13 +6,18 @@ foreach{
 
 cases{
     case j = 0:{
+        j:=1;
         split 2;
     }
 }
 cases{
-    case match '.*a':{
-        print_state;
+    case match '.*hg':{
+       j:= 2;
+        //print_state;
     }
+}
+foreach{
+    print_state;
 }
 
 

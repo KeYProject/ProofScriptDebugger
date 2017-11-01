@@ -1,5 +1,15 @@
 // Please select one of the following scripts.
 //
+
+script test123(){
+ x:int := 0;
+ cases{
+    case x==0:
+        auto;
+    default:
+        impRight;
+ }
+}
 script test23(){
 impRight;
 impLeft;

@@ -19,6 +19,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -67,8 +68,10 @@ public class InterpreterTest {
 
     @Test
     public void testSimple2() throws IOException {
-        // Interpreter inter = execute(getClass().getResourceAsStream("testSimple2.txt"));
-        // Assert.assertSame(0, ((BigInteger) inter.getCurrentGoals().getGoals().get(0).getAssignments().lookupVarValue("j").getData()).intValue());
+        Interpreter inter = execute(getClass().getResourceAsStream("testSimple2.txt"));
+        Assert.assertSame(1,
+                ((BigInteger) ((GoalNode) inter.getCurrentGoals().get(0)).getAssignments().getValue(new Variable("j")).getData()).intValue());
+        //getGoals().get(0).getAssignments().lookupVarValue("j").getData()).intValue());
     }
 
     @Test

@@ -11,6 +11,7 @@ import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
+import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 import lombok.Getter;
 import lombok.Setter;
@@ -458,9 +459,28 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         MatchEvaluator mEval = new MatchEvaluator(goal.getAssignments(), goal, matcherApi);
         mEval.getEntryListeners().addAll(entryListenerStack.peek());
         mEval.getExitListeners().addAll(exitListenerStack.peek());
+
+        List<VariableAssignment> matchResult;
+        if (matchExpression.hasMatchExpression()) {
+            matchResult = mEval.eval(matchExpression);
+
+        } else {
+            matchResult = new ArrayList<>();
+            Evaluator eval = new Evaluator(goal.getAssignments(), goal);
+            Value eval1 = eval.eval(matchExpression);
+            if (eval1.getType().equals(SimpleType.BOOL) && eval1.equals(Value.TRUE)) {
+                VariableAssignment emptyAssignment = new VariableAssignment(null);
+                matchResult.add(emptyAssignment);
+            }
+
+        }
+
+
+
+
         exitScope(matchExpression);
 
-        List<VariableAssignment> matchResult = mEval.eval(matchExpression);
+        //List<VariableAssignment> matchResult = mEval.eval(matchExpression);
         if (matchResult.isEmpty()) {
             return null;
         } else {
