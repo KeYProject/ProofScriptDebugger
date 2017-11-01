@@ -161,15 +161,18 @@ public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
         statements.forEach(action);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Statements{" + "statements=" + statements + '}';
     }
 
-    @Override public <T> T accept(Visitor<T> visitor) {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
-    @Override public Statements copy() {
+    @Override
+    public Statements copy() {
         Statements s = new Statements();
         forEach(e -> {
             Statement ecopy = e.copy();
@@ -180,4 +183,17 @@ public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
         return s;
     }
 
+    @Override
+    public boolean eq(ASTNode o) {
+        if (this == o) return true;
+        if (!(o instanceof Statements)) return false;
+        if (!super.equals(o)) return false;
+        Statements that = (Statements) o;
+        for (int i = 0; i < statements.size(); i++) {
+            if (!statements.get(i).eq(that.statements.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

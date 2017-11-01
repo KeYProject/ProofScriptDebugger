@@ -3,8 +3,6 @@ script agascript() {
     andLeft;
     notLeft;
 
-    repeat { andLeft; }
-
     andLeft;
     andLeft;
     andLeft;

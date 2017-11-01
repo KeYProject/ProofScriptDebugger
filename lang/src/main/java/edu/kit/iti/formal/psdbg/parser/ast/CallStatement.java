@@ -64,9 +64,20 @@ public class CallStatement extends Statement<ScriptLanguageParser.ScriptCommandC
      */
     @Override
     public CallStatement copy() {
-
         CallStatement s = new CallStatement(command, parameters.copy());
         s.setRuleContext(this.getRuleContext());
         return s;
+    }
+
+    @Override
+    public boolean eq(ASTNode o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        CallStatement that = (CallStatement) o;
+
+        if (!getCommand().equals(that.getCommand())) return false;
+        return getParameters().equals(that.getParameters());
     }
 }

@@ -19,10 +19,12 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -75,6 +77,36 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     private DockPane dockStation;
+
+    @FXML
+    private ToggleButton togBtnCommandHelp;
+
+    @FXML
+    private ToggleButton togBtnProofTree;
+
+    @FXML
+    private ToggleButton togBtnActiveInspector;
+
+    @FXML
+    private ToggleButton togBtnWelcome;
+
+    @FXML
+    private ToggleButton togBtnCodeDock;
+
+    @FXML
+    private CheckMenuItem miCommandHelp;
+
+    @FXML
+    private CheckMenuItem miCodeDock;
+
+    @FXML
+    private CheckMenuItem miWelcomeDock;
+
+    @FXML
+    private CheckMenuItem miActiveInspector;
+
+    @FXML
+    private CheckMenuItem miProofTree;
 
     private JavaArea javaArea = new JavaArea();
 
@@ -135,6 +167,33 @@ public class DebuggerMain implements Initializable {
         Utils.addDebugListener(model.executeNotPossibleProperty(), "executeNotPossible");
         scriptController.mainScriptProperty().bindBidirectional(statusBar.mainScriptIdentifierProperty());
         initializeExamples();
+
+
+        dockingNodeHandling(togBtnActiveInspector,
+                miActiveInspector,
+                activeInspectorDock,
+                DockPos.CENTER);
+
+        dockingNodeHandling(togBtnCodeDock,
+                miCodeDock,
+                javaAreaDock,
+                DockPos.RIGHT);
+
+        dockingNodeHandling(togBtnCommandHelp,
+                miCommandHelp,
+                commandHelpDock,
+                DockPos.RIGHT);
+
+        dockingNodeHandling(togBtnWelcome,
+                miWelcomeDock,
+                welcomePaneDock,
+                DockPos.CENTER);
+
+        dockingNodeHandling(togBtnProofTree,
+                miProofTree,
+                proofTreeDock,
+                DockPos.LEFT);
+
     }
 
 
@@ -254,6 +313,27 @@ public class DebuggerMain implements Initializable {
         }
     }
 
+    public void dockingNodeHandling(ToggleButton btn, CheckMenuItem cmi, DockNode dn, DockPos defaultPosition) {
+        BooleanBinding prop = dn.dockedProperty().or(dn.floatingProperty());
+        prop.addListener((p, o, n) -> {
+            btn.setSelected(n);
+            cmi.setSelected(n);
+        });
+
+        EventHandler<ActionEvent> handler = event -> {
+            if (!prop.get()) {
+                if (dn.getLastDockPos() != null)
+                    dn.dock(dockStation, dn.getLastDockPos());
+                else
+                    dn.dock(dockStation, defaultPosition);
+            } else {
+                dn.undock();
+            }
+        };
+        btn.setOnAction(handler);
+        cmi.setOnAction(handler);
+    }
+
     @FXML
     public void executeScript() {
         executeScript(false);
@@ -304,9 +384,9 @@ public class DebuggerMain implements Initializable {
 
         if (FACADE.getProofState() == KeYProofFacade.ProofState.DIRTY) {
             try {
-                FACADE.reload();
+                FACADE.reload(model.getKeyFile());
             } catch (ProofInputException | ProblemLoaderException e) {
-                //TODO
+                LOGGER.error(e);
                 Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment",
                         e
                 );
@@ -356,6 +436,7 @@ public class DebuggerMain implements Initializable {
 
             model.setDebuggerFramework(df);
         } catch (RecognitionException e) {
+            LOGGER.error(e);
             Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
     }
@@ -389,6 +470,7 @@ public class DebuggerMain implements Initializable {
             task.setOnFailed(event -> {
                 statusBar.stopProgress();
                 event.getSource().exceptionProperty().get();
+
                 Utils.showExceptionDialog("Could not load sourceName", "Key sourceName loading error", "",
                         (Throwable) event.getSource().exceptionProperty().get()
                 );
@@ -490,6 +572,7 @@ public class DebuggerMain implements Initializable {
             String code = FileUtils.readFileToString(scriptFile, Charset.defaultCharset());
             ScriptArea area = scriptController.createNewTab(scriptFile);
         } catch (IOException e) {
+            LOGGER.error(e);
             Utils.showExceptionDialog("Exception occured", "",
                     "Could not load sourceName " + scriptFile, e);
         }
@@ -500,6 +583,7 @@ public class DebuggerMain implements Initializable {
         try {
             scriptController.saveCurrentScript();
         } catch (IOException e) {
+            LOGGER.error(e);
             Utils.showExceptionDialog("Could not save file", "Saving File Error", "Could not save current script", e);
 
         }
@@ -537,6 +621,7 @@ public class DebuggerMain implements Initializable {
         try {
             scriptController.saveCurrentScriptAs(scriptFile);
         } catch (IOException e) {
+            LOGGER.error(e);
             Utils.showExceptionDialog("Could not save file", "Saving File Error", "Could not save to file " + scriptFile.getName(), e);
         }
     }
@@ -561,6 +646,7 @@ public class DebuggerMain implements Initializable {
     public void stepOver(ActionEvent actionEvent) {
         LOGGER.debug("DebuggerMain.stepOver");
         try {
+            assert model.getDebuggerFramework() != null : "You should have started the prove";
             model.getDebuggerFramework().execute(new StepOverCommand<>());
         } catch (DebuggerException e) {
             Utils.showExceptionDialog("", "", "", e);
@@ -571,6 +657,7 @@ public class DebuggerMain implements Initializable {
 
     /**
      * Perform a step into
+     *
      * @param actionEvent
      */
     public void stepInto(ActionEvent actionEvent) {
@@ -610,7 +697,7 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void showWelcomeDock(ActionEvent actionEvent) {
-        if (!welcomePaneDock.isDocked()) {
+        if (!welcomePaneDock.isDocked() && !welcomePaneDock.isFloating()) {
             welcomePaneDock.dock(dockStation, DockPos.CENTER);
         }
     }
@@ -690,6 +777,7 @@ public class DebuggerMain implements Initializable {
                     FACADE.activateContract(result);
                     getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(FACADE.getPseudoGoals());
                 } catch (ProofInputException e) {
+                    LOGGER.error(e);
                     Utils.showExceptionDialog("", "", "", e);
                 }
             });
@@ -697,6 +785,7 @@ public class DebuggerMain implements Initializable {
 
         @Override
         protected void failed() {
+            LOGGER.error(exceptionProperty().get());
             Utils.showExceptionDialog("", "", "", exceptionProperty().get());
         }
 

@@ -23,7 +23,6 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  */
 
 
-
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
@@ -42,16 +41,18 @@ import java.util.function.Function;
  * @author Alexander Weigl
  * @version 1 (29.04.17)
  */
-@EqualsAndHashCode(callSuper = false, of="sig")
+@EqualsAndHashCode(callSuper = false, of = "sig")
 @ToString
 public class Signature extends ASTNode<ScriptLanguageParser.ArgListContext> implements Map<Variable, Type> {
     private final Map<Variable, Type> sig = new LinkedHashMap<>();
 
-    @Override public <T> T accept(Visitor<T> visitor) {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
-    @Override public Signature copy() {
+    @Override
+    public Signature copy() {
         Signature signature = new Signature();
         forEach((k, v) -> signature.put(k.copy(), v));
         signature.setRuleContext(this.ruleContext);
@@ -144,17 +145,17 @@ public class Signature extends ASTNode<ScriptLanguageParser.ArgListContext> impl
     }
 
     public Type computeIfPresent(Variable key,
-                                       BiFunction<? super Variable, ? super Type, ? extends Type> remappingFunction) {
+                                 BiFunction<? super Variable, ? super Type, ? extends Type> remappingFunction) {
         return sig.computeIfPresent(key, remappingFunction);
     }
 
     public Type compute(Variable key,
-                              BiFunction<? super Variable, ? super Type, ? extends Type> remappingFunction) {
+                        BiFunction<? super Variable, ? super Type, ? extends Type> remappingFunction) {
         return sig.compute(key, remappingFunction);
     }
 
     public Type merge(Variable key, Type value,
-                            BiFunction<? super Type, ? super Type, ? extends Type> remappingFunction) {
+                      BiFunction<? super Type, ? super Type, ? extends Type> remappingFunction) {
         return sig.merge(key, value, remappingFunction);
     }
 }

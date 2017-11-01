@@ -53,4 +53,15 @@ public abstract class CaseStatement extends Statement<ScriptLanguageParser.Cases
      */
     @Override public abstract CaseStatement copy();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        CaseStatement that = (CaseStatement) o;
+
+        return getBody().eq(that.getBody());
+    }
+
 }

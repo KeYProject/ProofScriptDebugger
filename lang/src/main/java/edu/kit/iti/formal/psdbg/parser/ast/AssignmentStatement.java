@@ -74,4 +74,17 @@ public class AssignmentStatement
         return type != null;
     }
 
+
+    @Override
+    public boolean eq(ASTNode o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        AssignmentStatement that = (AssignmentStatement) o;
+
+        if (!getLhs().eq(that.getLhs())) return false;
+        if (!getRhs().eq(that.getRhs())) return false;
+        return getType() != null ? getType().equals(that.getType()) : that.getType() == null;
+    }
 }

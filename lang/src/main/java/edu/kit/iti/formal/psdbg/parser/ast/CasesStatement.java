@@ -66,4 +66,21 @@ public class CasesStatement extends Statement<ScriptLanguageParser.CasesStmtCont
         c.setRuleContext(this.ruleContext);
         return c;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        CasesStatement that = (CasesStatement) o;
+
+        for (int i = 0; i < cases.size(); i++) {
+            if(!cases.get(i).eq(that.cases.get(i)))
+                return false;
+        }
+
+        return getDefCaseStmt() != null ? getDefCaseStmt().eq(that.getDefCaseStmt()) : that.getDefCaseStmt() == null;
+    }
+
 }

@@ -16,6 +16,8 @@ import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicabl
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
 import java.util.HashMap;
@@ -27,6 +29,8 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public class RuleCommandHandler implements CommandHandler<KeyData> {
+    private static final Logger LOGGER = LogManager.getLogger(RuleCommandHandler.class);
+
     @Getter
     private final Map<String, Rule> rules;
 
@@ -53,7 +57,7 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         KeyData kd = expandedNode.getData();
         Map<String, String> map = new HashMap<>();
         params.asMap().forEach((k, v) -> map.put(k.getIdentifier(), v.getData().toString()));
-        System.out.println(map);
+        LOGGER.info("Execute {} with {}", call, map);
         try {
             map.put("#2", call.getCommand());
             EngineState estate = new EngineState(kd.getProof());

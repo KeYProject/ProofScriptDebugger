@@ -37,5 +37,15 @@ public class GuardedCaseStatement extends CaseStatement {
         return scs;
     }
 
+    @Override
+    public boolean eq(ASTNode o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        GuardedCaseStatement that = (GuardedCaseStatement) o;
+
+        return getGuard().eq(that.getGuard());
+    }
 
 }

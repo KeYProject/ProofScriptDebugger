@@ -37,6 +37,24 @@ public class DefaultCaseStatement extends Statement<ScriptLanguageParser.StmtLis
         dcs.setRuleContext(this.ruleContext);
         return dcs;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        DefaultCaseStatement that = (DefaultCaseStatement) o;
+
+        return getBody().eq(that.getBody());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + getBody().hashCode();
+        return result;
+    }
 }
 
 

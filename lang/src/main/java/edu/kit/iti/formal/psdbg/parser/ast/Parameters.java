@@ -23,7 +23,6 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  */
 
 
-
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
 import lombok.EqualsAndHashCode;
@@ -46,11 +45,13 @@ import java.util.function.Function;
 public class Parameters extends ASTNode<ScriptLanguageParser.ParametersContext> {
     private final Map<Variable, Expression> parameters = new LinkedHashMap<>();
 
-    @Override public <T> T accept(Visitor<T> visitor) {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
-    @Override public Parameters copy() {
+    @Override
+    public Parameters copy() {
         Parameters p = new Parameters();
         forEach((k, v) -> p.put(k.copy(), v.copy()));
         p.setRuleContext(this.getRuleContext());
@@ -138,18 +139,38 @@ public class Parameters extends ASTNode<ScriptLanguageParser.ParametersContext> 
     }
 
     public Expression computeIfPresent(Variable key,
-            BiFunction<? super Variable, ? super Expression, ? extends Expression> remappingFunction) {
+                                       BiFunction<? super Variable, ? super Expression, ? extends Expression> remappingFunction) {
         return parameters.computeIfPresent(key, remappingFunction);
     }
 
     public Expression compute(Variable key,
-            BiFunction<? super Variable, ? super Expression, ? extends Expression> remappingFunction) {
+                              BiFunction<? super Variable, ? super Expression, ? extends Expression> remappingFunction) {
         return parameters.compute(key, remappingFunction);
     }
 
     public Expression merge(Variable key, Expression value,
-            BiFunction<? super Expression, ? super Expression, ? extends Expression> remappingFunction) {
+                            BiFunction<? super Expression, ? super Expression, ? extends Expression> remappingFunction) {
         return parameters.merge(key, value, remappingFunction);
+    }
+
+    @Override
+    public boolean eq(ASTNode o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Parameters that = (Parameters) o;
+        for (Map.Entry<Variable, Expression> e : that.parameters.entrySet()) {
+            if (!e.getValue().eq(get(e.getKey())))
+                return false;
+        }
+
+        for (Map.Entry<Variable, Expression> e : parameters.entrySet()) {
+            if (!e.getValue().eq(that.get(e.getKey())))
+                return false;
+        }
+
+        return true;
     }
 
 }

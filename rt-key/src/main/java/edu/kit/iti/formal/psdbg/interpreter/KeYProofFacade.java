@@ -71,12 +71,12 @@ public class KeYProofFacade {
     /**
      * reload the current proof. synchronously because only the first load is slow.
      */
-    public void reload() throws ProofInputException, ProblemLoaderException {
+    public void reload(File problemFile) throws ProofInputException, ProblemLoaderException {
         if (contract.get() != null) {// reinstante the contract
             setProof(getEnvironment().createProof(
                     contract.get().getProofObl(getEnvironment().getServices())));
         } else {
-            setProof(KeYApi.loadFromKeyFile(proof.get().getProofFile()).getLoadedProof().getProof());
+            setProof(KeYApi.loadFromKeyFile(problemFile).getLoadedProof().getProof());
         }
     }
 

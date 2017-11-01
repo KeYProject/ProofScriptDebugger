@@ -125,4 +125,8 @@ public abstract class ASTNode<T extends ParserRuleContext>
         } while (n != null);
         return true;
     }
+
+    public boolean eq(ASTNode other) {
+        return equals(other);
+    }
 }

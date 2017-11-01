@@ -44,4 +44,15 @@ public class ClosesCase extends CaseStatement {
         return cs;
     }
 
+    @Override
+    public boolean eq(ASTNode o) {
+        if (this == o) return true;
+        if (!(o instanceof ClosesCase)) return false;
+        if (!super.equals(o)) return false;
+
+        ClosesCase that = (ClosesCase) o;
+
+        return getClosesGuard() != null ? getClosesGuard().eq(that.getClosesGuard()) : that.getClosesGuard() == null;
+    }
+
 }

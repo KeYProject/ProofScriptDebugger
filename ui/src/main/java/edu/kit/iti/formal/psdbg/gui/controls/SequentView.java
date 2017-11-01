@@ -73,6 +73,7 @@ public class SequentView extends CodeArea {
                 hightlightRange(0, 0);
             }
         } catch (NullPointerException npe) {
+            npe.printStackTrace();
         }
         mouseEvent.consume();
     }
@@ -130,6 +131,7 @@ public class SequentView extends CodeArea {
 
         Sequent sequent = node.get().sequent();
         filter = new IdentitySequentPrintFilter();
+        filter.setSequent(sequent);
 
         ProgramPrinter prgPrinter = new ProgramPrinter(new StringWriter());
         this.backend = new LogicPrinter.PosTableStringBackend(80);
