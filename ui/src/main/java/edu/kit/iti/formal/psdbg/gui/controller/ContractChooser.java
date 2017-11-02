@@ -9,7 +9,6 @@ import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
-import lombok.Getter;
 
 import java.util.List;
 
@@ -25,7 +24,7 @@ import java.util.List;
  * @author A. Weigl
  */
 public class ContractChooser extends Dialog<Contract> {
-    @Getter
+
     private final MultipleSelectionModel<Contract> selectionModel;
 
     private final ObjectProperty<ObservableList<Contract>> items;
