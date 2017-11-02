@@ -350,9 +350,9 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         CaseStatement cs = null;
         if (ctx.TRY() != null) {
             cs = new TryCase();
-        } else if (ctx.closesScript != null) {
+        } else if (ctx.closesGuard != null) {
             cs = new ClosesCase();
-            Statements closes = (Statements) ctx.closesScript.accept(this);
+            Statements closes = (Statements) ctx.closesGuard.accept(this);
             ((ClosesCase) cs).setClosesGuard(closes);
             closes.setParent(cs);
         } else {
