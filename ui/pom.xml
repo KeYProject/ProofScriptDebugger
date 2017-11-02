@@ -83,15 +83,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--    <plugin>
-                <groupId>com.zenjava</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>8.8.3</version>
-                <configuration>
-                    <mainClass>ProofScriptDebugger.Main</mainClass>
-                </configuration>
-            </plugin>
-            -->
+
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -42,14 +42,14 @@ deploy:
     - "mvn package -DperformRelease=true -DcreateChecksum=true -DskipTests=true -B"
   artifacts: 
     paths:
-      - target/*jar
+      - "*/target/*.jar"
   allow_failure: true
 
 site:
   stage: deploy
   script:
-    - "mvn site:site -DperformRelease=true -DcreateChecksum=true -DskipTests=true -B"
+    - "mvn site:site -DskipTests=true -B"
   artifacts:
     paths:
-      - target/site/*
+      - "*/target/site/*"
   allow_failure: true
