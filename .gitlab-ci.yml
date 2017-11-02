@@ -19,32 +19,14 @@ stages:
 
 setup:
   stage: setup
-  script: >
-    COMPONENTS=keydeps/lib/components/
-    mvn install:install-file -Dfile=$COMPONENTS/key.core.jar \
-                               -DgroupId=key-project-psdbg \
-                               -DartifactId=key.core \
-                               -Dversion=2.7-SNAPSHOT \
-                               -Dpackaging=jar
-
-    mvn install:install-file -Dfile=$COMPONENTS/key.ui.jar \
-                               -DgroupId=key-project-psdbg \
-                               -DartifactId=key.ui \
-                               -Dversion=2.7-SNAPSHOT \
-                               -Dpackaging=jar
-
-    mvn install:install-file -Dfile=$COMPONENTS/key.util.jar \
-                               -DgroupId=key-project-psdbg \
-                               -DartifactId=key.util \
-                               -Dversion=2.7-SNAPSHOT \
-                               -Dpackaging=jar
-
-    mvn install:install-file -Dfile=$COMPONENTS/../libs/recoderKey.jar\
-                               -DgroupId=key-project-psdbg \
-                               -DartifactId=recoder \
-                               -Dversion=2.7\
-                               -Dpackaging=jar
-
+  script:
+    - COMPONENTS=keydeps/lib/components/
+    - GID=key-project-psdbg
+    - V=2.7-SNAPSHOT
+    - mvn install:install-file -Dfile=$COMPONENTS/key.core.jar -DartifactId=key.core  -DgroupId=$GID -Dversion=$V -Dpackaging=jar
+    - mvn install:install-file -Dfile=$COMPONENTS/key.ui.jar -DartifactId=key.ui -DgroupId=$GID -Dversion=$V -Dpackaging=jar
+    - mvn install:install-file -Dfile=$COMPONENTS/key.util.jar -DartifactId=key.util -DgroupId=$GID -Dversion=$V -Dpackaging=jar
+    - mvn install:install-file -Dfile=$COMPONENTS/../libs/recoderKey.jar -DartifactId=recoder  -DgroupId=$GID -Dversion=2.7 -Dpackaging=jar
 
 build:
   stage: build
