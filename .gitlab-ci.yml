@@ -43,5 +43,13 @@ deploy:
   artifacts: 
     paths:
       - target/*jar
+  allow_failure: true
+
+site:
+  stage: deploy
+  script:
+    - "mvn site:site -DperformRelease=true -DcreateChecksum=true -DskipTests=true -B"
+  artifacts:
+    paths:
       - target/site/*
   allow_failure: true
