@@ -18,6 +18,7 @@ stages:
   - deploy
 
 setup:
+  stage: setup
   script: >
     COMPONENTS=keydeps/lib/components/
     mvn install:install-file -Dfile=$COMPONENTS/key.core.jar \
