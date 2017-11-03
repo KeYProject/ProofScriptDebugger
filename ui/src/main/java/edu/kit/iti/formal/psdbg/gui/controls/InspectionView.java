@@ -3,12 +3,14 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -18,6 +20,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.util.StringConverter;
+import lombok.Getter;
 
 /**
  * Right part of the splitpane that displays the different parts of a state
@@ -29,10 +33,13 @@ public class InspectionView extends BorderPane {
             new InspectionModel()
     );
 
+    public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
+
+    @FXML @Getter
+    private ComboBox<PTreeNode<KeyData>> frames;
+
     @FXML
     private TextField txtSearchPattern;
-
-    public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
 
     @FXML
     private SequentView sequentView;
@@ -45,6 +52,26 @@ public class InspectionView extends BorderPane {
 
     public InspectionView() {
         Utils.createWithFXML(this);
+
+        frames.valueProperty().addListener((prop, o, n) -> {
+                    model.get().getGoals().setAll(
+                            n.getStateBeforeStmt().getGoals());
+                    model.get().setSelectedGoalNodeToShow(
+                            n.getStateBeforeStmt().getSelectedGoalNode());
+                }
+        );
+
+        frames.setConverter(new StringConverter<PTreeNode<KeyData>>() {
+            @Override
+            public String toString(PTreeNode<KeyData> object) {
+                return object.getSingleRepresentation();
+            }
+
+            @Override
+            public PTreeNode<KeyData> fromString(String string) {
+                return null;
+            }
+        });
 
         model.get().selectedGoalNodeToShowProperty().addListener((o, a, b) -> {
             goalView.getSelectionModel().select(b);
@@ -72,7 +99,7 @@ public class InspectionView extends BorderPane {
 
         final KeyCombination kb = new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN);
         sequentView.setOnKeyReleased(event -> {
-           // System.out.println(event);
+            // System.out.println(event);
             if (kb.match(event)) {
                 event.consume();
                 //nice animation here

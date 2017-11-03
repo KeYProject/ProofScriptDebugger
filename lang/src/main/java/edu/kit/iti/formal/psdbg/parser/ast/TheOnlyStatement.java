@@ -23,16 +23,17 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  */
 
 
-
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author Alexander Weigl
  * @version 1 (29.04.17)
  */
-@Data
+@Getter
+@Setter
 public class TheOnlyStatement extends GoalSelector<ScriptLanguageParser.TheOnlyStmtContext> {
     public TheOnlyStatement() {
     }
@@ -54,6 +55,8 @@ public class TheOnlyStatement extends GoalSelector<ScriptLanguageParser.TheOnlyS
      */
     @Override
     public TheOnlyStatement copy() {
-        return new TheOnlyStatement(getBody().copy());
+        TheOnlyStatement tos = new TheOnlyStatement(getBody().copy());
+        tos.setRuleContext(this.ruleContext);
+        return tos;
     }
 }

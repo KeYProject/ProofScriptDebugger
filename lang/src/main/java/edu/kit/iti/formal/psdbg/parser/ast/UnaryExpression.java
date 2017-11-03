@@ -61,6 +61,7 @@ public class UnaryExpression extends Expression<ParserRuleContext> {
     @Override
     public UnaryExpression copy() {
         UnaryExpression u = new UnaryExpression(operator, expression.copy());
+        u.setRuleContext(this.getRuleContext());
         return u;
     }
 

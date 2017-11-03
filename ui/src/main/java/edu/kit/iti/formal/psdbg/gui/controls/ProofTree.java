@@ -18,19 +18,22 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.BorderPane;
 import javafx.util.StringConverter;
-
-import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.val;
 
 /**
  * KeY Proof Tree
  */
 public class ProofTree extends BorderPane {
     private ObjectProperty<Proof> proof = new SimpleObjectProperty<>();
+
     private ObjectProperty<Node> root = new SimpleObjectProperty<>();
+
     private MapProperty colorOfNodes = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
     @FXML
-    private TreeView<Node> treeProof;
+    private TreeView<NodeOrString> treeProof;
+
     private ProofTreeListener proofTreeListener = new ProofTreeListener() {
         @Override
         public void proofExpanded(ProofTreeEvent proofTreeEvent) {
@@ -91,9 +94,24 @@ public class ProofTree extends BorderPane {
             if (old != null) {
                 old.removeProofTreeListener(proofTreeListener);
             }
-            n.addProofTreeListener(proofTreeListener);
+            if (n != null)
+                n.addProofTreeListener(proofTreeListener);
         });
         init();
+    }
+
+    /**
+     * From https://www.programcreek.com/java-api-examples/index.php?api=javafx.scene.control.TreeItem
+     *
+     * @param candidate
+     */
+    private static void expandRootToItem(TreeItem candidate) {
+        if (candidate != null) {
+            expandRootToItem(candidate.getParent());
+            if (!candidate.isLeaf()) {
+                candidate.setExpanded(true);
+            }
+        }
     }
 
     private void init() {
@@ -102,47 +120,58 @@ public class ProofTree extends BorderPane {
         treeProof.refresh();
     }
 
-    private TreeCell<Node> cellFactory(TreeView<Node> nodeTreeView) {
-        TextFieldTreeCell<Node> tftc = new TextFieldTreeCell<>();
-        tftc.setConverter(new StringConverter<Node>() {
+    private TreeCell<NodeOrString> cellFactory(TreeView<NodeOrString> nodeTreeView) {
+        TextFieldTreeCell<NodeOrString> tftc = new TextFieldTreeCell<>();
+        StringConverter<NodeOrString> stringConverter = new StringConverter<NodeOrString>() {
             @Override
-            public String toString(Node object) {
-               /* if (object.getAppliedRuleApp() != null) {
-                    return object.getAppliedRuleApp().rule().displayName();
-                } else {
-                   return object.name();
-                }*/
-                String nodeLabel;
-                if (object.getAppliedRuleApp() != null) {
-                    nodeLabel = object.getAppliedRuleApp().rule().displayName();
-                } else {
-                    nodeLabel = object.isClosed() ? "Closed Goal" : "Open Goal";
+            public String toString(NodeOrString object) {
+                if (object instanceof TString) {
+                    TString tString = (TString) object;
+                    return tString.label;
                 }
-                return nodeLabel;
-                // return object.sequent().toString();
+
+                if (object instanceof TNode) {
+                    TNode tNode = (TNode) object;
+                    String nodeLabel;
+                    if (tNode.node.getAppliedRuleApp() != null) {
+                        nodeLabel = tNode.node.getAppliedRuleApp().rule().displayName();
+                    } else {
+                        nodeLabel = tNode.node.isClosed() ? "Closed Goal" : "Open Goal";
+                    }
+                    return nodeLabel;
+                }
+                return "";
             }
 
             @Override
-            public Node fromString(String string) {
+            public NodeOrString fromString(String string) {
                 return null;
             }
-        });
+        };
+        tftc.setConverter(stringConverter);
         tftc.itemProperty().addListener((p, o, n) -> repaint(tftc));
         colorOfNodes.addListener((InvalidationListener) o -> repaint(tftc));
         return tftc;
     }
 
-    private void repaint(TextFieldTreeCell<Node> tftc) {
-        Node n = tftc.getItem();
+    /**
+     * @param tftc
+     */
+
+    private void repaint(TextFieldTreeCell<NodeOrString> tftc) {
+        Node n = ((TNode) tftc.getItem()).node;
         tftc.setStyle("");
         if (n != null) {
             if (n.isClosed()) {
-                tftc.setStyle("-fx-background-color: greenyellow");
+                colorOfNodes.putIfAbsent(n, "green");
+                //tftc.setStyle("-fx-background-color: greenyellow");
             }
             if (colorOfNodes.containsKey(n)) {
                 tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
             }
         }
+        expandRootToItem(tftc.getTreeItem());
+
     }
 
     public Object getColorOfNodes() {
@@ -180,23 +209,58 @@ public class ProofTree extends BorderPane {
     public ObjectProperty<Proof> proofProperty() {
         return proof;
     }
+
+    static class NodeOrString {
+    }
+
+    @AllArgsConstructor
+    static class TNode extends NodeOrString {
+        Node node;
+    }
+
+    @AllArgsConstructor
+    static class TString extends NodeOrString {
+        String label;
+    }
 }
 
-class TreeItemNode extends TreeItem<Node> {
+class TreeItemNode extends TreeItem<ProofTree.NodeOrString> {
     public TreeItemNode(Node value) {
-        super(value);
+        super(new ProofTree.TNode(value));
     }
 
     @Override
     public boolean isLeaf() {
-        return getValue().leaf();
+        return ((ProofTree.TNode) getValue()).node.childrenCount() <= 1;
     }
 
     @Override
-    public ObservableList<TreeItem<Node>> getChildren() {
-        if (super.getChildren().size() != getValue().children().size())
-            super.getChildren().setAll(
-                    getValue().children().stream().map(TreeItemNode::new).collect(Collectors.toList()));
-        return super.getChildren();
+    public ObservableList<TreeItem<ProofTree.NodeOrString>> getChildren() {
+        ObservableList<TreeItem<ProofTree.NodeOrString>> list = FXCollections.observableArrayList();
+        Node n = ((ProofTree.TNode) getValue()).node;
+
+        if (isLeaf()) return list;
+
+        if (n.childrenCount() == 1) {
+            val node = n.child(0);
+            list.add(new TreeItemNode(node));
+            while (node.childrenCount() == 1) {
+                Node c = node.child(0);
+                list.add(new TreeItemNode(c));
+            }
+        } else {
+            for (Node child : n.children()) {
+                val ti = new TreeItemString(child.getNodeInfo().getBranchLabel());
+                list.add(ti);
+                ti.getChildren().add(new TreeItemNode(child));
+            }
+        }
+        return list;
+    }
+}
+
+class TreeItemString extends TreeItem<ProofTree.NodeOrString> {
+    public TreeItemString(String branchLabel) {
+        super(new ProofTree.TString(branchLabel));
     }
 }

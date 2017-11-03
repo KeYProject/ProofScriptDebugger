@@ -23,22 +23,22 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  */
 
 
-
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@RequiredArgsConstructor
 @AllArgsConstructor
-public class CaseStatement extends Statement<ScriptLanguageParser.CasesListContext> {
-    public boolean isClosedStmt;
+public abstract class CaseStatement extends Statement<ScriptLanguageParser.CasesListContext> {
     protected Statements body;
 
     /**
@@ -51,7 +51,17 @@ public class CaseStatement extends Statement<ScriptLanguageParser.CasesListConte
     /**
      * {@inheritDoc}
      */
-    @Override public CaseStatement copy() {
-        return new CaseStatement(isClosedStmt, body.copy());
+    @Override public abstract CaseStatement copy();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        CaseStatement that = (CaseStatement) o;
+
+        return getBody().eq(that.getBody());
     }
+
 }

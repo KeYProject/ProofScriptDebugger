@@ -6,9 +6,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
-import javafx.scene.web.WebView;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
-import lombok.Getter;
 
 import java.util.List;
 
@@ -24,10 +24,13 @@ import java.util.List;
  * @author A. Weigl
  */
 public class ContractChooser extends Dialog<Contract> {
-    @Getter
+
     private final MultipleSelectionModel<Contract> selectionModel;
+
     private final ObjectProperty<ObservableList<Contract>> items;
+
     private final ListView<Contract> listOfContractsView = new ListView<>();
+
     private final Services services;
 
     public ContractChooser(Services services,
@@ -87,26 +90,49 @@ public class ContractChooser extends Dialog<Contract> {
     }
 
     private class ContractListCell extends ListCell<Contract> {
-        private final WebView webView = new WebView();
+        private final TextFlow text = new TextFlow();
 
         ContractListCell(ListView<Contract> contractListView) {
             itemProperty().addListener((observable, oldValue, newValue) -> render());
             selectedProperty().addListener((observable, oldValue, newValue) -> render());
-            setGraphic(webView);
+            text.maxWidthProperty().bind(contractListView.widthProperty());
+            setGraphic(text);
         }
 
         private void render() {
             if (getItem() != null) {
-                String content = beautifyContractHTML(getItem().getHTMLText(services), getItem().getTarget().toString());
-                webView.getEngine().loadContent(content);
+                text.getChildren().clear();
+                String content = getItem().getPlainText(services);
+                Text contract = new Text("Contract for method: ");
+                Text name = new Text(getItem().getTarget().toString());
+                Text tcontent = new Text(content);
 
-                //webView.getEngine().loadContent(getItem().getHTMLText(services));
-                //int val = (int) webView.getEngine().executeScript("document.height");
-                webView.setPrefHeight(150);
-                webView.setDisable(true);
+                contract.setStyle("-fx-font-weight: bold; -fx-font-size: 120%");
+                name.setStyle("-fx-font-family: monospace; -fx-font-size: 120%");
+                tcontent.setStyle("-fx-font-family: monospace");
+
+                text.getChildren().add(contract);
+                text.getChildren().add(name);
+                text.getChildren().add(new Text("\n"));
+                //text.getChildren().add(tcontent);
+
+                for (String line : content.split("\n")) {
+                    if (line.contains(":")) {
+                        String[] a = line.split(":", 2);
+                        Text s = new Text(String.format("%-15s", a[0] + ":"));
+                        Text t = new Text(a[1] + "\n");
+                        s.setStyle("-fx-font-family: monospace;-fx-font-weight:bold;-fx-min-width: 10em");
+                        t.setStyle("-fx-font-family: monospace");
+                        text.getChildren().addAll(s, t);
+                    } else {
+                        Text t = new Text(line + "\n");
+                        t.setStyle("-fx-font-family: monospace");
+                        text.getChildren().addAll(t);
+                    }
+                }
 
                 if (selectedProperty().get()) {
-                    webView.setStyle("-fx-background-color: lightblue");
+                    //   text.setStyle("-fx-background-color: lightblue");
                 }
             }
         }
@@ -114,5 +140,8 @@ public class ContractChooser extends Dialog<Contract> {
         private String beautifyContractHTML(String html, String name) {
             return "Contract for <b>" + name + "</b><br>" + html;
         }
+
     }
+
+
 }

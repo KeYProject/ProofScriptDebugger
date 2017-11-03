@@ -77,8 +77,6 @@
     </distributionManagement>
 
 
-
-
     <build>
         <extensions>
             <extension>
@@ -160,6 +158,9 @@
                 <version>1.12</version>
                 <configuration>
                     <licenseName>gpl_v3</licenseName>
+                    <copyrightOwners>
+                        Sarah Grebing, Alexander Weigl
+                    </copyrightOwners>
                 </configuration>
             </plugin>
 
@@ -174,6 +175,66 @@
                     <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
+
+            <!--
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger</mainClass>
+                        </manifest>
+                    </archive>
+
+                    <descriptorRefs>
+                        <descriptorRef>exe</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <reportPlugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <configuration>
+                                <additionalparam>-Xdoclint:none</additionalparam>
+                            </configuration>
+                        </plugin>
+                    </reportPlugins>
+                </configuration>
+            </plugin>
+
+
         </plugins>
     </build>
 

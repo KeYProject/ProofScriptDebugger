@@ -11,12 +11,16 @@ import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
+import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 import lombok.Getter;
 import lombok.Setter;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
-import java.util.logging.Logger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,25 +32,26 @@ import java.util.stream.Stream;
  */
 public class Interpreter<T> extends DefaultASTVisitor<Object>
         implements ScopeObservable {
-    private static final int MAX_ITERATIONS = 5;
+    private static final int MAX_ITERATIONS = 10000;
 
-    protected static Logger logger = Logger.getLogger("interpreter");
+    protected static Logger logger = LogManager.getLogger(Interpreter.class);
 
-    //TODO later also include information about source line for each state (for debugging purposes and rewind purposes)
+    @Getter
+    public final AtomicBoolean hardStop = new AtomicBoolean(false);
+
+    @Getter
+    protected List<Visitor> entryListeners = new ArrayList<>(),
+            exitListeners = new ArrayList<>();
+
     private Stack<State<T>> stateStack = new Stack<>();
-    //We now need thet stack of listeners to handle try statements scuh that listnersa re only informed if a try was sucessfull
-    private Stack<List<Visitor>> entryListenerStack = new Stack<>();
-    private Stack<List<Visitor>> exitListenerStack = new Stack<>();
-
-    //@Getter
-    //private List<Visitor> entryListeners = new ArrayList<>(),
-    //        exitListeners = new ArrayList<>();
 
     @Getter
     @Setter
     private MatcherApi<T> matcherApi;
+
     @Getter
     private CommandLookup functionLookup;
+
     @Getter
     @Setter
     private boolean scrictSelectedGoalMode = false;
@@ -55,20 +60,24 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     @Setter
     private VariableAssignmentHook<T> variableAssignmentHook = null;
 
+    @Getter
+    @Setter
+    private boolean suppressListeners = false;
+
     public Interpreter(CommandLookup lookup) {
         functionLookup = lookup;
-        entryListenerStack.push(new ArrayList<>());
-        exitListenerStack.push(new ArrayList<>());
     }
 
     @Override
-    public List<Visitor> getExitListeners() {
-        return exitListenerStack.peek();
+    public <T extends ParserRuleContext> void enterScope(ASTNode<T> node) {
+        if (hardStop.get())
+            throw new InterpreterRuntimeException("hard stop");
+        if (!suppressListeners) callListeners(getEntryListeners(), node);
     }
 
     @Override
-    public List<Visitor> getEntryListeners() {
-        return entryListenerStack.peek();
+    public <T extends ParserRuleContext> void exitScope(ASTNode<T> node) {
+        if (!suppressListeners) callListeners(getExitListeners(), node);
     }
 
     /**
@@ -89,7 +98,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         script.accept(this);
     }
 
-
     /**
      * Visit a proof script (context is handled by the call of the script noch by visiting the script itself)
      * 1) visit its signature
@@ -100,12 +108,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
      */
     @Override
     public Object visit(ProofScript proofScript) {
-
         //add vars
         visit(proofScript.getSignature());
-        enterScope(proofScript);
+        //weigl: disabled because it is strange enterScope(proofScript);
         proofScript.getBody().accept(this);
-        exitScope(proofScript);
+        //exitScope(proofScript);
         return null;
     }
 
@@ -150,21 +157,17 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return true;
     }
 
-
     private Value evaluate(Expression expr) {
         return evaluate(getSelectedNode(), expr);
     }
 
     private Value evaluate(GoalNode<T> g, Expression expr) {
         enterScope(expr);
-        Evaluator evaluator = new Evaluator(g.getAssignments(), g);
+        Evaluator<T> evaluator = new Evaluator<>(g.getAssignments(), g);
         evaluator.setMatcher(matcherApi);
-        evaluator.getEntryListeners().addAll(entryListenerStack.peek());
-        evaluator.getExitListeners().addAll(exitListenerStack.peek());
         exitScope(expr);
         return evaluator.eval(expr);
     }
-
 
     /**
      * Visiting a statement list results in visiting each statement
@@ -183,7 +186,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     }
 
     /**
-     *
      * @param casesStatement
      * @return
      */
@@ -203,7 +205,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         List<CaseStatement> cases = casesStatement.getCases();
 
         for (GoalNode<T> goal : allGoalsBeforeCases) {
-            newState(goal); //to allow the visit method for the case stmt to retrieve goal
+            newState(goal); //to allow the visit method for the case statement to retrieve goal
 
             boolean result = false;
             for (CaseStatement aCase : cases) {
@@ -265,27 +267,23 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     }
 
     @Override
-    public Object visit(SimpleCaseStatement simpleCaseStatement) {
-        Expression matchExpression = simpleCaseStatement.getGuard();
+    public Object visit(GuardedCaseStatement guardedCaseStatement) {
+        Expression matchExpression = guardedCaseStatement.getGuard();
         State<T> currentStateToMatch = peekState();
         GoalNode<T> selectedGoal = currentStateToMatch.getSelectedGoalNode();
         VariableAssignment va = evaluateMatchInGoal(matchExpression, selectedGoal);
-        if (va != null) {
-            enterScope(simpleCaseStatement);
-            executeBody(simpleCaseStatement.getBody(), selectedGoal, va);
-            exitScope(simpleCaseStatement);
-            return true;
-        } else {
-            return false;
+
+        try {
+            enterScope(guardedCaseStatement);
+            if (va != null) {
+                executeBody(guardedCaseStatement.getBody(), selectedGoal, va);
+                return true;
+            } else {
+                return false;
+            }
+        } finally {
+            exitScope(guardedCaseStatement);
         }
-    }
-
-    @Override
-    public Object visit(TryCase TryCase) {
-        enterScope(TryCase);
-
-        exitScope(TryCase);
-        return false;
     }
 
     /**
@@ -328,16 +326,12 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     /**
      * Match a set of goal nodes against a matchpattern of a case and return the matched goals together with instantiated variables
-     *
-     * @param allGoalsBeforeCases
-     * @param aCase
-     * @return
      */
   /*  private Map<GoalNode<T>, VariableAssignment> matchGoal(Set<GoalNode<T>> allGoalsBeforeCases, CaseStatement aCase) {
 
         HashMap<GoalNode<T>, VariableAssignment> matchedGoals = new HashMap<>();
         if (!aCase.isClosedStmt()) {
-            SimpleCaseStatement caseStmt = (SimpleCaseStatement) aCase;
+            GuardedCaseStatement caseStmt = (GuardedCaseStatement) aCase;
             Expression matchExpression = caseStmt.getGuard();
             for (GoalNode<T> goal : allGoalsBeforeCases) {
                 VariableAssignment va = evaluateMatchInGoal(matchExpression, goal);
@@ -377,10 +371,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         }
     }*/
 
-    /**
-     * @param casesStatement
-     * @return
-     */
 /*
     public Object visitOld(CasesStatement casesStatement) {
         enterScope(casesStatement);
@@ -433,6 +423,13 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         exitScope(casesStatement);
         return null;
     }*/
+    @Override
+    public Object visit(TryCase TryCase) {
+        enterScope(TryCase);
+
+        exitScope(TryCase);
+        return false;
+    }
 
     /**
      * Evaluate a match in a specific goal
@@ -443,12 +440,25 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
      */
     private VariableAssignment evaluateMatchInGoal(Expression matchExpression, GoalNode<T> goal) {
         enterScope(matchExpression);
-        MatchEvaluator mEval = new MatchEvaluator(goal.getAssignments(), goal, matcherApi);
-        mEval.getEntryListeners().addAll(entryListenerStack.peek());
-        mEval.getExitListeners().addAll(exitListenerStack.peek());
-        exitScope(matchExpression);
+        List<VariableAssignment> matchResult;
+        if (matchExpression.hasMatchExpression()) {
+            MatchEvaluator mEval = new MatchEvaluator(goal.getAssignments(), goal, matcherApi);
+            mEval.getEntryListeners().addAll(getEntryListeners());
+            mEval.getExitListeners().addAll(getExitListeners());
+            exitScope(matchExpression);
 
-        List<VariableAssignment> matchResult = mEval.eval(matchExpression);
+            matchResult = mEval.eval(matchExpression);
+        } else {
+
+            matchResult = new ArrayList<>();
+            Evaluator eval = new Evaluator(goal.getAssignments(), goal);
+            Value eval1 = eval.eval(matchExpression);
+            if (eval1.getType().equals(SimpleType.BOOL) && eval1.equals(Value.TRUE)) {
+                VariableAssignment emptyAssignment = new VariableAssignment(null);
+                matchResult.add(emptyAssignment);
+            }
+            exitScope(matchExpression);
+        }
         if (matchResult.isEmpty()) {
             return null;
         } else {
@@ -504,7 +514,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return s;
     }
 
-
     /**
      * Visiting a call statement results in:
      * 0) searching for the handler of the called command
@@ -536,12 +545,13 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             //newErrorState.setErrorState(true);
             //pushState(newErrorState);
         }
-        g.exitScope();
-        //  System.out.println(stateStack.peek().hashCode());
-        exitScope(call);
+        finally {
+            g.exitScope();
+            //  System.out.println(stateStack.peek().hashCode());
+            exitScope(call);
+        }
         return null;
     }
-
 
     public VariableAssignment evaluateParameters(Parameters parameters) {
         VariableAssignment va = new VariableAssignment();
@@ -600,17 +610,21 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         enterScope(repeatStatement);
         int counter = 0;
         boolean b = false;
-        do {
-            counter++;
-            State<T> prev = getCurrentState();
-            repeatStatement.getBody().accept(this);
-            State<T> end = getCurrentState();
+        try {
+            do {
+                counter++;
+                State<T> prev = getCurrentState();
+                repeatStatement.getBody().accept(this);
+                State<T> end = getCurrentState();
 
-            Set<GoalNode<T>> prevNodes = new HashSet<>(prev.getGoals());
-            Set<GoalNode<T>> endNodes = new HashSet<>(end.getGoals());
-            b = prevNodes.equals(endNodes);
-            b = b && counter <= MAX_ITERATIONS;
-        } while (b);
+                Set<GoalNode<T>> prevNodes = new HashSet<>(prev.getGoals());
+                Set<GoalNode<T>> endNodes = new HashSet<>(end.getGoals());
+                b = prevNodes.equals(endNodes);
+                b = b && counter <= MAX_ITERATIONS;
+            } while (b);
+        }catch (InterpreterRuntimeException e) {
+            logger.debug("Catched!", e);
+        }
         exitScope(repeatStatement);
         return null;
     }
@@ -633,7 +647,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             if (scrictSelectedGoalMode)
                 throw e;
 
-            logger.warning("No goal selected. Returning first goal!");
+            logger.warn("No goal selected. Returning first goal!");
             return getCurrentGoals().get(0);
         }
     }
@@ -732,6 +746,8 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return stateStack.peek();
     }
 
+    //endregion
+
     /**
      * Get goalnodes from current state
      *
@@ -741,24 +757,4 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return getCurrentState().getGoals();
     }
 
-    //endregion
-
-    /**
-     * Start a new context where already registered listeners are not informed
-     */
-    protected void startSideComputation() {
-        entryListenerStack.push(new ArrayList<>());
-        exitListenerStack.push(new ArrayList<>());
-    }
-
-    /**
-     * End side computation and restore listeners
-     */
-    protected void endSideComputation() {
-        assert !exitListenerStack.empty() && !entryListenerStack.empty();
-        entryListenerStack.pop();
-        exitListenerStack.pop();
-
-
-    }
 }

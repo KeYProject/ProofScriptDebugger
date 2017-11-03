@@ -58,6 +58,7 @@ public class BinaryExpression extends Expression<ParserRuleContext> {
     @Override
     public BinaryExpression copy() {
         BinaryExpression be = new BinaryExpression(left.copy(), operator, right.copy());
+        be.setRuleContext(this.ruleContext);
         return be;
     }
 

@@ -50,8 +50,35 @@ public class KeYProofFacade {
      * BooleanProperty inidcating whether KeY finished loading
      */
     private BooleanBinding readyToExecute = proof.isNotNull();
+
     //Workaround until api is relaxed
     private ProofManagementApi pma;
+
+    /**
+     *
+     */
+    public ProofState getProofState() {
+        Proof p = proof.get();
+        if (p == null)
+            return ProofState.EMPTY;
+
+        if (p.root().childrenCount() == 0)
+            return ProofState.VIRGIN;
+
+        return ProofState.DIRTY;
+    }
+
+    /**
+     * reload the current proof. synchronously because only the first load is slow.
+     */
+    public void reload(File problemFile) throws ProofInputException, ProblemLoaderException {
+        if (contract.get() != null) {// reinstante the contract
+            setProof(getEnvironment().createProof(
+                    contract.get().getProofObl(getEnvironment().getServices())));
+        } else {
+            setProof(KeYApi.loadFromKeyFile(problemFile).getLoadedProof().getProof());
+        }
+    }
 
     //region loading
     public Task<ProofApi> loadKeyFileTask(File keYFile) {
@@ -117,14 +144,13 @@ public class KeYProofFacade {
         proof.set(pa.getProof());
         contract.set(null);
     }
-    //endregion
 
     /**
      * Build the KeYInterpreter that handles the execution of the loaded key problem sourceName
      */
     public InterpreterBuilder buildInterpreter() {
         assert readyToExecute.getValue();
-
+        assert getEnvironment() != null && getProof() != null : "No proof loaded";
         InterpreterBuilder interpreterBuilder = new InterpreterBuilder();
         interpreterBuilder
                 .proof(environment.get(), proof.get())
@@ -136,7 +162,7 @@ public class KeYProofFacade {
 
         return interpreterBuilder;
     }
-
+    //endregion
 
     /**
      * Reload all KeY structure if proof should be reloaded
@@ -201,6 +227,21 @@ public class KeYProofFacade {
     public Collection<GoalNode<KeyData>> getPseudoGoals() {
         KeyData data = new KeyData(proof.get().root(), getEnvironment(), getProof());
         return Collections.singleton(new GoalNode<>(null, data, data.getNode().isClosed()));
+    }
+
+    public enum ProofState {
+        /**
+         * There is no KeY Proof actually loaded.
+         */
+        EMPTY,
+        /**
+         * The loaded KeY Proof is untouched iff there is only one node --- the root.
+         */
+        VIRGIN,
+        /**
+         * The KeY Proof was ravished by Taclets and other stuff.
+         */
+        DIRTY;
     }
     //endregion
 }

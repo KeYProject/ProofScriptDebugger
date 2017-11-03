@@ -9,9 +9,9 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
-import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
 import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
 import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
+import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -36,12 +36,19 @@ public class SequentView extends CodeArea {
     private Services services;
 
     private LogicPrinter lp;
+
     private IdentitySequentPrintFilter filter;
+
     private LogicPrinter.PosTableStringBackend backend;
+
     private SimpleObjectProperty<de.uka.ilkd.key.proof.Goal> goal = new SimpleObjectProperty<>();
+
     private SimpleObjectProperty<de.uka.ilkd.key.proof.Node> node = new SimpleObjectProperty<>();
+
     private ObservableBooleanValue rulesAvailable = goal.isNotNull();
+
     private KeYProofFacade keYProofFacade;
+
     private TacletContextMenu menu;
 
 
@@ -57,12 +64,16 @@ public class SequentView extends CodeArea {
         if (backend == null) return;
         CharacterHit hit = hit(mouseEvent.getX(), mouseEvent.getY());
         int insertionPoint = hit.getInsertionIndex();
-        PosInSequent pis = backend.getInitialPositionTable().getPosInSequent(insertionPoint, filter);
-        if (pis != null) {
-            Range r = backend.getPositionTable().rangeForIndex(insertionPoint, getLength());
-            hightlightRange(r.start(), r.end());
-        } else {
-            hightlightRange(0, 0);
+        try {
+            PosInSequent pis = backend.getInitialPositionTable().getPosInSequent(insertionPoint, filter);
+            if (pis != null) {
+                Range r = backend.getPositionTable().rangeForIndex(insertionPoint, getLength());
+                hightlightRange(r.start(), r.end());
+            } else {
+                hightlightRange(0, 0);
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
         }
         mouseEvent.consume();
     }
@@ -119,7 +130,9 @@ public class SequentView extends CodeArea {
         NamespaceSet nss = services.getNamespaces();
 
         Sequent sequent = node.get().sequent();
-        filter = new IdentitySequentPrintFilter(sequent);
+        //Sarah, wenn du das hier liest wirst du festgestellt haben, dass wir auf zwei verschiedene KeY-Versionen arbeiten.
+        filter = new IdentitySequentPrintFilter();
+        filter.setSequent(sequent);
 
         ProgramPrinter prgPrinter = new ProgramPrinter(new StringWriter());
         this.backend = new LogicPrinter.PosTableStringBackend(80);
@@ -195,7 +208,7 @@ public class SequentView extends CodeArea {
         if (node.get().sequent() != null) {
             Matchings m = MatcherFacade.matches(pattern, node.get().sequent(), true);
             if (m.size() == 0) return false;
-             Map<String, MatchPath> va = m.first();
+            Map<String, MatchPath> va = m.first();
             System.out.println(va);//TODO remove
             for (MatchPath mp : va.values()) {
                 System.out.println(mp.pio());
@@ -209,7 +222,8 @@ public class SequentView extends CodeArea {
         if (backend == null) {
             return;
         }
-        ImmutableList<Integer> path = ImmutableSLList.singleton(1);
+
+        ImmutableList<Integer> path = ImmutableSLList.<Integer>nil().append(1);
         Range r = backend.getInitialPositionTable().rangeForPath(path);
         setStyle(r.start(), r.end(), Collections.singleton("search-highlight"));
     }

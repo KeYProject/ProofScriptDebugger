@@ -36,11 +36,13 @@ import lombok.*;
  * @author Alexander Weigl
  * @version 1 (28.04.17)
  */
-@Data
+
 @ToString(includeFieldNames = true)
 @NoArgsConstructor
 @RequiredArgsConstructor()
 @AllArgsConstructor
+@Getter
+@Setter
 public class AssignmentStatement
         extends Statement<ScriptLanguageParser.AssignmentContext> {
     @NonNull
@@ -61,6 +63,7 @@ public class AssignmentStatement
         s.lhs = lhs.copy();
         s.rhs = rhs.copy();
         s.type = type;
+        s.setRuleContext(this.ruleContext);
         return s;
     }
 
@@ -71,4 +74,17 @@ public class AssignmentStatement
         return type != null;
     }
 
+
+    @Override
+    public boolean eq(ASTNode o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        AssignmentStatement that = (AssignmentStatement) o;
+
+        if (!getLhs().eq(that.getLhs())) return false;
+        if (!getRhs().eq(that.getRhs())) return false;
+        return getType() != null ? getType().equals(that.getType()) : that.getType() == null;
+    }
 }

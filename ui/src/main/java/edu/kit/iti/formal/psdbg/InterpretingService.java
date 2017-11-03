@@ -1,6 +1,6 @@
 package edu.kit.iti.formal.psdbg;
 
-import edu.kit.iti.formal.psdbg.gui.controller.PuppetMaster;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.BlockListener;
 import edu.kit.iti.formal.psdbg.gui.controls.DebuggerStatusBar;
 import edu.kit.iti.formal.psdbg.gui.controls.Utils;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
@@ -22,6 +22,9 @@ public class InterpretingService extends Service<State<KeyData>> {
      * The interpreter (with the appropriate KeY state) that is used to traverse and execute the script
      */
     private final SimpleObjectProperty<Interpreter<KeyData>> interpreter = new SimpleObjectProperty<>();
+    /**
+     * Statusbar for indication of progress
+     */
     private DebuggerStatusBar statusBar;
 
     /**
@@ -32,18 +35,18 @@ public class InterpretingService extends Service<State<KeyData>> {
     /**
      * The blocker, necessary for controlling how far the script should be interpreted
      */
-    private PuppetMaster blocker;
+    private BlockListener blocker;
     /**
      * Property that is set if this service has run successfully
      */
     private SimpleBooleanProperty hasRunSucessfully = new SimpleBooleanProperty(false);
 
-    public InterpretingService(PuppetMaster blocker) {
+    public InterpretingService(BlockListener blocker) {
         this.blocker = blocker;
     }
 
 
-    public InterpretingService(PuppetMaster blocker, DebuggerStatusBar statusBar) {
+    public InterpretingService(BlockListener blocker, DebuggerStatusBar statusBar) {
         this.blocker = blocker;
         this.statusBar = statusBar;
     }
@@ -80,7 +83,7 @@ public class InterpretingService extends Service<State<KeyData>> {
         if (statusBar != null) {
             statusBar.stopProgress();
         }
-        blocker.publishState();
+        //blocker.publishState();
     }
 
     @Override
@@ -99,6 +102,7 @@ public class InterpretingService extends Service<State<KeyData>> {
             protected edu.kit.iti.formal.psdbg.interpreter.data.State<KeyData> call() throws Exception {
                 if (statusBar != null) {
                     statusBar.indicateProgress();
+                    statusBar.publishMessage("Interpreting " + ast.getName());
                 }
                 i.interpret(ast);
                 return i.peekState();

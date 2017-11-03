@@ -1,7 +1,5 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
-import edu.kit.iti.formal.psdbg.interpreter.funchdl.DefaultLookup;
-import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowVisitor;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.TransformAst;
@@ -22,9 +20,9 @@ public class ControlFlowVisitorTest {
                 getClass().getResourceAsStream("/edu/kit/iti/formal/psdbg/interpreter/simple1.txt")));
         List<ProofScript> scripts = (List<ProofScript>) a.start().accept(new TransformAst());
         ProofScript s = scripts.get(0);
-        ControlFlowVisitor pfv = new ControlFlowVisitor(new DefaultLookup());
-        s.accept(pfv);
-        System.out.println(pfv.asdot());
+        //ControlFlowVisitor pfv = new ControlFlowVisitor(new DefaultLookup());
+        //s.accept(pfv);
+        //System.out.println(pfv.asdot());
     }
 
 }

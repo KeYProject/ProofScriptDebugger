@@ -19,18 +19,25 @@ import javafx.scene.paint.Color;
 public class InspectionModel {
 
     private final ObjectProperty<ASTNode> node = new SimpleObjectProperty<>(this, "node");
+
     //alle aktuellen nicht geschlossene Ziele -> alle leaves später (open+closed)
     private final ListProperty<GoalNode<KeyData>> goals = new SimpleListProperty<>(this, "goals");
+
     //sicht user selected
     private final ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShow = new SimpleObjectProperty<>(this, "selectedGoalNodeToShow");
+
     //aktuell im Interpreter aktives Goal
     private final ObjectProperty<GoalNode<KeyData>> currentInterpreterGoal = new SimpleObjectProperty<>(this, "currentInterpreterGoal");
 
     private final MapProperty<GoalNode, Color> colorofEachGoalNodeinListView = new SimpleMapProperty<>(FXCollections.observableHashMap());
+
     //private final StringProperty javaString = new SimpleStringProperty();
     private final SetProperty<Integer> highlightedJavaLines = new SimpleSetProperty<>(FXCollections.observableSet(), "highlightedJavaLines");
+
     private final BooleanProperty closable = new SimpleBooleanProperty(this, "InspectionViewClosableProperty");
+
     private final BooleanProperty isInterpreterTab = new SimpleBooleanProperty();
+
     private ObjectProperty<Mode> mode = new SimpleObjectProperty<>();
 
 
@@ -154,6 +161,7 @@ public class InspectionModel {
     public BooleanProperty isInterpreterTabProperty() {
         return isInterpreterTab;
     }
+
 
     enum Mode {
         LIVING, DEAD, POSTMORTEM,

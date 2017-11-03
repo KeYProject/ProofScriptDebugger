@@ -54,8 +54,23 @@ public class ProofScript extends ASTNode<ScriptLanguageParser.ScriptContext> {
         ps.setName(getName());
         ps.setBody(body.copy());
         ps.setSignature(signature.copy());
+        ps.setRuleContext(this.ruleContext);
         return ps;
     }
 
+
+    @Override
+    public boolean eq(ASTNode o) {
+        if (this == o) return true;
+        if (!(o instanceof ProofScript)) return false;
+        if (!super.equals(o)) return false;
+
+        ProofScript that = (ProofScript) o;
+
+        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
+        if (getSignature() != null ? !getSignature().eq(that.getSignature()) : that.getSignature() != null)
+            return false;
+        return getBody() != null ? getBody().eq(that.getBody()) : that.getBody() == null;
+    }
 
 }

@@ -1,30 +1,55 @@
 image: key-ant-openjdk-8:latest
 
-
-
-
 cache:
   paths:
     - .m2/
 
 variables:
-  MAVEN_OPTS: -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2
+  MAVEN_OPTS: >-
+    -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2
+    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
+    -Dorg.slf4j.simpleLogger.showDateTime=true
   GIT_SSL_NO_VERIFY: "true"
 
-  
+stages:
+  - setup
+  - build
+  - test
+  - deploy
+
+setup:
+  stage: setup
+  script:
+    - COMPONENTS=keydeps/lib/components/
+    - GID=key-project-psdbg
+    - V=2.7-SNAPSHOT
+    - mvn install:install-file -Dfile=$COMPONENTS/key.core.jar -DartifactId=key.core  -DgroupId=$GID -Dversion=$V -Dpackaging=jar
+    - mvn install:install-file -Dfile=$COMPONENTS/key.ui.jar -DartifactId=key.ui -DgroupId=$GID -Dversion=$V -Dpackaging=jar
+    - mvn install:install-file -Dfile=$COMPONENTS/key.util.jar -DartifactId=key.util -DgroupId=$GID -Dversion=$V -Dpackaging=jar
+    - mvn install:install-file -Dfile=$COMPONENTS/../libs/recoderKey.jar -DartifactId=recoder  -DgroupId=$GID -Dversion=2.7 -Dpackaging=jar
 
 build:
+  stage: build
   script: "mvn compile -B -T 2"
 
-
-test: 
+test:
+  stage: test
   script: "mvn test -B"
 
 deploy:
+  stage: deploy
   script: 
-    - "mvn package site:site -DperformRelease=true -DcreateChecksum=true -DskipTests=true -B"
+    - "mvn package -DperformRelease=true -DcreateChecksum=true -DskipTests=true -B"
   artifacts: 
     paths:
-      - target/*jar
-      - target/site/*
+      - "*/target/*.jar"
+  allow_failure: true
+
+site:
+  stage: deploy
+  script:
+    - "mvn site:site -DskipTests=true -B"
+  artifacts:
+    paths:
+      - "*/target/site/*"
   allow_failure: true

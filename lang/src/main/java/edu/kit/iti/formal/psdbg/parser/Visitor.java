@@ -72,7 +72,7 @@ public interface Visitor<T> {
 
     T visit(TryCase TryCase);
 
-    T visit(SimpleCaseStatement simpleCaseStatement);
+    T visit(GuardedCaseStatement guardedCaseStatement);
 
     T visit(CaseStatement caseStatement);
 

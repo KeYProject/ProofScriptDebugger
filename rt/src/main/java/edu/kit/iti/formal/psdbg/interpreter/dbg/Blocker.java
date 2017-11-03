@@ -1,105 +1,133 @@
 package edu.kit.iti.formal.psdbg.interpreter.dbg;
 
-import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
-import edu.kit.iti.formal.psdbg.parser.ast.*;
+import edu.kit.iti.formal.psdbg.interpreter.Evaluator;
+import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
+import edu.kit.iti.formal.psdbg.interpreter.exceptions.InterpreterRuntimeException;
+import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
+import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
-/**
- * Created by weigl on 21.05.2017.
- */
-public class Blocker extends DefaultASTVisitor<Void> {
-    AtomicInteger stepUntilBlock = new AtomicInteger(-1);
-    //needs to threadable
-    Set<Integer> brkpnts = new TreeSet<>();
-    final Lock lock = new ReentrantLock();
-    final Condition block = lock.newCondition();
-
-    //better a semaphore?
-    //Semaphore semaphore = new Semaphore();
-
-    public Void checkForHalt(ASTNode node) {
-        if (stepUntilBlock.get() > 0)
-            stepUntilBlock.decrementAndGet();
-
-        if (stepUntilBlock.get() == 0)
-            block();
-
-        int lineNumber = node.getStartPosition().getLineNumber();
-        if (brkpnts.contains(lineNumber)) {
-            block();
-        }
-
-        return super.defaultVisit(node);
+public abstract class Blocker {
+    public interface BlockPredicate extends Predicate<ASTNode> {
     }
 
-    private void block() {
-        try {
-            lock.lock();
-            block.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
-        }
-    }
 
-    public void addBreakpoint(int i) {
-        brkpnts.add(i);
-    }
+    @RequiredArgsConstructor
+    public static class BreakpointLine<T> implements BlockPredicate {
+        @Getter
+        private final Interpreter<T> interpreter;
 
-    public void unlock() {
-        try {
-            lock.lock();
-            block.signal();
-        } finally {
-            lock.unlock();
+        @Getter
+        private final Set<Breakpoint> breakpoints = new HashSet<>();
+
+        private final Breakpoint cmp = new Breakpoint(null, 0);
+
+        @Override
+        public boolean test(ASTNode node) {
+            Evaluator<T> evaluator = new Evaluator<>(interpreter.getSelectedNode().getAssignments(), interpreter.getSelectedNode());
+            for (Breakpoint brkpt : getBreakpoints()) {
+                // check file name
+                if (brkpt.getSourceName().equals(node.getOrigin())) {
+                    // check line
+                    if (brkpt.getLineNumber() == node.getStartPosition().getLineNumber()) {
+                        // if there is no condition
+                        if (brkpt.getConditionAst() == null) {
+                            return true; // no condition ==> trigger
+                        } else { // if there is a condition, we check:
+                            val v = evaluator.eval(brkpt.getConditionAst());
+                            if (v.getType() != SimpleType.BOOL)
+                                throw new InterpreterRuntimeException(
+                                        String.format("Condition %s of breakpoint %s returned type %s",
+                                                brkpt.getCondition(), brkpt, v.getType()));
+                            if (v.getData() == Boolean.TRUE)
+                                return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
     }
 
+    public static class CounterBlocker implements BlockPredicate {
+        @Getter
+        private final AtomicInteger stepUntilBlock = new AtomicInteger(-1);
 
-    @Override
-    public Void visit(ProofScript proofScript) {
-        return checkForHalt(proofScript);
+        public CounterBlocker(int steps) {
+            stepUntilBlock.set(steps);
+        }
+
+        @Override
+        public boolean test(ASTNode astNode) {
+            int value;
+            if ((value = stepUntilBlock.decrementAndGet()) >= 0) {
+                return 0 == value;
+            }
+            return false;
+        }
+
+        public void deactivate() {
+            stepUntilBlock.set(-1);
+        }
     }
 
-    @Override
-    public Void visit(AssignmentStatement assignment) {
-        return checkForHalt(assignment);
+    @RequiredArgsConstructor
+    public static class UntilNode implements BlockPredicate {
+        @Getter
+        private final ASTNode node;
+
+        @Override
+        public boolean test(ASTNode astNode) {
+            return node.equals(astNode);
+        }
     }
 
-    @Override
-    public Void visit(CasesStatement casesStatement) {
-        return checkForHalt(casesStatement);
+    @RequiredArgsConstructor
+    public static class NextWithParent implements BlockPredicate {
+        @Getter
+        private final ASTNode parent;
+
+        @Override
+        public boolean test(ASTNode astNode) {
+            return parent.equals(astNode.getParent());
+        }
     }
 
-    @Override
-    public Void visit(CaseStatement caseStatement) {
-        return checkForHalt(caseStatement);
+    @RequiredArgsConstructor
+    public static class SmallerContext implements BlockPredicate {
+        private final int depth;
+
+        private final Supplier<Integer> currenDepth;
+
+        @Override
+        public boolean test(ASTNode astNode) {
+            return currenDepth.get() <= depth;
+        }
     }
 
-    @Override
-    public Void visit(CallStatement call) {
-        return checkForHalt(call);
+
+    @RequiredArgsConstructor
+    public static class ParentInContext implements BlockPredicate {
+        @Getter
+        private final ASTNode[] context;
+
+        @Override
+        public boolean test(ASTNode astNode) {
+            for (ASTNode node : context) {
+                if (astNode.isAncestor(node))
+                    return true;
+            }
+            return false;
+        }
     }
 
-    @Override
-    public Void visit(TheOnlyStatement theOnly) {
-        return checkForHalt(theOnly);
-    }
 
-    @Override
-    public Void visit(ForeachStatement foreach) {
-        return checkForHalt(foreach);
-    }
-
-    @Override
-    public Void visit(RepeatStatement repeatStatement) {
-        return checkForHalt(repeatStatement);
-    }
 }

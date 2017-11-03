@@ -23,11 +23,9 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  */
 
 
-
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.Visitable;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.*;
@@ -40,7 +38,6 @@ import java.util.stream.Stream;
  * @author Alexander Weigl
  * @version 1 (27.04.17)
  */
-@EqualsAndHashCode
 @ToString
 public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
         implements Visitable, Iterable<Statement> {
@@ -164,17 +161,39 @@ public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
         statements.forEach(action);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Statements{" + "statements=" + statements + '}';
     }
 
-    @Override public <T> T accept(Visitor<T> visitor) {
+    @Override
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 
-    @Override public Statements copy() {
+    @Override
+    public Statements copy() {
         Statements s = new Statements();
-        forEach(e -> s.add(e.copy()));
+        forEach(e -> {
+            Statement ecopy = e.copy();
+            ecopy.setRuleContext(e.getRuleContext());
+            s.add(ecopy);
+        });
+        s.setRuleContext(this.getRuleContext());
         return s;
+    }
+
+    @Override
+    public boolean eq(ASTNode o) {
+        if (this == o) return true;
+        if (!(o instanceof Statements)) return false;
+        if (!super.equals(o)) return false;
+        Statements that = (Statements) o;
+        for (int i = 0; i < statements.size(); i++) {
+            if (!statements.get(i).eq(that.statements.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

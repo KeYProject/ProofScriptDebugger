@@ -25,19 +25,30 @@ package edu.kit.iti.formal.psdbg.parser.ast;
 
 import edu.kit.iti.formal.psdbg.parser.Visitable;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
+
+import javax.annotation.Nullable;
 
 /**
  * @author Alexander Weigl
  * @version 1 (27.04.17)
  */
+@EqualsAndHashCode
 public abstract class ASTNode<T extends ParserRuleContext>
         implements Visitable, Copyable<ASTNode<T>> {
     /**
      * The corresponding parse rule context
      */
     protected T ruleContext;
+
+    /**
+     *
+     */
+    @Getter @Setter @Nullable
+    protected ASTNode parent;
 
     /**
      *
@@ -56,6 +67,7 @@ public abstract class ASTNode<T extends ParserRuleContext>
      *
      * @return
      */
+    @Nullable
     public String getOrigin() {
         if (ruleContext != null) {
             String src = ruleContext.getStart().getInputStream().getSourceName();
@@ -104,4 +116,27 @@ public abstract class ASTNode<T extends ParserRuleContext>
     @Override
     public abstract ASTNode<T> copy();
 
+    public boolean isAncestor(ASTNode node){
+        ASTNode n = this;
+        do {
+            if (n.equals(node))
+                return true;
+            n = n.getParent();
+        } while (n != null);
+        return true;
+    }
+
+    public boolean eq(ASTNode other) {
+        return equals(other);
+    }
+
+    public int getDepth() {
+        int depth = 0;
+        ASTNode n = this;
+        do {
+            n = n.getParent();
+            depth++;
+        } while (n != null);
+        return depth;
+    }
 }

@@ -2,9 +2,11 @@ package edu.kit.iti.formal.psdbg.parser.ast;
 
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class DefaultCaseStatement extends Statement<ScriptLanguageParser.StmtListContext> {
 
     protected Statements body;
@@ -31,7 +33,27 @@ public class DefaultCaseStatement extends Statement<ScriptLanguageParser.StmtLis
      */
     @Override
     public DefaultCaseStatement copy() {
-        return new DefaultCaseStatement(body.copy());
+        DefaultCaseStatement dcs = new DefaultCaseStatement(body.copy());
+        dcs.setRuleContext(this.ruleContext);
+        return dcs;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        DefaultCaseStatement that = (DefaultCaseStatement) o;
+
+        return getBody().eq(that.getBody());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + getBody().hashCode();
+        return result;
     }
 }
 

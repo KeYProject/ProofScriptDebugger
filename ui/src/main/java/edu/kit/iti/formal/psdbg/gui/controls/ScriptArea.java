@@ -5,8 +5,8 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.logic.SequentFormula;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
-import edu.kit.iti.formal.psdbg.gui.model.Breakpoint;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
 import edu.kit.iti.formal.psdbg.lint.LintProblem;
 import edu.kit.iti.formal.psdbg.lint.LinterStrategy;
 import edu.kit.iti.formal.psdbg.parser.Facade;
@@ -63,6 +63,7 @@ import java.util.function.UnaryOperator;
  */
 public class ScriptArea extends CodeArea {
     public static final Logger LOGGER = LogManager.getLogger(ScriptArea.class);
+
     public static final String EXECUTION_MARKER = "\u2316";
 
     /**
@@ -86,13 +87,18 @@ public class ScriptArea extends CodeArea {
     private final ObjectProperty<MainScriptIdentifier> mainScript = new SimpleObjectProperty<>();
 
     private GutterFactory gutter;
+
     private ANTLR4LexerHighlighter highlighter;
+
     private ListProperty<LintProblem> problems = new SimpleListProperty<>(FXCollections.observableArrayList());
+
     private SimpleObjectProperty<CharacterHit> currentMouseOver = new SimpleObjectProperty<>();
+
     private ScriptAreaContextMenu contextMenu = new ScriptAreaContextMenu();
 
     private Consumer<Token> onPostMortem = token -> {
     };
+
     private int getTextWithoutMarker;
 
     public ScriptArea() {
@@ -114,7 +120,7 @@ public class ScriptArea extends CodeArea {
         textProperty().addListener((prop, oldValue, newValue) -> {
             dirty.set(true);
             if (newValue.isEmpty()) {
-                System.err.println("text cleared");
+                LOGGER.debug("text cleared");
             } else {
                 updateMainScriptMarker();
                 updateHighlight();
@@ -122,7 +128,6 @@ public class ScriptArea extends CodeArea {
                 highlightNonExecutionArea();
             }
         });
-
 
 
         markedRegions.addListener((InvalidationListener) o -> updateHighlight());
@@ -226,7 +231,7 @@ public class ScriptArea extends CodeArea {
 
     private void highlightNonExecutionArea() {
         if (hasExecutionMarker()) {
-            System.out.println("getExecutionMarkerPosition() = " + getExecutionMarkerPosition());
+            LOGGER.debug("getExecutionMarkerPosition() = " + getExecutionMarkerPosition());
 
 
             UnaryOperator<Collection<String>> styleMapper = strings -> {
@@ -331,7 +336,7 @@ public class ScriptArea extends CodeArea {
         int line = 1;
         for (GutterAnnotation s : gutter.lineAnnotations) {
             if (s.isBreakpoint()) {
-                Breakpoint b = new Breakpoint(filePath.get(), line);
+                Breakpoint b = new Breakpoint(filePath.get().toString(), line);
                 b.setCondition(s.getBreakpointCondition());
                 list.add(b);
             }
@@ -442,7 +447,7 @@ public class ScriptArea extends CodeArea {
 
         String text = getText();
 
-        //set new Command on position of execution marker
+        //set new DebuggerCommand on position of execution marker
         int posExecMarker = this.getExecutionMarkerPosition();
         setText(text.substring(0, posExecMarker) + "\n" + tapName + " formula=`" + term + "`;\n" + text.substring(posExecMarker + 1));
 
@@ -469,6 +474,7 @@ public class ScriptArea extends CodeArea {
         private MaterialDesignIconView iconMainScript = new MaterialDesignIconView(
                 MaterialDesignIcon.SQUARE_INC, "12"
         );
+
         private MaterialDesignIconView iconBreakPoint = new MaterialDesignIconView(
                 MaterialDesignIcon.STOP_CIRCLE_OUTLINE, "12"
         );
@@ -516,15 +522,15 @@ public class ScriptArea extends CodeArea {
             return annotation.get();
         }
 
+        public void setAnnotation(GutterAnnotation annotation) {
+            this.annotation.set(annotation);
+        }
+
         private void addPlaceholder() {
             Label lbl = new Label();
             lbl.setMinWidth(12);
             lbl.setMinHeight(12);
             getChildren().add(lbl);
-        }
-
-        public void setAnnotation(GutterAnnotation annotation) {
-            this.annotation.set(annotation);
         }
 
         public SimpleObjectProperty<GutterAnnotation> annotationProperty() {
@@ -534,9 +540,13 @@ public class ScriptArea extends CodeArea {
 
     private static class GutterAnnotation {
         private StringProperty text = new SimpleStringProperty();
+
         private SimpleBooleanProperty breakpoint = new SimpleBooleanProperty();
+
         private StringProperty breakpointCondition = new SimpleStringProperty();
+
         private BooleanBinding conditional = breakpointCondition.isNotNull().and(breakpointCondition.isNotEmpty());
+
         private BooleanProperty mainScript = new SimpleBooleanProperty();
 
         public String getText() {
@@ -624,15 +634,20 @@ public class ScriptArea extends CodeArea {
     @Data
     public static class RegionStyle {
         public final int start, stop;
+
         public final String clazzName;
     }
 
     public class GutterFactory implements IntFunction<Node> {
         private final Background defaultBackground =
                 new Background(new BackgroundFill(Color.web("#ddd"), null, null));
+
         private final Val<Integer> nParagraphs;
+
         private Insets defaultInsets = new Insets(0.0, 5.0, 0.0, 5.0);
+
         private Paint defaultTextFill = Color.web("#666");
+
         private Font defaultFont = Font.font("monospace", FontPosture.ITALIC, 13);
 
         private ObservableList<GutterAnnotation> lineAnnotations =
@@ -724,7 +739,7 @@ public class ScriptArea extends CodeArea {
             Token node = Utils.findToken(getText(), pos.getInsertionIndex());
             onPostMortem.accept(node);
 
-            //TODO forward to ProofTreeController, it jumps to the node and this should be done via the callbacks.
+            //TODO forward to ProofTreeManager, it jumps to the node and this should be done via the callbacks.
 
             /*ScriptArea area = ScriptArea.this;
             int chrIdx = currentMouseOver.get().getCharacterIndex().orElse(0);

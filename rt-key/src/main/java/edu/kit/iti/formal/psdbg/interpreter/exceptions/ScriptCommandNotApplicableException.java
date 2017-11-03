@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Exception for not applicable Rules
  */
-public class ScriptCommandNotApplicableException extends RuntimeException {
+public class ScriptCommandNotApplicableException extends InterpreterRuntimeException {
 
     public ScriptCommandNotApplicableException(Exception e) {
         super(e);

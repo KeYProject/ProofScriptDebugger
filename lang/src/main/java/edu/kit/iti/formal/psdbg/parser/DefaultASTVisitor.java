@@ -143,8 +143,8 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
     }
 
     @Override
-    public T visit(SimpleCaseStatement simpleCaseStatement) {
-        return defaultVisit(simpleCaseStatement);
+    public T visit(GuardedCaseStatement guardedCaseStatement) {
+        return defaultVisit(guardedCaseStatement);
     }
 
     @Override
