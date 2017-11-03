@@ -6,12 +6,14 @@ import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
+import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
 import edu.kit.iti.formal.psdbg.StepIntoCommand;
 import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
 import edu.kit.iti.formal.psdbg.gui.controls.*;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
+import edu.kit.iti.formal.psdbg.gui.model.InterpreterThreadState;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
@@ -39,11 +41,17 @@ import org.apache.logging.log4j.Logger;
 import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
+import org.reactfx.util.FxTimer;
+import org.reactfx.util.Timer;
 
+import javax.annotation.Nullable;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -132,6 +140,8 @@ public class DebuggerMain implements Initializable {
     @FXML
     private Menu examplesMenu;
 
+    private Timer interpreterThreadTimer;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Events.register(this);
@@ -194,6 +204,8 @@ public class DebuggerMain implements Initializable {
                 proofTreeDock,
                 DockPos.LEFT);
 
+        statusBar.interpreterStatusModelProperty().bind(model.interpreterStateProperty());
+        renewThreadStateTimer();
     }
 
 
@@ -427,6 +439,8 @@ public class DebuggerMain implements Initializable {
             ib.setScripts(scripts);
             KeyInterpreter interpreter = ib.build();
             DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, ms, null);
+            df.setSucceedListener(this::onInterpreterSucceed);
+            df.setErrorListener(this::onInterpreterError);
             if (addInitBreakpoint) {
                 df.releaseUntil(new Blocker.CounterBlocker(1)); // just execute
             }
@@ -439,6 +453,84 @@ public class DebuggerMain implements Initializable {
             LOGGER.error(e);
             Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
+    }
+
+    private void onInterpreterSucceed(DebuggerFramework<KeyData> keyDataDebuggerFramework) {
+        scriptController.getDebugPositionHighlighter().remove();
+        statusBar.publishMessage("Interpreter finished.");
+    }
+
+    @FXML
+    public void debugPrintDot(@Nullable ActionEvent ae) {
+        if (model.getDebuggerFramework() == null) {
+            statusBar.publishErrorMessage("can print debug info, no debugger started!");
+            return;
+        }
+        try (PrintWriter out = new PrintWriter(new FileWriter("debug.dot"))) {
+            out.println("digraph G {");
+            for (PTreeNode<KeyData> n : model.getDebuggerFramework().getStates()) {
+                out.format("%d [label=\"%s@%s (G: %d)\"]%n", n.hashCode(),
+                        n.getStatement().accept(new ShortCommandPrinter()),
+                        n.getStatement().getStartPosition().getLineNumber(),
+                        n.getStateBeforeStmt().getGoals().size()
+                );
+
+                if (n.getStepOver() != null)
+                    out.format("%d -> %d [label=\"SO\"]%n", n.hashCode(), n.getStepOver().hashCode());
+                if (n.getStepInto() != null)
+                    out.format("%d -> %d [label=\"SI\"]%n", n.hashCode(), n.getStepInto().hashCode());
+
+                if (n.getStepInvOver() != null)
+                    out.format("%d -> %d [label=\"<SO\"]%n", n.hashCode(), n.getStepInvOver().hashCode());
+                if (n.getStepInvInto() != null)
+                    out.format("%d -> %d [label=\"<SI\"]%n", n.hashCode(), n.getStepInvInto().hashCode());
+
+                if (n.getStepReturn() != null)
+                    out.format("%d -> %d [label=\"R\"]%n", n.hashCode(), n.getStepReturn().hashCode());
+
+            }
+            out.println("}");
+
+        } catch (IOException e) {
+            statusBar.publishErrorMessage(e.getMessage());
+        }
+    }
+
+    private void onInterpreterError(DebuggerFramework<KeyData> keyDataDebuggerFramework, Throwable throwable) {
+        Utils.showExceptionDialog("Error during Execution", "Error during Script Execution",
+                "Here should be some really good text...\nNothing will be the same. Everything broken.",
+                throwable
+        );
+    }
+
+    private void renewThreadStateTimer() {
+        if (interpreterThreadTimer != null) {
+            interpreterThreadTimer.stop();
+        }
+        interpreterThreadTimer = FxTimer.runPeriodically(Duration.ofMillis(500),
+                () -> {
+                    if (model.getDebuggerFramework() == null) {
+                        model.setInterpreterState(InterpreterThreadState.NO_THREAD);
+                    } else {
+                        Thread t = model.getDebuggerFramework().getInterpreterThread();
+                        switch (t.getState()) {
+                            case NEW:
+                            case BLOCKED:
+                            case WAITING:
+                            case TIMED_WAITING:
+                                model.setInterpreterState(InterpreterThreadState.WAIT);
+                                break;
+                            case TERMINATED:
+                                if (model.getDebuggerFramework().hasError())
+                                    model.setInterpreterState(InterpreterThreadState.ERROR);
+                                else
+                                    model.setInterpreterState(InterpreterThreadState.FINISHED);
+                                break;
+                            default:
+                                model.setInterpreterState(InterpreterThreadState.RUNNING);
+                        }
+                    }
+                });
     }
 
     @FXML

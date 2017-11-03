@@ -6,8 +6,8 @@ import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
+import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
-import edu.kit.iti.formal.psdbg.parser.ast.Statement;
 import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import lombok.Getter;
 import lombok.Setter;
@@ -66,7 +66,9 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
         contextStack.add(node);
         State<T> currentInterpreterStateCopy = getInterpreterStateCopy();
         lastNode.setStateBeforeStmt(currentInterpreterStateCopy);
-
+        if (node instanceof CallStatement) {
+            lastNode.setAtomic(interpreter.getFunctionLookup().isAtomic((CallStatement) node));
+        }
         //add node to state graph
         return lastNode;
     }

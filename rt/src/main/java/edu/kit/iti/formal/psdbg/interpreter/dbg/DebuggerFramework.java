@@ -6,12 +6,14 @@ import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowNode;
 import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowTypes;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -25,39 +27,37 @@ import java.util.function.Consumer;
  * <li>{@link StateWrapper}: signals the PTreeNodes</li>
  * <li></li>
  * </ol>
- *<code><pre>
- +------------------------------------------------------------------------------------------+
- |                                                                                          |
- |                               DebuggerFramework<T>                                       |
- |                                                                                          +------------+
- |                                                                                          |           execute(DebuggerCommand)
- |                                                                                          |              Commands: StepOver, StepInto,
- |    +------------------+       +-----------------+       +---------------------------+    |                        StepReturn, StepBack
- |    |                  |       |                 |       |                           |    |
- |    |  Interpreter<T>  +-------> StateWrapper<T> +------->  PTreeManager<T>          +--------->
- |    |                  |       |                 |       |                           |    |
- |    +---------+--------+       +-----------------+       +---------------------------+    |    statePointerChanged(PTreeNode<T>)
- |              |                                                                           |
- |              |         Listener                  emitNode                                |
- |              |                                                                           |
- |              |                                                                           |
- |    +---------v------------+                                                              |
- |    |                      <--------------------------------------------------------------------+  releaseForever()
- |    |    BlockerListener   |                                                              |        release()
- |    |                      |                                                              |        releaseUntil(BlockerPredicate)
- |    +----------------------+                                                              |        getBreakpoints()
- |                                                                                          |
- |                                                                                          |
- |    +----------------+      +---------------------+                                       |
- |    |                |      |                     |                                       |
- |    |   Breakpoint   |      |   BlockerPredicate  |                                       |
- |    |                |      |                     |                                       |
- |    +----------------+      +---------------------+                                       |
- |                                                                                          |
- +------------------------------------------------------------------------------------------+
- </pre></code>
- *
- *
+ * <code><pre>
+ * +------------------------------------------------------------------------------------------+
+ * |                                                                                          |
+ * |                               DebuggerFramework<T>                                       |
+ * |                                                                                          +------------+
+ * |                                                                                          |           execute(DebuggerCommand)
+ * |                                                                                          |              Commands: StepOver, StepInto,
+ * |    +------------------+       +-----------------+       +---------------------------+    |                        StepReturn, StepBack
+ * |    |                  |       |                 |       |                           |    |
+ * |    |  Interpreter<T>  +-------> StateWrapper<T> +------->  PTreeManager<T>          +--------->
+ * |    |                  |       |                 |       |                           |    |
+ * |    +---------+--------+       +-----------------+       +---------------------------+    |    statePointerChanged(PTreeNode<T>)
+ * |              |                                                                           |
+ * |              |         Listener                  emitNode                                |
+ * |              |                                                                           |
+ * |              |                                                                           |
+ * |    +---------v------------+                                                              |
+ * |    |                      <--------------------------------------------------------------------+  releaseForever()
+ * |    |    BlockerListener   |                                                              |        release()
+ * |    |                      |                                                              |        releaseUntil(BlockerPredicate)
+ * |    +----------------------+                                                              |        getBreakpoints()
+ * |                                                                                          |
+ * |                                                                                          |
+ * |    +----------------+      +---------------------+                                       |
+ * |    |                |      |                     |                                       |
+ * |    |   Breakpoint   |      |   BlockerPredicate  |                                       |
+ * |    |                |      |                     |                                       |
+ * |    +----------------+      +---------------------+                                       |
+ * |                                                                                          |
+ * +------------------------------------------------------------------------------------------+
+ * </pre></code>
  *
  * @author Alexander Weigl
  * @version 1 (27.10.17)
@@ -65,11 +65,12 @@ import java.util.function.Consumer;
 public class DebuggerFramework<T> {
     private final Interpreter<T> interpreter;
 
-    @Getter
+    /*@Getter
     private final List<Consumer<PTreeNode<T>>> beforeExecutionListener = new LinkedList<>();
 
     @Getter
     private final List<Consumer<PTreeNode<T>>> afterExecutionListener = new LinkedList<>();
+    */
 
     @Getter
     private final List<Consumer<PTreeNode<T>>> currentStatePointerListener = new LinkedList<>();
@@ -82,20 +83,35 @@ public class DebuggerFramework<T> {
 
     private final StateWrapper<T> stateWrapper;
 
+    private final ProofScript mainScript;
+
+    @Getter @Setter
+    private BiConsumer<DebuggerFramework<T>, Throwable> errorListener = (df, exc) -> {
+    };
+
+    @Getter @Setter
+    private Consumer<DebuggerFramework<T>> succeedListener = (df) -> {
+    };
+
     private Blocker.BreakpointLine<T> breakpointBlocker;
+
+    @Nullable
+    @Getter
+    private Throwable error;
 
 
     public DebuggerFramework(@Nonnull Interpreter<T> interpreter,
                              @Nonnull ProofScript main,
                              MutableValueGraph<ControlFlowNode, ControlFlowTypes> cfg) {
         this.interpreter = interpreter;
+        mainScript = main;
         blocker = new BlockListener<>(interpreter);
         breakpointBlocker = new Blocker.BreakpointLine<>(interpreter);
         blocker.getPredicates().add(breakpointBlocker);
         stateWrapper = new StateWrapper<>(interpreter);
         ptreeManager = new ProofTreeManager<>(cfg);
         stateWrapper.setEmitNode(ptreeManager::receiveNode);
-        interpreterThread = new Thread(() -> interpreter.interpret(main));
+        interpreterThread = new Thread(this::run);
     }
 
     public List<Consumer<PTreeNode<T>>> getStatePointerListener() {
@@ -114,6 +130,17 @@ public class DebuggerFramework<T> {
     public void start() {
         interpreterThread.start();
     }
+
+    private void run() {
+        try {
+            interpreter.interpret(mainScript);
+            succeedListener.accept(this);
+        } catch (Exception e) {
+            error = e;
+            errorListener.accept(this, e);
+        }
+    }
+
 
     /**
      * stops the interpreter in the background on the next {@link edu.kit.iti.formal.psdbg.parser.ast.ASTNode}.
@@ -186,5 +213,13 @@ public class DebuggerFramework<T> {
 
     public Set<Breakpoint> getBreakpoints() {
         return breakpointBlocker.getBreakpoints();
+    }
+
+    public Thread getInterpreterThread() {
+        return interpreterThread;
+    }
+
+    public boolean hasError() {
+        return error != null;
     }
 }

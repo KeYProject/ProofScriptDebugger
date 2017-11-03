@@ -1,16 +1,29 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
+import edu.kit.iti.formal.psdbg.gui.model.InterpreterThreadState;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.Transition;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Separator;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.StatusBar;
@@ -22,29 +35,49 @@ import org.controlsfx.control.StatusBar;
  */
 public class DebuggerStatusBar extends StatusBar {
     private static final Logger LOGGER = LogManager.getLogger(DebuggerStatusBar.class);
+
     //private final Dialog<Void> loggerDialog = createDialog();
     //private final ContextMenu contextMenu = createContextMenu();
     //private final Appender loggerHandler = createAppender();
     //private LogCatchHandlerFX logCatchHandler = new LogCatchHandlerFX();
+    private ObjectProperty<InterpreterThreadState> interpreterStatusModel = new SimpleObjectProperty<>();
 
     private ObjectProperty<MainScriptIdentifier> mainScriptIdentifier = new SimpleObjectProperty<>();
 
     private IntegerProperty numberOfGoals = new SimpleIntegerProperty(0);
 
+    private Label lblCurrentNodes = new Label("#nodes: %s");
+
+    private Label lblMainscript = new Label();
+
+    private MaterialDesignIconView interpreterStatusView =
+            new MaterialDesignIconView(MaterialDesignIcon.MATERIAL_UI, "2.3em");
+
+
+    private ProgressIndicator progressIndicator = new ProgressIndicator();
+
+    private EventHandler<MouseEvent> toolTipHandler = event ->
+            publishMessage(((Control) event.getTarget()).getTooltip().getText());
+
     public DebuggerStatusBar() {
         //listenOnField("psdbg");
 
         getRightItems().addAll(
-                lblMainscript
+                lblMainscript,
+                new Separator(),
+                interpreterStatusView
                 //lblCurrentNodes,
                 //progressIndicator
         );
 
-        /*setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.SECONDARY) {
-                contextMenu.show(this, event.getScreenX(), event.getScreenY());
-            }
-        });*/
+        interpreterStatusModel.addListener((p, o, n) -> {
+            interpreterStatusView.setIcon(n.getIcon());
+            if (n == InterpreterThreadState.ERROR)
+                interpreterStatusView.setFill(Color.web("orangered"));
+            else
+                interpreterStatusView.setFill(Color.web("cornflowerblue"));
+        });
+
         numberOfGoals.addListener((observable, oldValue, newValue) -> {
             lblCurrentNodes.setText("#nodes: " + newValue);
         });
@@ -83,27 +116,9 @@ public class DebuggerStatusBar extends StatusBar {
         this.numberOfGoals.set(numberOfGoals);
     }
 
-    private Label lblCurrentNodes = new Label("#nodes: %s");
-    private Label lblMainscript = new Label();
-    private ProgressIndicator progressIndicator = new ProgressIndicator();
-    private EventHandler<MouseEvent> toolTipHandler = event -> {
-        publishMessage(((Control) event.getTarget()).getTooltip().getText());
-    };
-
     public IntegerProperty numberOfGoalsProperty() {
         return numberOfGoals;
     }
-
-    /*
-    private Appender createAppender() {
-        PatternLayout layout = PatternLayout.createDefaultLayout();
-        return new AbstractAppender("", null, layout) {
-            @Override
-            public void append(LogEvent event) {
-                publishMessage(event.getMessage().getFormattedMessage());
-            }
-        };
-    }*/
 
     public void publishMessage(String format, Object... args) {
         String msg = String.format(format, args);
@@ -114,25 +129,6 @@ public class DebuggerStatusBar extends StatusBar {
         return toolTipHandler;
     }
 
-    /*
-    public void listenOnField(ObservableStringValue value) {
-        value.addListener((observable, oldValue, newValue) -> {
-            publishMessage(newValue);
-        });
-    }*/
-
-    /*
-    public void listenOnField(Logger logger) {
-        org.apache.logging.log4j.core.Logger plogger = ((org.apache.logging.log4j.core.Logger) logger); // Bypassing the public API
-        plogger.addAppender(loggerHandler);
-        plogger.addAppender(logCatchHandler);
-        logger.info("Listener added");
-    }*/
-
-    /*public void listenOnField(String loggerCategory) {
-        listenOnField(LogManager.getLogger(loggerCategory));
-    }*/
-
     public void indicateProgress() {
         progressIndicator.setProgress(-1);
     }
@@ -140,15 +136,6 @@ public class DebuggerStatusBar extends StatusBar {
     public void stopProgress() {
         progressIndicator.setProgress(100);
     }
-
-    /*public ContextMenu createContextMenu() {
-        ContextMenu cm = new ContextMenu();
-        Menu viewOptions = new Menu("View Options");
-        MenuItem showLog = new MenuItem("Show Log", new MaterialDesignIconView(MaterialDesignIcon.FORMAT_LIST_BULLETED));
-        showLog.setOnAction(this::showLog);
-        cm.getItems().addAll(viewOptions, showLog);
-        return cm;
-    }*/
 
     public MainScriptIdentifier getMainScriptIdentifier() {
         return mainScriptIdentifier.get();
@@ -161,91 +148,33 @@ public class DebuggerStatusBar extends StatusBar {
     public ObjectProperty<MainScriptIdentifier> mainScriptIdentifierProperty() {
         return mainScriptIdentifier;
     }
-}
 
-    /*
-    private void showLog(ActionEvent actionEvent) {
-        loggerDialog.show();
-    }*/
-
-    /*public Dialog<Void> createDialog() {
-        final TableView<LogEvent> recordView = new TableView<>(logCatchHandler.recordsProperty());
-        recordView.setEditable(false);
-        recordView.setSortPolicy(param -> false);
-
-        TableColumn<LogEvent, Date> dateColumn = new TableColumn<>("Date");
-        TableColumn<LogEvent, Level> levelColumn = new TableColumn<>("Level");
-        //TableColumn<LogRecord, String> classColumn = new TableColumn<>("Class");
-        TableColumn<LogEvent, String> messageColumn = new TableColumn<>("Message");
-
-        recordView.getColumns().setAll(dateColumn, levelColumn, messageColumn);
-
-
-        dateColumn.setCellValueFactory(
-                param -> new SimpleObjectProperty<>(new Date(param.getValue().getTimeMillis())
-                ));
-
-        levelColumn.setCellValueFactory(
-                param -> new SimpleObjectProperty<>(param.getValue().getLevel())
-        );
-
-        messageColumn.setCellValueFactory(
-                param -> {
-                    return new SimpleStringProperty(param.getValue().getMessage().getFormattedMessage());
-}
-        );
-
-
-                Dialog<Void> dialog=new Dialog<>();
-        dialog.setResizable(true);
-        dialog.initModality(Modality.NONE);
-        dialog.setHeaderText("Logger Records");
-        DialogPane dpane=dialog.getDialogPane();
-        dpane.setContent(new BorderPane(recordView));
-        dpane.getButtonTypes().setAll(ButtonType.CLOSE);
-        return dialog;
-        }*/
-
-/*
-    public static class LogCatchHandlerFX extends AbstractAppender {
-        private ListProperty<LogEvent> records = new SimpleListProperty<>(FXCollections.observableList(
-                new LinkedList<>() //remove of head
-        ));
-
-        private int maxRecords = 5000;
-
-        protected LogCatchHandlerFX() {
-            super("LogCatchHandlerFX", null, PatternLayout.createDefaultLayout());
-        }
-
-        @Override
-        public void append(LogEvent event) {
-            records.add(event);
-            while (records.size() > maxRecords)
-                records.remove(0);
-        }
-
-
-        public ObservableList<LogEvent> getRecords() {
-            return records.get();
-        }
-
-        public void setRecords(ObservableList<LogEvent> records) {
-            this.records.set(records);
-        }
-
-        public ListProperty<LogEvent> recordsProperty() {
-            return records;
-        }
-
-        public int getMaxRecords() {
-            return maxRecords;
-        }
-
-        public void setMaxRecords(int maxRecords) {
-            this.maxRecords = maxRecords;
-        }
+    public InterpreterThreadState getInterpreterStatusModel() {
+        return interpreterStatusModel.get();
     }
-    }*/
 
+    public void setInterpreterStatusModel(InterpreterThreadState interpreterStatusModel) {
+        this.interpreterStatusModel.set(interpreterStatusModel);
+    }
 
+    public ObjectProperty<InterpreterThreadState> interpreterStatusModelProperty() {
+        return interpreterStatusModel;
+    }
+
+    public void publishErrorMessage(String message) {
+        publishMessage(message);
+        final Animation animation = new Transition() {
+            {
+                setCycleDuration(Duration.millis(1000));
+                setInterpolator(Interpolator.EASE_OUT);
+            }
+
+            @Override
+            protected void interpolate(double frac) {
+                Color vColor = new Color(1, 0, 0, 1 - frac);
+                setBackground(new Background(new BackgroundFill(vColor, CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+        };
+        animation.play();
+    }
+}

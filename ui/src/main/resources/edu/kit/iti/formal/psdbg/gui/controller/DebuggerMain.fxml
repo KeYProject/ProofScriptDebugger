@@ -61,6 +61,9 @@
                         <Menu text="Edit">
                             <items>
                                 <MenuItem text="Delete"/>
+                                <MenuItem text="Print Debug Information" onAction="#debugPrintDot"
+                                          accelerator="Ctrl+d"
+                                />
                             </items>
                         </Menu>
                         <Menu text="View">
@@ -70,12 +73,14 @@
                                         <MaterialDesignIconView glyphName="CODE_TAGS" size="24.0"/>
                                     </graphic>
                                 </CheckMenuItem>
-                                <CheckMenuItem fx:id="miWelcomeDock" onAction="#showWelcomeDock" text="Show Welcome window">
+                                <CheckMenuItem fx:id="miWelcomeDock" onAction="#showWelcomeDock"
+                                               text="Show Welcome window">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="HELP_CIRCLE" size="24.0"/>
                                     </graphic>
                                 </CheckMenuItem>
-                                <CheckMenuItem fx:id="miActiveInspector" onAction="#showActiveInspector" text="Show Active Inspector window">
+                                <CheckMenuItem fx:id="miActiveInspector" onAction="#showActiveInspector"
+                                               text="Show Active Inspector window">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="MAGNIFY" size="24.0"/>
                                     </graphic>
@@ -85,7 +90,8 @@
                                         <MaterialDesignIconView glyphName="TREE" size="24.0"/>
                                     </graphic>
                                 </CheckMenuItem>
-                                <CheckMenuItem fx:id="miCommandHelp" onAction="#showCommandHelp" text="Show Command Help">
+                                <CheckMenuItem fx:id="miCommandHelp" onAction="#showCommandHelp"
+                                               text="Show Command Help">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="STACKEXCHANGE" size="24.0"/>
                                     </graphic>
@@ -143,7 +149,6 @@
                             </items>
 
                         </SplitMenuButton>
-
 
                         <Button onAction="#stepInto" disable="${controller.stepNotPossible}">
                             <graphic>
