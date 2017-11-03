@@ -3,6 +3,7 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -22,6 +23,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 import lombok.Getter;
+
+import java.util.List;
 
 /**
  * Right part of the splitpane that displays the different parts of a state
@@ -163,6 +166,17 @@ public class InspectionView extends BorderPane {
 
     public ReadOnlyObjectProperty<InspectionModel> modelProperty() {
         return model;
+    }
+
+    public void activate(PTreeNode<KeyData> node, State<KeyData> lastState) {
+        InspectionModel im = model.get();
+        im.getGoals().setAll(lastState.getGoals());
+        im.setSelectedGoalNodeToShow(lastState.getSelectedGoalNode());
+
+        //Experimental
+        List<PTreeNode<KeyData>> ctxn = node.getContextNodes();
+        frames.getItems().setAll(ctxn);
+        frames.getSelectionModel().select(node);
     }
 
     /**

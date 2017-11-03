@@ -2,6 +2,7 @@ package edu.kit.iti.formal.psdbg.gui.controller;
 
 import com.google.common.eventbus.EventBus;
 import de.uka.ilkd.key.logic.PosInOccurrence;
+import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptArea;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
@@ -9,6 +10,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +18,7 @@ import java.util.List;
 
 /**
  * See http://codingjunkie.net/guava-eventbus/ for an introduction.
- *
+ * <p>
  * Created by weigl on 7/11/17.
  */
 public class Events {
@@ -45,6 +47,7 @@ public class Events {
     @RequiredArgsConstructor
     public static class TacletApplicationEvent {
         private final TacletApp app;
+
         private final PosInOccurrence pio;
     }
 
@@ -52,6 +55,7 @@ public class Events {
     @RequiredArgsConstructor
     public static class ScriptModificationEvent {
         private final int line;
+
         private final CallStatement cs;
     }
 
@@ -73,11 +77,31 @@ public class Events {
      */
     public static class EventForNewGoalView {
         private final ASTNode correspodingASTNode;
-        private final State<KeyData> newState;
-        private final List<GoalNode> listOfNotExecutedNodes;
-        private final List<GoalNode> listOfAlreadyExecutedGoalNodes;
-        private final List<GoalNode> closedNodes;
-        private final List<GoalNode> openNodes;
 
+        private final State<KeyData> newState;
+
+        private final List<GoalNode> listOfNotExecutedNodes;
+
+        private final List<GoalNode> listOfAlreadyExecutedGoalNodes;
+
+        private final List<GoalNode> closedNodes;
+
+        private final List<GoalNode> openNodes;
+    }
+
+
+    @Data
+    @RequiredArgsConstructor
+    public static class SelectNodeInGoalList {
+        private final Node node;
+    }
+
+    @Data
+    @RequiredArgsConstructor
+    @AllArgsConstructor
+    public static class PublishMessage {
+        private String message;
+
+        private int flash = 0;
     }
 }

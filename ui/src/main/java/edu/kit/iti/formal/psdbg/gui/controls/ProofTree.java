@@ -4,6 +4,7 @@ import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.ProofTreeEvent;
 import de.uka.ilkd.key.proof.ProofTreeListener;
+import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import javafx.application.Platform;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.ObjectProperty;
@@ -11,9 +12,7 @@ import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.BorderPane;
 import javafx.util.StringConverter;
@@ -87,6 +86,8 @@ public class ProofTree extends BorderPane {
         }
     };
 
+    private ContextMenu contextMenu;
+
     public ProofTree() {
         Utils.createWithFXML(this);
         treeProof.setCellFactory(this::cellFactory);
@@ -97,6 +98,9 @@ public class ProofTree extends BorderPane {
             }
             if (n != null)
                 n.addProofTreeListener(proofTreeListener);
+        });
+        setOnContextMenuRequested(evt -> {
+            getContextMenu().show(this, evt.getScreenX(), evt.getScreenY());
         });
         init();
     }
@@ -121,6 +125,25 @@ public class ProofTree extends BorderPane {
         } else {
             return object.isClosed() ? "CLOSED GOAL" : "OPEN GOAL";
         }
+    }
+
+    public ContextMenu getContextMenu() {
+        if (contextMenu == null) {
+            MenuItem showGoal = new MenuItem("Show in Goal List");
+            showGoal.setOnAction((evt) -> {
+                TreeItem<TreeNode> item = treeProof.getSelectionModel().getSelectedItem();
+                Node n = item.getValue().getNode();
+                if (n != null) {
+                    Events.fire(new Events.SelectNodeInGoalList(n));
+                } else {
+                    Events.fire(new Events.PublishMessage("Current item does not have a node.", 2));
+                }
+            });
+            contextMenu = new ContextMenu(showGoal);
+            contextMenu.setAutoFix(true);
+            contextMenu.setAutoHide(true);
+        }
+        return contextMenu;
     }
 
     private void init() {

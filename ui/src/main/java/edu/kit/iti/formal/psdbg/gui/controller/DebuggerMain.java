@@ -1,5 +1,6 @@
 package edu.kit.iti.formal.psdbg.gui.controller;
 
+import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.api.ProofApi;
@@ -17,7 +18,9 @@ import edu.kit.iti.formal.psdbg.gui.model.InterpreterThreadState;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
+import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.application.Platform;
@@ -142,6 +145,29 @@ public class DebuggerMain implements Initializable {
 
     private Timer interpreterThreadTimer;
 
+    @Subscribe
+    public void handle(Events.PublishMessage message) {
+        if (message.getFlash() == 0)
+            statusBar.publishMessage(message.getMessage());
+        else if (message.getFlash() == 1)
+            statusBar.publishSuccessMessage(message.getMessage());
+        else
+            statusBar.publishErrorMessage(message.getMessage());
+    }
+
+    @Subscribe
+    public void handle(Events.SelectNodeInGoalList evt) {
+        InspectionModel im = getInspectionViewsController().getActiveInspectionViewTab().getModel();
+        for (GoalNode<KeyData> gn : im.getGoals()) {
+            if (gn.getData().getNode().equals(evt.getNode())) {
+                im.setSelectedGoalNodeToShow(gn);
+                return;
+            }
+        }
+
+        statusBar.publishErrorMessage("Node not present in Goal List");
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Events.register(this);
@@ -208,7 +234,6 @@ public class DebuggerMain implements Initializable {
         renewThreadStateTimer();
     }
 
-
     /**
      * If the mouse moves other toolbar button, the help text should display in the status bar
      */
@@ -236,21 +261,8 @@ public class DebuggerMain implements Initializable {
      * @see {@link #handleStatePointer(PTreeNode)}
      */
     private void handleStatePointerUI(PTreeNode<KeyData> node) {
-        InspectionModel im = getInspectionViewsController().getActiveInspectionViewTab().getModel();
-
-        im.getGoals().setAll(
-                node.getStateBeforeStmt().getGoals()
-        );
-        im.setSelectedGoalNodeToShow(
-                node.getStateBeforeStmt().getSelectedGoalNode());
-
+        getInspectionViewsController().getActiveInspectionViewTab().activate(node, node.getStateBeforeStmt());
         scriptController.getDebugPositionHighlighter().highlight(node.getStatement());
-
-        //Experimental
-        ComboBox<PTreeNode<KeyData>> frames = getInspectionViewsController().getActiveInspectionViewTab().getFrames();
-        List<PTreeNode<KeyData>> ctxn = node.getContextNodes();
-        frames.getItems().setAll(ctxn);
-        frames.getSelectionModel().select(node);
     }
 
     private void marriageJavaCode() {
@@ -458,7 +470,11 @@ public class DebuggerMain implements Initializable {
     private void onInterpreterSucceed(DebuggerFramework<KeyData> keyDataDebuggerFramework) {
         Platform.runLater(() -> {
             scriptController.getDebugPositionHighlighter().remove();
-            statusBar.publishMessage("Interpreter finished.");
+            statusBar.publishSuccessMessage("Interpreter finished.");
+            assert model.getDebuggerFramework() != null;
+            PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
+            State<KeyData> lastState = statePointer.getStateAfterStmt();
+            getInspectionViewsController().getActiveInspectionViewTab().activate(statePointer, lastState);
         });
     }
 
@@ -588,7 +604,7 @@ public class DebuggerMain implements Initializable {
     }
 
     @FXML
-    protected void loadKeYFile() {
+    public void loadKeYFile() {
         File keyFile = openFileChooserOpenDialog("Select KeY File", "KeY Files", "key", "kps");
         openKeyFile(keyFile);
     }

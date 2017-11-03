@@ -13,18 +13,6 @@
     <packaging>jar</packaging>
     <version>1.0</version>
 
-    <repositories>
-        <repository>
-            <id>local-repo</id>
-            <name>local-repo</name>
-            <url>file:///${basedir}/local-repo</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -66,6 +54,7 @@
 
     <build>
         <plugins>
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -80,17 +69,18 @@
                 </executions>
                 <configuration>
                     <workingDirectory>${basedir}/../</workingDirectory>
-                    <!--                 <arguments>
+                                     <arguments>
                                 <systemProperties>
                                     <systemProperty>
                                         <key>java.security.policy</key>
                                         <value>policy</value>
                                     </systemProperty>
                                 </systemProperties>
-                            </arguments>-->
+                            </arguments>
                     <mainClass>GenDoc</mainClass>
                 </configuration>
             </plugin>
+            -->
         </plugins>
     </build>
 

@@ -3,6 +3,7 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 
 /**
@@ -114,6 +115,14 @@ public class WelcomePane extends AnchorPane {
         proofScriptDebugger.openJavaFile();
         proofScriptDebugger.getScriptController().newScript();
 
+    }
+
+    @FXML
+    public void loadKeyProblem(ActionEvent event) {
+        proofScriptDebugger.getWelcomePaneDock().close();
+        proofScriptDebugger.showActiveInspector(event);
+        proofScriptDebugger.loadKeYFile();
+        proofScriptDebugger.getScriptController().newScript();
     }
 
 }

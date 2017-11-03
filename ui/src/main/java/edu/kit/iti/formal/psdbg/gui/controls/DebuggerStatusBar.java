@@ -28,6 +28,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.StatusBar;
 
+import java.util.function.DoubleFunction;
+
 /**
  * Created on 09.06.2017
  *
@@ -163,6 +165,16 @@ public class DebuggerStatusBar extends StatusBar {
 
     public void publishErrorMessage(String message) {
         publishMessage(message);
+        flash((frac) -> new Color(1, 0, 0, 1 - frac));
+
+    }
+
+    public void publishSuccessMessage(String message) {
+        publishMessage(message);
+        flash((frac) -> new Color(0, 1, 0, 1 - frac));
+    }
+
+    private void flash(DoubleFunction<Color> color) {
         final Animation animation = new Transition() {
             {
                 setCycleDuration(Duration.millis(1000));
@@ -171,8 +183,7 @@ public class DebuggerStatusBar extends StatusBar {
 
             @Override
             protected void interpolate(double frac) {
-                Color vColor = new Color(1, 0, 0, 1 - frac);
-                setBackground(new Background(new BackgroundFill(vColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                setBackground(new Background(new BackgroundFill(color.apply(frac), CornerRadii.EMPTY, Insets.EMPTY)));
             }
         };
         animation.play();
