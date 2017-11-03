@@ -24,7 +24,9 @@ package edu.kit.iti.formal.psdbg.parser;
 
 
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
+import edu.kit.iti.formal.psdbg.parser.ast.Expression;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
+import lombok.val;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -33,7 +35,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import edu.kit.iti.formal.psdbg.parser.ast.*;
 
 /**
  * This class captures high-level functions of this package.
@@ -103,5 +104,10 @@ public abstract class Facade {
         PrettyPrinter prettyPrinter = new PrettyPrinter();
         node.accept(prettyPrinter);
         return prettyPrinter.toString();
+    }
+
+    public static Expression parseExpression(String condition) {
+        val ctx = getParser(CharStreams.fromString(condition)).expression();
+        return (Expression) ctx.accept(new TransformAst());
     }
 }

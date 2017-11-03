@@ -10,23 +10,20 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ClosesCase extends CaseStatement {
-
-    private boolean isClosedStmt = true;
-
     /**
      * Script that should be executed and shown whether case can be closed
      */
-    private Statements closesScript;
+    private Statements closesGuard;
 
     /**
      * A close subscript() {bodyscript} expression
      *
-     * @param closesScript the script that is exectued in order to determine whether goal would clos. This proof is pruned afterwards
+     * @param closesGuard the script that is exectued in order to determine whether goal would clos. This proof is pruned afterwards
      * @param body         the actual script that is then executed when closesscript was successful and pruned
      */
-    public ClosesCase(Statements closesScript, Statements body) {
+    public ClosesCase(Statements closesGuard, Statements body) {
         this.body = body;
-        this.closesScript = closesScript;
+        this.closesGuard = closesGuard;
     }
 
     /**
@@ -42,7 +39,20 @@ public class ClosesCase extends CaseStatement {
      */
     @Override
     public ClosesCase copy() {
-        return new ClosesCase(closesScript.copy(), body.copy());
+        ClosesCase cs = new ClosesCase(closesGuard.copy(), body.copy());
+        cs.setRuleContext(this.ruleContext);
+        return cs;
+    }
+
+    @Override
+    public boolean eq(ASTNode o) {
+        if (this == o) return true;
+        if (!(o instanceof ClosesCase)) return false;
+        if (!super.equals(o)) return false;
+
+        ClosesCase that = (ClosesCase) o;
+
+        return getClosesGuard() != null ? getClosesGuard().eq(that.getClosesGuard()) : that.getClosesGuard() == null;
     }
 
 }

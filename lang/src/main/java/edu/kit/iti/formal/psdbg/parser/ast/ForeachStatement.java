@@ -23,16 +23,17 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  */
 
 
-
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author Alexander Weigl
  * @version 1 (29.04.17)
  */
-@Data
+@Getter
+@Setter
 public class ForeachStatement extends GoalSelector<ScriptLanguageParser.ForEachStmtContext> {
     public ForeachStatement() {
     }
@@ -52,6 +53,8 @@ public class ForeachStatement extends GoalSelector<ScriptLanguageParser.ForEachS
      * {@inheritDoc}
      */
     @Override public ForeachStatement copy() {
-        return new ForeachStatement(getBody().copy());
+        ForeachStatement fs = new ForeachStatement(getBody().copy());
+        fs.setRuleContext(this.ruleContext);
+        return fs;
     }
 }

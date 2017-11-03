@@ -67,6 +67,7 @@ public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatter
         if (signature != null)
             me.signature = signature.copy();
         me.pattern = pattern.copy();
+        me.setRuleContext(this.ruleContext);
         return me;
     }
 

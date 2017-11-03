@@ -39,6 +39,7 @@ public class SubstituteExpression extends Expression<ScriptLanguageParser.ExprSu
         SubstituteExpression se = new SubstituteExpression();
         se.sub = sub.copy();
         se.substitution = new LinkedHashMap<>(substitution);
+        se.setRuleContext(this.ruleContext);
         return se;
     }
 

@@ -31,7 +31,25 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @author Alexander Weigl
  * @version 1 (29.04.17)
  */
-@Data @AllArgsConstructor @NoArgsConstructor public abstract class GoalSelector<T extends ParserRuleContext>
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public abstract class GoalSelector<T extends ParserRuleContext>
         extends Statement<T> {
+    @Getter
+    @Setter
     @NonNull private Statements body = new Statements();
+
+    @Override
+    public boolean eq(ASTNode o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        GoalSelector<?> that = (GoalSelector<?>) o;
+
+        return getBody() != null ? getBody().eq(that.getBody()) : that.getBody() == null;
+    }
+
 }

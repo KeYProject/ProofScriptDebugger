@@ -1,12 +1,11 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
-import edu.kit.iti.formal.psdbg.parser.ast.*;
-import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
-import edu.kit.iti.formal.psdbg.parser.ast.Operator;
+import edu.kit.iti.formal.psdbg.parser.ast.*;
+import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import edu.kit.iti.formal.psdbg.parser.types.TermType;
 import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
@@ -67,6 +66,7 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
      */
     @Override
     public Value visit(MatchExpression match) {
+        enterScope(match);
         if (match.getSignature() != null && !match.getSignature().isEmpty()) {
             throw new IllegalStateException("not supported");
         }
@@ -81,7 +81,7 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
             }
         }
 
-
+        exitScope(match);
         return va != null && va.size() > 0 ? Value.TRUE : Value.FALSE;
     }
 

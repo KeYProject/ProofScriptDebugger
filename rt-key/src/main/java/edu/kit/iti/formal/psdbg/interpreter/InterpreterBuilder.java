@@ -117,7 +117,7 @@ public class InterpreterBuilder {
     }
 
     public InterpreterBuilder onEntry(Visitor v) {
-        interpreter.getEntryListeners().add(v);
+        interpreter.getEntryListeners().add(0, v);
         return this;
     }
 
@@ -144,6 +144,8 @@ public class InterpreterBuilder {
     public InterpreterBuilder proof(ProofApi pa) {
         addKeyMatcher(pa);
         pa.getRules().forEach(s -> pmr.getRules().put(s, null));
+        keyEnvironment = pa.getEnv();
+        proof = pa.getProof();
         return this;
     }
 
