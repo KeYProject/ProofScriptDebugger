@@ -20,6 +20,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.val;
 
+import java.util.Iterator;
+
 
 /**
  * KeY Proof Tree
@@ -155,7 +157,9 @@ public class ProofTree extends BorderPane {
     }
 
     private TreeItem<TreeNode> populate(String label, Node n) {
+
         val treeNode = new TreeNode(label, n);
+
         TreeItem<TreeNode> ti = new TreeItem<>(treeNode);
         if (n.childrenCount() == 0) {
             ti.getChildren().add(new TreeItem<>(new TreeNode(
@@ -175,8 +179,25 @@ public class ProofTree extends BorderPane {
         if (node.childrenCount() == 0) {
 
         } else { // children count > 1
-            node.children().forEach(child ->
-                    ti.getChildren().add(populate(child.getNodeInfo().getBranchLabel(), child)));
+            Iterator<Node> nodeIterator = node.childrenIterator();
+
+            Node childNode;
+            int branchCounter = 1;
+            while (nodeIterator.hasNext()) {
+                childNode = nodeIterator.next();
+                if (childNode.getNodeInfo().getBranchLabel() != null) {
+                    ti.getChildren().add(populate(childNode.getNodeInfo().getBranchLabel(), childNode));
+                } else {
+                    ti.getChildren().add(populate("BRANCH " + branchCounter, childNode));
+                    branchCounter++;
+                }
+            }
+
+/*            node.childrenIterator().forEachRemaining(child -> ti.getChildren().add(
+                    populate(child.getNodeInfo().getBranchLabel(), child)));
+*/
+            //node.children().forEach(child ->
+            //        ti.getChildren().add(populate(child.getNodeInfo().getBranchLabel(), child)));
         }
 
         return ti;
