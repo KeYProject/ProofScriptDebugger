@@ -201,7 +201,7 @@ public class ProofTree extends BorderPane {
             {
                 if (proof.get() != null) {
                     List<String[]> labels = LabelFactory.getLabelOfOpenGoals(proof.get(),
-                            LabelFactory::getRuleLabel);
+                            LabelFactory::getBranchingLabel);
                     String text;
                     if (labels.isEmpty()) {
                         text = "// no open goals";
@@ -209,7 +209,7 @@ public class ProofTree extends BorderPane {
                         text = "// only one goals";
                     } else {
                         int upperLimit = 0;
-                        /* trying to find the common suffix
+                        /* trying to find the common suffix*/
                         try {
                             String[] ref = labels.get(0);
                             for (; true; upperLimit++) {
@@ -221,7 +221,7 @@ public class ProofTree extends BorderPane {
                                 upperLimit++;
                             }
                         } catch (ArrayIndexOutOfBoundsException e) {
-                        }*/
+                        }
 
                         int finalUpperLimit = upperLimit;
                         text = labels.stream()
