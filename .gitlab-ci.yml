@@ -48,7 +48,7 @@ deploy:
 sonar:
   stage: deploy
   script:
-    - ""
+    - "mvn org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar  -Dsonar.organization=wadoon-github   -Dsonar.host.url=https://sonarcloud.io   -Dsonar.login=3441b7b4ade9f61b61b75322893d084c51d8acc3"
   allow_failure: true
 
 site:
