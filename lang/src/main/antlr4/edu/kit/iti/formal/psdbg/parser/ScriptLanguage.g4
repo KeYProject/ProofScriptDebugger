@@ -9,16 +9,16 @@ start
     ;
 
 script
-    : SCRIPT name=ID '(' signature=argList? ')' INDENT body=stmtList DEDENT
+    : SCRIPT name=ID LPAREN signature=argList? RPAREN INDENT body=stmtList DEDENT
     ;
 
 
 argList
-    :   varDecl (',' varDecl)*
+    :   varDecl (COMMA varDecl)*
     ;
 
 varDecl
-    :   name=ID ':' type=ID
+    :   name=ID COLON type=ID
     ;
 
 stmtList
@@ -59,18 +59,18 @@ expression
     | expression IMP expression   #exprIMP
     //|   expression EQUIV expression already covered by EQ/NEQ
     | expression LBRACKET substExpressionList RBRACKET #exprSubst
-    | MINUS expression   #exprNegate
-    | NOT expression  #exprNot
-    | '(' expression ')' #exprParen
-    | literals             #exprLiterals
-    | matchPattern         #exprMatch
+    | MINUS expression         #exprNegate
+    | NOT expression           #exprNot
+    | LPAREN expression RPAREN #exprParen
+    | literals                 #exprLiterals
+    | matchPattern             #exprMatch
 ;
 
 
 substExpressionList
     :
-    (scriptVar '\\' expression
-        (',' scriptVar '\\' expression)*
+    (scriptVar SUBST_TO expression
+        (COMMA scriptVar SUBST_TO expression)*
     )?
     ;
 
@@ -97,8 +97,9 @@ matchPattern
     ;
 
 scriptVar
-    :   '?' ID
+    :   QUESTION_MARK ID
     ;
+
 
 repeatStmt
     :   REPEAT INDENT stmtList DEDENT
@@ -138,7 +139,7 @@ scriptCommand
     ;
 
 parameters: parameter+;
-parameter :  ((pname=ID '=')? expr=expression);
+parameter :  ((pname=ID EQ)? expr=expression);
 
 /*
 callStmt
@@ -179,6 +180,7 @@ DEDENT : '}' ;
 SEMICOLON : ';' ;
 COLON : ':' ;
 HEAPSIMP:'heap-simp';
+SUBST_TO: '\\';
 
 
 STRING_LITERAL
@@ -204,8 +206,11 @@ OR: '|' ;
 IMP : '==>' ;
 EQUIV : '<=>' ;
 NOT: 'not';
-
+COMMA: ',';
+LPAREN: '(';
+RPAREN: ')';
 EXE_MARKER: '\u2316' -> channel(HIDDEN);
+QUESTION_MARK: '?';
 
 DIGITS : DIGIT+ ;
 fragment DIGIT : [0-9] ;

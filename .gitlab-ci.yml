@@ -45,6 +45,12 @@ deploy:
       - "*/target/*.jar"
   allow_failure: true
 
+sonar:
+  stage: deploy
+  script:
+    - ""
+  allow_failure: true
+
 site:
   stage: deploy
   script:

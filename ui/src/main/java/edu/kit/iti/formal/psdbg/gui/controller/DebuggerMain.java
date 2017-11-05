@@ -1,5 +1,7 @@
 package edu.kit.iti.formal.psdbg.gui.controller;
 
+import alice.tuprolog.InvalidLibraryException;
+import alice.tuprolog.InvalidTheoryException;
 import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
@@ -10,6 +12,7 @@ import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
 import edu.kit.iti.formal.psdbg.StepIntoCommand;
 import edu.kit.iti.formal.psdbg.examples.Examples;
+import edu.kit.iti.formal.psdbg.fmt.DefaultFormatter;
 import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
 import edu.kit.iti.formal.psdbg.gui.controls.*;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
@@ -144,6 +147,15 @@ public class DebuggerMain implements Initializable {
     private Menu examplesMenu;
 
     private Timer interpreterThreadTimer;
+
+    @Subscribe
+    public void handle(Events.ShowSequent ss) {
+        SequentView sv = new SequentView();
+        sv.setKeYProofFacade(FACADE);
+        sv.setNode(ss.getNode());
+        DockNode node = new DockNode(sv, "Sequent Viewer " + ss.getNode().serialNr());
+        node.dock(dockStation, DockPos.CENTER);
+    }
 
     @Subscribe
     public void handle(Events.PublishMessage message) {
@@ -874,6 +886,19 @@ public class DebuggerMain implements Initializable {
 
     public ScriptController getScriptController() {
         return scriptController;
+    }
+
+    @FXML
+    public void reformatCurrentEditor(ActionEvent event) {
+        scriptController.getOpenScripts().values().forEach(ed -> {
+            try {
+                DefaultFormatter df = new DefaultFormatter();
+                ((ScriptArea) ed.getContents()).setText(
+                        df.format(((ScriptArea) ed.getContents()).getText()));
+            } catch (InvalidLibraryException | IOException | InvalidTheoryException e) {
+                LOGGER.debug(e);
+            }
+        });
     }
 
     public class ContractLoaderService extends Service<List<Contract>> {

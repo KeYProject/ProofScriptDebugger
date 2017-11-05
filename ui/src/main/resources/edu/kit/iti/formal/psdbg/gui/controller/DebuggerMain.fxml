@@ -61,36 +61,114 @@
                         <Menu text="Edit">
                             <items>
                                 <MenuItem text="Delete"/>
+                                <MenuItem text="Reformat" accelerator="Ctrl+Shift+f" onAction="#reformatCurrentEditor"/>
                                 <MenuItem text="Print Debug Information" onAction="#debugPrintDot"
                                           accelerator="Ctrl+d"
                                 />
                             </items>
                         </Menu>
+                        <Menu text="Debug">
+                            <MenuItem onAction="#executeScript"
+                                      text="Execute"
+                                      accelerator="F2"
+                                      disable="${controller.executeNotPossible}">
+                                <graphic>
+                                    <MaterialDesignIconView glyphName="PLAY" size="24.0"/>
+                                </graphic>
+                            </MenuItem>
+                            <MenuItem text="Debug stepwise"
+                                      accelerator="F3"
+                                      onAction="#executeStepwise"
+                                      disable="${controller.executeNotPossible}">
+                                <graphic>
+                                    <MaterialDesignIconView glyphName="PLAY_PAUSE" size="24.0"/>
+                                </graphic>
+                            </MenuItem>
+                            <MenuItem
+                                    accelerator="F4"
+                                    text="Run to Breakpoint"
+                                    onAction="#executeToBreakpoint"
+                                    disable="${controller.executeNotPossible}">
+                                <graphic>
+                                    <MaterialDesignIconView glyphName="FAST_FORWARD" size="24.0"/>
+                                </graphic>
+                            </MenuItem>
+
+                            <MenuItem onAction="#stepInto"
+                                      accelerator="F5"
+                                      text="Step Into"
+                                      disable="${controller.stepNotPossible}">
+                                <graphic>
+                                    <MaterialDesignIconView glyphName="DEBUG_STEP_INTO" size="24.0"/>
+                                </graphic>
+                            </MenuItem>
+
+                            <MenuItem onAction="#stepOver"
+                                      accelerator="F6"
+                                      text="Step Over"
+                                      disable="${controller.stepNotPossible}">
+                                <graphic>
+                                    <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0"/>
+                                </graphic>
+                            </MenuItem>
+
+                            <MenuItem onAction="#stepBack"
+                                      accelerator="F7"
+
+                                      text="Step Back"
+                                      disable="${controller.stepNotPossible}">
+                                <graphic>
+                                    <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0" scaleX="-1"/>
+                                </graphic>
+                            </MenuItem>
+
+
+                            <MenuItem disable="${controller.stepNotPossible}"
+                                      accelerator="F8"
+                                      text="Step Out">
+                                <graphic>
+                                    <MaterialDesignIconView glyphName="DEBUG_STEP_OUT" size="24.0"/>
+                                </graphic>
+                            </MenuItem>
+
+                            <MenuItem onAction="#stopDebugMode"
+                                      accelerator="F12"
+                                      text="Stop"
+                                      disable="${controller.stepNotPossible}">
+                                <!--disable="${! controller.debugMode}"-->
+                                <graphic>
+                                    <MaterialDesignIconView glyphName="STOP" size="24.0"/>
+                                </graphic>
+                            </MenuItem>
+                        </Menu>
                         <Menu text="View">
                             <items>
-                                <CheckMenuItem fx:id="miCodeDock" onAction="#showCodeDock" text="Show Java Code window">
+                                <CheckMenuItem fx:id="miCodeDock" onAction="#showCodeDock" text="Show Java Code window"
+                                               accelerator="Ctrl+J">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="CODE_TAGS" size="24.0"/>
                                     </graphic>
                                 </CheckMenuItem>
                                 <CheckMenuItem fx:id="miWelcomeDock" onAction="#showWelcomeDock"
-                                               text="Show Welcome window">
+                                               text="Show Welcome window" accelerator="Ctrl+w">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="HELP_CIRCLE" size="24.0"/>
                                     </graphic>
                                 </CheckMenuItem>
                                 <CheckMenuItem fx:id="miActiveInspector" onAction="#showActiveInspector"
-                                               text="Show Active Inspector window">
+                                               text="Show Active Inspector window" accelerator="Ctrl+I">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="MAGNIFY" size="24.0"/>
                                     </graphic>
                                 </CheckMenuItem>
-                                <CheckMenuItem fx:id="miProofTree" onAction="#showProofTree" text="Show Proof Tree">
+                                <CheckMenuItem fx:id="miProofTree" onAction="#showProofTree" text="Show Proof Tree"
+                                               accelerator="Ctrl+t">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="TREE" size="24.0"/>
                                     </graphic>
                                 </CheckMenuItem>
                                 <CheckMenuItem fx:id="miCommandHelp" onAction="#showCommandHelp"
+                                               accelerator="F1"
                                                text="Show Command Help">
                                     <graphic>
                                         <MaterialDesignIconView glyphName="STACKEXCHANGE" size="24.0"/>
@@ -98,7 +176,7 @@
                                 </CheckMenuItem>
                             </items>
                         </Menu>
-                        <Menu fx:id="examplesMenu" text="Examples">
+                        <Menu fx:id="examplesMenu" text="_Examples">
                             <items>
                                 <MenuItem text="Examples not loaded" disable="true"/>
                             </items>

@@ -16,7 +16,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>edu.kit.iti.formal.psdbg</groupId>
-			<artifactId>runtime</artifactId>
+			<artifactId>rt</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>

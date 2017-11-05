@@ -89,19 +89,44 @@ public class Events {
         private final List<GoalNode> openNodes;
     }
 
-
+    /**
+     *
+     */
     @Data
     @RequiredArgsConstructor
     public static class SelectNodeInGoalList {
         private final Node node;
     }
 
+    /**
+     * @author weigl
+     */
     @Data
     @RequiredArgsConstructor
     @AllArgsConstructor
     public static class PublishMessage {
-        private String message;
+        private final String message;
 
         private int flash = 0;
+    }
+
+    /**
+     *
+     */
+    @Data
+    @RequiredArgsConstructor
+    public static class ShowSequent {
+        private final Node node;
+    }
+
+    /**
+     * Der Gipfel an doofen Eventnamen
+     *
+     * @author weigl
+     */
+    @Data
+    @RequiredArgsConstructor
+    public static class InsertAtTheEndOfMainScript {
+        private final String text;
     }
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -36,11 +37,12 @@ public class MainScriptIdentifier {
      * @param scripts
      * @return
      */
+    @Nonnull
     public Optional<ProofScript> find(Collection<ProofScript> scripts) {
         Optional<ProofScript> byName = byName(scripts);
         Optional<ProofScript> byLine = byLine(scripts);
         ProofScript script = byName.orElseGet(() -> byLine.orElse(null));
-        if (script == null) return null;
+        if (script == null) return Optional.empty();
         lineNumber = script.getStartPosition().getLineNumber();
         scriptName = script.getName();
         return Optional.of(script);

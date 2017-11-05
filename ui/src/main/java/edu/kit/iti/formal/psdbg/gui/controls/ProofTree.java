@@ -1,9 +1,14 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import de.uka.ilkd.key.java.Services;
+import de.uka.ilkd.key.pp.LogicPrinter;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.ProofTreeEvent;
 import de.uka.ilkd.key.proof.ProofTreeListener;
+import edu.kit.iti.formal.psdbg.LabelFactory;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import javafx.application.Platform;
 import javafx.beans.property.MapProperty;
@@ -17,10 +22,14 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.BorderPane;
 import javafx.util.StringConverter;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
 
 
 /**
@@ -90,6 +99,9 @@ public class ProofTree extends BorderPane {
 
     private ContextMenu contextMenu;
 
+    @Getter @Setter
+    private Services services;// = DebuggerMain.FACADE.getService();
+
     public ProofTree() {
         Utils.createWithFXML(this);
         treeProof.setCellFactory(this::cellFactory);
@@ -129,21 +141,119 @@ public class ProofTree extends BorderPane {
         }
     }
 
+    public void consumeNode(Consumer<Node> consumer, String success) {
+        TreeItem<TreeNode> item = treeProof.getSelectionModel().getSelectedItem();
+        Node n = item.getValue().node;
+        if (n != null) {
+            consumer.accept(n);
+            Events.fire(new Events.PublishMessage(success));
+        } else {
+            Events.fire(new Events.PublishMessage("Current item does not have a node.", 2));
+        }
+    }
+
     public ContextMenu getContextMenu() {
         if (contextMenu == null) {
-            MenuItem showGoal = new MenuItem("Show in Goal List");
-            showGoal.setOnAction((evt) -> {
-                TreeItem<TreeNode> item = treeProof.getSelectionModel().getSelectedItem();
-                Node n = item.getValue().getNode();
-                if (n != null) {
-                    Events.fire(new Events.SelectNodeInGoalList(n));
+            MenuItem copyBranchLabel = new MenuItem("Branch Label");
+            copyBranchLabel.setOnAction(evt -> consumeNode(n -> Utils.intoClipboard(
+                    LabelFactory.getBranchingLabel(n)), "Copied!"));
+
+            MenuItem copyProgramLines = new MenuItem("Program Lines");
+            copyProgramLines.setOnAction(evt -> {
+                consumeNode(n -> {
+                    Utils.intoClipboard(
+                            LabelFactory.getProgramLines(n));
+                }, "Copied!");
+            });
+
+            MenuItem copySequent = new MenuItem("Sequent");
+            copySequent.setOnAction(evt -> {
+                consumeNode(n -> {
+                    assert services != null : "set KeY services!";
+                    String s = LogicPrinter.quickPrintSequent(n.sequent(), services);
+                    Utils.intoClipboard(s);
+                }, "Copied!");
+            });
+
+            MenuItem copyRulesLabel = new MenuItem("Rule labels");
+            copyRulesLabel.setOnAction(evt -> {
+                consumeNode(n -> {
+                    Utils.intoClipboard(
+                            LabelFactory.getRuleLabel(n));
+                }, "Copied!");
+            });
+
+            MenuItem copyProgramStatements = new MenuItem("Statements");
+            copyProgramStatements.setOnAction(event -> {
+                consumeNode(n -> {
+                    Utils.intoClipboard(
+                            LabelFactory.getProgramStatmentLabel(n));
+                }, "Copied!");
+            });
+
+            Menu copy = new Menu("Copy", new MaterialDesignIconView(MaterialDesignIcon.CONTENT_COPY),
+                    copyBranchLabel, copyProgramLines,
+                    copyProgramStatements, copyRulesLabel,
+                    copySequent);
+
+            MenuItem createCases = new MenuItem("Created Case for Open Goals");
+            createCases.setOnAction((evt) ->
+            {
+                if (proof.get() != null) {
+                    List<String[]> labels = LabelFactory.getLabelOfOpenGoals(proof.get(),
+                            LabelFactory::getRuleLabel);
+                    String text;
+                    if (labels.isEmpty()) {
+                        text = "// no open goals";
+                    } else if (labels.size() == 1) {
+                        text = "// only one goals";
+                    } else {
+                        int upperLimit = 0;
+                        /* trying to find the common suffix
+                        try {
+                            String[] ref = labels.get(0);
+                            for (; true; upperLimit++) {
+                                for (String[] lbl : labels) {
+                                    if (!lbl[upperLimit].equals(ref[upperLimit])) {
+                                        break;
+                                    }
+                                }
+                                upperLimit++;
+                            }
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                        }*/
+
+                        int finalUpperLimit = upperLimit;
+                        text = labels.stream()
+                                .map(a -> Arrays.stream(a, finalUpperLimit, a.length))
+                                .map(s -> s.reduce((a, b) -> b + LabelFactory.SEPARATOR + a).orElse("error"))
+                                .map(s -> String.format("\tcase match \"%s\" :\n\t\t//commands", s))
+                                .reduce((a, b) -> a + "\n" + b)
+                                .orElse("ERROR");
+                    }
+
+                    String s = "cases {\n" + text + "\n}";
+                    Events.fire(new Events.InsertAtTheEndOfMainScript(s));
+                    Events.fire(new Events.PublishMessage("Copied to Clipboard"));
                 } else {
-                    Events.fire(new Events.PublishMessage("Current item does not have a node.", 2));
+
                 }
             });
-            contextMenu = new ContextMenu(showGoal);
+
+
+            MenuItem showSequent = new MenuItem("Show Sequent");
+            showSequent.setOnAction((evt) ->
+                    consumeNode(n -> Events.fire(new Events.ShowSequent(n)), ""));
+
+            MenuItem showGoal = new MenuItem("Show in Goal List");
+            showGoal.setOnAction((evt) -> {
+                consumeNode(n -> Events.fire(new Events.SelectNodeInGoalList(n)), "Found!");
+            });
+
+            contextMenu = new ContextMenu(copy, createCases, showSequent, showGoal);
             contextMenu.setAutoFix(true);
             contextMenu.setAutoHide(true);
+
         }
         return contextMenu;
     }
@@ -208,7 +318,7 @@ public class ProofTree extends BorderPane {
         StringConverter<TreeNode> stringConverter = new StringConverter<TreeNode>() {
             @Override
             public String toString(TreeNode object) {
-                return object.getLabel();
+                return object.label;
             }
 
             @Override
@@ -276,9 +386,7 @@ public class ProofTree extends BorderPane {
         return proof;
     }
 
-
     @AllArgsConstructor
-    @Data
     private static class TreeNode {
         String label;
 

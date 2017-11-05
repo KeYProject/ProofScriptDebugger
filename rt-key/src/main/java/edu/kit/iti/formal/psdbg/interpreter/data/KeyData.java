@@ -1,10 +1,12 @@
 package edu.kit.iti.formal.psdbg.interpreter.data;
 
 import de.uka.ilkd.key.control.KeYEnvironment;
+import de.uka.ilkd.key.java.Label;
 import de.uka.ilkd.key.java.SourceElement;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
+import edu.kit.iti.formal.psdbg.LabelFactory;
 import lombok.*;
 
 import java.util.HashSet;
@@ -22,8 +24,6 @@ import java.util.function.Function;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class KeyData {
-    private static final String SEPARATOR = " // ";
-    private static final String RANGE_SEPARATOR = " -- ";
     private final KeYEnvironment env;
     private final Proof proof;
     private Node node;
@@ -71,43 +71,12 @@ public class KeyData {
      */
     public String getRuleLabel() {
         if (ruleLabel == null) {
-            ruleLabel = constructLabel((Node n) -> n.getAppliedRuleApp().rule().name().toString());
+            ruleLabel =  LabelFactory.getRuleLabel(getNode());
         }
         return ruleLabel;
     }
 
-    /**
-     * Create Label for goalview according to function that is passed.
-     * The following functions can be given:
-     * <ul>
-     *     <li>@see  #Method getRuleLabel()</li>
-     *     <li>@see  #Method getBranchingLabel()</li>
-     *     <li>@see  #Method getNameLabel()</li>
-     *     <li>@see  #Method getProgramLinesLabel()</li>
-     *     <li>@see  #Method getProgramStatementsLabel()</li>
-     * </ul>
-     * @param projection function determining which kind of label to construct
-     * @return Label from this node to parent
-     */
-    private String constructLabel(Function<Node, String> projection) {
-        StringBuilder sb = new StringBuilder();
-        Node cur = getNode();
-        do {
-            try {
-                String section = projection.apply(cur);
-                //filter null elements and -1 elements
-                if (section != null && !(section.equals(Integer.toString(-1)))) {
-                    sb.append(section);
-                    sb.append(SEPARATOR);
 
-                }
-            } catch (Exception e) {
-            }
-            cur = cur.parent();
-        } while (cur != null);
-        sb.append("$$");
-        return sb.toString();
-    }
 
     /**
      * Get branching label of node from KeY
@@ -115,7 +84,7 @@ public class KeyData {
      */
     public String getBranchingLabel() {
         if (branchingLabel == null) {
-            branchingLabel = constructLabel(n -> n.getNodeInfo().getBranchLabel());
+            branchingLabel = LabelFactory.getBranchingLabel(getNode());
         }
         return branchingLabel;
     }
@@ -126,7 +95,7 @@ public class KeyData {
      */
     public String getNameLabel() {
         if (nameLabel == null) {
-            nameLabel = constructLabel(Node::name);
+            nameLabel = LabelFactory.getNameLabel(getNode());
         }
         return nameLabel;
     }
@@ -137,17 +106,7 @@ public class KeyData {
      */
     public String getProgramLinesLabel() {
         if (programLinesLabel == null) {
-            programLinesLabel = constructLabel(n -> {
-                int startPos = n.getNodeInfo().getActiveStatement().getPositionInfo().getStartPosition().getLine();
-                int endPos = n.getNodeInfo().getActiveStatement().getPositionInfo().getEndPosition().getLine();
-                if (startPos == endPos) {
-                    return Integer.toString(startPos);
-                } else {
-                    String start = Integer.toString(startPos);
-                    String end = Integer.toString(endPos);
-                    return start + RANGE_SEPARATOR + end;
-                }
-            });
+            programLinesLabel = LabelFactory.getProgramLines(getNode());
         }
         return programLinesLabel;
     }
@@ -158,10 +117,8 @@ public class KeyData {
      */
     public String getProgramStatementsLabel() {
         if (programStatementsLabel == null) {
-            programStatementsLabel = constructLabel(n ->
-                    n.getNodeInfo().getFirstStatementString());
+            programStatementsLabel = LabelFactory.getProgramStatmentLabel(getNode());
         }
-
         return programStatementsLabel;
     }
 

@@ -45,6 +45,19 @@
         </dependency>
 
         <dependency>
+            <groupId>it.unibo.alice.tuprolog</groupId>
+            <artifactId>tuprolog</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+
+        <!--
+        <dependency>
+            <groupId>com.thesett</groupId>
+            <artifactId>prolog</artifactId>
+            <version>0.9.117</version>
+        </dependency>-->
+
+        <dependency>
             <groupId>edu.kit.iti.formal.psdbg</groupId>
             <artifactId>lang</artifactId>
             <version>0.1-SNAPSHOT</version>
@@ -52,7 +65,7 @@
 
         <dependency>
             <groupId>edu.kit.iti.formal.psdbg</groupId>
-            <artifactId>runtime</artifactId>
+            <artifactId>rt</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
 

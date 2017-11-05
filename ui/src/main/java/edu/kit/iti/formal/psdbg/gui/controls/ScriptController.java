@@ -56,6 +56,19 @@ public class ScriptController {
     }
 
     @Subscribe
+    public void handle(Events.InsertAtTheEndOfMainScript text) {
+        String t = text.getText();
+        logger.debug("Try to insert text: {}", text);
+        List<ProofScript> ast = Facade.getAST(getMainScript().getScriptArea().getStream());
+        Optional<ProofScript> ps = getMainScript().find(ast);
+        if (ps.isPresent()) {
+            int index = ps.get().getRuleContext().getStop().getStartIndex();
+            logger.debug("Found main script! Insert at {}", index);
+            getMainScript().getScriptArea().insertText(index, t+"\n");
+        }
+    }
+
+    @Subscribe
     public void handle(Events.FocusScriptArea fsa) {
         logger.debug("FocusScriptArea handled!");
         openScripts.get(fsa.getScriptArea()).focus();
@@ -204,8 +217,8 @@ public class ScriptController {
         ArrayList<ProofScript> all = new ArrayList<>();
         for (ScriptArea area : openScripts.keySet()) {
             //absolute path important to find area later by token
-            CharStream stream = CharStreams.fromString(area.getText(), area.getFilePath().getAbsolutePath());
-            all.addAll(Facade.getAST(stream));
+
+            all.addAll(Facade.getAST(area.getStream()));
         }
         return all;
     }
@@ -262,6 +275,10 @@ public class ScriptController {
         return mainScript.get();
     }
 
+    public void setMainScript(MainScriptIdentifier mainScript) {
+        this.mainScript.set(mainScript);
+    }
+
     public void setMainScript(ProofScript proofScript) {
         MainScriptIdentifier msi = new MainScriptIdentifier();
         msi.setLineNumber(proofScript.getStartPosition().getLineNumber());
@@ -269,10 +286,6 @@ public class ScriptController {
         msi.setSourceName(proofScript.getRuleContext().getStart().getInputStream().getSourceName());
         msi.setScriptArea(findEditor(new File(proofScript.getOrigin())));
         setMainScript(msi);
-    }
-
-    public void setMainScript(MainScriptIdentifier mainScript) {
-        this.mainScript.set(mainScript);
     }
 
     public ObjectProperty<MainScriptIdentifier> mainScriptProperty() {

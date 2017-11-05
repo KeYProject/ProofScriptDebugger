@@ -37,6 +37,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -464,6 +465,11 @@ public class ScriptArea extends CodeArea {
         Events.fire(new Events.ScriptModificationEvent(posExecMarker, call));
         Events.unregister(this);
         //this.getMainScript().getScriptArea().insertText(this.getExecutionMarkerPosition(), tapName+" "+on+ ";");
+
+    }
+
+    public CodePointCharStream getStream() {
+        return CharStreams.fromString(getText(), getFilePath().getAbsolutePath());
 
     }
 

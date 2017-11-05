@@ -14,6 +14,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import org.antlr.v4.runtime.CharStreams;
@@ -25,6 +27,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -265,4 +269,9 @@ public class Utils {
         alert.showAndWait();
     }
 
+    public static void intoClipboard(String s) {
+        Map<DataFormat, Object> map = Collections.singletonMap(DataFormat.PLAIN_TEXT, s);
+        Clipboard.getSystemClipboard().setContent(map);
+        System.err.println(s);
+    }
 }
