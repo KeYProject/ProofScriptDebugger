@@ -98,7 +98,7 @@ public class ProofScriptHandler implements CommandHandler {
 
     @Override
     public boolean isAtomic() {
-        return true;
+        return false;
     }
 
     public void addScripts(List<ProofScript> ast) {

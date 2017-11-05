@@ -11,11 +11,9 @@ import de.uka.ilkd.key.proof.ProofTreeListener;
 import edu.kit.iti.formal.psdbg.LabelFactory;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import javafx.application.Platform;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleMapProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -40,10 +38,20 @@ public class ProofTree extends BorderPane {
 
     private ObjectProperty<Node> root = new SimpleObjectProperty<>();
 
+    private SetProperty<Node> sentinels = new SimpleSetProperty<>(FXCollections.observableSet());
+
+
     private MapProperty colorOfNodes = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
     @FXML
     private TreeView<TreeNode> treeProof;
+
+    private ContextMenu contextMenu;
+
+    @Getter @Setter
+    private Services services;// = DebuggerMain.FACADE.getService();
+
+    private BooleanProperty deactivateRefresh = new SimpleBooleanProperty();
 
     private ProofTreeListener proofTreeListener = new ProofTreeListener() {
         @Override
@@ -96,11 +104,6 @@ public class ProofTree extends BorderPane {
 
         }
     };
-
-    private ContextMenu contextMenu;
-
-    @Getter @Setter
-    private Services services;// = DebuggerMain.FACADE.getService();
 
     public ProofTree() {
         Utils.createWithFXML(this);
@@ -259,18 +262,26 @@ public class ProofTree extends BorderPane {
     }
 
     private void init() {
+        if (deactivateRefresh.get())
+            return;
+
         if (root.get() != null) {
             TreeItem<TreeNode> item = populate("Proof", root.get());
             treeProof.setRoot(item);
         }
+
         treeProof.refresh();
     }
 
     private TreeItem<TreeNode> populate(String label, Node n) {
-
         val treeNode = new TreeNode(label, n);
-
         TreeItem<TreeNode> ti = new TreeItem<>(treeNode);
+
+        // abort the traversing iff we have reached a sentinel!
+        if (sentinels.contains(n)) {
+            return ti;
+        }
+
         if (n.childrenCount() == 0) {
             ti.getChildren().add(new TreeItem<>(new TreeNode(
                     n.isClosed() ? "CLOSED GOAL" : "OPEN GOAL", null)));
@@ -384,6 +395,30 @@ public class ProofTree extends BorderPane {
 
     public ObjectProperty<Proof> proofProperty() {
         return proof;
+    }
+
+    public ObservableSet<Node> getSentinels() {
+        return sentinels.get();
+    }
+
+    public void setSentinels(ObservableSet<Node> sentinels) {
+        this.sentinels.set(sentinels);
+    }
+
+    public SetProperty<Node> sentinelsProperty() {
+        return sentinels;
+    }
+
+    public boolean isDeactivateRefresh() {
+        return deactivateRefresh.get();
+    }
+
+    public void setDeactivateRefresh(boolean deactivateRefresh) {
+        this.deactivateRefresh.set(deactivateRefresh);
+    }
+
+    public BooleanProperty deactivateRefreshProperty() {
+        return deactivateRefresh;
     }
 
     @AllArgsConstructor

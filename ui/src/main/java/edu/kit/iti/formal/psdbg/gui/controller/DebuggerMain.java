@@ -6,6 +6,9 @@ import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.api.ProofApi;
+import de.uka.ilkd.key.proof.Goal;
+import de.uka.ilkd.key.proof.Node;
+import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
@@ -40,6 +43,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -63,6 +67,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 /**
  * Controller for the Debugger MainWindow
@@ -787,11 +792,20 @@ public class DebuggerMain implements Initializable {
     public void stepInto(ActionEvent actionEvent) {
         LOGGER.debug("DebuggerMain.stepOver");
         try {
+            if (model.getDebuggerFramework().getStatePointer().isAtomic()) {
+                model.getDebuggerFramework().getStatePointerListener()
+                        .add(new StepIntoHandler(model.getStatePointer()));
+            }
             model.getDebuggerFramework().execute(new StepIntoCommand<>());
         } catch (DebuggerException e) {
             Utils.showExceptionDialog("", "", "", e);
             LOGGER.error(e);
         }
+    }
+
+    private void handleStepInto(PTreeNode<KeyData> newState) {
+
+
     }
 
     /**
@@ -929,6 +943,38 @@ public class DebuggerMain implements Initializable {
         @Override
         protected Task<List<Contract>> createTask() {
             return FACADE.getContractsForJavaFileTask(model.getJavaFile());
+        }
+    }
+
+    @RequiredArgsConstructor
+    private class StepIntoHandler implements java.util.function.Consumer<PTreeNode<KeyData>> {
+        private final PTreeNode<KeyData> original;
+
+        @Override
+        public void accept(PTreeNode<KeyData> keyDataPTreeNode) {
+            Platform.runLater(this::acceptUI);
+        }
+
+        public void acceptUI() {
+            model.getDebuggerFramework().getStatePointerListener().remove(this);
+            GoalNode<KeyData> beforeNode = original.getStateBeforeStmt().getSelectedGoalNode();
+            ProofTree ptree = new ProofTree();
+            Proof proof = beforeNode.getData().getProof();
+            Node pnode = beforeNode.getData().getNode();
+
+            ptree.setProof(proof);
+            ptree.setRoot(pnode);
+            ptree.setDeactivateRefresh(true);
+
+            Set<Node> sentinels = proof.getSubtreeGoals(pnode)
+                    .stream()
+                    .map(Goal::node)
+                    .collect(Collectors.toSet());
+            ptree.getSentinels().addAll(sentinels);
+            DockNode node = new DockNode(ptree, "Proof Tree for Step Into: " +
+                    original.getStatement().accept(new ShortCommandPrinter())
+            );
+            node.dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
         }
     }
 //endregion

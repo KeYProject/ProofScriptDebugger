@@ -28,7 +28,7 @@ public interface CommandHandler<T> {
                   VariableAssignment params);
 
     default boolean isAtomic() {
-        return false;
+        return true;
     }
 
     /**
