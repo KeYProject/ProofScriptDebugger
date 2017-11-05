@@ -436,38 +436,6 @@ public class ScriptArea extends CodeArea {
     }
 
 
-    @Subscribe
-    public void handle(Events.TacletApplicationEvent tap) {
-        LOGGER.debug("ScriptArea.handleTacletApplication");
-        String tapName = tap.getApp().taclet().displayName();
-
-        SequentFormula seqForm = tap.getPio().sequentFormula();
-        //transform term to parsable string representation
-        String term = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(seqForm.formula());
-
-
-        String text = getText();
-
-        //set new DebuggerCommand on position of execution marker
-        int posExecMarker = this.getExecutionMarkerPosition();
-        setText(text.substring(0, posExecMarker) + "\n" + tapName + " formula=`" + term + "`;\n" + text.substring(posExecMarker + 1));
-
-        LineMapping lm = new LineMapping(text);
-        int line = lm.getLine(getCaretPosition());
-        //System.out.println(line);
-
-        setDirty(true);
-
-        //create Call Statement
-        Parameters params = new Parameters();
-        params.put(new Variable("formula"), new TermLiteral(term));
-        CallStatement call = new CallStatement(tapName, params);
-        Events.fire(new Events.ScriptModificationEvent(posExecMarker, call));
-        Events.unregister(this);
-        //this.getMainScript().getScriptArea().insertText(this.getExecutionMarkerPosition(), tapName+" "+on+ ";");
-
-    }
-
     public CodePointCharStream getStream() {
         return CharStreams.fromString(getText(), getFilePath().getAbsolutePath());
 
