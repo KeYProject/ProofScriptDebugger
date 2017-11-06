@@ -13,6 +13,7 @@ import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -136,6 +137,17 @@ public class ProofTree extends BorderPane {
         }
     }
 
+    private static void expandRootToLeaves(TreeItem candidate) {
+        if (candidate != null) {
+            if (!candidate.isLeaf()) {
+                candidate.setExpanded(true);
+                ObservableList<TreeItem> children = candidate.getChildren();
+                children.forEach(treeItem -> expandRootToLeaves(treeItem));
+
+            }
+        }
+    }
+
     public static String toString(Node object) {
         if (object.getAppliedRuleApp() != null) {
             return object.getAppliedRuleApp().rule().name().toString();
@@ -209,7 +221,7 @@ public class ProofTree extends BorderPane {
                     if (labels.isEmpty()) {
                         text = "// no open goals";
                     } else if (labels.size() == 1) {
-                        text = "// only one goals";
+                        text = "// only one goal";
                     } else {
                         int upperLimit = 0;
                         /* trying to find the common suffix*/
@@ -253,7 +265,13 @@ public class ProofTree extends BorderPane {
                 consumeNode(n -> Events.fire(new Events.SelectNodeInGoalList(n)), "Found!");
             });
 
-            contextMenu = new ContextMenu(copy, createCases, showSequent, showGoal);
+            MenuItem expandAllNodes = new MenuItem("Expand Tree");
+            expandAllNodes.setOnAction(event -> {
+
+                expandRootToLeaves(treeProof.getRoot());
+            });
+
+            contextMenu = new ContextMenu(expandAllNodes, new SeparatorMenuItem(), copy, createCases, showSequent, showGoal);
             contextMenu.setAutoFix(true);
             contextMenu.setAutoHide(true);
 

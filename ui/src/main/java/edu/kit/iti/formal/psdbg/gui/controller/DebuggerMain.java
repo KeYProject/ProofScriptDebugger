@@ -82,7 +82,7 @@ public class DebuggerMain implements Initializable {
 
     public final ContractLoaderService contractLoaderService = new ContractLoaderService();
 
-    private final InspectionViewsController inspectionViewsController = new InspectionViewsController();
+    private InspectionViewsController inspectionViewsController;
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
@@ -142,7 +142,7 @@ public class DebuggerMain implements Initializable {
 
     private DockNode welcomePaneDock = new DockNode(welcomePane, "Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
 
-    private DockNode activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
+    private DockNode activeInspectorDock;
 
     private CommandHelp commandHelp = new CommandHelp();
 
@@ -159,7 +159,7 @@ public class DebuggerMain implements Initializable {
         sv.setKeYProofFacade(FACADE);
         sv.setNode(ss.getNode());
         DockNode node = new DockNode(sv, "Sequent Viewer " + ss.getNode().serialNr());
-        node.dock(dockStation, DockPos.CENTER);
+        node.dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
     }
 
     @Subscribe
@@ -175,9 +175,12 @@ public class DebuggerMain implements Initializable {
     @Subscribe
     public void handle(Events.SelectNodeInGoalList evt) {
         InspectionModel im = getInspectionViewsController().getActiveInspectionViewTab().getModel();
+        DockNode dockNode = getInspectionViewsController().newPostMortemInspector(im);
+        dockNode.dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
         for (GoalNode<KeyData> gn : im.getGoals()) {
             if (gn.getData().getNode().equals(evt.getNode())) {
                 im.setSelectedGoalNodeToShow(gn);
+                dockNode.focus();
                 return;
             }
         }
@@ -190,10 +193,11 @@ public class DebuggerMain implements Initializable {
         Events.register(this);
         model.setDebugMode(false);
         scriptController = new ScriptController(dockStation);
-
+        inspectionViewsController = new InspectionViewsController(dockStation);
+        activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
         //register the welcome dock in the center
         welcomePaneDock.dock(dockStation, DockPos.LEFT);
-        //statusBar.publishMessage("File: " + (newValue != null ? newValue.getAbsolutePath() : "n/a"));
+
         marriageJavaCode();
 
         //marriage key proof facade to proof tree
@@ -203,7 +207,8 @@ public class DebuggerMain implements Initializable {
                         proofTree.setRoot(null);
                     } else {
                         proofTree.setRoot(n.root());
-                        getInspectionViewsController().getActiveInspectionViewTab()
+                        getInspectionViewsController().
+                                getActiveInspectionViewTab()
                                 .getModel().getGoals().setAll(FACADE.getPseudoGoals());
                     }
                     proofTree.setProof(n);
