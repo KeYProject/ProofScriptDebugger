@@ -3,6 +3,7 @@ package edu.kit.iti.formal.psdbg;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
+import lombok.val;
 import org.apache.commons.lang.ArrayUtils;
 import org.key_project.util.collection.ImmutableList;
 
@@ -22,7 +23,6 @@ public class LabelFactory {
     public static String SEPARATOR = " // ";
 
     public static String RANGE_SEPARATOR = " -- ";
-
 
     /**
      * Create Label for goalview according to function that is passed.
@@ -58,7 +58,20 @@ public class LabelFactory {
     }
 
     public static String getBranchingLabel(Node node) {
-        return constructLabel(node, n -> n.getNodeInfo().getBranchLabel());
+        StringBuilder sb = new StringBuilder();
+        while (node != null) {
+            val p = node.parent();
+            if (p != null && p.childrenCount() != 1) {
+                val branchLabel = node.getNodeInfo().getBranchLabel();
+                sb.append(branchLabel != null && !branchLabel.isEmpty()
+                        ? branchLabel
+                        : "#" + p.getChildNr(node))
+                        .append(SEPARATOR);
+            }
+            node = p;
+        }
+        sb.append("$$");
+        return sb.toString();
     }
 
     public static String getNameLabel(Node node) {
