@@ -971,15 +971,19 @@ public class DebuggerMain implements Initializable {
             ptree.setRoot(pnode);
             ptree.setDeactivateRefresh(true);
 
+
             Set<Node> sentinels = proof.getSubtreeGoals(pnode)
                     .stream()
                     .map(Goal::node)
                     .collect(Collectors.toSet());
             ptree.getSentinels().addAll(sentinels);
+            ptree.expandRootToLeaves();
+            //TODO set coloring of starting and end node
             DockNode node = new DockNode(ptree, "Proof Tree for Step Into: " +
                     original.getStatement().accept(new ShortCommandPrinter())
             );
-            node.dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
+
+            node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
         }
     }
 //endregion

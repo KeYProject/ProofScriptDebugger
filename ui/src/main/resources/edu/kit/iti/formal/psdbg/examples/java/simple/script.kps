@@ -1,23 +1,20 @@
-script t(){
-    symbex;
-    foreach{
-       simp_heap;
-
-    }
-
-}
-
-script t(){
+script t1(){
     symbex;
     cases{
-       case match `?X = 0 ==>`:
-            eqSymm on=`?X=0`[];
+       case match `?X >= 0,?X > 0  ==>`:
+           cut `?X = 0`[?X \ X];
+           auto;
 
     }
+    //foreach{
+    //    auto;
+    //}
 
 }
 
-script t1(){
+
+
+script t2(){
     symbex;
     cases{
        case match '.*x.*':
@@ -31,3 +28,11 @@ script t1(){
 }
 
 
+script t(){
+    symbex;
+    foreach{
+       simp_heap;
+
+    }
+
+}

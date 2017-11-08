@@ -170,7 +170,7 @@ public class InspectionView extends BorderPane {
 
     public void activate(PTreeNode<KeyData> node, State<KeyData> lastState) {
         InspectionModel im = model.get();
-        im.getGoals().setAll(lastState.getGoals());
+        im.getGoals().setAll(lastState.getGoals()); //TODO nullcheck
         im.setSelectedGoalNodeToShow(lastState.getSelectedGoalNode());
 
         //Experimental

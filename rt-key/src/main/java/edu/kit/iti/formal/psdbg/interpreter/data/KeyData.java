@@ -1,7 +1,6 @@
 package edu.kit.iti.formal.psdbg.interpreter.data;
 
 import de.uka.ilkd.key.control.KeYEnvironment;
-import de.uka.ilkd.key.java.Label;
 import de.uka.ilkd.key.java.SourceElement;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
@@ -11,7 +10,6 @@ import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * @author Alexander Weigl
@@ -52,6 +50,7 @@ public class KeyData {
         env = environment;
         this.proof = proof;
         closedNode = proof.closed();
+
     }
 
     public KeyData(Node root, KeYEnvironment environment, Proof proof) {

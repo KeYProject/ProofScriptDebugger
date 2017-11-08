@@ -32,7 +32,6 @@ public abstract class Blocker {
 
         @Override
         public boolean test(ASTNode node) {
-            Evaluator<T> evaluator = new Evaluator<>(interpreter.getSelectedNode().getAssignments(), interpreter.getSelectedNode());
             for (Breakpoint brkpt : getBreakpoints()) {
                 // check file name
                 if (brkpt.getSourceName().equals(node.getOrigin())) {
@@ -42,6 +41,7 @@ public abstract class Blocker {
                         if (brkpt.getConditionAst() == null) {
                             return true; // no condition ==> trigger
                         } else { // if there is a condition, we check:
+                            Evaluator<T> evaluator = new Evaluator<>(interpreter.getSelectedNode().getAssignments(), interpreter.getSelectedNode());
                             val v = evaluator.eval(brkpt.getConditionAst());
                             if (v.getType() != SimpleType.BOOL)
                                 throw new InterpreterRuntimeException(
