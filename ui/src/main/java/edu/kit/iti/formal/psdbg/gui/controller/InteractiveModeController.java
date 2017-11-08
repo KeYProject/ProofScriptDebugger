@@ -21,9 +21,7 @@ import java.util.Map;
 @Setter
 public class InteractiveModeController {
     private static final Logger LOGGER = LogManager.getLogger(InteractiveModeController.class);
-
     private final Map<Node, Statements> cases = new HashMap<>();
-
     private BooleanProperty activated = new SimpleBooleanProperty();
 
 
@@ -33,12 +31,14 @@ public class InteractiveModeController {
     public void start() {
         Events.register(this);
         cases.clear();
+        activated.set(true);
     }
 
     public void stop() {
         Events.unregister(this);
         String c = getCasesAsString();
         Events.fire(new Events.InsertAtTheEndOfMainScript(c));
+        activated.set(false);
     }
 
     @Subscribe
