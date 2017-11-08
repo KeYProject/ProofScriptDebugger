@@ -4,3 +4,4 @@ edu.kit.iti.formal.psdbg.examples.java.simple.JavaSimpleExample
 edu.kit.iti.formal.psdbg.examples.java.transitive.PaperExample
 edu.kit.iti.formal.psdbg.examples.java.dpqs.DualPivotExample
 edu.kit.iti.formal.psdbg.examples.agatha.AgathaExample
+edu.kit.iti.formal.psdbg.examples.java.bubbleSort.BubbleSortExample

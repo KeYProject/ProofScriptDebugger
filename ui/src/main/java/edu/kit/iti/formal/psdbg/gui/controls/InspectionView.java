@@ -170,8 +170,14 @@ public class InspectionView extends BorderPane {
 
     public void activate(PTreeNode<KeyData> node, State<KeyData> lastState) {
         InspectionModel im = model.get();
-        im.getGoals().setAll(lastState.getGoals()); //TODO nullcheck
-        im.setSelectedGoalNodeToShow(lastState.getSelectedGoalNode());
+        if (lastState != null && lastState.getGoals() != null) {
+            im.getGoals().setAll(lastState.getGoals());
+            im.setSelectedGoalNodeToShow(lastState.getSelectedGoalNode());
+        } else {
+            lastState = node.getStepInvOver().getStateBeforeStmt();
+            im.getGoals().setAll(lastState.getGoals());
+            im.setSelectedGoalNodeToShow(lastState.getSelectedGoalNode());
+        }
 
         //Experimental
         List<PTreeNode<KeyData>> ctxn = node.getContextNodes();

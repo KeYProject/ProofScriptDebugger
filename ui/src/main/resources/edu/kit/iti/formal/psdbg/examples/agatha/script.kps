@@ -1,3 +1,16 @@
+script test(){
+    impRight;
+    andLeft;
+    notLeft;
+    repeat { andLeft; }
+    exLeft;
+    andLeft;
+    eqSymm formula = `agatha = butler`;
+    nnf_imp2or formula=`\foral S w6;(hates(agatha,w6) -> hates(butler,w6))`;
+
+}
+
+
 script SolveAgathaRiddle_1() {
     impRight;
     andLeft;
