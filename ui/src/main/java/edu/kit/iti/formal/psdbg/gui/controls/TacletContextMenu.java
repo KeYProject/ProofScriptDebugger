@@ -318,7 +318,7 @@ public class TacletContextMenu extends ContextMenu {
 
         //System.out.println("event = [" + event + "]");
 
-        Events.fire(new Events.TacletApplicationEvent(event, pos.getPosInOccurrence()));
+        Events.fire(new Events.TacletApplicationEvent(event, pos.getPosInOccurrence(), goal));
     }
 
     /**

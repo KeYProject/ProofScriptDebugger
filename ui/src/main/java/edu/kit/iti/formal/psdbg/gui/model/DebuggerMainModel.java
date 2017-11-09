@@ -40,6 +40,7 @@ public class DebuggerMainModel {
     private ObjectProperty<InterpreterThreadState> interpreterState = new SimpleObjectProperty<>(this, "interpreterState",
             InterpreterThreadState.NO_THREAD);
 
+
     /**
      * True, iff the execution is not possible
      */

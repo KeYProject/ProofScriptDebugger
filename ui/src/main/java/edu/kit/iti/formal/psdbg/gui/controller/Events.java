@@ -2,6 +2,7 @@ package edu.kit.iti.formal.psdbg.gui.controller;
 
 import com.google.common.eventbus.EventBus;
 import de.uka.ilkd.key.logic.PosInOccurrence;
+import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptArea;
@@ -47,8 +48,11 @@ public class Events {
     @RequiredArgsConstructor
     public static class TacletApplicationEvent {
         private final TacletApp app;
-
         private final PosInOccurrence pio;
+
+        private final Goal currentGoal;
+
+
     }
 
     @Data
