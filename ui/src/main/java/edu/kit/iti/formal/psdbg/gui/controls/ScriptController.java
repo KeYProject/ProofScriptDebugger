@@ -122,7 +122,7 @@ public class ScriptController {
         return getDockNode(findEditor(filepath));
     }
 
-    private DockNode getDockNode(ScriptArea editor) {
+    public DockNode getDockNode(ScriptArea editor) {
         if (editor == null) {
             return null;
         }
@@ -178,7 +178,7 @@ public class ScriptController {
         if (lastScriptArea == null)
             dockNode.dock(parent, DockPos.LEFT);
         else
-            dockNode.dock(parent, DockPos.LEFT, getDockNode(lastScriptArea));
+            dockNode.dock(parent, DockPos.CENTER, getDockNode(lastScriptArea));
 
         area.dirtyProperty().addListener(new ChangeListener<Boolean>() {
             @Override

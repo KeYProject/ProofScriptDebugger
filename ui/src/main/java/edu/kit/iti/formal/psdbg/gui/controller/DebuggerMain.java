@@ -26,7 +26,6 @@ import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
-import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.application.Platform;
@@ -81,14 +80,10 @@ public class DebuggerMain implements Initializable {
     protected static final Logger LOGGER = LogManager.getLogger(DebuggerMain.class);
 
     public final ContractLoaderService contractLoaderService = new ContractLoaderService();
-
-    private InspectionViewsController inspectionViewsController;
-
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
-
     @Getter
     private final DebuggerMainModel model = new DebuggerMainModel();
-
+    private InspectionViewsController inspectionViewsController;
     private ScriptController scriptController;
 
     @FXML
@@ -128,7 +123,7 @@ public class DebuggerMain implements Initializable {
     private CheckMenuItem miProofTree;
 
     @FXML
-    private Button btnIM;
+    private ToggleButton btnIM;
 
     private JavaArea javaArea = new JavaArea();
 
@@ -289,8 +284,10 @@ public class DebuggerMain implements Initializable {
      * @see {@link #handleStatePointer(PTreeNode)}
      */
     private void handleStatePointerUI(PTreeNode<KeyData> node) {
-        getInspectionViewsController().getActiveInspectionViewTab().activate(node, node.getStateBeforeStmt());
-        scriptController.getDebugPositionHighlighter().highlight(node.getStatement());
+        if (node != null) {
+            getInspectionViewsController().getActiveInspectionViewTab().activate(node, node.getStateBeforeStmt());
+            scriptController.getDebugPositionHighlighter().highlight(node.getStatement());
+        }
     }
 
     private void marriageJavaCode() {
@@ -501,10 +498,12 @@ public class DebuggerMain implements Initializable {
             statusBar.publishSuccessMessage("Interpreter finished.");
             btnIM.setDisable(false);
             assert model.getDebuggerFramework() != null;
-            PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
+            btnIM.setSelected(true);
+            /*PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
+            assert statePointer!=null;
             State<KeyData> lastState = statePointer.getStateAfterStmt();
             getInspectionViewsController().getActiveInspectionViewTab().activate(statePointer, lastState);
-
+            */
         });
     }
 
@@ -858,11 +857,15 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void interactiveMode(ActionEvent actionEvent) {
-        interactiveModeController.setActivated(true);
-        interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
-
-
+        if (btnIM.isSelected()) {
+            interactiveModeController.stop();
+        } else {
+            interactiveModeController.setActivated(true);
+            interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
+        }
     }
+
+
     @FXML
     public void showWelcomeDock(ActionEvent actionEvent) {
         if (!welcomePaneDock.isDocked() && !welcomePaneDock.isFloating()) {
