@@ -84,6 +84,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
      * starting point is a statement list
      */
     public void interpret(ProofScript script) {
+        enterScope(script);
         if (stateStack.empty()) {
             throw new InterpreterRuntimeException("no state on stack. call newState before interpret");
         }
@@ -96,6 +97,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         }
 
         script.accept(this);
+        exitScope(script);
     }
 
     /**

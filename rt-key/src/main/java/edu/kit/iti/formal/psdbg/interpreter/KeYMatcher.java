@@ -26,6 +26,8 @@ import edu.kit.iti.formal.psdbg.parser.types.Type;
 import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
 import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
 import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
 import java.util.*;
@@ -39,6 +41,8 @@ import java.util.regex.Pattern;
  * @author S. Grebing
  */
 public class KeYMatcher implements MatcherApi<KeyData> {
+    private static final Logger LOGGER = LogManager.getLogger(KeYMatcher.class);
+
     private static final Name CUT_TACLET_NAME = new Name("cut");
     private ScriptApi scrapi;
     private KeyInterpreter interpreter;
@@ -244,6 +248,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         Matchings m = MatcherFacade.matches(data, currentState.getData().getNode().sequent());
 
         if (m.isEmpty()) {
+            LOGGER.error("currentState has no match= " + currentState.getData().getNode().sequent());
             return Collections.emptyList();
         } else {
             Map<String, MatchPath> firstMatch = m.first();
@@ -260,11 +265,11 @@ public class KeYMatcher implements MatcherApi<KeyData> {
                     Value<String> value = toValueTerm(currentState.getData(), matched);
                     va.declare(s, value.getType());
                     va.assign(s, value);
-                    System.out.println("Variable " + s + " : " + value);
+                    LOGGER.error("Variables to match " + s + " : " + value);
                 }
             }
             List<VariableAssignment> retList = new LinkedList();
-            System.out.println("Matched Variables " + va.toString());
+            LOGGER.error("Matched Variables " + va.toString());
             retList.add(va);
             return retList;
         }

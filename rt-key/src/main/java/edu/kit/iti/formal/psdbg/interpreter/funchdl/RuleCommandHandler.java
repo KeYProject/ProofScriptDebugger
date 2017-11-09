@@ -74,6 +74,7 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
             }
         } catch (Exception e) {
             if (e.getClass().equals(ScriptException.class)) {
+                System.out.println("e.getMessage() = " + e.getMessage());
                 throw new ScriptCommandNotApplicableException(e, c, map);
 
             } else {

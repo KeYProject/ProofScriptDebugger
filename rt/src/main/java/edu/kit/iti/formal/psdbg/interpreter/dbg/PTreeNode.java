@@ -36,6 +36,10 @@ public class PTreeNode<T> {
 
     private boolean atomic;
 
+    private boolean isFirstNode = false;
+
+    private boolean isLastNode = false;
+
     @Nullable
     private PTreeNode<T> stepInto;
 

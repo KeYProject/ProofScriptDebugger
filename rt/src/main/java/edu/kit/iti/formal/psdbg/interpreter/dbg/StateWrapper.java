@@ -43,6 +43,9 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
     private Consumer<PTreeNode<T>> emitNode = (n) -> {
     };
 
+    @Getter
+    private ProofScript root;
+
     @Nullable
     private PTreeNode<T> lastNode;
 
@@ -74,11 +77,18 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
     }
 
     public void createRoot(ProofScript node) {
+        this.root = node;
         emitNode.accept(createNode(node));
     }
 
     public void createNormalNode(ASTNode node) {
         emitNode.accept(createNode(node));
+    }
+
+    public void createSentinel() {
+        PTreeNode<T> node = createNode(getRoot());
+        node.setLastNode(true);
+        emitNode.accept(node);
     }
 
 
@@ -142,6 +152,16 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
         public Void defaultVisit(ASTNode node) {
             LOGGER.error("exit {}", node.accept(new ShortCommandPrinter()));
             completeLastNode(node);
+            return null;
+        }
+
+        @Override
+        public Void visit(ProofScript proofScript) {
+            LOGGER.error("exit {}", proofScript.accept(new ShortCommandPrinter()));
+
+            if (proofScript.equals(root)) {
+                createSentinel();
+            }
             return null;
         }
 

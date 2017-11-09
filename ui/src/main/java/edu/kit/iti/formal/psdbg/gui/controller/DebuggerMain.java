@@ -127,6 +127,9 @@ public class DebuggerMain implements Initializable {
     @FXML
     private CheckMenuItem miProofTree;
 
+    @FXML
+    private Button btnIM;
+
     private JavaArea javaArea = new JavaArea();
 
     private DockNode javaAreaDock = new DockNode(javaArea, "Java Source",
@@ -147,6 +150,8 @@ public class DebuggerMain implements Initializable {
     private CommandHelp commandHelp = new CommandHelp();
 
     private DockNode commandHelpDock = new DockNode(commandHelp, "DebuggerCommand Help");
+
+    private InteractiveModeController interactiveModeController;
 
     @FXML
     private Menu examplesMenu;
@@ -193,6 +198,7 @@ public class DebuggerMain implements Initializable {
         Events.register(this);
         model.setDebugMode(false);
         scriptController = new ScriptController(dockStation);
+        interactiveModeController = new InteractiveModeController(scriptController);
         inspectionViewsController = new InspectionViewsController(dockStation);
         activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
         //register the welcome dock in the center
@@ -493,10 +499,12 @@ public class DebuggerMain implements Initializable {
         Platform.runLater(() -> {
             scriptController.getDebugPositionHighlighter().remove();
             statusBar.publishSuccessMessage("Interpreter finished.");
+            btnIM.setDisable(false);
             assert model.getDebuggerFramework() != null;
             PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
             State<KeyData> lastState = statePointer.getStateAfterStmt();
             getInspectionViewsController().getActiveInspectionViewTab().activate(statePointer, lastState);
+
         });
     }
 
@@ -834,10 +842,27 @@ public class DebuggerMain implements Initializable {
         stop.setText("Reload");
     }
 
+  /*  public void handle(Events.TacletApplicationEvent tap){
+        TacletApp app = tap.getApp();
+        Goal currentGoal = tap.getCurrentGoal();
+        ImmutableList<Goal> apply = currentGoal.apply(app);
+
+
+
+    }*/
+
     public void newScript(ActionEvent actionEvent) {
         scriptController.newScript();
     }
 
+
+    @FXML
+    public void interactiveMode(ActionEvent actionEvent) {
+        interactiveModeController.setActivated(true);
+        interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
+
+
+    }
     @FXML
     public void showWelcomeDock(ActionEvent actionEvent) {
         if (!welcomePaneDock.isDocked() && !welcomePaneDock.isFloating()) {
@@ -971,15 +996,19 @@ public class DebuggerMain implements Initializable {
             ptree.setRoot(pnode);
             ptree.setDeactivateRefresh(true);
 
+
             Set<Node> sentinels = proof.getSubtreeGoals(pnode)
                     .stream()
                     .map(Goal::node)
                     .collect(Collectors.toSet());
             ptree.getSentinels().addAll(sentinels);
+            ptree.expandRootToLeaves();
+            //TODO set coloring of starting and end node
             DockNode node = new DockNode(ptree, "Proof Tree for Step Into: " +
                     original.getStatement().accept(new ShortCommandPrinter())
             );
-            node.dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
+
+            node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
         }
     }
 //endregion

@@ -47,6 +47,8 @@ public class ProofTree extends BorderPane {
     @FXML
     private TreeView<TreeNode> treeProof;
 
+    public void addNodeColor() {
+    }
     private ContextMenu contextMenu;
 
     @Getter @Setter
@@ -123,6 +125,10 @@ public class ProofTree extends BorderPane {
         init();
     }
 
+    public void expandRootToLeaves() {
+        expandRootToLeaves(getTreeProof().getRoot());
+    }
+
     /**
      * From https://www.programcreek.com/java-api-examples/index.php?api=javafx.scene.control.TreeItem
      *
@@ -137,6 +143,9 @@ public class ProofTree extends BorderPane {
         }
     }
 
+    public TreeView<TreeNode> getTreeProof() {
+        return treeProof;
+    }
     private static void expandRootToLeaves(TreeItem candidate) {
         if (candidate != null) {
             if (!candidate.isLeaf()) {
@@ -266,8 +275,7 @@ public class ProofTree extends BorderPane {
             });
 
             MenuItem expandAllNodes = new MenuItem("Expand Tree");
-            expandAllNodes.setOnAction(event -> {
-
+            expandAllNodes.setOnAction((event) -> {
                 expandRootToLeaves(treeProof.getRoot());
             });
 
