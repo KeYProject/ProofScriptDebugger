@@ -24,6 +24,8 @@ public class LabelFactory {
 
     public static String RANGE_SEPARATOR = " -- ";
 
+    public static String END_MARKER = "$$";
+
     /**
      * Create Label for goalview according to function that is passed.
      * The following functions can be given:
@@ -53,7 +55,7 @@ public class LabelFactory {
             }
             cur = cur.parent();
         } while (cur != null);
-        sb.append("END");
+        sb.append(END_MARKER);
         return sb.toString();
     }
 
@@ -70,7 +72,7 @@ public class LabelFactory {
             }
             node = p;
         }
-        sb.append("END");
+        sb.append(END_MARKER);
         return sb.toString();
     }
 
