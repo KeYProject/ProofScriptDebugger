@@ -158,4 +158,9 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
             throw new IllegalStateException("Try to apply substitute on a non-term value.");
         }
     }
+
+    @Override
+    public Value visit(FunctionCall func) {
+        return func.getFunction().eval(this, func);
+    }
 }

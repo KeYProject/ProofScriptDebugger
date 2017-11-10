@@ -25,12 +25,14 @@ package edu.kit.iti.formal.psdbg.parser.types;
 
 /**
  * Represents the possible types (including scriptVarTypes).
- *
+ * <p>
  * Created at 30.04.2017
+ *
  * @author Sarah Grebing
  */
 public enum SimpleType implements Type {
     STRING("string"), ANY("any"),
+    PATTERN("pattern"),
     INT("int"), BOOL("bool"), INT_ARRAY("int[]"), OBJECT("object"),
     HEAP("heap"), FIELD("field"), LOCSET("locset"), NULL("null"), FORMULA("formula"), SEQ("Seq");
 

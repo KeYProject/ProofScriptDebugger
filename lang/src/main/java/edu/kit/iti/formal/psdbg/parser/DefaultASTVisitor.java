@@ -151,5 +151,10 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
     public T visit(ClosesCase closesCase) {
         return defaultVisit(closesCase);
     }
+
+    @Override
+    public T visit(FunctionCall func) {
+        return defaultVisit(func);
+    }
 }
 

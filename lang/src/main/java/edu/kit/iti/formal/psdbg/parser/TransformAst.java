@@ -24,8 +24,11 @@ package edu.kit.iti.formal.psdbg.parser;
 
 
 import edu.kit.iti.formal.psdbg.parser.ast.*;
+import edu.kit.iti.formal.psdbg.parser.function.FunctionRegister;
+import edu.kit.iti.formal.psdbg.parser.function.ScriptFunction;
 import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
 import lombok.Getter;
+import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -36,20 +39,27 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Alexander Weigl
  * @version 2 (29.10.17), introduction of parent
- * version 1 (27.04.17)
+ *          version 1 (27.04.17)
  */
 public class TransformAst implements ScriptLanguageVisitor<Object> {
     /**
      * Start index for positional arguments for command calls
      */
     public static final int KEY_START_INDEX_PARAMETER = 2;
-
     @Getter
     private final List<ProofScript> scripts = new ArrayList<>(10);
+    @Getter
+    @Setter
+    private FunctionRegister functionRegister = new FunctionRegister();
+
+    public TransformAst() {
+        functionRegister.loadDefault();
+    }
 
     @Override
     public List<ProofScript> visitStart(ScriptLanguageParser.StartContext ctx) {
@@ -222,9 +232,17 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override
+    public FunctionCall visitFunction(ScriptLanguageParser.FunctionContext ctx) {
+        List<Expression> args = ctx.expression().stream()
+                .map(c -> (Expression) c.accept(this))
+                .collect(Collectors.toList());
+        ScriptFunction func = functionRegister.get(ctx.ID().getText());
+        return new FunctionCall(func, args);
+    }
+
+    @Override
     public Object visitExprAnd(ScriptLanguageParser.ExprAndContext ctx) {
         return createBinaryExpression(ctx, ctx.expression(), Operator.AND);
-
     }
 
     @Override

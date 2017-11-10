@@ -79,4 +79,6 @@ public interface Visitor<T> {
     T visit(SubstituteExpression subst);
 
     T visit(ClosesCase closesCase);
+
+    T visit(FunctionCall func);
 }
