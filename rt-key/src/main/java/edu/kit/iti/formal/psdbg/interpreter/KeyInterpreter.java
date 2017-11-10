@@ -2,7 +2,6 @@ package edu.kit.iti.formal.psdbg.interpreter;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
-import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.api.VariableAssignments;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
@@ -66,7 +65,7 @@ public class KeyInterpreter extends Interpreter<KeyData> {
             }
         }
         //prune proof
-        logger.debug("The closes script " + (allClosed ? "closed the proof.\n" : "did not close the proof.\n") + "Rolling Back proof now.");
+        LOGGER.debug("The closes script " + (allClosed ? "closed the proof.\n" : "did not close the proof.\n") + "Rolling Back proof now.");
         Proof currentKeYproof = selectedGoalNode.getData().getProof();
         ImmutableList<Goal> subtreeGoals = currentKeYproof.getSubtreeGoals(((KeyData) selectedGoalNode.getData()).getNode());
         currentKeYproof.pruneProof(selectedGoalCopy.getData().getNode());

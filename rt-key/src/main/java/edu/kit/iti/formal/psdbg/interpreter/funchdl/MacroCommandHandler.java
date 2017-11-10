@@ -15,6 +15,8 @@ import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
 import java.util.Collection;
@@ -28,6 +30,8 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public class MacroCommandHandler implements CommandHandler<KeyData> {
+    protected static Logger LOGGER = LogManager.getLogger(MacroCommandHandler.class);
+
     @Getter
     private final Map<String, ProofMacro> macros;
 
@@ -57,6 +61,7 @@ public class MacroCommandHandler implements CommandHandler<KeyData> {
 
         State<KeyData> state = interpreter.getCurrentState();
         GoalNode<KeyData> expandedNode = state.getSelectedGoalNode();
+        assert state.getGoals().contains(expandedNode);
 
 
         try {
@@ -67,6 +72,8 @@ public class MacroCommandHandler implements CommandHandler<KeyData> {
                 ImmutableList<Goal> ngoals = expandedNode.getData().getProof().getSubtreeGoals(expandedNode.getData().getNode());
 
                 state.getGoals().remove(expandedNode);
+                state.setSelectedGoalNode(null);
+
                 if (ngoals.isEmpty()) {
                     Node start = expandedNode.getData().getNode();
                     //start.leavesIterator()
@@ -74,7 +81,7 @@ public class MacroCommandHandler implements CommandHandler<KeyData> {
                     Iterator<Node> nodeIterator = start.leavesIterator();
                     while (nodeIterator.hasNext()) {
                         Node n = nodeIterator.next();
-                        System.out.println(n.isClosed());
+                        LOGGER.error(n.isClosed());
                     }
 
                 } else {
@@ -83,6 +90,9 @@ public class MacroCommandHandler implements CommandHandler<KeyData> {
                         KeyData kdn = new KeyData(expandedNode.getData(), g.node());
                         state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.isClosedNode()));
                     }
+                    assert !state.getGoals().contains(expandedNode);
+
+
                 }
             }
         } catch (InterruptedException e) {

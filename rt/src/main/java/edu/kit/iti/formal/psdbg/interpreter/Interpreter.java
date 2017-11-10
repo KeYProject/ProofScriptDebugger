@@ -221,6 +221,9 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             }
 
             State<T> stateAfterCase = popState(); //remove state from stack
+            if (stateAfterCase.getSelectedGoalNode() != null) {
+                assert stateAfterCase.getGoals().contains(stateAfterCase.getSelectedGoalNode());
+            }
 
             if (result && stateAfterCase.getGoals() != null) {
                 resultingGoals.addAll(stateAfterCase.getGoals());
@@ -273,6 +276,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         Expression matchExpression = guardedCaseStatement.getGuard();
         State<T> currentStateToMatch = peekState();
         GoalNode<T> selectedGoal = currentStateToMatch.getSelectedGoalNode();
+        assert currentStateToMatch.getGoals().contains(selectedGoal);
         VariableAssignment va = evaluateMatchInGoal(matchExpression, selectedGoal);
 
         try {
@@ -510,6 +514,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         enterScope(caseStmts);
         goalNode.enterScope(va);
         State<T> s = newState(goalNode);
+        assert s.getGoals().contains(s.getSelectedGoalNode());
         caseStmts.accept(this);
         //popState(s); //This may be incorrect-> Bug? -> Cases Statement needs to pop, as goals need to be collected
         exitScope(caseStmts);
@@ -644,7 +649,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     //region State Handling
     public GoalNode<T> getSelectedNode() {
         try {
-            return stateStack.peek().getSelectedGoalNode();
+            GoalNode<T> selectedGoalNode = stateStack.peek().getSelectedGoalNode();
+            if (selectedGoalNode != null) {
+                assert stateStack.peek().getGoals().contains(selectedGoalNode);
+            }
+            return selectedGoalNode;
         } catch (IllegalStateException e) {
             if (scrictSelectedGoalMode)
                 throw e;
