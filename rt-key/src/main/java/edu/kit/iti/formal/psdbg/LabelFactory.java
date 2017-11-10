@@ -53,7 +53,7 @@ public class LabelFactory {
             }
             cur = cur.parent();
         } while (cur != null);
-        sb.append("$$");
+        sb.append("END");
         return sb.toString();
     }
 
@@ -70,7 +70,7 @@ public class LabelFactory {
             }
             node = p;
         }
-        sb.append("$$");
+        sb.append("END");
         return sb.toString();
     }
 

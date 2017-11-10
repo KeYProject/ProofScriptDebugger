@@ -139,6 +139,23 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
     }
 
     @Override
+    public Void visit(StringLiteral stringLiteral) {
+        s.append(String.format("\'\'%s\'\'", stringLiteral.getText()));
+        return super.visit(stringLiteral);
+    }
+
+    /**
+     * clear line
+     */
+    private void cl() {
+        int i = s.length() - 1;
+        while (Character.isWhitespace(s.charAt(i))) {
+            s.deleteCharAt(i--);
+        }
+        nl();
+    }
+
+    @Override
     public Void visit(CasesStatement casesStatement) {
         s.append("cases {");
         incrementIndent();
@@ -154,38 +171,16 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
             s.append("}");
         }*/
         if (casesStatement.getDefCaseStmt() != null) {
-            s.append("default {");
+            s.append("default : ");
             casesStatement.getDefCaseStmt().accept(this);
             cl();
-            s.append("}");
+            // s.append("}");
         }
 
         decrementIndent();
         cl();
         s.append("}");
         return null;
-    }
-
-    /**
-     * clear line
-     */
-    private void cl() {
-        int i = s.length() - 1;
-        while (Character.isWhitespace(s.charAt(i))) {
-            s.deleteCharAt(i--);
-        }
-        nl();
-    }
-
-    @Override
-    public Void visit(GuardedCaseStatement caseStatement) {
-        s.append("case ");
-        caseStatement.getGuard().accept(this);
-        s.append(" {");
-        caseStatement.getBody().accept(this);
-        nl();
-        s.append("}");
-        return super.visit(caseStatement);
     }
 
     @Override
@@ -206,9 +201,14 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
     }
 
     @Override
-    public Void visit(StringLiteral stringLiteral) {
-        s.append(String.format("\"%s\"", stringLiteral.getText()));
-        return super.visit(stringLiteral);
+    public Void visit(GuardedCaseStatement caseStatement) {
+        s.append("case ");
+        caseStatement.getGuard().accept(this);
+        s.append(": ");
+        caseStatement.getBody().accept(this);
+        nl();
+        // s.append("}");
+        return super.visit(caseStatement);
     }
 
     @Override

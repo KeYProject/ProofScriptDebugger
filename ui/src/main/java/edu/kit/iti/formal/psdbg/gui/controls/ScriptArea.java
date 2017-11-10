@@ -1,9 +1,7 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
-import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
-import de.uka.ilkd.key.logic.SequentFormula;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
@@ -11,7 +9,7 @@ import edu.kit.iti.formal.psdbg.lint.LintProblem;
 import edu.kit.iti.formal.psdbg.lint.LinterStrategy;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageLexer;
-import edu.kit.iti.formal.psdbg.parser.ast.*;
+import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.binding.BooleanBinding;
@@ -201,7 +199,9 @@ public class ScriptArea extends CodeArea {
         String newValue = getText();
         if (newValue.length() != 0) {
             clearStyle(0, newValue.length());
+
             StyleSpans<? extends Collection<String>> spans = highlighter.highlight(newValue);
+
             if (spans != null) setStyleSpans(0, spans);
 
             markedRegions.forEach(reg -> {
