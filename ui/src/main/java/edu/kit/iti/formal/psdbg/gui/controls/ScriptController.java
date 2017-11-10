@@ -120,14 +120,6 @@ public class ScriptController {
         return getDockNode(findEditor(filepath));
     }
 
-<<<<<<< HEAD
-    public DockNode getDockNode(ScriptArea editor) {
-        if (editor == null) {
-            return null;
-        }
-        return openScripts.get(editor);
-    }
-
     /**
      * Create a new Tab in the ScriptTabPane containing the contents of the file given as argument
      *
@@ -161,10 +153,7 @@ public class ScriptController {
         }
     }
 
-=======
->>>>>>> fe78f6e478dd00993310329ee09e52cb3af7a516
-    /**
-     * Create new DockNode for ScriptArea Tab
+     /* Create new DockNode for ScriptArea Tab
      *
      * @param area ScriptAreaTab
      * @return
@@ -201,38 +190,6 @@ public class ScriptController {
         return dockNode;
     }
 
-    /**
-     * Create a new Tab in the ScriptTabPane containing the contents of the file given as argument
-     *
-     * @param filePath to file that should be loaded to new tab
-     * @return refernce to new scriptArea in new tab
-     * @throws IOException if an Exception occurs while loading file
-     */
-    public ScriptArea createNewTab(File filePath) throws IOException {
-        filePath = filePath.getAbsoluteFile();
-        if (findEditor(filePath) == null) {
-            ScriptArea area = new ScriptArea();
-            area.mainScriptProperty().bindBidirectional(mainScript);
-            area.setFilePath(filePath);
-            DockNode dockNode = createDockNode(area);
-            openScripts.put(area, dockNode);
-
-            if (filePath.exists()) {
-                String code = FileUtils.readFileToString(filePath, "utf-8");
-                if (!area.textProperty().getValue().isEmpty()) {
-                    area.deleteText(0, area.textProperty().getValue().length());
-                }
-                area.setText(code);
-            }
-
-
-            return area;
-        } else {
-            logger.info("File already exists. Will not load it again");
-            ScriptArea area = findEditor(filePath);
-            return area;
-        }
-    }
 
     public DockNode getDockNode(ScriptArea editor) {
         if (editor == null) {

@@ -502,9 +502,9 @@ public class DebuggerMain implements Initializable {
         Platform.runLater(() -> {
             scriptController.getDebugPositionHighlighter().remove();
             statusBar.publishSuccessMessage("Interpreter finished.");
-            btnIM.setDisable(false);
+            btnInteractiveMode.setDisable(false);
             assert model.getDebuggerFramework() != null;
-            btnIM.setSelected(true);
+            btnInteractiveMode.setSelected(true);
             /*PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
             assert statePointer!=null;
             State<KeyData> lastState = statePointer.getStateAfterStmt();
@@ -871,8 +871,6 @@ public class DebuggerMain implements Initializable {
         } 
     }
 
-
-    }
     @FXML
     public void showWelcomeDock(ActionEvent actionEvent) {
         if (!welcomePaneDock.isDocked() && !welcomePaneDock.isFloating()) {
