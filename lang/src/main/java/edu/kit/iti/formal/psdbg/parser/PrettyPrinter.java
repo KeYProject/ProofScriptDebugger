@@ -166,7 +166,7 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         }
      /*   if (casesStatement.getDefaultCase() != null) {
             s.append("default {");
-            casesStatement.getDefaultCase().accept(this);
+            casesStatement.getDefaultCase().visit(this);
             cl();
             s.append("}");
         }*/
@@ -269,6 +269,19 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         s.append("}");
         return null;
 
+    }
+
+    @Override
+    public Void visit(FunctionCall func) {
+        s.append(func.getFunction().getName())
+                .append('(');
+        func.getArguments().forEach(a -> {
+            a.accept(this);
+            s.append(", ");
+        });
+        s.delete(s.length() - 3, s.length() - 1); //delete last ', '
+        s.append(')');
+        return null;
     }
 
     @Override

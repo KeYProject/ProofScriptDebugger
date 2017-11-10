@@ -2,7 +2,7 @@ package edu.kit.iti.formal.psdbg.parser;
 
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 
-public class ASTDiff implements Visitor<ASTNode> {
+public class ASTDiff extends DefaultASTVisitor<ASTNode> {
     private ASTNode other;
 
     private ProofScript newScript;
