@@ -59,6 +59,7 @@ expression
     | expression IMP expression   #exprIMP
     //|   expression EQUIV expression already covered by EQ/NEQ
     | expression LBRACKET substExpressionList RBRACKET #exprSubst
+    | ID LPAREN  (expression (',' expression)*)? RPAREN  #function
     | MINUS expression         #exprNegate
     | NOT expression           #exprNot
     | LPAREN expression RPAREN #exprParen
