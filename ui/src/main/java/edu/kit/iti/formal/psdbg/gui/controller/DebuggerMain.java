@@ -128,7 +128,7 @@ public class DebuggerMain implements Initializable {
     private CheckMenuItem miProofTree;
 
     @FXML
-    private Button btnIM;
+    private ToggleButton btnInteractiveMode;
 
     private JavaArea javaArea = new JavaArea();
 
@@ -199,6 +199,7 @@ public class DebuggerMain implements Initializable {
         model.setDebugMode(false);
         scriptController = new ScriptController(dockStation);
         interactiveModeController = new InteractiveModeController(scriptController);
+        btnInteractiveMode.setSelected(false);
         inspectionViewsController = new InspectionViewsController(dockStation);
         activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
         //register the welcome dock in the center
@@ -499,7 +500,7 @@ public class DebuggerMain implements Initializable {
         Platform.runLater(() -> {
             scriptController.getDebugPositionHighlighter().remove();
             statusBar.publishSuccessMessage("Interpreter finished.");
-            btnIM.setDisable(false);
+            btnInteractiveMode.setDisable(false);
             assert model.getDebuggerFramework() != null;
             PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
             State<KeyData> lastState = statePointer.getStateAfterStmt();
@@ -858,8 +859,12 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void interactiveMode(ActionEvent actionEvent) {
-        interactiveModeController.setActivated(true);
-        interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
+        if (btnInteractiveMode.isSelected()) {
+            interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
+
+        } else {
+            interactiveModeController.stop();
+        }
 
 
     }

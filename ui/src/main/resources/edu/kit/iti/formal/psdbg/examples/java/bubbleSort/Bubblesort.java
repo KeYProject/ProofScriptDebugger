@@ -9,8 +9,7 @@ class Bubblesort {
 	@*/
 	
     public int[] bubbleSort(int[] arr) {
-        int temp = 0;  
-		
+        int temp = 0;
 		/*@
 			@	loop_invariant 0 <= i && i <= arr.length;
 			@	loop_invariant (\forall int a,b; a >= arr.length - i && b <= arr.length && a < b && i > 0; arr[a] <= arr[b]);
@@ -18,7 +17,6 @@ class Bubblesort {
 			@	decreases arr.length - i;
 			@*/
          for(int i=0; i < arr.length; i++){  
-			
 			/*@
 			@	loop_invariant 1 <= j && j <= arr.length - i + 1;
 			@	assignable arr[*], temp;
@@ -41,7 +39,7 @@ class Bubblesort {
 	/*@ public normal_behaviour
 	@	requires arr != null;
 	@	requires arr.length > 0;
-	@	ensures true;
+	@	ensures \result == true;
 	@*/
 	public boolean test(int[] arr) {
 		arr = bubbleSort(arr);

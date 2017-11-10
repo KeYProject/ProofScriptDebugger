@@ -3,36 +3,8 @@ script t1(){
     cases{
        case match `?X >= 0,?X > 0  ==>`:
            cut `?X = 0`[?X \ X];
-           auto;
-
+           foreach{
+             auto;
+           }
     }
-    //foreach{
-    //    auto;
-    //}
-
-}
-
-
-
-script t2(){
-    symbex;
-    cases{
-       case match '.*x.*':
-            auto;
-
-	   default:
-	       auto;
-
-    }
-
-}
-
-
-script t(){
-    symbex;
-    foreach{
-       simp_heap;
-
-    }
-
 }

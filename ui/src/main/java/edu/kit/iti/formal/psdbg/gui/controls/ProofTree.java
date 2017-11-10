@@ -309,17 +309,19 @@ public class ProofTree extends BorderPane {
         }
 
         if (n.childrenCount() == 0) {
-            ti.getChildren().add(new TreeItem<>(new TreeNode(
-                    n.isClosed() ? "CLOSED GOAL" : "OPEN GOAL", null)));
+            TreeItem<TreeNode> e = new TreeItem<>(new TreeNode(
+                    n.isClosed() ? "CLOSED GOAL" : "OPEN GOAL", null));
+
+            ti.getChildren().add(e);
             return ti;
         }
 
         Node node = n.child(0);
         if (n.childrenCount() == 1) {
-            ti.getChildren().add(new TreeItem<>(new TreeNode(toString(node), node)));
+            ti.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
             while (node.childrenCount() == 1) {
                 node = node.child(0);
-                ti.getChildren().add(new TreeItem<>(new TreeNode(toString(node), node)));
+                ti.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
             }
         }
 
@@ -364,20 +366,24 @@ public class ProofTree extends BorderPane {
             }
         };
         tftc.setConverter(stringConverter);
-
-        //tftc.itemProperty().addListener((p, o, n) -> repaint(tftc));
+        tftc.itemProperty().addListener((p, o, n) -> {
+            if (n != null)
+                repaint(tftc);
+        });
 
         //colorOfNodes.addListener((InvalidationListener) o -> repaint(tftc));
         return tftc;
     }
 
-    /*private void repaint(TextFieldTreeCell<TreeNode> tftc) {
+    private void repaint(TextFieldTreeCell<TreeNode> tftc) {
         Node n = tftc.getItem().node;
         tftc.setStyle("");
-        if (n != null) {
+        if (n != null && n.leaf()) {
             if (n.isClosed()) {
-                colorOfNodes.putIfAbsent(n, "green");
+                colorOfNodes.putIfAbsent(n, "seagreen");
                 //tftc.setStyle("-fx-background-color: greenyellow");
+            } else {
+                colorOfNodes.putIfAbsent(n, "darkred");
             }
             if (colorOfNodes.containsKey(n)) {
                 tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
@@ -385,7 +391,7 @@ public class ProofTree extends BorderPane {
         }
         expandRootToItem(tftc.getTreeItem());
 
-    }*/
+    }
 
     public Object getColorOfNodes() {
         return colorOfNodes.get();

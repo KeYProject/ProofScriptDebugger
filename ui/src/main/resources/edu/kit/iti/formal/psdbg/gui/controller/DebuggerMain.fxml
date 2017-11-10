@@ -275,7 +275,7 @@
                             </tooltip>
                         </Button>
 
-                        <Button fx:id="btnIM" onAction="#interactiveMode" disable="true">
+                        <ToggleButton fx:id="btnInteractiveMode" onAction="#interactiveMode" disable="true">
                             <!--disable="${! controller.debugMode}"-->
                             <graphic>
                                 <MaterialDesignIconView glyphName="HAND_POINTING_RIGHT" size="24.0"/>
@@ -283,7 +283,7 @@
                             <tooltip>
                                 <Tooltip text="Start/Stop Interactive Mode"/>
                             </tooltip>
-                        </Button>
+                        </ToggleButton>
 
                         <Pane HBox.hgrow="ALWAYS"/>
                         <Label text="Windows:"/>

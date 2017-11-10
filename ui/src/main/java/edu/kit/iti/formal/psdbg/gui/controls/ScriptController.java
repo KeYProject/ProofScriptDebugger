@@ -15,8 +15,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -122,11 +120,42 @@ public class ScriptController {
         return getDockNode(findEditor(filepath));
     }
 
-    private DockNode getDockNode(ScriptArea editor) {
-        if (editor == null) {
-            return null;
-        }
-        return openScripts.get(editor);
+    /**
+     * Create new DockNode for ScriptArea Tab
+     *
+     * @param area ScriptAreaTab
+     * @return
+     */
+    private DockNode createDockNode(ScriptArea area) {
+        DockNode dockNode = new DockNode(area, area.getFilePath().getName(), new MaterialDesignIconView(MaterialDesignIcon.FILE_DOCUMENT));
+        dockNode.closedProperty().addListener(o -> {
+            openScripts.remove(area);
+        });
+        area.filePathProperty().addListener((observable, oldValue, newValue) -> dockNode.setTitle(newValue.getName()));
+
+        if (lastScriptArea == null)
+            dockNode.dock(parent, DockPos.LEFT);
+        else
+            dockNode.dock(parent, DockPos.CENTER, getDockNode(lastScriptArea));
+
+        area.dirtyProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (newValue)
+                    dockNode.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.FILE_DOCUMENT));
+                else
+                    dockNode.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.FILE_DOCUMENT_BOX));
+            }
+        });
+
+        this.lastScriptArea = area;
+        area.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            logger.debug("area = [" + area + "]");
+            if (newValue)
+                lastScriptArea = area;
+        });
+
+        return dockNode;
     }
 
     /**
@@ -162,42 +191,11 @@ public class ScriptController {
         }
     }
 
-    /**
-     * Create new DockNode for ScriptArea Tab
-     *
-     * @param area ScriptAreaTab
-     * @return
-     */
-    private DockNode createDockNode(ScriptArea area) {
-        DockNode dockNode = new DockNode(area, area.getFilePath().getName(), new MaterialDesignIconView(MaterialDesignIcon.FILE_DOCUMENT));
-        dockNode.closedProperty().addListener(o -> {
-            openScripts.remove(area);
-        });
-        area.filePathProperty().addListener((observable, oldValue, newValue) -> dockNode.setTitle(newValue.getName()));
-
-        if (lastScriptArea == null)
-            dockNode.dock(parent, DockPos.LEFT);
-        else
-            dockNode.dock(parent, DockPos.LEFT, getDockNode(lastScriptArea));
-
-        area.dirtyProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue)
-                    dockNode.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.FILE_DOCUMENT));
-                else
-                    dockNode.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.FILE_DOCUMENT_BOX));
-            }
-        });
-
-        this.lastScriptArea = area;
-        area.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            logger.debug("area = [" + area + "]");
-            if (newValue)
-                lastScriptArea = area;
-        });
-
-        return dockNode;
+    public DockNode getDockNode(ScriptArea editor) {
+        if (editor == null) {
+            return null;
+        }
+        return openScripts.get(editor);
     }
 
     /**
