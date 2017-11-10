@@ -68,6 +68,9 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
 
             ImmutableList<Goal> ngoals = kd.getProof().getSubtreeGoals(kd.getNode());
             state.getGoals().remove(expandedNode);
+            if (state.getSelectedGoalNode().equals(expandedNode)) {
+                state.setSelectedGoalNode(null);
+            }
             for (Goal g : ngoals) {
                 KeyData kdn = new KeyData(kd, g.node());
                 state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));

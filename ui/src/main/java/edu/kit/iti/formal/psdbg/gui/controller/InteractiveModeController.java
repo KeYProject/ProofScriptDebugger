@@ -67,7 +67,7 @@ public class InteractiveModeController {
     public void stop() {
         Events.unregister(this);
         String c = getCasesAsString();
-        scriptController.getDockNode(scriptArea).undock();
+        scriptController.getDockNode(scripundocktArea).undock();
         Events.fire(new Events.InsertAtTheEndOfMainScript(c));
     }
 

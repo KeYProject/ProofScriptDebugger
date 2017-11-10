@@ -15,6 +15,8 @@ import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
 import java.util.Collection;
@@ -30,6 +32,8 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
+    protected static Logger LOGGER = LogManager.getLogger(ProofScriptCommandBuilder.class);
+
     @Getter
     private final Map<String, ProofScriptCommand> commands;
 
@@ -65,7 +69,10 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
             //what happens if this is empty -> meaning proof is closed
-
+            state.getGoals().remove(expandedNode);
+            if (state.getSelectedGoalNode().equals(expandedNode)) {
+                state.setSelectedGoalNode(null);
+            }
             ImmutableList<Goal> ngoals = kd.getProof().getSubtreeGoals(kd.getNode());
             if (ngoals.isEmpty()) {
                 Node start = expandedNode.getData().getNode();
@@ -74,7 +81,7 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
                 Iterator<Node> nodeIterator = start.leavesIterator();
                 while (nodeIterator.hasNext()) {
                     Node n = nodeIterator.next();
-                    System.out.println(n.isClosed());
+                    LOGGER.error(n.isClosed());
                 }
 
             } else {
@@ -83,7 +90,7 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
                     state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.isClosedNode()));
                 }
             }
-            state.getGoals().remove(expandedNode);
+
 
         } catch (Exception e) {
             throw new RuntimeException(e);

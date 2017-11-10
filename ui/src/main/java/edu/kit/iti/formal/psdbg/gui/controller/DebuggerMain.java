@@ -26,6 +26,7 @@ import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.application.Platform;
@@ -80,10 +81,14 @@ public class DebuggerMain implements Initializable {
     protected static final Logger LOGGER = LogManager.getLogger(DebuggerMain.class);
 
     public final ContractLoaderService contractLoaderService = new ContractLoaderService();
+
+    private InspectionViewsController inspectionViewsController;
+
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
+
     @Getter
     private final DebuggerMainModel model = new DebuggerMainModel();
-    private InspectionViewsController inspectionViewsController;
+
     private ScriptController scriptController;
 
     @FXML
@@ -123,7 +128,7 @@ public class DebuggerMain implements Initializable {
     private CheckMenuItem miProofTree;
 
     @FXML
-    private ToggleButton btnIM;
+    private ToggleButton btnInteractiveMode;
 
     private JavaArea javaArea = new JavaArea();
 
@@ -194,6 +199,7 @@ public class DebuggerMain implements Initializable {
         model.setDebugMode(false);
         scriptController = new ScriptController(dockStation);
         interactiveModeController = new InteractiveModeController(scriptController);
+        btnInteractiveMode.setSelected(false);
         inspectionViewsController = new InspectionViewsController(dockStation);
         activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
         //register the welcome dock in the center
@@ -857,15 +863,16 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void interactiveMode(ActionEvent actionEvent) {
-        if (btnIM.isSelected()) {
-            interactiveModeController.stop();
-        } else {
+        if (btnInteractiveMode.isSelected()) {
             interactiveModeController.setActivated(true);
             interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
-        }
+        } else {
+            interactiveModeController.stop();
+        } 
     }
 
 
+    }
     @FXML
     public void showWelcomeDock(ActionEvent actionEvent) {
         if (!welcomePaneDock.isDocked() && !welcomePaneDock.isFloating()) {

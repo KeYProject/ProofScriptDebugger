@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.dockfx.DockPane?>
-<?import org.controlsfx.control.ToggleSwitch?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.112"
             fx:controller="edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain"
             prefWidth="1024" prefHeight="640">
@@ -276,7 +275,7 @@
                             </tooltip>
                         </Button>
 
-                        <ToggleButton fx:id="btnIM" onAction="#interactiveMode" disable="true">
+                        <ToggleButton fx:id="btnInteractiveMode" onAction="#interactiveMode" disable="true">
                             <!--disable="${! controller.debugMode}"-->
                             <graphic>
                                 <MaterialDesignIconView glyphName="HAND_POINTING_RIGHT" size="24.0"/>

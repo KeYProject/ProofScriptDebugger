@@ -79,10 +79,6 @@ public class State<T> {
         return new State<T>(copiedGoals, refToSelGoal);
     }
 
-    public void setSelectedGoalNode(GoalNode<T> gn) {
-        this.selectedGoalNode = gn;
-    }
-
     public GoalNode<T> getSelectedGoalNode() {
      /*   if (selectedGoalNode == null) {
             throw new IllegalStateException("no selected node");
@@ -96,7 +92,15 @@ public class State<T> {
         if (getGoals().size() == 1) {
             selectedGoalNode = getGoals().get(0);
         }
+
         return selectedGoalNode;
+    }
+
+    public void setSelectedGoalNode(GoalNode<T> gn) {
+        if (gn != null) {
+            assert goals.contains(gn);
+        }
+        this.selectedGoalNode = gn;
     }
 
     public String toString() {
