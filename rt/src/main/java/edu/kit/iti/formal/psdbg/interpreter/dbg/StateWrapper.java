@@ -124,7 +124,7 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
 
         @Override
         public Void defaultVisit(ASTNode node) {
-            LOGGER.error("enter {}", node.accept(new ShortCommandPrinter()));
+            LOGGER.debug("enter {}", node.accept(new ShortCommandPrinter()));
             createNormalNode(node);
             return null;
         }
@@ -136,7 +136,7 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
 
         @Override
         public Void visit(ProofScript proofScript) {
-            LOGGER.error("enter {}", proofScript.accept(new ShortCommandPrinter()));
+            LOGGER.debug("enter {}", proofScript.accept(new ShortCommandPrinter()));
             if (root) {
                 createRoot(proofScript);
                 root = false;

@@ -194,4 +194,10 @@ public interface ASTTraversal<T> extends Visitor<T> {
         defCase.getBody().accept(this);
         return null;
     }
+
+    @Override
+    default T visit(FunctionCall func) {
+        func.getArguments().forEach(a -> a.accept(this));
+        return null;
+    }
 }
