@@ -9,7 +9,7 @@ import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.FunctionCall;
 import edu.kit.iti.formal.psdbg.parser.ast.MatchExpression;
 import edu.kit.iti.formal.psdbg.parser.ast.Signature;
-import edu.kit.iti.formal.psdbg.parser.ast.TermLiteral;
+import edu.kit.iti.formal.psdbg.parser.ast.Variable;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.function.ScriptFunction;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
@@ -21,6 +21,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * <h3>Examples</h3>
+ * <code><pre>
+ *     * find(match `f(?X)`) => f(x)
+ *     * find(match ``) =>
+ * </pre></code>
+ *
  * @author Alexander Weigl
  * @version 1 (10.11.17)
  */
@@ -48,17 +54,22 @@ public class FindInSequence implements ScriptFunction {
             MatchExpression match = (MatchExpression) call.getArguments().get(0);
             Signature sig = match.getSignature();
             Value pattern = e.eval(match.getPattern());
-            List<VariableAssignment> va = null;
             KeYMatcher matcher = (KeYMatcher) e.getMatcher();
-            if (pattern.getType() == SimpleType.STRING) {
-                va = matcher.matchLabel(e.getGoal(), (String) pattern.getData());
-                //TODO extract the results form the matcher in order to retrieve the selection results
-            } else if (TypeFacade.isTerm(pattern.getType())) {
-                va = matcher.matchSeq(e.getGoal(), (String) pattern.getData(), sig);
+            if (TypeFacade.isTerm(pattern.getType())) {
+                List<VariableAssignment> va = matcher.matchSeq(e.getGoal(),
+                        (String) pattern.getData(), sig);
+                if (va.isEmpty()) {
+                    throw new IllegalArgumentException("No match found for " + match.getPattern());
+                } else {
+                    Value rt = va.get(0).getValue(new Variable("rt"));
+                    if (rt == null)
+                        throw new IllegalStateException("Binding 'rt' not defined in pattern: " + match.getPattern());
+                    return rt;
+                }
+            } else {
+                throw new IllegalArgumentException("Matching only possible on terms.");
             }
 
-            //TODO capture top level term
-            return Value.from(new TermLiteral(""));
         } catch (ClassCastException exc) {
             throw new IllegalStateException("Excepted a match expression as first argument found: " + call.getArguments().get(0),
                     exc);
