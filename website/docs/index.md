@@ -75,10 +75,11 @@ A full description of the language and debugging-concept is published at <a href
     </div>
     <div >
         <h3>Adjustable view on list of open goals</h3>
-        <img src="img/simpleJavaGoalList.png" style="width:304px;height:228px;"  />
+        <img src="img/ScreenshotState.png" style="width:304px;height:228px;"  />
     </div>
     <div >
         <h3>Explore the proof tree of KeY</h3>
+         <img src="img/ScreenshotProofTree.png" style="width:304px;height:228px;"  />
     </div>
 </div>
 <div style="clear: both;"/>
@@ -91,15 +92,22 @@ A full description of the language and debugging-concept is published at <a href
         </div>
         <div >
             <h3>Set a breakpoint and run execution to breakpoint</h3>
-             <img src="img/simpleJava2.png"  style="width:304px;height:228px;"/>
+             <img src="img/ScreenshotBreakpoint.png"  style="width:304px;height:228px;"/>
         </div>
         <div > 
             <h3> Step forward and step backward</h3>
-            <img src="img/simpleJavaStep.png" style="width:304px;height:228px;" />
+            <img src="img/ScreenshotStep.png" style="width:304px;height:228px;" />
         </div>
+        <div > 
+        <h3> Interactive Rule Application</h3>
+                    <img src="img/ScreenshotInteractive.png" style="width:304px;height:228px;" />
+                </div>
     </div>
     <div style="clear: both;"/> 
     <p>
+    
+
+For Accessing the prototype, please contact the authors.
 <footer style="border-top: #ccc 1px solid">
             Contact: <a href="https://formal.iti.kit.edu/~grebing/">Sarah Grebing</a>
         </footer>
