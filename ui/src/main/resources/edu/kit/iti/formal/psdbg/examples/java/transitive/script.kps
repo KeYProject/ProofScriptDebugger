@@ -6,9 +6,9 @@ script prove_transitive(){
    //simp_heap;
  }
  cases{
-  // case match  `seqPerm(?Res0Copy, ?Arr) ==>`:
+  // case match  `seqPerm(?Res0Copy, ?Arr), seqPerm(?R, ?Res0Copy) ==>`:
 
-   case match `seqPerm(?Res0Copy, ?Arr), seqPerm(?Res0Sort, ?Res0Copy), seqPerm(?Res1Copy0, ?Res0Sort),seqPerm(?Res2Copy1, ?Res0Sort) ==> seqPerm(?Res2Copy1, ?Arr)`:
+   //case match `seqPerm(?Res0Copy, ?Arr), seqPerm(?Res0Sort, ?Res0Copy), seqPerm(?Res1Copy0, ?Res0Sort),seqPerm(?Res2Copy1, ?Res0Sort) ==> seqPerm(?Res2Copy1, ?Arr)`:
    // SeqPermSym on=`seqPerm(?Res0Copy, ?Arr) ==>`;
    // SeqPermSym on=`seqPerm(?Res0Sort, ?Res0Copy) ==>`;
    // SeqPermSym on=`seqPerm(?Res1Copy0, ?Res0Sort)==>`;

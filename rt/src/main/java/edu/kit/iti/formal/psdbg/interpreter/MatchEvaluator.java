@@ -168,6 +168,7 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
             //TODO extract the results form the matcher in order to retrieve the selection results
         } else if (TypeFacade.isTerm(pattern.getType())) {
             va = getMatcher().matchSeq(goal, (String) pattern.getData(), sig);
+            System.out.println("va = " + va);
         }
         return va != null ? va : Collections.emptyList();
     }
