@@ -1,0 +1,23 @@
+
+script auto1() {
+	auto;
+}
+
+script sumandmax() {
+symbex;
+cases{
+	case match `wellFormed(heap)`: //1486 ähnlich wie 1288
+		andRight;
+		cases{
+			case `==> true`: //Case 1
+				closeTrue;
+			
+			default: //Case 2	
+		}
+	default:
+		
+}
+
+
+}
+

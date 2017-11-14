@@ -1,11 +1,8 @@
 package edu.kit.iti.formal.psdbg.lint.checkers;
 
-import edu.kit.iti.formal.psdbg.parser.ast.ForeachStatement;
-import edu.kit.iti.formal.psdbg.parser.ast.GoalSelector;
-import edu.kit.iti.formal.psdbg.parser.ast.RepeatStatement;
-import edu.kit.iti.formal.psdbg.parser.ast.TheOnlyStatement;
 import edu.kit.iti.formal.psdbg.lint.Issue;
 import edu.kit.iti.formal.psdbg.lint.IssuesRepository;
+import edu.kit.iti.formal.psdbg.parser.ast.*;
 
 import java.util.Objects;
 
@@ -66,6 +63,11 @@ public class SuccessiveGoalSelector extends AbstractLintRule {
                         repeat, repeat.getBody().get(0));
             }
             return super.visit(repeat);
+        }
+
+        @Override
+        public Void visit(FunctionCall func) {
+            return null;
         }
     }
 }

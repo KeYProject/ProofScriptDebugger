@@ -17,6 +17,11 @@ public class EmptyBlocks extends AbstractLintRule {
 
     private static class EmptyBlockSearcher extends Searcher {
 
+        @Override
+        public Void visit(FunctionCall func) {
+            return null;
+        }
+
         public void check(ASTNode node, Statements statements) {
             if (statements.size() == 0) {
                 problem(EMPTY_BLOCK, node);

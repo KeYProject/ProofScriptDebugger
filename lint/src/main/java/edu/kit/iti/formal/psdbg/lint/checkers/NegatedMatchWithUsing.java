@@ -1,9 +1,10 @@
 package edu.kit.iti.formal.psdbg.lint.checkers;
 
-import edu.kit.iti.formal.psdbg.parser.ast.MatchExpression;
-import edu.kit.iti.formal.psdbg.parser.ast.UnaryExpression;
 import edu.kit.iti.formal.psdbg.lint.Issue;
 import edu.kit.iti.formal.psdbg.lint.IssuesRepository;
+import edu.kit.iti.formal.psdbg.parser.ast.FunctionCall;
+import edu.kit.iti.formal.psdbg.parser.ast.MatchExpression;
+import edu.kit.iti.formal.psdbg.parser.ast.UnaryExpression;
 
 /**
  * @author Alexander Weigl
@@ -26,6 +27,11 @@ public class NegatedMatchWithUsing extends AbstractLintRule {
                 }
             }
             return super.visit(ue);
+        }
+
+        @Override
+        public Void visit(FunctionCall func) {
+            return null;
         }
     }
 }

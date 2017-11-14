@@ -65,6 +65,11 @@ public class VariableDeclarationCheck extends AbstractLintRule {
             return null;
         }
 
+        @Override
+        public Void visit(FunctionCall func) {
+            return null;
+        }
+
         private void declare(Variable var, Type type) {
             if (current.getType(var) != null) {
                 problem(REDECLARE_VARIABLE).tokens(var.getToken());
