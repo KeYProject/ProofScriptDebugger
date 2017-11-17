@@ -75,7 +75,7 @@ EXISTS: '\exists';
 DIGITS : DIGIT+ ;
 fragment DIGIT : [0-9] ;
 SID: '?' [_a-zA-Z0-9\\]+ ;
-ID : [a-zA-Z\\_] ([_a-zA-Z0-9\\])*;
+ID : [a-zA-Z\\_] ([_a-zA-Z0-9\\])*| 'update-application';
 
 COMMENT: '//' ~[\n\r]* -> channel(HIDDEN);
 WS: [\n\f\r\t ] -> channel(HIDDEN);
