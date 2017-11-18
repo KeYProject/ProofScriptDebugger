@@ -72,7 +72,7 @@ public class MatcherFacade {
     public static Matchings matches(String pattern, Sequent sequent, boolean catchAll) {
         MatchPatternParser mpp = getParser(pattern);
         MatchPatternParser.SequentPatternContext ctx = mpp.sequentPattern();
-        logger.error("Matching \n" + pattern + "\n" + sequent.toString());
+        logger.info("Matching \n" + pattern + "\n" + sequent.toString());
         if (mpp.getNumberOfSyntaxErrors() != 0) {
             logger.info("Invalid pattern syntax '{}' no matches returned.", pattern);
             return new Matchings();

@@ -32,8 +32,6 @@ import java.util.stream.Stream;
  */
 public class Interpreter<T> extends DefaultASTVisitor<Object>
         implements ScopeObservable {
-    private static final int MAX_ITERATIONS = 10000;
-
     protected static Logger logger = LogManager.getLogger(Interpreter.class);
 
     @Getter
@@ -42,6 +40,13 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     @Getter
     protected List<Visitor> entryListeners = new ArrayList<>(),
             exitListeners = new ArrayList<>();
+
+    /**
+     *
+     */
+    @Getter
+    @Setter
+    private int maxIterationsRepeat = 10000;
 
     private Stack<State<T>> stateStack = new Stack<>();
 
@@ -54,11 +59,12 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     @Getter
     @Setter
-    private boolean scrictSelectedGoalMode = false;
+    private boolean strictMode = false;
 
     @Getter
     @Setter
     private VariableAssignmentHook<T> variableAssignmentHook = null;
+
 
     @Getter
     @Setter
@@ -551,8 +557,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             //State<T> newErrorState = newState(null, null);
             //newErrorState.setErrorState(true);
             //pushState(newErrorState);
-        }
-        finally {
+        } finally {
             g.exitScope();
             //  System.out.println(stateStack.peek().hashCode());
             exitScope(call);
@@ -627,9 +632,9 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
                 Set<GoalNode<T>> prevNodes = new HashSet<>(prev.getGoals());
                 Set<GoalNode<T>> endNodes = new HashSet<>(end.getGoals());
                 b = prevNodes.equals(endNodes);
-                b = b && counter <= MAX_ITERATIONS;
+                b = b && counter <= maxIterationsRepeat;
             } while (b);
-        }catch (InterpreterRuntimeException e) {
+        } catch (InterpreterRuntimeException e) {
             logger.debug("Catched!", e);
         }
         exitScope(repeatStatement);
@@ -655,7 +660,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             }
             return selectedGoalNode;
         } catch (IllegalStateException e) {
-            if (scrictSelectedGoalMode)
+            if (strictMode)
                 throw e;
 
             logger.warn("No goal selected. Returning first goal!");

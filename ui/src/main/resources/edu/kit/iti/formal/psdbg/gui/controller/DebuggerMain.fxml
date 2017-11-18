@@ -60,6 +60,7 @@
                         </Menu>
                         <Menu text="Edit">
                             <items>
+                                <MenuItem text="Open in KeY" onAction="#openInKey"/>
                                 <MenuItem text="Delete"/>
                                 <MenuItem text="Reformat" accelerator="Ctrl+Shift+f" onAction="#reformatCurrentEditor"/>
                                 <MenuItem text="Print Debug Information" onAction="#debugPrintDot"

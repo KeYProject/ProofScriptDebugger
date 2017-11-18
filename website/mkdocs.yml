@@ -9,8 +9,16 @@ site_author: Alexander Weigl <weigl@kit.edu>
 theme_dir: kit_theme
 
 markdown_extensions:
+  - fenced_code
+  - codehilite
+  - footnotes
   - smarty
   - toc:
       permalink: True
       separator: "_"
   - sane_lists
+  - mdx_math:
+      enable_dollar_delimiter: True #for use of inline $..$
+
+extra_javascript: ['https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML']
+

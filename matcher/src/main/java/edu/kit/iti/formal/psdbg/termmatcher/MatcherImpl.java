@@ -7,7 +7,6 @@ import de.uka.ilkd.key.logic.Term;
 import edu.kit.formal.psdb.termmatcher.MatchPatternLexer;
 import edu.kit.formal.psdb.termmatcher.MatchPatternParser;
 import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
-import static edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPathFacade.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.CommonToken;
@@ -18,6 +17,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPathFacade.*;
+
 /**
  * Matchpattern visitor visits the matchpatterns of case-statements
  *
@@ -26,9 +27,13 @@ import java.util.stream.Stream;
  */
 class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     static final Matchings NO_MATCH = new Matchings();
+
     static final Matchings EMPTY_MATCH = Matchings.singleton("EMPTY_MATCH", null);
+
     static final Map<String, MatchPath> EMPTY_VARIABLE_ASSIGNMENT = EMPTY_MATCH.first();
+
     Random random = new Random(42L);
+
     /*
      * Reduce two matchinfos
      *
@@ -61,6 +66,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     }
     */
     private List<Integer> currentPosition = new ArrayList<>();
+
     /**
      * If true, we assume every term in the pattern has a binder.
      * The binding names are generated.
@@ -205,9 +211,11 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         //System.out.format("Match: %25s with %s %n", peek, ctx.toInfoString(new MatchPatternParser(null)));
         String expectedFunction = ctx.func.getText();
         Term peek = ((MatchPath.MPTerm) path).getUnit();
-        if (peek.op().name().toString().equals(expectedFunction)  // same name
-                && ctx.termPattern().size() == peek.arity()       // same arity
-                ) {
+        boolean sameName = expectedFunction.equals("?")
+                || expectedFunction.equals("_")
+                || peek.op().name().toString().equals(expectedFunction);
+        boolean sameArity = ctx.termPattern().size() == peek.arity();
+        if (sameName && sameArity) {
             Matchings m = IntStream.range(0, peek.arity())
                     .mapToObj(i -> (Matchings)
                             accept(ctx.termPattern(i), create(path, i)))

@@ -6,9 +6,11 @@ import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.api.ProofApi;
+import de.uka.ilkd.key.gui.MainWindow;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
+import de.uka.ilkd.key.proof.SingleProof;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
@@ -26,7 +28,6 @@ import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
-import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.application.Platform;
@@ -55,6 +56,7 @@ import org.reactfx.util.FxTimer;
 import org.reactfx.util.Timer;
 
 import javax.annotation.Nullable;
+import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -82,12 +84,12 @@ public class DebuggerMain implements Initializable {
 
     public final ContractLoaderService contractLoaderService = new ContractLoaderService();
 
-    private InspectionViewsController inspectionViewsController;
-
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     @Getter
     private final DebuggerMainModel model = new DebuggerMainModel();
+
+    private InspectionViewsController inspectionViewsController;
 
     private ScriptController scriptController;
 
@@ -868,7 +870,7 @@ public class DebuggerMain implements Initializable {
             interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
         } else {
             interactiveModeController.stop();
-        } 
+        }
     }
 
     @FXML
@@ -952,6 +954,24 @@ public class DebuggerMain implements Initializable {
             }
         });
     }
+
+    public void openInKey(@Nullable ActionEvent event) {
+        if (FACADE.getProofState() == KeYProofFacade.ProofState.EMPTY) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "No proof is loaded", ButtonType.OK);
+            alert.show();
+            return;
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            // Swing Thread!
+            MainWindow keyWindow = MainWindow.getInstance();
+            keyWindow.addProblem(new SingleProof(FACADE.getProof(), "script"));
+            //keyWindow.getProofList().getModel().addProof();
+            keyWindow.makePrettyView();
+            keyWindow.setVisible(true);
+        });
+    }
+
 
     public class ContractLoaderService extends Service<List<Contract>> {
         @Override
