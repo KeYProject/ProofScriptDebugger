@@ -5,6 +5,7 @@ import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.api.ProofManagementApi;
 import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.java.Services;
+import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
@@ -16,11 +17,13 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.key_project.util.collection.ImmutableList;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Facade to KeY. Build part of the interpreter
@@ -225,8 +228,13 @@ public class KeYProofFacade {
     }
 
     public Collection<GoalNode<KeyData>> getPseudoGoals() {
-        KeyData data = new KeyData(proof.get().root(), getEnvironment(), getProof());
-        return Collections.singleton(new GoalNode<>(null, data, data.getNode().isClosed()));
+        Proof p = getProof();
+        KeYEnvironment env = getEnvironment();
+        ImmutableList<Goal> openGoals = p.getSubtreeGoals(p.root());
+        List<GoalNode<KeyData>> goals = openGoals.stream().map(g ->
+                new GoalNode<>(null, new KeyData(g, env, p), false))
+                        .collect(Collectors.toList());
+        return goals;
     }
 
     public enum ProofState {
