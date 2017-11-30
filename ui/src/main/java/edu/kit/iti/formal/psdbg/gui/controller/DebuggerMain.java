@@ -782,8 +782,20 @@ public class DebuggerMain implements Initializable {
      * @param actionEvent
      */
     public void saveProof(ActionEvent actionEvent) {
+        FileChooser fc = new FileChooser();
+        File file = fc.showOpenDialog(btnInteractiveMode.getScene().getWindow());
+        if (file != null) {
+            try {
+                saveProof(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-        LOGGER.error("saveProof not implemented!!!");
+    public void saveProof(File file) throws IOException {
+        if (FACADE.getProof() != null)
+            FACADE.getProof().saveToFile(file);
     }
 
     /**
