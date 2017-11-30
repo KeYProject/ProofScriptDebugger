@@ -8,6 +8,7 @@ import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
 import de.uka.ilkd.key.proof.Proof;
+import edu.kit.iti.formal.psdbg.interpreter.assignhook.InterpreterOptionsHook;
 import edu.kit.iti.formal.psdbg.interpreter.assignhook.KeyAssignmentHook;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -52,10 +53,14 @@ public class InterpreterBuilder {
     private ScopeLogger logger;
     @Getter
     private DefaultLookup lookup = new DefaultLookup(psh, pmh, pmc, pmr);
+
+    @Getter
+    private KeyAssignmentHook keyHooks = new KeyAssignmentHook();
+
     private KeyInterpreter interpreter = new KeyInterpreter(lookup);
 
     @Getter
-    private KeyAssignmentHook variableHook = new KeyAssignmentHook();
+    private InterpreterOptionsHook<KeyData> optionsHook = new InterpreterOptionsHook<>(interpreter);
 
     public InterpreterBuilder addProofScripts(File file) throws IOException {
         return addProofScripts(Facade.getAST(file));
@@ -72,7 +77,8 @@ public class InterpreterBuilder {
     }
 
     public KeyInterpreter build() {
-        interpreter.setVariableAssignmentHook(variableHook);
+        interpreter.getVariableHooks().add(keyHooks);
+        interpreter.getVariableHooks().add(optionsHook);
         return interpreter;
     }
 

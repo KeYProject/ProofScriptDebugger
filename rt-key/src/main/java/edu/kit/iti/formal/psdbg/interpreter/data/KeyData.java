@@ -5,6 +5,7 @@ import de.uka.ilkd.key.java.SourceElement;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
+import de.uka.ilkd.key.strategy.StrategyProperties;
 import edu.kit.iti.formal.psdbg.LabelFactory;
 import lombok.*;
 
@@ -166,4 +167,7 @@ public class KeyData {
     }
 
 
+    public StrategyProperties getActiveStrategyProperties() {
+        return getProof().getSettings().getStrategySettings().getActiveStrategyProperties();
+    }
 }

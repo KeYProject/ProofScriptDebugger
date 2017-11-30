@@ -81,4 +81,8 @@ public class Value<T> {
     public String toString() {
         return data + ":" + type;
     }
+
+    public static Value<BigInteger> from(long val) {
+        return from(BigInteger.valueOf(val));
+    }
 }

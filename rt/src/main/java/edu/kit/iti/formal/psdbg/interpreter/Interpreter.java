@@ -36,36 +36,26 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     @Getter
     public final AtomicBoolean hardStop = new AtomicBoolean(false);
-
+    @Getter
+    private final List<VariableAssignmentHook<T>> variableHooks = new LinkedList<>();
     @Getter
     protected List<Visitor> entryListeners = new ArrayList<>(),
             exitListeners = new ArrayList<>();
-
     /**
      *
      */
     @Getter
     @Setter
     private int maxIterationsRepeat = 10000;
-
     private Stack<State<T>> stateStack = new Stack<>();
-
     @Getter
     @Setter
     private MatcherApi<T> matcherApi;
-
     @Getter
     private CommandLookup functionLookup;
-
     @Getter
     @Setter
     private boolean strictMode = false;
-
-    @Getter
-    @Setter
-    private VariableAssignmentHook<T> variableAssignmentHook = null;
-
-
     @Getter
     @Setter
     private boolean suppressListeners = false;
@@ -96,12 +86,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         }
 
         //initialize environment variables
-        if (variableAssignmentHook != null) {
-            VariableAssignment va = variableAssignmentHook.getStartAssignment(getSelectedNode().getData());
+        for (VariableAssignmentHook<T> hook : variableHooks) {
+            VariableAssignment va = hook.getStartAssignment(getSelectedNode().getData());
             getSelectedNode().setAssignments(
                     getSelectedNode().getAssignments().push(va));
         }
-
         script.accept(this);
         exitScope(script);
     }
@@ -159,10 +148,12 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     }
 
     protected boolean fireVariableAssignmentHook(GoalNode<T> node, String identifier, Value v) {
-        if (variableAssignmentHook != null) {
-            return variableAssignmentHook.handleAssignment(node.getData(), identifier, v);
+        for (VariableAssignmentHook<T> hook : variableHooks) {
+            if (hook.handleAssignment(node.getData(), identifier, v)) {
+                return true;
+            }
         }
-        return true;
+        return variableHooks.size() == 0;
     }
 
     private Value evaluate(Expression expr) {
