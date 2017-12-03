@@ -43,7 +43,6 @@ import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CharacterHit;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.MouseOverTextEvent;
-import org.fxmisc.richtext.model.NavigationActions;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.reactfx.collection.LiveList;
 import org.reactfx.value.Val;
@@ -149,7 +148,7 @@ public class ScriptArea extends CodeArea {
             int characterPosition = hit.getInsertionIndex();
             //System.out.println("characterPosition = " + characterPosition);
             // move the caret to that character's position
-            this.moveTo(characterPosition, NavigationActions.SelectionPolicy.CLEAR);
+            //this.moveTo(characterPosition, NavigationActions.SelectionPolicy.CLEAR);
         });
 
         mainScript.addListener((observable) -> updateMainScriptMarker());

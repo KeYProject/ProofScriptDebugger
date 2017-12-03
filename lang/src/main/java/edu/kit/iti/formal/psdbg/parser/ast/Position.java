@@ -30,9 +30,9 @@ import org.antlr.v4.runtime.Token;
 /**
  * @author Alexander Weigl
  */
-@Data @RequiredArgsConstructor public class Position implements Copyable<Position> {
-    @NonNull final int lineNumber;
-    @NonNull final int charInLine;
+@Data @Value @RequiredArgsConstructor public class Position implements Copyable<Position> {
+    private final int lineNumber;
+    private final int charInLine;
 
     public Position() {
         this(-1, -1);

@@ -24,7 +24,7 @@
                         <VBox>
                             <!--<BreadCrumbBar fx:id="frames"/>-->
                             <HBox alignment="BASELINE_LEFT">
-                                <Label labelFor="$frames" text="Contexts:"  />
+                                <Label labelFor="$frames" text="Contexts:"/>
                                 <ComboBox fx:id="frames" HBox.hgrow="ALWAYS"/>
                             </HBox>
                             <ListView fx:id="goalView"/>
