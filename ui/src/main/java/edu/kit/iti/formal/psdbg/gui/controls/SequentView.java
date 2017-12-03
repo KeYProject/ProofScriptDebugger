@@ -151,7 +151,6 @@ public class SequentView extends CodeArea {
         clear();
         insertText(0, backend.getString());
         if (node.get().isClosed()) {
-            System.out.println("Closed " + node.get().sequent());
             this.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
             this.getStyleClass().add("closed-sequent-view");
         } else {

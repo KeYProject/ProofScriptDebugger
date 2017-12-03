@@ -13,7 +13,7 @@ public interface CommandLookup<T> {
 
     boolean isAtomic(CallStatement call);
 
-    public CommandHandler getBuilder(CallStatement callStatement);
+    public CommandHandler<T> getBuilder(CallStatement callStatement, T data);
 
     String getHelp(CallStatement call);
 }

@@ -150,14 +150,14 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
     private class ExitListener extends DefaultASTVisitor<Void> {
         @Override
         public Void defaultVisit(ASTNode node) {
-            LOGGER.error("exit {}", node.accept(new ShortCommandPrinter()));
+            LOGGER.debug("exit {}", node.accept(new ShortCommandPrinter()));
             completeLastNode(node);
             return null;
         }
 
         @Override
         public Void visit(ProofScript proofScript) {
-            LOGGER.error("exit {}", proofScript.accept(new ShortCommandPrinter()));
+            LOGGER.debug("exit {}", proofScript.accept(new ShortCommandPrinter()));
 
             if (proofScript.equals(root)) {
                 createSentinel();

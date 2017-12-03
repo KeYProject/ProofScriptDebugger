@@ -6,11 +6,7 @@ public class PaperExample extends JavaExample {
     public PaperExample() {
         setName("Transitive Permutation");
         setJavaFile(this.getClass().getResource("Simple.java"));
-
-
         defaultInit(getClass());
-
-        System.out.println(this);
     }
 
 }

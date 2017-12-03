@@ -7,10 +7,6 @@ public class JavaSimpleExample extends JavaExample {
     public JavaSimpleExample() {
         setName("Simple Java Example");
         setJavaFile(this.getClass().getResource("Test.java"));
-
-
         defaultInit(getClass());
-
-        System.out.println(this);
     }
 }

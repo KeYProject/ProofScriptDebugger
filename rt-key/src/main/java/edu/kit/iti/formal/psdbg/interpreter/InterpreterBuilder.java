@@ -22,6 +22,7 @@ import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -168,12 +169,12 @@ public class InterpreterBuilder {
     public InterpreterBuilder ignoreLines(Set<Integer> lines) {
         CommandHandler<KeyData> ignoreHandler = new CommandHandler<KeyData>() {
             @Override
-            public boolean handles(CallStatement call) throws IllegalArgumentException {
+            public boolean handles(CallStatement call, KeyData data) throws IllegalArgumentException {
                 return lines.contains(call.getStartPosition().getLineNumber());
             }
 
             @Override
-            public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params) {
+            public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params, KeyData data) {
                 //System.out.println("InterpreterBuilder.evaluate");
             }
         };
@@ -184,12 +185,12 @@ public class InterpreterBuilder {
     public InterpreterBuilder ignoreLinesUntil(final int caretPosition) {
         CommandHandler<KeyData> ignoreHandler = new CommandHandler<KeyData>() {
             @Override
-            public boolean handles(CallStatement call) throws IllegalArgumentException {
+            public boolean handles(CallStatement call, KeyData data) throws IllegalArgumentException {
                 return call.getRuleContext().getStart().getStartIndex() < caretPosition;
             }
 
             @Override
-            public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params) {
+            public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params, KeyData data) {
                 System.out.println("InterpreterBuilder.evaluate");
             }
         };

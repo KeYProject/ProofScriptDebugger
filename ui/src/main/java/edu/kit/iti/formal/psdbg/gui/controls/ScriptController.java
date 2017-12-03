@@ -257,11 +257,8 @@ public class ScriptController {
      * @throws IOException
      */
     public void saveCurrentScriptAs(File scriptFile) throws IOException {
-
         for (ScriptArea area : openScripts.keySet()) {
-
             if (openScripts.size() == 1 || area.isFocused()) {
-                System.out.println(area.getText());
                 FileUtils.write(scriptFile, area.getText(), Charset.defaultCharset());
                 area.setFilePath(scriptFile);
                 area.setDirty(false);

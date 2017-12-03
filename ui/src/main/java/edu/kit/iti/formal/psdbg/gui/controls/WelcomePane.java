@@ -48,18 +48,6 @@ public class WelcomePane extends AnchorPane {
     public void loadJavaTest(ActionEvent event) {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
-        Examples.loadExamples().forEach(example -> {
-            //     if (example.getName().equals("Transitive Permutation"))
-            if (example.getName().equals("Simple Java Example"))
-
-                example.open(proofScriptDebugger);
-
-        });
-       /* proofScriptDebugger.openScript(
-                new File("src/test/resources/edu/kit/formal/psdb/interpreter/javaExample/test.kps")
-        );
-        proofScriptDebugger.openJavaFile(
-                new File("src/test/resources/edu/kit/formal/psdb/interpreter/javaExample/Test.java"));*/
     }
 
     /**

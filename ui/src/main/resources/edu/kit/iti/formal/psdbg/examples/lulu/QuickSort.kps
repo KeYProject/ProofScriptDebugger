@@ -1,0 +1,117 @@
+script solong() {
+autopilot_prep;
+foreach{
+	tryclose;
+}
+}
+
+
+script quicksort() {
+
+
+autopilot_prep;
+foreach{
+	tryclose;
+}
+
+
+cases{
+	case match occ='1':
+		//1st goal # 532
+		simp_upd;  //shouldn't do much, but shouldn't fail either
+		seqPermFromSwap;
+		andRight;
+		cases{
+			case match occ='2': //Case 2
+				instantiate hide var=`iv` with=`i_0`;
+				instantiate hide var=`jv` with=`j_0`;
+				auto;
+			default: //Case 1
+				auto;
+		}
+	
+	default: 
+		//2nd goal #203
+		simp_upd;
+		seqPermFromSwap;
+		andRight;
+		cases{
+			case match occ='2': //Case 2
+				instantiate hide var=`iv` with=`i_0`;
+				instantiate hide var=`jv` with=`j_0`;
+				auto;
+			default: //Case 1
+				auto;
+		}
+		
+}
+
+}
+
+script shorter(){
+	
+autopilot_prep;
+foreach{
+	tryclose;
+}
+
+
+cases{
+	default: 
+		simp_upd;  
+		seqPermFromSwap;
+		andRight;
+		
+		cases{
+			case match occ='2':
+			exRightHide var=`iv` with=`i_0`;
+			exRightHide var=`jv` with=`j_0`;
+			auto;
+			
+			default:
+			auto;
+		
+		}
+	
+		/*
+		cases{
+			case match `==> (exists{jv:int}(and(and(and(and(leq(Z(0(#)),iv),leq(Z(0(#)),jv)),lt(iv,seqLen(seqDef{u:int}(Z(0(#)),length(array),any::select(store(store(anon(heap,arrayRange(array,from,add(Z(neglit(1(#))),to)),anon_heap_LOOP<<anonHeapFunction>>),array,arr(to),arr_2<<selectSK>>),array,arr(i_0),int::select(heap,array,arr(to))),array,arr(u)))))),lt(jv,seqLen(seqDef{u:int}(Z(0(#)),length(array),any::select(store(store(anon(heap,arrayRange(array,from,add(Z(neglit(1(#))),to)),anon_heap_LOOP<<anonHeapFunction>>),array,arr(to),arr_2<<selectSK>>),array,arr(i_0),int::select(heap,array,arr(to))),array,arr(u)))))),equals(seqDef{u:int}(Z(0(#)),length(array),any::select(anon(heap,arrayRange(array,from,add(Z(neglit(1(#))),to)),anon_heap_LOOP<<anonHeapFunction>>),array,arr(u))),seqSwap(seqDef{u:int}(Z(0(#)),length(array),any::select(store(store(anon(heap,arrayRange(array,from,add(Z(neglit(1(#))),to)),anon_heap_LOOP<<anonHeapFunction>>),array,arr(to),arr_2<<selectSK>>),array,arr(i_0),int::select(heap,array,arr(to))),array,arr(u))),iv,jv)))))`: //Case 2
+				instantiate hide var=`iv` with=`i_0`;
+				instantiate hide var=`jv` with=`j_0`;
+				auto;
+			 default: //Case 1
+				auto;
+				
+		*/
+		}
+	
+		
+		
+}
+/*
+script trying(){
+	
+autopilot_prep;
+foreach{
+	tryclose;
+}
+cases{
+	default: 
+		simp_upd;  
+		seqPermFromSwap;
+		andRight;
+		
+		try{
+			exRightHide var=`iv` with=`i_0`;
+			exRightHide var=`jv` with=`j_0`;	
+			
+		}
+	auto;
+		
+}
+*/
+}
+	
+		
+		
+

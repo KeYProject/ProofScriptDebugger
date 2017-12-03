@@ -245,10 +245,10 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         //System.out.println("State that will be matched " + currentState.getData().getNode().sequent() + " with pattern " + data);
         //System.out.println("Signature " + sig.toString());
 
-        Matchings m = MatcherFacade.matches(data, currentState.getData().getNode().sequent());
+        Matchings m = MatcherFacade.matches(data, currentState.getData().getNode().sequent(), false);
 
         if (m.isEmpty()) {
-            LOGGER.error("currentState has no match= " + currentState.getData().getNode().sequent());
+            LOGGER.debug("currentState has no match= " + currentState.getData().getNode().sequent());
             return Collections.emptyList();
         } else {
             Map<String, MatchPath> firstMatch = m.first();

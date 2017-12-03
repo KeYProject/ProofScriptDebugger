@@ -4,6 +4,8 @@ import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 
+import javax.annotation.Nullable;
+
 /**
  * @author Alexander Weigl
  * @version 1 (20.05.17)
@@ -16,16 +18,17 @@ public interface CommandHandler<T> {
      * @return
      * @throws IllegalArgumentException
      */
-    boolean handles(CallStatement call) throws IllegalArgumentException;
+    boolean handles(CallStatement call, @Nullable T data) throws IllegalArgumentException;
 
     /**
      * @param interpreter
      * @param call
      * @param params
+     * @param data
      */
     void evaluate(Interpreter<T> interpreter,
                   CallStatement call,
-                  VariableAssignment params);
+                  VariableAssignment params, T data);
 
     default boolean isAtomic() {
         return true;

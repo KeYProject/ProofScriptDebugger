@@ -23,7 +23,7 @@ public abstract class BuiltinCommands {
         private final String name;
 
         @Override
-        public boolean handles(CallStatement call) throws IllegalArgumentException {
+        public boolean handles(CallStatement call, T data) throws IllegalArgumentException {
             return name.equals(call.getCommand());
         }
     }
@@ -34,7 +34,7 @@ public abstract class BuiltinCommands {
         }
 
         @Override
-        public void evaluate(Interpreter<T> interpreter, CallStatement call, VariableAssignment params) {
+        public void evaluate(Interpreter<T> interpreter, CallStatement call, VariableAssignment params, T data) {
             for (GoalNode<T> gn : interpreter.getCurrentGoals()) {
                 System.out.format("%s %s%n  %s%n", gn == interpreter.getSelectedNode() ? "*" : " ", gn.getData(), gn.getAssignments().asMap());
             }
@@ -51,7 +51,7 @@ public abstract class BuiltinCommands {
          * Created by sarah on 5/17/17.
          */
         @Override
-        public void evaluate(Interpreter<String> interpreter, CallStatement call, VariableAssignment params) {
+        public void evaluate(Interpreter<String> interpreter, CallStatement call, VariableAssignment params, String data) {
             Value<BigInteger> val = (Value<BigInteger>) params.getValues().getOrDefault(
                     new Variable("#2"),
                     Value.from(2));

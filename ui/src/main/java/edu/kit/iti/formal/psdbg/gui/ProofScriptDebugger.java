@@ -42,57 +42,17 @@ public class ProofScriptDebugger extends Application {
     @Override
     public void start(Stage primaryStage) {
         Locale.setDefault(Locale.ENGLISH);
-        //System.setProperty("log4j.configurationFile", "/tmp/log4j.properties");
-        //System.setProperty("log4j2.loggerContextFactory", "org.apache.logging.log4j.core.impl.Log4jContextFactory");
-
         try {
-
-//            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
-//                            "controller/DebuggerMain.fxml"));
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/edu/kit/iti/formal/psdbg/gui/controller/DebuggerMain.fxml"));
-            //"/edu/kit/formal/psdb/gui/controller/DebuggerMain.fxml"));
             Parent root = fxmlLoader.load();
             DebuggerMain controller = fxmlLoader.getController();
             Scene scene = new Scene(root);
-
-
-            scene.getAccelerators().put(
-                    new KeyCodeCombination(KeyCode.F1),
-                    () -> controller.showCommandHelp(null)
-            );
-
-            scene.getAccelerators().put(
-                    new KeyCodeCombination(KeyCode.F12),
-                    () -> controller.showWelcomeDock(null)
-            );
-
-            scene.getAccelerators().put(
-                    new KeyCodeCombination(KeyCode.F5),
-                    () -> controller.stepBack(null)
-            );
-
-            scene.getAccelerators().put(
-                    new KeyCodeCombination(KeyCode.F6),
-                    () -> controller.stepOver(null)
-            );
-
-
-            scene.getAccelerators().put(
-                    new KeyCodeCombination(KeyCode.F7),
-                    () -> controller.stepInto(null)
-            );
-
-            scene.getAccelerators().put(
-                    new KeyCodeCombination(KeyCode.F3),
-                    controller::executeStepwise
-            );
-
-
             primaryStage.setOnCloseRequest(event -> Platform.exit());
             scene.getStylesheets().addAll(
                     getClass().getResource("debugger-ui.css").toExternalForm(),
                     DockNode.class.getResource("default.css").toExternalForm()
             );
+
             primaryStage.setTitle(NAME + " (" + VERSION + ") with KeY:" + KEY_VERSION);
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -103,8 +63,6 @@ public class ProofScriptDebugger extends Application {
             logger.info("KeY: " + KeYConstants.COPYRIGHT);
             logger.info("KeY Version: " + KeYConstants.VERSION);
             logger.info("KeY Internal: " + KeYConstants.INTERNAL_VERSION);
-            //LOGGER.error("sfklsajflksajfsdajfsdalfjsdaf", new IllegalAccessError("dlfsdalfjsadflj"));
-
 
         } catch (Exception e) {
             e.printStackTrace();

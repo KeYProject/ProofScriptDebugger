@@ -7,12 +7,12 @@ import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 
 public class RigidRuleCommandHandler implements CommandHandler<KeyData> {
     @Override
-    public boolean handles(CallStatement call) throws IllegalArgumentException {
+    public boolean handles(CallStatement call, KeyData data) throws IllegalArgumentException {
         return true;
     }
 
     @Override
-    public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params) {
+    public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params, KeyData data) {
 
 //        Evaluator evaluator = new Evaluator(g.getAssignments(), g);
 //        evaluator.setMatcher(interpreter.getMatcherApi());

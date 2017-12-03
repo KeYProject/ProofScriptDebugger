@@ -448,9 +448,8 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             MatchEvaluator mEval = new MatchEvaluator(goal.getAssignments(), goal, matcherApi);
             mEval.getEntryListeners().addAll(getEntryListeners());
             mEval.getExitListeners().addAll(getExitListeners());
-            exitScope(matchExpression);
-
             matchResult = mEval.eval(matchExpression);
+            exitScope(matchExpression);
         } else {
 
             matchResult = new ArrayList<>();

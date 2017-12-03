@@ -47,7 +47,7 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
     }
 
     @Override
-    public boolean handles(CallStatement call) {
+    public boolean handles(CallStatement call, KeyData data) {
         return commands.containsKey(call.getCommand());
     }
 
@@ -55,7 +55,7 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
     @Override
     public void evaluate(Interpreter<KeyData> interpreter,
                          CallStatement call,
-                         VariableAssignment params) {
+                         VariableAssignment params, KeyData data) {
         ProofScriptCommand c = commands.get(call.getCommand());
         State<KeyData> state = interpreter.getCurrentState();
         GoalNode<KeyData> expandedNode = state.getSelectedGoalNode();

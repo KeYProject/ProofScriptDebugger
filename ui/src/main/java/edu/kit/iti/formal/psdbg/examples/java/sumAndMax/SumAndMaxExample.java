@@ -7,11 +7,6 @@ public class SumAndMaxExample extends JavaExample {
     public SumAndMaxExample() {
         setName("SumAndMax Example");
         setJavaFile(this.getClass().getResource("SumAndMax.java"));
-
-
         defaultInit(getClass());
-
-        System.out.println(this);
-
     }
 }

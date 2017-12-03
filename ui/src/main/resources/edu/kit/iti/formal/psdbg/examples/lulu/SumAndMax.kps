@@ -1,0 +1,65 @@
+
+script sumandmax() {
+symbex;
+
+cases{
+	case match `update-application(_, false)`: 
+		false_right;
+		simp_upd;
+		close;
+
+	
+	/*
+	case match `==> true & ?X`: // goal 1486 - bis jetzt das einzigste von denen, dass besucht wird
+	andRight;
+		cases{
+			case match `==> true`:
+			closeTrue;
+			
+			default: 
+				//tryclose;
+		}
+	
+	*/
+	
+	
+	
+	default:
+		//tryclose;
+}
+}
+
+
+
+
+
+
+
+script sumandmaxeasy() {
+symbex;
+cases{
+	try:
+		false_right;
+		simp_upd;
+		close;
+	//default: tryclose;
+		
+}
+		
+}
+
+script a() {
+	auto;
+}
+
+script e() {
+	symbex;
+}
+
+script fore() {
+	symbex;
+	cases{
+		default: tryclose;
+	}
+}
+

@@ -7,7 +7,5 @@ public class BubbleSortExample extends JavaExample {
         setName("Bubble Sort");
         setJavaFile(this.getClass().getResource("Bubblesort.java"));
         defaultInit(getClass());
-        System.out.println(this);
-
     }
 }

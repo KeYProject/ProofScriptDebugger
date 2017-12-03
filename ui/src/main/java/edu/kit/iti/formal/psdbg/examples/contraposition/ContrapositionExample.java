@@ -10,8 +10,6 @@ public class ContrapositionExample extends Example {
     public ContrapositionExample() {
         setName("Contraposition");
         defaultInit(getClass());
-
-        System.out.println(this);
     }
 
 }

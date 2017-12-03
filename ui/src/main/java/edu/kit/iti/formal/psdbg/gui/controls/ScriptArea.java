@@ -207,7 +207,11 @@ public class ScriptArea extends CodeArea {
             markedRegions.forEach(reg -> {
                 Collection<String> list = new HashSet<>();
                 list.add(reg.clazzName);
-                setStyle(reg.start, reg.stop, list);
+                try {
+                    setStyle(reg.start, reg.stop, list);
+                } catch (IndexOutOfBoundsException e) {
+                    //weigl silently ignore
+                }
             });
         }
 

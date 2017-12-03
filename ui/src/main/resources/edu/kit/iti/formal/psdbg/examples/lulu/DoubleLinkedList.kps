@@ -1,0 +1,11 @@
+script dancinglinks() {
+	onestep;
+	simp_heap;
+	notLeft occ='1';
+	notLeft;
+	replace_known_right occ='4'; //user
+	onestep;
+	Class_invariant_axiom_for_DoubleLinkedList formula=`java.lang.Object::<inv>(heap,self)`; //user
+
+
+}

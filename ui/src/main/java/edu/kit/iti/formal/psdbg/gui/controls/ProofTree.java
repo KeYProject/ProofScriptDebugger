@@ -47,8 +47,6 @@ public class ProofTree extends BorderPane {
     @FXML
     private TreeView<TreeNode> treeProof;
 
-    public void addNodeColor() {
-    }
     private ContextMenu contextMenu;
 
     @Getter @Setter
@@ -125,10 +123,6 @@ public class ProofTree extends BorderPane {
         init();
     }
 
-    public void expandRootToLeaves() {
-        expandRootToLeaves(getTreeProof().getRoot());
-    }
-
     /**
      * From https://www.programcreek.com/java-api-examples/index.php?api=javafx.scene.control.TreeItem
      *
@@ -143,9 +137,6 @@ public class ProofTree extends BorderPane {
         }
     }
 
-    public TreeView<TreeNode> getTreeProof() {
-        return treeProof;
-    }
     private static void expandRootToLeaves(TreeItem candidate) {
         if (candidate != null) {
             if (!candidate.isLeaf()) {
@@ -165,6 +156,17 @@ public class ProofTree extends BorderPane {
         }
     }
 
+    public void addNodeColor() {
+    }
+
+    public void expandRootToLeaves() {
+        expandRootToLeaves(getTreeProof().getRoot());
+    }
+
+    public TreeView<TreeNode> getTreeProof() {
+        return treeProof;
+    }
+
     public void consumeNode(Consumer<Node> consumer, String success) {
         TreeItem<TreeNode> item = treeProof.getSelectionModel().getSelectedItem();
         Node n = item.getValue().node;
@@ -178,6 +180,10 @@ public class ProofTree extends BorderPane {
 
     public ContextMenu getContextMenu() {
         if (contextMenu == null) {
+            MenuItem refresh = new MenuItem("Refresh");
+            refresh.setOnAction(event -> repopulate());
+            refresh.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.REFRESH));
+
             MenuItem copyBranchLabel = new MenuItem("Branch Label");
             copyBranchLabel.setOnAction(evt -> consumeNode(n -> Utils.intoClipboard(
                     LabelFactory.getBranchingLabel(n)), "Copied!"));
@@ -279,7 +285,7 @@ public class ProofTree extends BorderPane {
                 expandRootToLeaves(treeProof.getRoot());
             });
 
-            contextMenu = new ContextMenu(expandAllNodes, new SeparatorMenuItem(), copy, createCases, showSequent, showGoal);
+            contextMenu = new ContextMenu(refresh, expandAllNodes, new SeparatorMenuItem(), copy, createCases, showSequent, showGoal);
             contextMenu.setAutoFix(true);
             contextMenu.setAutoHide(true);
 
@@ -288,6 +294,10 @@ public class ProofTree extends BorderPane {
     }
 
     private void init() {
+
+    }
+
+    private void repopulate() {
         if (deactivateRefresh.get())
             return;
 

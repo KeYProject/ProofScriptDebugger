@@ -4,9 +4,7 @@ import de.uka.ilkd.key.api.KeYApi;
 import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.macros.ProofMacro;
-import de.uka.ilkd.key.macros.ProofMacroFinishedInfo;
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -21,7 +19,6 @@ import org.key_project.util.collection.ImmutableList;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -46,18 +43,21 @@ public class MacroCommandHandler implements CommandHandler<KeyData> {
 
 
     @Override
-    public boolean handles(CallStatement call) throws IllegalArgumentException {
+    public boolean handles(CallStatement call, KeyData data) throws IllegalArgumentException {
         return macros.containsKey(call.getCommand());
     }
 
     @Override
     public void evaluate(Interpreter<KeyData> interpreter,
                          CallStatement call,
-                         VariableAssignment params) {
+                         VariableAssignment params, KeyData data) {
+        long startTime = System.currentTimeMillis();
+
         //ProofMacro m = macros.get(call.getCommand());
         ProofMacro macro = KeYApi.getMacroApi().getMacro(call.getCommand());
-        ProofMacroFinishedInfo info = ProofMacroFinishedInfo.getDefaultInfo(macro,
+        /*ProofMacroFinishedInfo info = ProofMacroFinishedInfo.getDefaultInfo(macro,
                 interpreter.getCurrentState().getSelectedGoalNode().getData().getProof());
+        */
 
         State<KeyData> state = interpreter.getCurrentState();
         GoalNode<KeyData> expandedNode = state.getSelectedGoalNode();
@@ -68,37 +68,22 @@ public class MacroCommandHandler implements CommandHandler<KeyData> {
             //uiControl.taskStarted(new DefaultTaskStartedInfo(TaskStartedInfo.TaskKind.Macro, macro.getName(), 0));
             synchronized (macro) {
                 AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
-                info = macro.applyTo(uiControl, expandedNode.getData().getNode(), null, uiControl);
+                macro.applyTo(uiControl, expandedNode.getData().getNode(), null, uiControl);
                 ImmutableList<Goal> ngoals = expandedNode.getData().getProof().getSubtreeGoals(expandedNode.getData().getNode());
-
                 state.getGoals().remove(expandedNode);
                 state.setSelectedGoalNode(null);
-
-                if (ngoals.isEmpty()) {
-                    Node start = expandedNode.getData().getNode();
-                    //start.leavesIterator()
-//                Goal s = kd.getProof().getGoal(start);
-                    Iterator<Node> nodeIterator = start.leavesIterator();
-                    while (nodeIterator.hasNext()) {
-                        Node n = nodeIterator.next();
-                        LOGGER.error(n.isClosed());
-                    }
-
-                } else {
-
-                    for (Goal g : ngoals) {
-                        KeyData kdn = new KeyData(expandedNode.getData(), g.node());
-                        state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.isClosedNode()));
-                    }
+                if (!ngoals.isEmpty()) {
+                    ngoals.stream()
+                            .map(g -> new KeyData(expandedNode.getData(), g))
+                            .map(kd -> new GoalNode<>(expandedNode, kd, false))
+                            .forEachOrdered(gn -> state.getGoals().add(gn));
                     assert !state.getGoals().contains(expandedNode);
-
-
                 }
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            LOGGER.debug("Execution of {} took {} ms", call.getCommand(), (System.currentTimeMillis() - startTime));
         }
     }
 }

@@ -2,11 +2,20 @@ package edu.kit.iti.formal.psdbg.interpreter.funchdl;
 
 import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
+import de.uka.ilkd.key.java.Services;
+import de.uka.ilkd.key.logic.PosInOccurrence;
+import de.uka.ilkd.key.logic.PosInTerm;
+import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.RuleCommand;
 import de.uka.ilkd.key.macros.scripts.ScriptException;
 import de.uka.ilkd.key.proof.Goal;
+import de.uka.ilkd.key.proof.Proof;
+import de.uka.ilkd.key.proof.RuleAppIndex;
+import de.uka.ilkd.key.proof.rulefilter.TacletFilter;
 import de.uka.ilkd.key.rule.Rule;
+import de.uka.ilkd.key.rule.Taclet;
+import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -19,9 +28,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Alexander Weigl
@@ -39,14 +51,49 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
     }
 
     @Override
-    public boolean handles(CallStatement call) throws IllegalArgumentException {
-        return rules.containsKey(call.getCommand());
+    public boolean handles(CallStatement call, KeyData data) throws IllegalArgumentException {
+        if (rules.containsKey(call.getCommand())) return true;//static/rigid rules
+        if (data != null) {
+            Goal goal = data.getGoal();
+            Set<String> rules = findTaclets(data.getProof(), goal);
+            return rules.contains(call.getCommand());
+        }
+        return false;
+    }
+
+    private Set<String> findTaclets(Proof p, Goal g) {
+        Services services = p.getServices();
+        TacletFilter filter = new TacletFilter() {
+            @Override
+            protected boolean filter(Taclet taclet) {
+                return true;
+            }
+        };
+        RuleAppIndex index = g.ruleAppIndex();
+        index.autoModeStopped();
+        HashSet<String> set = new HashSet<>();
+        ImmutableList<TacletApp> allApps = ImmutableSLList.nil();
+        for (SequentFormula sf : g.node().sequent().antecedent()) {
+            ImmutableList<TacletApp> apps = index.getTacletAppAtAndBelow(filter,
+                    new PosInOccurrence(sf, PosInTerm.getTopLevel(), true),
+                    services);
+            apps.forEach(t -> set.add(t.taclet().name().toString()));
+        }
+
+        for (SequentFormula sf : g.node().sequent().succedent()) {
+            ImmutableList<TacletApp> apps = index.getTacletAppAtAndBelow(filter,
+                    new PosInOccurrence(sf, PosInTerm.getTopLevel(), true),
+                    services);
+            apps.forEach(t -> set.add(t.taclet().name().toString()));
+        }
+        return set;
     }
 
     @Override
     public void evaluate(Interpreter<KeyData> interpreter,
                          CallStatement call,
-                         VariableAssignment params) throws IllegalStateException, RuntimeException, ScriptCommandNotApplicableException {
+                         VariableAssignment params,
+                         KeyData data) throws RuntimeException, ScriptCommandNotApplicableException {
         if (!rules.containsKey(call.getCommand())) {
             throw new IllegalStateException();
         }

@@ -83,7 +83,7 @@ public class InterpreterTest {
         }
 
         @Override
-        public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
+        public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params, Object data) {
             Map<Variable, Value> m = params.asMap();
             Value exp = get(m, "exp", "expected", "#2");
             Value act = get(m, "act", "actual", "#3");
@@ -102,7 +102,7 @@ public class InterpreterTest {
         }
 
         @Override
-        public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
+        public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params, Object data) {
             Map<Variable, Value> m = params.asMap();
             Value<Boolean> exp = get(m, "val", "#2");
             Value<String> msg = get(m, "msg", "#3");

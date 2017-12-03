@@ -20,7 +20,7 @@ import java.util.Map;
  * @version 1 (21.05.17)
  */
 @RequiredArgsConstructor
-public class ProofScriptHandler implements CommandHandler {
+public class ProofScriptHandler implements CommandHandler<Object> {
     private static final String SUFFIX = ".kps";
     @Getter
     private final Map<String, ProofScript> scripts;
@@ -76,7 +76,7 @@ public class ProofScriptHandler implements CommandHandler {
     }
 
     @Override
-    public boolean handles(CallStatement call) throws IllegalArgumentException {
+    public boolean handles(CallStatement call, Object data) throws IllegalArgumentException {
         if (scripts.containsKey(call.getCommand()))
             return true;
         try {
@@ -88,7 +88,7 @@ public class ProofScriptHandler implements CommandHandler {
     }
 
     @Override
-    public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params) {
+    public void evaluate(Interpreter interpreter, CallStatement call, VariableAssignment params, Object data) {
         ProofScript ps = scripts.get(call.getCommand());
         //new State
         //

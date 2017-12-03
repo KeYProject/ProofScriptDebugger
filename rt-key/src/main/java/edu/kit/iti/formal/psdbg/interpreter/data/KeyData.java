@@ -48,6 +48,7 @@ public class KeyData {
 
     public KeyData(Goal g, KeYEnvironment environment, Proof proof) {
         goal = g;
+        node = goal.node();
         env = environment;
         this.proof = proof;
         closedNode = proof.closed();

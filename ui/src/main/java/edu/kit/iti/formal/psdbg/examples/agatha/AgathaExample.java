@@ -6,6 +6,5 @@ public class AgathaExample extends Example {
     public AgathaExample() {
         setName("Agatha");
         defaultInit(getClass());
-        System.out.println(this);
     }
 }
