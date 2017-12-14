@@ -37,6 +37,7 @@ public class InspectionView extends BorderPane {
     );
 
     public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
+    public SequentOptionsMenu sequentOptionsMenu = new SequentOptionsMenu();
 
     @FXML @Getter
     private ComboBox<PTreeNode<KeyData>> frames;
@@ -158,6 +159,11 @@ public class InspectionView extends BorderPane {
     public void showGoalOptions(MouseEvent actionEvent) {
         Node n = (Node) actionEvent.getTarget();
         goalOptionsMenu.show(n, actionEvent.getScreenX(), actionEvent.getScreenY());
+    }
+
+    public void showSequentOptions(MouseEvent actionEvent) {
+        Node n = (Node) actionEvent.getTarget();
+        sequentOptionsMenu.show(n, actionEvent.getScreenX(), actionEvent.getScreenY());
     }
 
     public InspectionModel getModel() {

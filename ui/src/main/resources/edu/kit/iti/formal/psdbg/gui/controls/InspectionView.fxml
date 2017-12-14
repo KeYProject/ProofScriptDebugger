@@ -34,7 +34,7 @@
 
                 <SectionPane title="Sequent">
                     <headerRight>
-                        <Button>
+                        <Button onMouseClicked="#showSequentOptions">
                             <graphic>
                                 <MaterialDesignIconView glyphName="WRENCH"/>
                             </graphic>

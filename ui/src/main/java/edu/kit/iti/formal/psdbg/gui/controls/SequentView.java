@@ -134,6 +134,7 @@ public class SequentView extends CodeArea {
         filter = new IdentitySequentPrintFilter();
         filter.setSequent(sequent);
 
+
         ProgramPrinter prgPrinter = new ProgramPrinter(new StringWriter());
         this.backend = new LogicPrinter.PosTableStringBackend(80);
 
