@@ -1,26 +1,26 @@
 package edu.kit.iti.formal.psdbg.parser;
 
-/*-
- * #%L
- * ProofScriptParser
- * %%
- * Copyright (C) 2017 Application-oriented Formal Verification
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/gpl-3.0.html>.
- * #L%
- */
+        /*-
+         * #%L
+         * ProofScriptParser
+         * %%
+         * Copyright (C) 2017 Application-oriented Formal Verification
+         * %%
+         * This program is free software: you can redistribute it and/or modify
+         * it under the terms of the GNU General Public License as
+         * published by the Free Software Foundation, either version 3 of the
+         * License, or (at your option) any later version.
+         *
+         * This program is distributed in the hope that it will be useful,
+         * but WITHOUT ANY WARRANTY; without even the implied warranty of
+         * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+         * GNU General Public License for more details.
+         *
+         * You should have received a copy of the GNU General Public
+         * License along with this program.  If not, see
+         * <http://www.gnu.org/licenses/gpl-3.0.html>.
+         * #L%
+         */
 
 
 import edu.kit.iti.formal.psdbg.parser.ast.*;
@@ -39,26 +39,61 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * @author Alexander Weigl
  * @version 2 (29.10.17), introduction of parent
- *          version 1 (27.04.17)
+ * version 1 (27.04.17)
  */
 public class TransformAst implements ScriptLanguageVisitor<Object> {
     /**
      * Start index for positional arguments for command calls
      */
     public static final int KEY_START_INDEX_PARAMETER = 2;
+
     @Getter
     private final List<ProofScript> scripts = new ArrayList<>(10);
+
     @Getter
     @Setter
     private FunctionRegister functionRegister = new FunctionRegister();
 
+    private Function<String, UnconditionalBlock> ubFactory;
+
+    private Function<String, ConditionalBlock> cbFactory;
+
+
     public TransformAst() {
         functionRegister.loadDefault();
+        ubFactory = (id -> {
+            switch (id) {
+                case "foreach":
+                    return new ForeachStatement();
+                case "theonly":
+                    return new TheOnlyStatement();
+                case "repeat":
+                    return new RepeatStatement();
+                case "relax":
+                    return new RelaxBlock();
+                case "strict":
+                    return new StrictBlock();
+                default:
+                    throw new RuntimeException("Block " + id + " is not known.");
+            }
+        });
+
+        cbFactory = (id -> {
+            switch (id) {
+                case "if":
+                    return new IfStatement();
+                case "while":
+                    return new WhileStatement();
+                default:
+                    throw new RuntimeException("Block " + id + " is not known.");
+            }
+        });
     }
 
     @Override
@@ -268,11 +303,11 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override
-    public Map<String, Expression> visitSubstExpressionList(ScriptLanguageParser.SubstExpressionListContext ctx) {
-        Map<String, Expression> map = new LinkedHashMap<>();
+    public Map<String, Expression<ParserRuleContext>> visitSubstExpressionList(ScriptLanguageParser.SubstExpressionListContext ctx) {
+        Map<String, Expression<ParserRuleContext>> map = new LinkedHashMap<>();
         for (int i = 0; i < ctx.scriptVar().size(); i++) {
             map.put(ctx.scriptVar(i).getText(),
-                    (Expression) ctx.expression(i).accept(this));
+                    (Expression<ParserRuleContext>) ctx.expression(i).accept(this));
         }
         return map;
     }
@@ -336,16 +371,6 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override
-    public Object visitRepeatStmt(ScriptLanguageParser.RepeatStmtContext ctx) {
-        RepeatStatement rs = new RepeatStatement();
-        rs.setRuleContext(ctx);
-        Statements body = (Statements) ctx.stmtList().accept(this);
-        rs.setBody(body);
-        body.setParent(rs);
-        return rs;
-    }
-
-    @Override
     public Object visitCasesStmt(ScriptLanguageParser.CasesStmtContext ctx) {
         CasesStatement cases = new CasesStatement();
         ctx.casesList().forEach(c -> cases.getCases().add((CaseStatement) c.accept(this)));
@@ -388,24 +413,31 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
 
 
     @Override
-    public Object visitForEachStmt(ScriptLanguageParser.ForEachStmtContext ctx) {
-        ForeachStatement f = new ForeachStatement();
-        f.setRuleContext(ctx);
+    public UnconditionalBlock visitUnconditionalBlock(ScriptLanguageParser.UnconditionalBlockContext ctx) {
+        List<UnconditionalBlock> list = ctx.kind.stream().map(token -> ubFactory.apply(token.getText())).collect(Collectors.toList());
+        UnconditionalBlock first = list.get(0);
+        UnconditionalBlock last = list.stream().reduce((a, b) -> {
+            b.setParent(a);
+            a.getBody().add(b);
+            return b;
+        }).orElse(first);
+        list.forEach(a -> a.setRuleContext(ctx));
         Statements body = (Statements) ctx.stmtList().accept(this);
-        f.setBody(body);
-        body.setParent(f);
-        return f;
+        last.setBody(body);
+        body.setParent(last);
+        return first;
     }
 
     @Override
-    public Object visitTheOnlyStmt(ScriptLanguageParser.TheOnlyStmtContext ctx) {
-        TheOnlyStatement f = new TheOnlyStatement();
-        f.setRuleContext(ctx);
+    public ConditionalBlock visitConditionalBlock(ScriptLanguageParser.ConditionalBlockContext ctx) {
+        ConditionalBlock cb = cbFactory.apply(ctx.kind.getText());
+        cb.setRuleContext(ctx);
         Statements body = (Statements) ctx.stmtList().accept(this);
-        f.setBody(body);
-        body.setParent(f);
-        return f;
+        cb.setBody(body);
+        body.setParent(cb);
+        return cb;
     }
+
 
     @Override
     public Object visitScriptCommand(ScriptLanguageParser.ScriptCommandContext ctx) {

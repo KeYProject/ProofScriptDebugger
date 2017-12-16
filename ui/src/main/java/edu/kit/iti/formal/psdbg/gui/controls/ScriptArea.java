@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CharacterHit;
 import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.MouseOverTextEvent;
+import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.reactfx.collection.LiveList;
 import org.reactfx.value.Val;
