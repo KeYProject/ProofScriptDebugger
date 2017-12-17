@@ -37,7 +37,7 @@ public class InspectionView extends BorderPane {
     );
 
     public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
-    public SequentOptionsMenu sequentOptionsMenu = new SequentOptionsMenu();
+    public SequentOptionsMenu sequentOptionsMenu = new SequentOptionsMenu(model.get());
 
     @FXML @Getter
     private ComboBox<PTreeNode<KeyData>> frames;
