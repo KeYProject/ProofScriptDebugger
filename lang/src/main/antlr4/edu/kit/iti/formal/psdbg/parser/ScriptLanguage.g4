@@ -122,11 +122,11 @@ casesList
     ;*/
 
 unconditionalBlock
-    : (kind+=(FOREACH|THEONLY|STRICT|RELAX|REPEAT))+ IDENT stmtList DEDENT
+    : (kind+=(FOREACH|THEONLY|STRICT|RELAX|REPEAT))+ INDENT stmtList DEDENT
     ;
 
 conditionalBlock
-    : kind=(IF|WHILE) LPAREN expression RPAREN IDENT stmtList DEDENT
+    : kind=(IF|WHILE) LPAREN expression RPAREN INDENT stmtList DEDENT
     ;
 
 
