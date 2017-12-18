@@ -59,7 +59,6 @@ public class SequentMatcher extends BorderPane {
         matchingsView.setItems(resultlist);
 
 
-
     }
 
     //alle aktuellen nicht geschlossene Ziele -> alle leaves später (open+closed)
@@ -70,9 +69,6 @@ public class SequentMatcher extends BorderPane {
     public ObservableList<GoalNode<KeyData>> getMatchingresults() {
         return matchingresults.get();
     }
-
-
-
 
 
     public ObservableList<Map<String, MatchPath>> getResults() {

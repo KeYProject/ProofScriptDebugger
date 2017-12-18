@@ -7,36 +7,42 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
 <fx:root xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
          type="edu.kit.iti.formal.psdbg.gui.controls.SequentMatcher">
     <center>
-        <SplitPane dividerPositions="0.4189895470383275" prefHeight="625.0" prefWidth="800">
+        <SplitPane orientation="VERTICAL">
             <items>
-                <VBox prefHeight="200.0" prefWidth="100.0">
-                    <children>
-                        <Label text="Sequent"/>
-                        <SequentView fx:id="sequentView" minHeight="0.0" minWidth="0.0" prefHeight="633.0" prefWidth="341.0"/>
-                    </children>
+                <VBox prefHeight="5" prefWidth="1150.0">
+                    <Label id="title" alignment="CENTER" contentDisplay="TOP" prefHeight="0.0" prefWidth="107.0"
+                           style="-fx-font-weight: bold; -fx-font-size: 110%;" text="Sequent Matcher"/>
+                    <Label text="Goal List"/>
+                    <ListView fx:id="goalView"/>
                 </VBox>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="348.0" prefWidth="814.0">
-                    <children>
+                <SplitPane dividerPositions="0.4189895470383275" prefHeight="500" prefWidth="800">
+                    <items>
+                        <VBox prefHeight="250.0" prefWidth="250">
+                            <children>
+                                <Label text="Sequent"/>
+                                <SequentView fx:id="sequentView" minHeight="0.0" minWidth="0.0" prefHeight="633.0"
+                                             prefWidth="341.0"/>
+                            </children>
+                        </VBox>
                         <SplitPane dividerPositions="0.28551136363636365" layoutX="11.0" layoutY="12.0"
                                    orientation="VERTICAL" prefHeight="706.0" prefWidth="641.0">
                             <items>
-                                <VBox prefHeight="293.0" prefWidth="639.0">
+                                <VBox prefHeight="293.0">
                                     <children>
                                         <Label text="Matching Pattern"/>
-                                        <TextArea fx:id="matchpattern" minHeight="0.0" minWidth="0.0" prefHeight="159.0" prefWidth="639.0"
-                                                  />
+                                        <TextArea fx:id="matchpattern" minHeight="0.0" minWidth="0.0" prefHeight="159.0"
+                                                  prefWidth="639.0"
+                                        />
                                         <Button mnemonicParsing="false" text="Start Matching"
                                                 onMouseClicked="#startMatch"/>
                                     </children>
                                 </VBox>
-                                <VBox prefHeight="349.0" prefWidth="664.0">
+                                <VBox prefHeight="349.0">
                                     <children>
                                         <Label text="Matches"/>
                                         <ListView fx:id="matchingsView"/>
@@ -44,19 +50,12 @@
                                 </VBox>
                             </items>
                         </SplitPane>
-                    </children>
-                </AnchorPane>
+                    </items>
+                </SplitPane>
             </items>
         </SplitPane>
     </center>
     <top>
-        <VBox prefHeight="218.0" prefWidth="1150.0">
-            <Label id="title" alignment="CENTER" contentDisplay="TOP" prefHeight="0.0" prefWidth="107.0"
-                   style="-fx-font-weight: bold; -fx-font-size: 110%;" text="Sequent Matcher"/>
-            <Label text="Goal List"/>
-            <ListView fx:id="goalView"/>
-        </VBox>
-
     </top>
     <padding>
         <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
