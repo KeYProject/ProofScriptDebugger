@@ -319,6 +319,51 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visit(DefaultCaseStatement defCase) {
+        return super.visit(defCase);
+    }
+
+    @Override
+    public Void visit(CaseStatement caseStatement) {
+        return super.visit(caseStatement);
+    }
+
+    @Override
+    public Void visit(SubstituteExpression subst) {
+        return super.visit(subst);
+    }
+
+    @Override
+    public Void visit(TryCase TryCase) {
+        return super.visit(TryCase);
+    }
+
+    @Override
+    public Void visit(ClosesCase closesCase) {
+        return super.visit(closesCase);
+    }
+
+    @Override
+    public Void visit(WhileStatement ws) {
+        return super.visit(ws);
+    }
+
+    @Override
+    public Void visit(IfStatement is) {
+        return super.visit(is);
+    }
+
+    @Override
+    public Void visit(StrictBlock strictBlock) {
+        return super.visit(strictBlock);
+    }
+
+    @Override
+    public Void visit(RelaxBlock relaxBlock) {
+        return super.visit(relaxBlock);
+    }
+
     //region Printers little helper
 
     private int getLastNewline() {

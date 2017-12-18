@@ -28,12 +28,11 @@ stmtList
 
 statement
     :   //scriptDecl
-         assignment
-    |   repeatStmt
-    |   casesStmt
-    |   forEachStmt
-    |   theOnlyStmt
-    |   scriptCommand
+      assignment
+    | casesStmt
+    | scriptCommand
+    | unconditionalBlock
+    | conditionalBlock
   //  |   callStmt
     ;
 
@@ -102,10 +101,6 @@ scriptVar
     ;
 
 
-repeatStmt
-    :   REPEAT INDENT stmtList DEDENT
-    ;
-
 casesStmt
     :   CASES INDENT
             casesList*
@@ -126,12 +121,12 @@ casesList
     : CLOSES  INDENT closesGuard=stmtList DEDENT
     ;*/
 
-forEachStmt
-    :   FOREACH INDENT stmtList DEDENT
+unconditionalBlock
+    : (kind+=(FOREACH|THEONLY|STRICT|RELAX|REPEAT))+ INDENT stmtList DEDENT
     ;
 
-theOnlyStmt
-    :   THEONLY INDENT stmtList DEDENT
+conditionalBlock
+    : kind=(IF|WHILE) LPAREN expression RPAREN INDENT stmtList DEDENT
     ;
 
 
@@ -176,13 +171,15 @@ BOOL: 'bool' ;
 TERMTYPE : 'term' ;*/
 FOREACH : 'foreach' ;
 THEONLY : 'theonly' ;
+STRICT : 'strict' ;
+RELAX : 'relax';
+IF:'if';
+WHILE:'while';
 INDENT : '{' ;
 DEDENT : '}' ;
 SEMICOLON : ';' ;
 COLON : ':' ;
-HEAPSIMP:'heap-simp';
 SUBST_TO: '\\';
-
 
 STRING_LITERAL
    : '\'' ('\'\'' | ~ ('\''))* '\''

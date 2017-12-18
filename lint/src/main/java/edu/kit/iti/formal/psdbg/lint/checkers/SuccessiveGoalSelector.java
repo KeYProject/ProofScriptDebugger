@@ -38,7 +38,7 @@ public class SuccessiveGoalSelector extends AbstractLintRule {
             return super.visit(theOnly);
         }
 
-        private boolean check(GoalSelector gs, String forbidden) {
+        private boolean check(UnconditionalBlock gs, String forbidden) {
             return gs.getBody().size() > 0 && Objects.equals(gs.getBody().get(0).getNodeName(), forbidden);
         }
 

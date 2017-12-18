@@ -156,5 +156,25 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
     public T visit(FunctionCall func) {
         return defaultVisit(func);
     }
+
+    @Override
+    public T visit(WhileStatement ws) {
+        return defaultVisit(ws);
+    }
+
+    @Override
+    public T visit(IfStatement is) {
+        return defaultVisit(is);
+    }
+
+    @Override
+    public T visit(StrictBlock strictBlock) {
+        return defaultVisit(strictBlock);
+    }
+
+    @Override
+    public T visit(RelaxBlock relaxBlock) {
+        return defaultVisit(relaxBlock);
+    }
 }
 
