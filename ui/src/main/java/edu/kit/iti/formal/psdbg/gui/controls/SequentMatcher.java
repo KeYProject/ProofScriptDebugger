@@ -1,19 +1,26 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
+import de.uka.ilkd.key.logic.PosInOccurrence;
+import de.uka.ilkd.key.logic.Term;
+import de.uka.ilkd.key.pp.*;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
 import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
 import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
-import javafx.beans.property.*;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SequentMatcher extends BorderPane {
@@ -31,12 +38,16 @@ public class SequentMatcher extends BorderPane {
     @FXML
     private ListView<Map<String, MatchPath>> matchingsView;
 
+    private Map<PosInOccurrence, Range> cursorPosition = new HashMap<>();
+
     public SequentMatcher() {
         Utils.createWithFXML(this);
 
         selectedGoalNodeToShow.addListener((observable, oldValue, newValue) -> {
                     sequentView.setGoal(newValue.getData().getGoal());
                     sequentView.setNode(newValue.getData().getNode());
+                    calculateLookupTable();
+
                 }
         );
 
@@ -46,6 +57,37 @@ public class SequentMatcher extends BorderPane {
 
         goals.addListener((observable, oldValue, newValue) -> goalView.setItems(newValue));
 
+        matchingsView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                newValue.forEach((name, mp) -> {
+                    PosInOccurrence pio = mp.pio();
+                    Range r = cursorPosition.get(pio);
+                    sequentView.setStyle(r.start(), r.end(), Collections.singleton("sequent-highlight"));
+                    System.out.println("Highlight " + r.start() + " " + r.end());
+                });
+
+            }
+        });
+    }
+
+    private void calculateLookupTable() {
+        sequentView.update(null);
+        cursorPosition.clear();
+        LogicPrinter.PosTableStringBackend backend = sequentView.getBackend();
+        SequentPrintFilter filter = new IdentitySequentPrintFilter();
+        filter.setSequent(selectedGoalNodeToShow.get().getData().getNode().sequent());
+        for (int i = 0; i < sequentView.getText().length(); i++) {
+            try {
+                Range range = backend.getPositionTable().rangeForIndex(i, sequentView.getLength());
+                PosInSequent pis = backend.getInitialPositionTable().getPosInSequent(i, filter);
+                if (pis != null && pis.getPosInOccurrence() != null) {
+                    Term term = pis.getPosInOccurrence().subTerm();
+                    cursorPosition.put(pis.getPosInOccurrence(), range);
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void startMatch() {

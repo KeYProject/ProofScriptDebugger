@@ -1,12 +1,12 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
 import de.uka.ilkd.key.api.KeYApi;
-import de.uka.ilkd.key.api.ProjectedNode;
 import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
+import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.interpreter.assignhook.InterpreterOptionsHook;
 import edu.kit.iti.formal.psdbg.interpreter.assignhook.KeyAssignmentHook;
@@ -19,14 +19,15 @@ import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import lombok.Getter;
+import org.key_project.util.collection.ImmutableList;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Alexander Weigl
@@ -202,11 +203,13 @@ public class InterpreterBuilder {
         if (proof == null || keyEnvironment == null)
             throw new IllegalStateException("Call proof(..) before startState");
 
-        final ProofApi pa = new ProofApi(proof, keyEnvironment);
-        final ProjectedNode root = pa.getFirstOpenGoal();
-        final KeyData keyData = new KeyData(root.getProofNode(), pa.getEnv(), pa.getProof());
-        final GoalNode<KeyData> startGoal = new GoalNode<>(null, keyData, keyData.isClosedNode());
-        return startState(startGoal);
+        ImmutableList<Goal> openGoals = proof.getSubtreeGoals(proof.root());
+        List<GoalNode<KeyData>> goals = openGoals.stream().map(g ->
+                new GoalNode<>(null, new KeyData(g, keyEnvironment, proof), false))
+                .collect(Collectors.toList());
+        interpreter.newState(goals);
+        return this;
+
     }
 
     private InterpreterBuilder startState(GoalNode<KeyData> startGoal) {
