@@ -34,7 +34,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class TheOnlyStatement extends GoalSelector<ScriptLanguageParser.TheOnlyStmtContext> {
+public class TheOnlyStatement extends UnconditionalBlock {
     public TheOnlyStatement() {
     }
 

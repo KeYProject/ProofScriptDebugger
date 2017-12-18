@@ -34,7 +34,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ForeachStatement extends GoalSelector<ScriptLanguageParser.ForEachStmtContext> {
+public class ForeachStatement extends UnconditionalBlock {
     public ForeachStatement() {
     }
 

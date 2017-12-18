@@ -51,8 +51,8 @@ public class KeyData {
         node = goal.node();
         env = environment;
         this.proof = proof;
-        closedNode = proof.closed();
-
+        //weigl: does not work -> closedNode = proof.closed();
+        node = g.node();
     }
 
     public KeyData(Node root, KeYEnvironment environment, Proof proof) {

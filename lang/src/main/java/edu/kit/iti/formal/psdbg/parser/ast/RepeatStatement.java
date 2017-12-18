@@ -34,7 +34,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class RepeatStatement extends GoalSelector<ScriptLanguageParser.RepeatStmtContext> {
+public class RepeatStatement extends UnconditionalBlock {
     public RepeatStatement() {
     }
 
@@ -59,6 +59,4 @@ public class RepeatStatement extends GoalSelector<ScriptLanguageParser.RepeatStm
         rs.setRuleContext(this.ruleContext);
         return rs;
     }
-
-
 }
