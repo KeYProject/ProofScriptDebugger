@@ -14,12 +14,17 @@ import java.util.ServiceLoader;
 public class FunctionRegister {
     private Map<String, ScriptFunction> functions = new HashMap<>();
 
+    public static FunctionRegister getDefault() {
+        return new FunctionRegister().loadDefault();
+    }
+
     /**
      * Load the default script functions via {@link java.util.ServiceLoader}.
      */
-    public void loadDefault() {
+    public FunctionRegister loadDefault() {
         ServiceLoader<ScriptFunction> sf = ServiceLoader.load(ScriptFunction.class);
         sf.forEach(s -> put(s.getName(), s));
+        return this;
     }
 
     public int size() {

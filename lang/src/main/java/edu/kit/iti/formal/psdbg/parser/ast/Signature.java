@@ -55,7 +55,8 @@ public class Signature extends ASTNode<ScriptLanguageParser.ArgListContext> impl
     public Signature copy() {
         Signature signature = new Signature();
         forEach((k, v) -> signature.put(k.copy(), v));
-        signature.setRuleContext(this.ruleContext);
+        if (this.ruleContext != null)
+            signature.setRuleContext(this.ruleContext);
         return signature;
     }
 

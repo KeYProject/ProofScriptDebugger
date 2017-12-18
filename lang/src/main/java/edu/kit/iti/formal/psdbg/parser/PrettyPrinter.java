@@ -26,6 +26,7 @@ package edu.kit.iti.formal.psdbg.parser;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.util.Iterator;
@@ -272,7 +273,7 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
     }
 
     @Override
-    public Void visit(FunctionCall func) {
+    public Void visit(@NonNull FunctionCall func) {
         s.append(func.getFunction().getName())
                 .append('(');
         func.getArguments().forEach(a -> {

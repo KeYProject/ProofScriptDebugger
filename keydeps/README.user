@@ -4,9 +4,9 @@
 # Execute this in this folder.
 
 # Set to key/key/deployment/components/
-COMPONENTS=${COMPONENTS:-/home/sarah/Documents/KIT_Mitarbeiter/KeYDevelopment/KeYGitDir/key/key/deployment/components/}
+#COMPONENTS=${COMPONENTS:-/home/sarah/Documents/KIT_Mitarbeiter/KeYDevelopment/KeYGitDir/key/key/deployment/components/}
 #COMPONENTS=$HOME/work/key/key/deployment/components/
-#COMPONENTS=lib/components/
+COMPONENTS=lib/components/
 
 
 

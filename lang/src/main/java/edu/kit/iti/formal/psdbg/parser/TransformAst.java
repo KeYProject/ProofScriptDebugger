@@ -55,10 +55,10 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     private final List<ProofScript> scripts = new ArrayList<>(10);
     @Getter
     @Setter
-    private FunctionRegister functionRegister = new FunctionRegister();
+    private FunctionRegister functionRegister = FunctionRegister.getDefault();
 
     public TransformAst() {
-        functionRegister.loadDefault();
+        //functionRegister.loadDefault();
     }
 
     @Override

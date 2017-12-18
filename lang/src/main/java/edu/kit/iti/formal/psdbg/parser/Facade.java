@@ -75,6 +75,7 @@ public abstract class Facade {
         TransformAst astt = new TransformAst();
         ScriptLanguageParser.StartContext ctx = parseStream(stream);
         if (ctx.exception != null) throw ctx.exception;
+
         ctx.accept(astt);
         return astt.getScripts();
     }

@@ -2,7 +2,10 @@
 //
 script test23(){
 impRight;
-impLeft;
+x:term := find(match `?rt ==>`);
+impLeft formula=x;
+
+
 cases{
     case match `q==>`:
       impRight;
