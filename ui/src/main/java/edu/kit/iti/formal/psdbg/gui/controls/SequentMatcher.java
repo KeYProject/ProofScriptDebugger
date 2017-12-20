@@ -8,15 +8,16 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
 import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
 import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.Observable;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 
 import java.util.Collections;
@@ -25,6 +26,8 @@ import java.util.Map;
 
 public class SequentMatcher extends BorderPane {
 
+
+    public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
 
     @FXML
     private SequentView sequentView;
@@ -43,6 +46,7 @@ public class SequentMatcher extends BorderPane {
     public SequentMatcher() {
         Utils.createWithFXML(this);
 
+
         selectedGoalNodeToShow.addListener((observable, oldValue, newValue) -> {
                     sequentView.setGoal(newValue.getData().getGoal());
                     sequentView.setNode(newValue.getData().getNode());
@@ -54,6 +58,9 @@ public class SequentMatcher extends BorderPane {
         goalView.getSelectionModel().selectedItemProperty().addListener((prop, old, nnew) ->
                 selectedGoalNodeToShow.setValue(nnew)
         );
+
+        goalView.setCellFactory(GoalNodeListCell::new);
+
 
         goals.addListener((observable, oldValue, newValue) -> goalView.setItems(newValue));
 
@@ -88,6 +95,11 @@ public class SequentMatcher extends BorderPane {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void showGoalOptions(MouseEvent actionEvent) {
+        Node n = (Node) actionEvent.getTarget();
+        goalOptionsMenu.show(n, actionEvent.getScreenX(), actionEvent.getScreenY());
     }
 
     public void startMatch() {
@@ -152,6 +164,7 @@ public class SequentMatcher extends BorderPane {
     }
 
 
+
     public void setSelectedGoalNodeToShow(GoalNode<KeyData> selectedGoalNodeToShow) {
         this.selectedGoalNodeToShow.set(selectedGoalNodeToShow);
     }
@@ -171,5 +184,30 @@ public class SequentMatcher extends BorderPane {
 
     public void setMatchingresults(ObservableList<GoalNode<KeyData>> matchingresults) {
         this.matchingresults.set(matchingresults);
+    }
+
+    /**
+     * Cells for GoalView
+     */
+    private class GoalNodeListCell extends ListCell<GoalNode<KeyData>> {
+
+        public GoalNodeListCell(ListView<GoalNode<KeyData>> goalNodeListView) {
+            itemProperty().addListener(this::update);
+            goalOptionsMenu.selectedViewOptionProperty().addListener(this::update);
+        }
+
+        private void update(Observable observable) {
+            if (getItem() == null) {
+                setText("");
+                return;
+            }
+            KeyData item = getItem().getData();
+            String text = "n/a";
+            if (goalOptionsMenu.getSelectedViewOption() != null) {
+                text = goalOptionsMenu.getSelectedViewOption().getText(item);
+            }
+            //setStyle("-fx-font-size: 12pt;");
+            setText(text);
+        }
     }
 }

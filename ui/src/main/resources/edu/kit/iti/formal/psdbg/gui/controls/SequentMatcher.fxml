@@ -9,17 +9,27 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.VBox?>
 
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<?import edu.kit.iti.formal.psdbg.gui.controls.SectionPane?>
 <fx:root xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
          type="edu.kit.iti.formal.psdbg.gui.controls.SequentMatcher">
     <center>
         <SplitPane orientation="VERTICAL">
             <items>
-                <VBox prefHeight="5" prefWidth="1150.0">
-                    <Label id="title" alignment="CENTER" contentDisplay="TOP" prefHeight="0.0" prefWidth="107.0"
-                           style="-fx-font-weight: bold; -fx-font-size: 110%;" text="Sequent Matcher"/>
-                    <Label text="Goal List"/>
-                    <ListView fx:id="goalView"/>
-                </VBox>
+                <SectionPane title="Current Goals">
+                    <headerRight>
+                        <Button onMouseClicked="#showGoalOptions">
+                            <graphic>
+                                <MaterialDesignIconView glyphName="WRENCH"/>
+                            </graphic>
+                        </Button>
+                    </headerRight>
+                    <center>
+                        <VBox prefHeight="5" prefWidth="1150.0">
+                            <ListView fx:id="goalView"/>
+                        </VBox>
+                    </center>
+                </SectionPane>
                 <SplitPane dividerPositions="0.4189895470383275" prefHeight="500" prefWidth="800">
                     <items>
                         <VBox prefHeight="250.0" prefWidth="250">
