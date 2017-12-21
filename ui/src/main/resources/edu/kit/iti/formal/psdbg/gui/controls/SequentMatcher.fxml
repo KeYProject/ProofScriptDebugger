@@ -15,7 +15,6 @@
          type="edu.kit.iti.formal.psdbg.gui.controls.SequentMatcher">
     <center>
         <SplitPane orientation="VERTICAL">
-            <items>
                 <SectionPane title="Current Goals">
                     <headerRight>
                         <Button onMouseClicked="#showGoalOptions">
@@ -31,38 +30,28 @@
                     </center>
                 </SectionPane>
                 <SplitPane dividerPositions="0.4189895470383275" prefHeight="500" prefWidth="800">
-                    <items>
-                        <VBox prefHeight="250.0" prefWidth="250">
-                            <children>
-                                <Label text="Sequent"/>
-                                <SequentView fx:id="sequentView" minHeight="0.0" minWidth="0.0" prefHeight="633.0"
-                                             prefWidth="341.0"/>
-                            </children>
-                        </VBox>
+                    <SectionPane title="Sequent" minHeight="0.0" minWidth="0.0" prefHeight="633.0"
+                                 prefWidth="341.0">
+                        <center>
+                                <SequentView fx:id="sequentView"/>
+                        </center>
+                    </SectionPane>
                         <SplitPane dividerPositions="0.28551136363636365" layoutX="11.0" layoutY="12.0"
                                    orientation="VERTICAL" prefHeight="706.0" prefWidth="641.0">
-                            <items>
                                 <VBox prefHeight="293.0">
-                                    <children>
                                         <Label text="Matching Pattern"/>
                                         <TextArea fx:id="matchpattern" minHeight="0.0" minWidth="0.0" prefHeight="159.0"
                                                   prefWidth="639.0"
                                         />
                                         <Button mnemonicParsing="false" text="Start Matching"
                                                 onMouseClicked="#startMatch"/>
-                                    </children>
                                 </VBox>
                                 <VBox prefHeight="349.0">
-                                    <children>
                                         <Label text="Matches"/>
                                         <ListView fx:id="matchingsView"/>
-                                    </children>
                                 </VBox>
-                            </items>
                         </SplitPane>
-                    </items>
                 </SplitPane>
-            </items>
         </SplitPane>
     </center>
     <top>
