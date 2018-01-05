@@ -14,11 +14,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,7 +32,7 @@ public class SequentMatcher extends BorderPane {
     public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
 
     @FXML
-    private SequentView sequentView;
+    private SequentViewMatcher sequentView;
 
     @FXML
     private ListView<GoalNode<KeyData>> goalView;
@@ -39,13 +41,17 @@ public class SequentMatcher extends BorderPane {
     private TextArea matchpattern;
 
     @FXML
-    private ListView<Map<String, MatchPath>> matchingsView;
+    private ListView<Map<String, MatchPath>>  matchingsView;
+
+    @FXML
+    private Label nomatchings;
 
     private Map<PosInOccurrence, Range> cursorPosition = new HashMap<>();
 
     public SequentMatcher() {
         Utils.createWithFXML(this);
 
+        getStyleClass().add("sequent-view"); //TODO
 
         selectedGoalNodeToShow.addListener((observable, oldValue, newValue) -> {
                     sequentView.setGoal(newValue.getData().getGoal());
@@ -69,7 +75,8 @@ public class SequentMatcher extends BorderPane {
                 newValue.forEach((name, mp) -> {
                     PosInOccurrence pio = mp.pio();
                     Range r = cursorPosition.get(pio);
-                    sequentView.setStyle(r.start(), r.end(), Collections.singleton("sequent-highlight"));
+                    sequentView.setStyleClass(r.start(),r.end(), "sequent-highlight"); //TODO
+
                     System.out.println("Highlight " + r.start() + " " + r.end());
                 });
 
@@ -106,11 +113,17 @@ public class SequentMatcher extends BorderPane {
         Matchings matchings = MatcherFacade.matches(matchpattern.getText(), getSelectedGoalNodeToShow().getData().getNode().sequent(), true);
         ObservableList<Map<String, MatchPath>> resultlist = FXCollections.observableArrayList(matchings);
 
+        //If no matchings found, add "No matchings found"
         if (resultlist.isEmpty()) {
-            System.out.println("No matchings found for this sequent");
+            matchingsView.setVisible(false);
+            nomatchings.setVisible(true);
+        } else {
+            nomatchings.setVisible(false);
+            matchingsView.setItems(resultlist);
+            matchingsView.setVisible(true);
         }
 
-        matchingsView.setItems(resultlist);
+
 
 
     }
