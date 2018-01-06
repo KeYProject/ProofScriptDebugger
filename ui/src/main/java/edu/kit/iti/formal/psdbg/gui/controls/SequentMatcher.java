@@ -44,14 +44,13 @@ public class SequentMatcher extends BorderPane {
     private ListView<Map<String, MatchPath>>  matchingsView;
 
     @FXML
-    private Label nomatchings;
+    private Label nomatchings; //only shown when no matchings found, else always hidden
 
     private Map<PosInOccurrence, Range> cursorPosition = new HashMap<>();
 
     public SequentMatcher() {
         Utils.createWithFXML(this);
 
-        getStyleClass().add("sequent-view"); //TODO
 
         selectedGoalNodeToShow.addListener((observable, oldValue, newValue) -> {
                     sequentView.setGoal(newValue.getData().getGoal());

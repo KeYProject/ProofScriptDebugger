@@ -52,7 +52,7 @@
                                         <Label text="Matches"/>
                                             <Pane>
                                                 <Label fx:id ="nomatchings" text="No matchings found" visible="false"/>
-                                                <ListView fx:id="matchingsView" prefWidth="650"/>
+                                                <ListView fx:id="matchingsView" prefWidth="800"/>
                                             </Pane>
 
                                 </VBox>
