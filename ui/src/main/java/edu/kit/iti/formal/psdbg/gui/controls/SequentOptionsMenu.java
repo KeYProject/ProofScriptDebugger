@@ -2,6 +2,7 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import javafx.beans.property.ObjectProperty;
@@ -16,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.dockfx.DockNode;
 
 import java.util.function.Function;
 
@@ -34,18 +36,25 @@ public class SequentOptionsMenu extends ContextMenu {
             @Override
             public void handle(ActionEvent event) {
 
-                //TODO: Abchecken ob überhaupt eine Sequenz vorhanden ist
 
                 try {
                     SequentMatcher root1 = new SequentMatcher();
                     root1.setGoals(model.getGoals());
                     root1.setSelectedGoalNodeToShow(model.getSelectedGoalNodeToShow());
+                    root1.getStyleClass().add("sequent-view");
+
                     Stage stage = new Stage();
                     stage.setTitle("Sequent Matcher");
-                    stage.setScene(new Scene(root1));
+                    Scene scene = new Scene(root1);
+                    scene.getStylesheets().addAll(
+                            // ProofScriptDebugger.class.getClass().getResource("debugger-ui.css").toExternalForm()
+                            getClass().getResource("/edu/kit/iti/formal/psdbg/gui/debugger-ui.css")
+                                    .toExternalForm());
+
+                    stage.setScene(scene);
+
                     stage.show();
 
-                    //TODO: probably have to add a few things here (Lulu)
 
                 } catch (Exception e) {
                     e.printStackTrace();

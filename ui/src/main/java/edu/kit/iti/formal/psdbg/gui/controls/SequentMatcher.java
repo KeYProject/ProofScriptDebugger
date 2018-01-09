@@ -32,7 +32,7 @@ public class SequentMatcher extends BorderPane {
     public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
 
     @FXML
-    private SequentViewMatcher sequentView;
+    private SequentView sequentView;
 
     @FXML
     private ListView<GoalNode<KeyData>> goalView;
@@ -74,7 +74,7 @@ public class SequentMatcher extends BorderPane {
                 newValue.forEach((name, mp) -> {
                     PosInOccurrence pio = mp.pio();
                     Range r = cursorPosition.get(pio);
-                    sequentView.setStyleClass(r.start(),r.end(), "sequent-highlight"); //TODO
+                    sequentView.setStyleClass(r.start(),r.end(), "sequent-highlight");
 
                     System.out.println("Highlight " + r.start() + " " + r.end());
                 });
