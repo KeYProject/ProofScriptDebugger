@@ -347,6 +347,7 @@ public class ProofTree extends BorderPane {
                 if (childNode.getNodeInfo().getBranchLabel() != null) {
                     ti.getChildren().add(populate(childNode.getNodeInfo().getBranchLabel(), childNode));
                 } else {
+                    //ti.getChildren().add(populate(childNode.getAppliedRuleApp().rule().name().toString(), childNode));
                     ti.getChildren().add(populate("BRANCH " + branchCounter, childNode));
                     branchCounter++;
                 }
