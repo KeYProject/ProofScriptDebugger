@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.VBox?>
+
+
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<?import edu.kit.iti.formal.psdbg.gui.controls.SectionPane?>
+<?import javafx.scene.layout.Pane?>
+<?import edu.kit.iti.formal.psdbg.gui.controls.SequentView?>
+<fx:root xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+         type="edu.kit.iti.formal.psdbg.gui.controls.SequentMatcher">
+    <center>
+        <SplitPane orientation="VERTICAL">
+                <SectionPane title="Current Goals">
+                    <headerRight>
+                        <Button onMouseClicked="#showGoalOptions">
+                            <graphic>
+                                <MaterialDesignIconView glyphName="WRENCH"/>
+                            </graphic>
+                        </Button>
+                    </headerRight>
+                    <center>
+                        <VBox prefHeight="5" prefWidth="1150.0">
+                            <ListView fx:id="goalView"/>
+                        </VBox>
+                    </center>
+                </SectionPane>
+                <SplitPane dividerPositions="0.4189895470383275" prefHeight="500" prefWidth="800">
+                    <SectionPane title="Sequent" minHeight="0.0" minWidth="0.0" prefHeight="633.0"
+                                 prefWidth="341.0">
+                        <center>
+                                <SequentView fx:id="sequentView"/>
+                        </center>
+                    </SectionPane>
+                        <SplitPane dividerPositions="0.28551136363636365" layoutX="11.0" layoutY="12.0"
+                                   orientation="VERTICAL" prefHeight="706.0" prefWidth="641.0">
+                                <VBox prefHeight="293.0">
+                                        <Label text="Matching Pattern"/>
+                                        <TextArea fx:id="matchpattern" minHeight="0.0" minWidth="0.0" prefHeight="159.0"
+                                                  prefWidth="639.0"
+                                        />
+                                        <Button mnemonicParsing="false" text="Start Matching"
+                                                onMouseClicked="#startMatch"/>
+                                </VBox>
+                                <VBox prefHeight="349.0">
+                                        <Label text="Matches"/>
+                                            <Pane>
+                                                <Label fx:id ="nomatchings" text="No matchings found" visible="false"/>
+                                                <ListView fx:id="matchingsView" prefWidth="800"/>
+                                            </Pane>
+
+                                </VBox>
+                        </SplitPane>
+                </SplitPane>
+        </SplitPane>
+    </center>
+    <padding>
+        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+    </padding>
+
+</fx:root>

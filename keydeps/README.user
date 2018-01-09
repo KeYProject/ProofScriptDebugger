@@ -33,3 +33,7 @@ mvn install:install-file -Dfile=$COMPONENTS/../libs/recoderKey.jar\
                          -DartifactId=recoder \
                          -Dversion=2.7\
                          -Dpackaging=jar \
+
+						 
+//insgesamt efach in der Kommandozeile das eingeben
+
