@@ -396,39 +396,18 @@ public class DebuggerMain implements Initializable {
         executeScript(false);
     }
 
-    @FXML
-    public void abortExecution() {
-        if (model.getDebuggerFramework() != null) {
-            try {
-                // try to friendly
-                Future future = executorService.submit(() -> {
-                    model.getDebuggerFramework().stop();
-                    model.getDebuggerFramework().unregister();
-                    model.getDebuggerFramework().release();
-                });
-
-                // wait a second!
-                future.get(1, TimeUnit.SECONDS);
-                // ungently stop
-                model.getDebuggerFramework().hardStop();
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                e.printStackTrace();
-            } finally {
-                model.setDebuggerFramework(null);
-            }
-        } else {
-            LOGGER.info("no interpreter running");
-        }
-    }
-
     private void executeScript(boolean addInitBreakpoint) {
         if (model.getDebuggerFramework() != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Interpreter is already running \nDo want to abort it?",
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Interpreter is already running \nDo you want to abort it?",
                     ButtonType.CANCEL, ButtonType.YES);
             Optional<ButtonType> ans = alert.showAndWait();
             ans.ifPresent(a -> {
                 if (a == ButtonType.OK) abortExecution();
             });
+
+            if (ans.isPresent() && ans.get() == ButtonType.CANCEL) {
+                return;
+            }
         }
 
         assert model.getDebuggerFramework() == null : "There should not be any interpreter running.";
@@ -452,6 +431,33 @@ public class DebuggerMain implements Initializable {
 
         // else getProofState() == VIRGIN!
         executeScript(FACADE.buildInterpreter(), addInitBreakpoint);
+    }
+
+    @FXML
+    public void abortExecution() {
+
+        if (model.getDebuggerFramework() != null) {
+            try {
+                // try to friendly
+                Future future = executorService.submit(() -> {
+                    model.getDebuggerFramework().stop();
+                    model.getDebuggerFramework().unregister();
+                    model.getDebuggerFramework().release();
+                });
+
+                // wait a second!
+                future.get(1, TimeUnit.SECONDS);
+                // ungently stop
+                model.getDebuggerFramework().hardStop();
+
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                e.printStackTrace();
+            } finally {
+                model.setDebuggerFramework(null);
+            }
+        } else {
+            LOGGER.info("no interpreter running");
+        }
     }
 
 

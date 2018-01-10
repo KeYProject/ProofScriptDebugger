@@ -6,7 +6,7 @@ public class LuLuQuickSort extends JavaExample {
     public LuLuQuickSort() {
         setName("LuLu QuickSort");
         setHelpText(null);
-        setJavaFile(getClass().getResource("QuickSort.java"));
+        setJavaFile(getClass().getResource("Quicksort.java"));
         setScriptFile(getClass().getResource("QuickSort.kps"));
     }
 }

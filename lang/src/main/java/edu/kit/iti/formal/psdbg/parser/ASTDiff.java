@@ -148,6 +148,11 @@ public class ASTDiff extends DefaultASTVisitor<ASTNode> {
         return null;
     }
 
+    /**
+     * @param old
+     * @param rev
+     * @return
+     */
     public ProofScript diff(ProofScript old, ProofScript rev) {
         other = rev;
         return (ProofScript) visit(old);
