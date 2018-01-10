@@ -302,6 +302,7 @@ public class ProofTree extends BorderPane {
             return;
 
         if (root.get() != null) {
+
             TreeItem<TreeNode> item = populate("Proof", root.get());
             treeProof.setRoot(item);
         }
@@ -317,12 +318,23 @@ public class ProofTree extends BorderPane {
         if (sentinels.contains(n)) {
             return ti;
         }
+        if (label.equals("Proof")) { //we are at the root
+            TreeItem<TreeNode> self1 = new TreeItem<>(new TreeNode(n.serialNr() + ": " + toString(n), n));
+            ti.getChildren().add(self1);
+        }
 
+        //if we are at a leaf we need to check goal state
         if (n.childrenCount() == 0) {
-            TreeItem<TreeNode> e = new TreeItem<>(new TreeNode(
-                    n.isClosed() ? "CLOSED GOAL" : "OPEN GOAL", null));
+            //  TreeItem<TreeNode> e = new TreeItem<>(new TreeNode(
+            //           n.isClosed() ? "CLOSED GOAL" : "OPEN GOAL", null));
 
-            ti.getChildren().add(e);
+           /* if(!label.equals("Proof")) {
+                TreeItem<TreeNode> self = new TreeItem<>(new TreeNode(n.serialNr() + ": " + toString(n), n));
+                ti.getChildren().add(self);
+            }*/
+            // ti.getChildren().add(e);
+
+
             return ti;
         }
 
@@ -339,16 +351,22 @@ public class ProofTree extends BorderPane {
 
         } else { // children count > 1
             Iterator<Node> nodeIterator = node.childrenIterator();
-
             Node childNode;
             int branchCounter = 1;
             while (nodeIterator.hasNext()) {
                 childNode = nodeIterator.next();
                 if (childNode.getNodeInfo().getBranchLabel() != null) {
-                    ti.getChildren().add(populate(childNode.getNodeInfo().getBranchLabel(), childNode));
+
+                    TreeItem<TreeNode> populate = populate(childNode.getNodeInfo().getBranchLabel(), childNode);
+                    // TreeItem<TreeNode> self = new TreeItem<>(new TreeNode(childNode.serialNr() + ": " + toString(childNode), childNode));
+                    // populate.getChildren().add(0, self);
+                    ti.getChildren().add(populate);
+
                 } else {
-                    //ti.getChildren().add(populate(childNode.getAppliedRuleApp().rule().name().toString(), childNode));
-                    ti.getChildren().add(populate("BRANCH " + branchCounter, childNode));
+                    TreeItem<TreeNode> populate = populate("BRANCH " + branchCounter, childNode);
+                    TreeItem<TreeNode> self = new TreeItem<>(new TreeNode(childNode.serialNr() + ": " + toString(childNode), childNode));
+                    populate.getChildren().add(0, self);
+                    ti.getChildren().add(populate);
                     branchCounter++;
                 }
             }
@@ -387,9 +405,10 @@ public class ProofTree extends BorderPane {
     }
 
     private void repaint(TextFieldTreeCell<TreeNode> tftc) {
-        Node n = tftc.getItem().node;
+        TreeNode item = tftc.getItem();
+        Node n = item.node;
         tftc.setStyle("");
-        if (n != null && n.leaf()) {
+        if (n != null && n.leaf() && !item.label.contains("BRANCH")) {
             if (n.isClosed()) {
                 colorOfNodes.putIfAbsent(n, "seagreen");
                 //tftc.setStyle("-fx-background-color: greenyellow");
