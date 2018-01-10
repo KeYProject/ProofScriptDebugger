@@ -66,6 +66,7 @@ public class SequentView extends CodeArea {
         int insertionPoint = hit.getInsertionIndex();
         try {
             PosInSequent pis = backend.getInitialPositionTable().getPosInSequent(insertionPoint, filter);
+
             if (pis != null) {
                 Range r = backend.getPositionTable().rangeForIndex(insertionPoint, getLength());
                 hightlightRange(r.start(), r.end());
@@ -133,6 +134,7 @@ public class SequentView extends CodeArea {
         //Sarah, wenn du das hier liest wirst du festgestellt haben, dass wir auf zwei verschiedene KeY-Versionen arbeiten.
         filter = new IdentitySequentPrintFilter();
         filter.setSequent(sequent);
+
 
         ProgramPrinter prgPrinter = new ProgramPrinter(new StringWriter());
         this.backend = new LogicPrinter.PosTableStringBackend(80);
@@ -208,7 +210,7 @@ public class SequentView extends CodeArea {
             Matchings m = MatcherFacade.matches(pattern, node.get().sequent(), true);
             if (m.size() == 0) return false;
             Map<String, MatchPath> va = m.first();
-            System.out.println(va);//TODO remove
+            //System.out.println(va);//TODO remove
             for (MatchPath mp : va.values()) {
                 System.out.println(mp.pio());
                 highlightTerm(mp.pio());
@@ -225,5 +227,9 @@ public class SequentView extends CodeArea {
         ImmutableList<Integer> path = ImmutableSLList.<Integer>nil().append(1);
         Range r = backend.getInitialPositionTable().rangeForPath(path);
         setStyle(r.start(), r.end(), Collections.singleton("search-highlight"));
+    }
+
+    public LogicPrinter.PosTableStringBackend getBackend() {
+        return backend;
     }
 }
