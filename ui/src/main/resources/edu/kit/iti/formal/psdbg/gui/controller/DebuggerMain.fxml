@@ -286,6 +286,16 @@
                             </tooltip>
                         </ToggleButton>
 
+                        <Button fx:id="interactive_undo" onAction="#undo" disable="true">
+                            <graphic>
+                                <MaterialDesignIconView glyphName="UNDO" size="24.0"/>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip text="Undo"/>
+                            </tooltip>
+                        </Button>
+
+
                         <Pane HBox.hgrow="ALWAYS"/>
                         <Label text="Windows:"/>
                         <ToggleButton fx:id="togBtnCodeDock" onAction="#showCodeDock">

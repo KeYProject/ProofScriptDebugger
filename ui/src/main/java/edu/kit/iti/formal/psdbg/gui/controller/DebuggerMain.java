@@ -132,6 +132,9 @@ public class DebuggerMain implements Initializable {
     @FXML
     private ToggleButton btnInteractiveMode;
 
+    @FXML
+    private Button interactive_undo;
+
     private JavaArea javaArea = new JavaArea();
 
     private DockNode javaAreaDock = new DockNode(javaArea, "Java Source",
@@ -861,6 +864,22 @@ public class DebuggerMain implements Initializable {
         }
     }
 
+    public void undo(ActionEvent actionEvent) {
+        LOGGER.debug("DebuggerMain.undo");
+        interactiveModeController.undo(actionEvent);
+
+
+
+        /*
+        try {
+            model.getDebuggerFramework().execute(new UndoCommand<>());
+        } catch (DebuggerException e) {
+            Utils.showExceptionDialog("", "", "", e);
+            LOGGER.error(e);
+        }
+        */
+    }
+
     public void stopDebugMode(ActionEvent actionEvent) {
         scriptController.getDebugPositionHighlighter().remove();
         Button stop = (Button) actionEvent.getSource();
@@ -884,10 +903,15 @@ public class DebuggerMain implements Initializable {
     @FXML
     public void interactiveMode(ActionEvent actionEvent) {
         if (btnInteractiveMode.isSelected()) {
+            assert model.getDebuggerFramework() != null;
+            interactiveModeController.setDebuggerFramework(model.getDebuggerFramework());
             interactiveModeController.setActivated(true);
             interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
+
+            interactive_undo.setDisable(false);
         } else {
             interactiveModeController.stop();
+            interactive_undo.setDisable(true);
         }
     }
 
