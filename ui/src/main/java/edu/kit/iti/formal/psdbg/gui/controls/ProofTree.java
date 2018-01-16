@@ -14,6 +14,7 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -42,7 +43,7 @@ public class ProofTree extends BorderPane {
     private SetProperty<Node> sentinels = new SimpleSetProperty<>(FXCollections.observableSet());
 
 
-    private MapProperty colorOfNodes = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    private MapProperty<Node, String> colorOfNodes = new SimpleMapProperty<Node, String>(FXCollections.observableHashMap());
 
     @FXML
     private TreeView<TreeNode> treeProof;
@@ -128,6 +129,7 @@ public class ProofTree extends BorderPane {
      *
      * @param candidate
      */
+
     private static void expandRootToItem(TreeItem candidate) {
         if (candidate != null) {
             expandRootToItem(candidate.getParent());
@@ -156,20 +158,24 @@ public class ProofTree extends BorderPane {
         }
     }
 
-    public void addNodeColor() {
+    public void addNodeColor(Node n, String color) {
+        this.colorOfNodes.put(n, color);
     }
 
-    public void expandRootToLeaves() {
+    public void expandRootToSentinels() {
         if (getTreeProof().getRoot() == null) {
             if (root.get() != null) {
-                TreeItem<TreeNode> item = populate(root.get().serialNr() + ": " + toString(root.get()), root.get());
-                //new TreeItem<>(new TreeNode(root.get().serialNr() + ": " + toString(root.get()), root.get()));
+                TreeItem<TreeNode> item = populate("Proof", root.get());
+                //populate(root.get().serialNr() + ": " + toString(root.get()), root.get());
+                //val treeNode = new TreeNode("Proof", root.get());
+
                 treeProof.setRoot(item);
             }
 
         }
         //expandRootToLeaves(getTreeProof().getRoot());
     }
+
 
     public TreeView<TreeNode> getTreeProof() {
         return treeProof;
@@ -416,38 +422,47 @@ public class ProofTree extends BorderPane {
         TreeNode item = tftc.getItem();
         Node n = item.node;
         tftc.setStyle("");
-        if (n != null && n.leaf() && !item.label.contains("BRANCH")) {
-            if (n.isClosed()) {
-                colorOfNodes.putIfAbsent(n, "seagreen");
-                //tftc.setStyle("-fx-background-color: greenyellow");
-            } else {
-                colorOfNodes.putIfAbsent(n, "darkred");
+        if (n != null) {
+            if (n.leaf() && !item.label.contains("BRANCH")) {
+                if (n.isClosed()) {
+                    colorOfNodes.putIfAbsent(n, "lightseagreen");
+                    //tftc.setStyle("-fx-background-color: greenyellow");
+                } else {
+                    colorOfNodes.putIfAbsent(n, "indianred");
+                }
+                if (colorOfNodes.containsKey(n)) {
+                    tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
+                }
             }
-            if (colorOfNodes.containsKey(n)) {
-                tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
-            }
+           /* if (colorOfNodes.containsKey(n)) {
+                tftc.setStyle("-fx-border-color: "+colorOfNodes.get(n)+";");
+            }*/
         }
+
         expandRootToItem(tftc.getTreeItem());
 
     }
 
-    public Object getColorOfNodes() {
+
+    public MapProperty<Node, String> colorOfNodesProperty() {
+        return colorOfNodes;
+    }
+
+    public ObservableMap<Node, String> getColorOfNodes() {
         return colorOfNodes.get();
     }
 
-    public void setColorOfNodes(Object colorOfNodes) {
+    public void setColorOfNodes(ObservableMap<Node, String> colorOfNodes) {
         this.colorOfNodes.set(colorOfNodes);
-    }
-
-    public MapProperty colorOfNodesProperty() {
-        return colorOfNodes;
     }
 
     public Node getRoot() {
         return root.get();
     }
 
+
     public void setRoot(Node root) {
+
         this.root.set(root);
     }
 

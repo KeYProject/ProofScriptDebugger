@@ -1119,6 +1119,7 @@ public class DebuggerMain implements Initializable {
 
             ptree.setProof(proof);
             ptree.setRoot(pnode);
+            ptree.addNodeColor(pnode, "blueviolet");
             ptree.setDeactivateRefresh(true);
 
 
@@ -1133,20 +1134,23 @@ public class DebuggerMain implements Initializable {
                         .map(Goal::node)
                         .collect(Collectors.toSet());
                 ptree.getSentinels().addAll(sentinels);
+                sentinels.forEach(node -> ptree.addNodeColor(node, "blueviolet"));
             } else {
                 Set<Node> sentinels = new HashSet<>();
                 Iterator<Node> nodeIterator = beforeNode.getData().getNode().leavesIterator();
                 while (nodeIterator.hasNext()) {
                     Node next = nodeIterator.next();
 
-                    sentinels.add(next.parent());
+                    sentinels.add(next);
                 }
                 ptree.getSentinels().addAll(sentinels);
+                sentinels.forEach(node -> ptree.addNodeColor(node, "blueviolet"));
                 //traverseProofTreeAndAddSentinelsToLeaves();
             }
 
 
-            ptree.expandRootToLeaves();
+            ptree.expandRootToSentinels();
+
             //TODO set coloring of starting and end node
             DockNode node = new DockNode(ptree, "Proof Tree for Step Into: " +
                     original.getStatement().accept(new ShortCommandPrinter())
