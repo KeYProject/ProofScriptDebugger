@@ -58,10 +58,12 @@ public class InspectionView extends BorderPane {
         Utils.createWithFXML(this);
 
         frames.valueProperty().addListener((prop, o, n) -> {
-                    model.get().getGoals().setAll(
-                            n.getStateBeforeStmt().getGoals());
-                    model.get().setSelectedGoalNodeToShow(
-                            n.getStateBeforeStmt().getSelectedGoalNode());
+            if (n != null) {
+                model.get().getGoals().setAll(
+                        n.getStateBeforeStmt().getGoals());
+                model.get().setSelectedGoalNodeToShow(
+                        n.getStateBeforeStmt().getSelectedGoalNode());
+            }
                 }
         );
 
@@ -78,7 +80,11 @@ public class InspectionView extends BorderPane {
         });
 
         model.get().selectedGoalNodeToShowProperty().addListener((o, a, b) -> {
-            goalView.getSelectionModel().select(b);
+            if (b != null) {
+                goalView.getSelectionModel().select(b);
+            } else {
+                goalView.getSelectionModel().clearSelection();
+            }
         });
 
         goalView.getSelectionModel().selectedItemProperty().addListener((o, a, b) -> {

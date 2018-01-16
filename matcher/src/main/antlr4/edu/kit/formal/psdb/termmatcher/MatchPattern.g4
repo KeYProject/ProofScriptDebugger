@@ -22,7 +22,8 @@ sequentPattern : antec=semiSeqPattern? ARROW succ=semiSeqPattern? #sequentArrow
 semiSeqPattern : termPattern (',' termPattern)*;
 
 termPattern :
-      termPattern MUL termPattern                               #mult
+   '(' (EXISTS|FORALL) (SID|ID)  termPattern ')'                #quantForm
+    |  termPattern MUL termPattern                              #mult
     | <assoc=right> termPattern op=(DIV|MOD) termPattern        #divMod
     | termPattern op=(PLUS|MINUS) termPattern                   #plusMinus
     | termPattern op=(LE|GE|LEQ|GEQ) termPattern                #comparison
@@ -53,12 +54,6 @@ bindClause : ('\\as' | ':') SID;
 DONTCARE: '?' | '_' | '█';
 DIGITS : DIGIT+ ;
 fragment DIGIT : [0-9] ;
-SID: '?' [_a-zA-Z0-9\\]+ ;
-ID : [a-zA-Z\\_] ([_a-zA-Z0-9\\])*
-   | 'update-application'
-   | 'parallel-upd'
-   | 'elem-update'
-   ;
 
 ARROW : '⇒' | '==>';
 STARDONTCARE: '...' | '…';
@@ -78,8 +73,16 @@ OR: '|' ;
 IMP: '->';
 MOD:'%';
 XOR:'^';
-FORALL: '\forall' | '∀';
-EXISTS: '\exists';
+NOT :'!';
+FORALL: '\\forall' | '∀';
+EXISTS: '\\exists';
+SID: '?' [_a-zA-Z0-9\\]+ ;
+ID : [a-zA-Z\\_] ([_a-zA-Z0-9\\])*
+   | 'update-application'
+   | 'parallel-upd'
+   | 'elem-update'
+   ;
+
 
 COMMENT: '//' ~[\n\r]* -> channel(HIDDEN);
 WS: [\n\f\r\t ] -> channel(HIDDEN);

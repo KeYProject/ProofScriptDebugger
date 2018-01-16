@@ -229,6 +229,25 @@
 
                         </SplitMenuButton>
 
+                        <Button onAction="#reloadProblem" disable="${controller.executeNotPossible}">
+                            <graphic>
+                                <MaterialDesignIconView glyphName="REFRESH" size="24.0"/>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip text="Reload Problem"/>
+                            </tooltip>
+                        </Button>
+
+                        <Button onAction="#continueAfterRun" disable="${controller.executeNotPossible}">
+                            <graphic>
+                                <MaterialDesignIconView glyphName="PLAY_CIRCLE_OUTLINE" size="24.0"/>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip text="Continue"/>
+                            </tooltip>
+                        </Button>
+
+
                         <Button onAction="#stepInto" disable="${controller.stepNotPossible}">
                             <graphic>
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_INTO" size="24.0"/>
@@ -252,17 +271,17 @@
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0" scaleX="-1"/>
                             </graphic>
                             <tooltip>
-                                <Tooltip text="Step Back"/>
+                                <Tooltip text="Step Over Reverse"/>
                             </tooltip>
                         </Button>
 
 
-                        <Button disable="${controller.stepNotPossible}">
+                        <Button onAction="#stepIntoReverse" disable="${controller.stepNotPossible}">
                             <graphic>
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_OUT" size="24.0"/>
                             </graphic>
                             <tooltip>
-                                <Tooltip text="Step Out"/>
+                                <Tooltip text="Step Into Reverse"/>
                             </tooltip>
                         </Button>
 

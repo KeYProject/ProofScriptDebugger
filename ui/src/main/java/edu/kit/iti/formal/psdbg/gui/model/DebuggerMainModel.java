@@ -46,6 +46,7 @@ public class DebuggerMainModel {
      */
     private ObservableBooleanValue executeNotPossible = new SimpleBooleanProperty();//proofTreeController.executeNotPossibleProperty().or(FACADE.readyToExecuteProperty().not());
 
+
     /**
      *
      */
@@ -222,4 +223,6 @@ public class DebuggerMainModel {
     public void setInterpreterState(InterpreterThreadState interpreterState) {
         this.interpreterState.set(interpreterState);
     }
+
+
 }

@@ -54,6 +54,7 @@ public class MatcherFacadeTest {
 
     @Test
     public void matches() throws Exception {
+        shouldMatchForm("\\exists int i; \\exists int j; (fint2(i, j) -> fint2(j, i))", "\\exists int i; \\exists int j; (fint2(i, j) -> fint2(j, i))");
         shouldMatch("f(a)", "_");
         shouldMatch("f(a)", "?X", "[{?X=f(a)}]");
         shouldMatch("h(a,a)", "h(?X,?X)", "[{?X=a}]");
