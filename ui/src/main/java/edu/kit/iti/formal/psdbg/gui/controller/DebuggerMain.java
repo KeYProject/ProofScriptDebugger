@@ -974,8 +974,10 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void interactiveMode(ActionEvent actionEvent) {
-        if (btnInteractiveMode.isSelected()) {
+        if (!btnInteractiveMode.isSelected()) {
             interactiveModeController.setActivated(true);
+            //SaG: this needs to be set to filter inapplicable rules
+            this.getFacade().getEnvironment().getProofControl().setMinimizeInteraction(true);
             interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
         } else {
             interactiveModeController.stop();

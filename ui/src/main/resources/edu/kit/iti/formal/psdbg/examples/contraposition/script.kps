@@ -3,7 +3,7 @@
 
 script test1234(){
     impRight;
-    auto;
+    //auto;
 }
 
 script test23(){

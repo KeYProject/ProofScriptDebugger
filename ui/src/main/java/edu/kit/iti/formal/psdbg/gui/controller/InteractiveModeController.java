@@ -62,6 +62,7 @@ public class InteractiveModeController {
         this.scriptArea = scriptController.newScript();
         this.model = model;
 
+
     }
 
     public void stop() {

@@ -103,6 +103,7 @@ public class TacletContextMenu extends ContextMenu {
         comp = new TacletAppComparator();
         insertHiddenController.initViewController(getMainApp(), getContext());
     */
+
         if (pos == null)
             throw new IllegalArgumentException(
                     "Argument pos must not be null.");
@@ -112,10 +113,12 @@ public class TacletContextMenu extends ContextMenu {
         occ = pos.getPosInOccurrence();
         //MediatorProofControl c = new MediatorProofControl(new DefaultAbstractMediatorUserInterfaceControlAdapter());
         ProofControl c = DebuggerMain.FACADE.getEnvironment().getUi().getProofControl();
-
         final ImmutableList<BuiltInRule> builtInRules = c.getBuiltInRule(goal, occ);
+
+        ImmutableList<TacletApp> findTaclet = c.getFindTaclet(goal, occ);
+
         createTacletMenu(
-                removeRewrites(c.getFindTaclet(goal, occ))
+                removeRewrites(findTaclet)
                         .prepend(c.getRewriteTaclet(goal, occ)),
                 c.getNoFindTaclet(goal), builtInRules);
 
