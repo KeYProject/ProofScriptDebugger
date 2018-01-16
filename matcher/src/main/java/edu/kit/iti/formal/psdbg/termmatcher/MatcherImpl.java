@@ -4,20 +4,21 @@ import com.google.common.collect.Sets;
 import de.uka.ilkd.key.logic.Semisequent;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
+import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 import edu.kit.formal.psdb.termmatcher.MatchPatternLexer;
 import edu.kit.formal.psdb.termmatcher.MatchPatternParser;
 import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
+import static edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPathFacade.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.CommonToken;
+import org.antlr.v4.runtime.Token;
 import org.key_project.util.collection.ImmutableArray;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import static edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPathFacade.*;
 
 /**
  * Matchpattern visitor visits the matchpatterns of case-statements
@@ -250,6 +251,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         return this.reduceConform(m, mNew);
     }
 
+
     @Override
     protected Matchings visitNumber(MatchPatternParser.NumberContext ctx, MatchPath path) {
         //we are at a number
@@ -417,7 +419,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     }
 
     protected Matchings visitBinaryOperation(String keyOpName, MatchPatternParser.TermPatternContext right, MatchPatternParser.TermPatternContext left, MatchPath peek) {
-        //create new functioncontext object and set fields accodringsly
+        //create new functioncontext object and set fields accordingly
         OwnFunctionContext func = new OwnFunctionContext(left);
         //MatchPatternParser.FunctionContext func = new MatchPatternParser.FunctionContext(left);
         //func.func = new CommonToken(MatchPatternLexer.ID, keyOpName);
@@ -487,6 +489,64 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     public Matchings visitExprNegate(MatchPatternParser.ExprNegateContext ctx, MatchPath peek) {
         return visitUnaryOperation("sub", ctx.termPattern(), peek);
     }
+
+    @Override
+    public Matchings visitQuantForm(MatchPatternParser.QuantFormContext ctx, MatchPath peek) {
+        Term toMatch = (Term) peek.getUnit();
+        if (!toMatch.op().toString().equals(ctx.quantifier.getText().substring(1))) {
+            return NO_MATCH;
+        }
+        if (toMatch.boundVars().size() != ctx.boundVars.size()) {
+            return NO_MATCH;
+        }
+        Matchings match = EMPTY_MATCH;
+
+        for (int i = 0; i < ctx.boundVars.size(); i++) {
+            Token qfPattern = ctx.boundVars.get(i);
+            QuantifiableVariable qv = toMatch.boundVars().get(i);
+
+            if (qfPattern.getType() == MatchPatternLexer.SID) {
+                match = reduceConform(match, Matchings.singleton(qfPattern.getText(), new MatchPath.MPQuantifiableVarible(peek, qv, i)));
+            } else {
+                if (!qv.name().toString().equals(qfPattern.getText())) {
+                    return NO_MATCH;
+                }
+                match = reduceConform(match, EMPTY_MATCH);
+            }
+        }
+
+
+        Matchings fromTerm = accept(ctx.skope, create(peek, 0));
+        return reduceConformQuant(fromTerm, match);
+    }
+
+    private Matchings reduceConformQuant(Matchings fromTerm, Matchings match) {
+        Matchings ret = new Matchings();
+        Map<String, MatchPath> quantifiedVarMap = match.first();
+
+        List<Map<String, MatchPath>> list = fromTerm.stream().filter(
+                map -> map.entrySet().stream().allMatch(
+                        entry -> {
+                            if (entry.getValue() != null) {
+                                MatchPath mp = (MatchPath) entry.getValue();
+                                Term mterm = (Term) mp.getUnit();
+                                if (quantifiedVarMap.containsKey(entry.getKey())) {
+                                    return ((QuantifiableVariable) quantifiedVarMap.get(entry.getKey()).getUnit()).name().toString().
+                                            equals(mterm.op().name().toString());
+                                } else {
+                                    return true;
+                                }
+                            } else {
+                                return true;
+                            }
+                        }
+                )
+        ).collect(Collectors.toList());
+
+        ret.addAll(list);
+        return ret;
+    }
+
 
     @Override
     public Matchings visitExprParen(MatchPatternParser.ExprParenContext ctx, MatchPath peek) {
