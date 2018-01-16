@@ -134,7 +134,7 @@
 
                             <MenuItem onAction="#stopDebugMode"
                                       accelerator="F12"
-                                      text="Stop"
+                                      text="Stop Debugging"
                                       disable="${controller.stepNotPossible}">
                                 <!--disable="${! controller.debugMode}"-->
                                 <graphic>
@@ -229,14 +229,14 @@
 
                         </SplitMenuButton>
 
-                        <Button onAction="#reloadProblem" disable="${controller.executeNotPossible}">
-                            <graphic>
-                                <MaterialDesignIconView glyphName="REFRESH" size="24.0"/>
-                            </graphic>
-                            <tooltip>
-                                <Tooltip text="Reload Problem"/>
-                            </tooltip>
-                        </Button>
+                        <!--      <Button onAction="#reloadProblem" disable="${controller.executeNotPossible}">
+                                  <graphic>
+                                      <MaterialDesignIconView glyphName="REFRESH" size="24.0"/>
+                                  </graphic>
+                                  <tooltip>
+                                      <Tooltip text="Reload Problem"/>
+                                  </tooltip>
+                              </Button>-->
 
                         <Button onAction="#continueAfterRun" disable="${controller.executeNotPossible}">
                             <graphic>
@@ -291,7 +291,7 @@
                                 <MaterialDesignIconView glyphName="STOP" size="24.0"/>
                             </graphic>
                             <tooltip>
-                                <Tooltip text="Stop"/>
+                                <Tooltip text="Stop Debugging"/>
                             </tooltip>
                         </Button>
 

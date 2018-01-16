@@ -939,7 +939,23 @@ public class DebuggerMain implements Initializable {
     public void stopDebugMode(ActionEvent actionEvent) {
         scriptController.getDebugPositionHighlighter().remove();
         Button stop = (Button) actionEvent.getSource();
-        stop.setText("Reload");
+        javafx.scene.Node graphic = stop.getGraphic();
+        if (graphic instanceof MaterialDesignIconView) {
+            MaterialDesignIconView buttonLabel = (MaterialDesignIconView) graphic;
+            if (buttonLabel.getGlyphName().equals("STOP")) {
+                stop.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.RELOAD, "24.0"));
+                stop.setTooltip(new Tooltip("Reload Problem"));
+            } else {
+                if (buttonLabel.getGlyphName().equals("RELOAD")) {
+                    stop.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.STOP, "24.0"));
+                    stop.setTooltip(new Tooltip("Stop Debugging"));
+                    reloadProblem(actionEvent);
+                }
+            }
+        } else {
+            throw new RuntimeException("Something went wrong when reading stop button");
+        }
+
     }
 
   /*  public void handle(Events.TacletApplicationEvent tap){
@@ -1122,12 +1138,6 @@ public class DebuggerMain implements Initializable {
             ptree.addNodeColor(pnode, "blueviolet");
             ptree.setDeactivateRefresh(true);
 
-
-            //TODO Traversierung WICHTIG
-            //traverse tree to closed goals -> set Sentinels
-            //laeves of PNode wenn aftestmt leer
-            //sonst nodes nodes afterstmt
-
             if (stateAfterStmt.size() > 0) {
                 Set<Node> sentinels = proof.getSubtreeGoals(pnode)
                         .stream()
@@ -1150,8 +1160,6 @@ public class DebuggerMain implements Initializable {
 
 
             ptree.expandRootToSentinels();
-
-            //TODO set coloring of starting and end node
             DockNode node = new DockNode(ptree, "Proof Tree for Step Into: " +
                     original.getStatement().accept(new ShortCommandPrinter())
             );
