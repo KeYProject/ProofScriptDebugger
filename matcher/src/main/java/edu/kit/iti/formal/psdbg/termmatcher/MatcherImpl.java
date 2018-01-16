@@ -432,37 +432,38 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         return accept(func, peek);
     }
 
-    private String convert(int op) {
-        switch (op) {
-            case MatchPatternParser.PLUS:
-                return "add";
-            case MatchPatternParser.MINUS:
-                return "sub";
-            case MatchPatternParser.MUL:
-                return "mul";
-            case MatchPatternParser.DIV:
-                return "div";
-            case MatchPatternParser.LE:
-                return "lt";
-            case MatchPatternParser.LEQ:
-                return "leq";
-            case MatchPatternParser.EQ:
-                return "equals";
-            case MatchPatternParser.GE:
-                return "gt";
-            case MatchPatternParser.GEQ:
-                return "geq";
-            case MatchPatternParser.IMP:
-                return "imp";
-            case MatchPatternParser.AND:
-                return "and";
-            case MatchPatternParser.OR:
-                return "or";
-            default:
-                throw new UnsupportedOperationException("The operator " + op + "is not known");
+    @Override
+    public Matchings visitQuantForm(MatchPatternParser.QuantFormContext ctx, MatchPath peek) {
+        Term toMatch = (Term) peek.getUnit();
+        if (!toMatch.op().toString().equals(convert(ctx.quantifier.getType()))) {
+            return NO_MATCH;
+        }
+        if (toMatch.boundVars().size() != ctx.boundVars.size()) {
+            return NO_MATCH;
+        }
+        Matchings match = EMPTY_MATCH;
+
+        for (int i = 0; i < ctx.boundVars.size(); i++) {
+            Token qfPattern = ctx.boundVars.get(i);
+            QuantifiableVariable qv = toMatch.boundVars().get(i);
+
+            if (qfPattern.getType() == MatchPatternLexer.DONTCARE) {
+                match = reduceConform(match, EMPTY_MATCH);
+                continue;
+            }
+            if (qfPattern.getType() == MatchPatternLexer.SID) {
+                match = reduceConform(match, Matchings.singleton(qfPattern.getText(), new MatchPath.MPQuantifiableVarible(peek, qv, i)));
+            } else {
+                if (!qv.name().toString().equals(qfPattern.getText())) {
+                    return NO_MATCH;
+                }
+                match = reduceConform(match, EMPTY_MATCH);
+            }
         }
 
 
+        Matchings fromTerm = accept(ctx.skope, create(peek, 0));
+        return reduceConformQuant(fromTerm, match);
     }
 
     @Override
@@ -490,34 +491,42 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         return visitUnaryOperation("sub", ctx.termPattern(), peek);
     }
 
-    @Override
-    public Matchings visitQuantForm(MatchPatternParser.QuantFormContext ctx, MatchPath peek) {
-        Term toMatch = (Term) peek.getUnit();
-        if (!toMatch.op().toString().equals(ctx.quantifier.getText().substring(1))) {
-            return NO_MATCH;
+    private String convert(int op) {
+        switch (op) {
+            case MatchPatternParser.PLUS:
+                return "add";
+            case MatchPatternParser.MINUS:
+                return "sub";
+            case MatchPatternParser.MUL:
+                return "mul";
+            case MatchPatternParser.DIV:
+                return "div";
+            case MatchPatternParser.LE:
+                return "lt";
+            case MatchPatternParser.LEQ:
+                return "leq";
+            case MatchPatternParser.EQ:
+                return "equals";
+            case MatchPatternParser.GE:
+                return "gt";
+            case MatchPatternParser.GEQ:
+                return "geq";
+            case MatchPatternParser.IMP:
+                return "imp";
+            case MatchPatternParser.AND:
+                return "and";
+            case MatchPatternParser.OR:
+                return "or";
+            case MatchPatternParser.FORALL:
+                return "all";
+            case MatchPatternParser.EXISTS:
+                return "exists";
+
+            default:
+                throw new UnsupportedOperationException("The operator " + op + "is not known");
         }
-        if (toMatch.boundVars().size() != ctx.boundVars.size()) {
-            return NO_MATCH;
-        }
-        Matchings match = EMPTY_MATCH;
-
-        for (int i = 0; i < ctx.boundVars.size(); i++) {
-            Token qfPattern = ctx.boundVars.get(i);
-            QuantifiableVariable qv = toMatch.boundVars().get(i);
-
-            if (qfPattern.getType() == MatchPatternLexer.SID) {
-                match = reduceConform(match, Matchings.singleton(qfPattern.getText(), new MatchPath.MPQuantifiableVarible(peek, qv, i)));
-            } else {
-                if (!qv.name().toString().equals(qfPattern.getText())) {
-                    return NO_MATCH;
-                }
-                match = reduceConform(match, EMPTY_MATCH);
-            }
-        }
 
 
-        Matchings fromTerm = accept(ctx.skope, create(peek, 0));
-        return reduceConformQuant(fromTerm, match);
     }
 
     private Matchings reduceConformQuant(Matchings fromTerm, Matchings match) {

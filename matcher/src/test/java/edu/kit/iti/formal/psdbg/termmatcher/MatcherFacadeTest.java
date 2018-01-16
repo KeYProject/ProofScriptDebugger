@@ -54,8 +54,26 @@ public class MatcherFacadeTest {
 
     @Test
     public void matches() throws Exception {
+        System.out.println("QuantifierMatching");
+        shouldMatchForm("\\forall int i; \\exists int j; fint2(j,i)", "(\\forall i (\\exists j _))");
+
         shouldMatchForm("fint2(1,i)", "fint2(1,i)");
+
+        shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists _ _)");
+
+        shouldMatchForm("\\exists int i; \\exists int j; fint2(j,i)", "(\\exists i (\\exists j _))");
+
+
+        shouldMatchForm("\\exists int i; \\exists int j; fint2(j,i)", "(\\exists i (\\exists j _))");
+
+        shouldMatchForm("\\exists int i; \\exists int j; fint2(j,i)", "(\\exists _ (\\exists j _))");
+
+        shouldMatchForm("\\exists int i; \\exists int j; fint2(j,i)", "(\\exists _ (\\exists _ _))");
+
+        shouldMatchForm("\\exists int i; \\exists int j; fint2(j,i)", "(\\exists i _)");
+
         shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists i fint2(1,i))");
+
         shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists ?X fint2(1,?X))");
 
         shouldMatchForm("\\exists int i; \\exists int j; (fint2(i, j) -> fint2(j, i))", "(\\exists i (\\exists j (fint2(i, j) -> fint2(j, i))))");
