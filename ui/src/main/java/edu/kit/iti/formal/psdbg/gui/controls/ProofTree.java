@@ -162,12 +162,13 @@ public class ProofTree extends BorderPane {
     public void expandRootToLeaves() {
         if (getTreeProof().getRoot() == null) {
             if (root.get() != null) {
-                TreeItem<TreeNode> item = new TreeItem<>(new TreeNode(root.get().serialNr() + ": " + toString(root.get()), root.get()));
+                TreeItem<TreeNode> item = populate(root.get().serialNr() + ": " + toString(root.get()), root.get());
+                //new TreeItem<>(new TreeNode(root.get().serialNr() + ": " + toString(root.get()), root.get()));
                 treeProof.setRoot(item);
             }
 
         }
-        expandRootToLeaves(getTreeProof().getRoot());
+        //expandRootToLeaves(getTreeProof().getRoot());
     }
 
     public TreeView<TreeNode> getTreeProof() {
