@@ -65,12 +65,11 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.time.Duration;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+
+import org.reactfx.util.Timer;
 
 /**
  * Controller for the Debugger MainWindow
@@ -711,7 +710,11 @@ public class DebuggerMain implements Initializable {
 
     }
 
-
+    /**
+     * Continue after the interpreter has reached a breakpoint
+     *
+     * @param event
+     */
     @FXML
     public void continueAfterRun(ActionEvent event) {
         LOGGER.debug("DebuggerMain.continueAfterBreakpoint");
@@ -724,6 +727,10 @@ public class DebuggerMain implements Initializable {
         }
     }
 
+    /**
+     * Reload a problem from the beginning
+     * @param event
+     */
     @FXML
     public void reloadProblem(ActionEvent event) {
         //abort current execution();
@@ -745,9 +752,6 @@ public class DebuggerMain implements Initializable {
         iModel.getGoals().clear();
         iModel.setSelectedGoalNodeToShow(null);
 
-        // init();
-
-        //reload File
         try {
             FACADE.reload(lastLoaded);
             if (iModel.getGoals().size() > 0) {
@@ -1111,24 +1115,37 @@ public class DebuggerMain implements Initializable {
             Proof proof = beforeNode.getData().getProof();
 
             Node pnode = beforeNode.getData().getNode();
-            System.out.println("pnode.serialNr() = " + pnode.serialNr());
-            stateAfterStmt.forEach(keyDataGoalNode -> System.out.println("keyDataGoalNode.getData().getNode().serialNr() = " + keyDataGoalNode.getData().getNode().serialNr()));
+            //      stateAfterStmt.forEach(keyDataGoalNode -> System.out.println("keyDataGoalNode.getData().getNode().serialNr() = " + keyDataGoalNode.getData().getNode().serialNr()));
 
             ptree.setProof(proof);
             ptree.setRoot(pnode);
             ptree.setDeactivateRefresh(true);
+
+
             //TODO Traversierung WICHTIG
-            //this is always 0 subtreegoals dies not return the subtree
-            //getSubtreegoals == 0
             //traverse tree to closed goals -> set Sentinels
             //laeves of PNode wenn aftestmt leer
             //sonst nodes nodes afterstmt
-            Set<Node> sentinels = proof.getSubtreeGoals(pnode)
-                    .stream()
-                    .map(Goal::node)
-                    .collect(Collectors.toSet());
-            System.out.println("Sentinels: " + sentinels.isEmpty());
-            ptree.getSentinels().addAll(sentinels);
+
+            if (stateAfterStmt.size() > 0) {
+                Set<Node> sentinels = proof.getSubtreeGoals(pnode)
+                        .stream()
+                        .map(Goal::node)
+                        .collect(Collectors.toSet());
+                ptree.getSentinels().addAll(sentinels);
+            } else {
+                Set<Node> sentinels = new HashSet<>();
+                Iterator<Node> nodeIterator = beforeNode.getData().getNode().leavesIterator();
+                while (nodeIterator.hasNext()) {
+                    Node next = nodeIterator.next();
+
+                    sentinels.add(next.parent());
+                }
+                ptree.getSentinels().addAll(sentinels);
+                //traverseProofTreeAndAddSentinelsToLeaves();
+            }
+
+
             ptree.expandRootToLeaves();
             //TODO set coloring of starting and end node
             DockNode node = new DockNode(ptree, "Proof Tree for Step Into: " +
@@ -1138,6 +1155,7 @@ public class DebuggerMain implements Initializable {
             node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
         }
     }
+
 //endregion
 }
 //deprecated

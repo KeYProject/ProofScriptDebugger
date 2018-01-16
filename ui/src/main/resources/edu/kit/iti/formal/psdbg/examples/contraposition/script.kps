@@ -1,5 +1,11 @@
 // Please select one of the following scripts.
 //
+
+script test1234(){
+    impRight;
+    auto;
+}
+
 script test23(){
 impRight;
 x:term := find(match `?rt ==>`);

@@ -5,6 +5,11 @@ import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+/**
+ * Step Over Command, to step Over a proof command
+ *
+ * @param <T>
+ */
 public class StepOverCommand<T> extends DebuggerCommand<T> {
     @Override
     public void execute(DebuggerFramework<T> dbg) {
