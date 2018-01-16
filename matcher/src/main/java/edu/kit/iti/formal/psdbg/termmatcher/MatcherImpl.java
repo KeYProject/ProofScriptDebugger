@@ -441,6 +441,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         if (toMatch.boundVars().size() != ctx.boundVars.size()) {
             return NO_MATCH;
         }
+
         Matchings match = EMPTY_MATCH;
 
         for (int i = 0; i < ctx.boundVars.size(); i++) {
@@ -448,7 +449,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
             QuantifiableVariable qv = toMatch.boundVars().get(i);
 
             if (qfPattern.getType() == MatchPatternLexer.DONTCARE) {
-                match = reduceConform(match, EMPTY_MATCH);
+                match = reduceConform(match, Matchings.singleton(qfPattern.getText(), new MatchPath.MPQuantifiableVarible(peek, qv, i)));
                 continue;
             }
             if (qfPattern.getType() == MatchPatternLexer.SID) {

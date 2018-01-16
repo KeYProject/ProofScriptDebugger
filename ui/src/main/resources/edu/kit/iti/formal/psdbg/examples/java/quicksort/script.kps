@@ -13,7 +13,7 @@ script split_from_quicksort_nice() {
   cases{
     case match `==> seqDef(_,_,_) = seqDef(_, _, _)`:
         auto;
-    case match `==> \exists ...`: //hier sollten bessere branchnamen hin
+    case match `==> \exists iv (\exists jv _)`: //this should match
         instantiate  var=`iv` with=`i_0`;
         instantiate  var=`jv` with=`j_0`;
         auto;
