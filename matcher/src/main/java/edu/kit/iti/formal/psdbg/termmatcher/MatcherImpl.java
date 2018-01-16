@@ -464,7 +464,9 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
 
 
         Matchings fromTerm = accept(ctx.skope, create(peek, 0));
-        return reduceConformQuant(fromTerm, match);
+        //return handleBindClause(ctx.bindClause(), path, m);
+        Matchings retM = reduceConformQuant(fromTerm, match);
+        return handleBindClause(ctx.bindClause(), peek, retM);
     }
 
     @Override

@@ -22,7 +22,7 @@ sequentPattern : antec=semiSeqPattern? ARROW succ=semiSeqPattern? #sequentArrow
 semiSeqPattern : termPattern (',' termPattern)*;
 
 termPattern :
-   '(' quantifier=(EXISTS|FORALL) boundVars+=(SID|ID|DONTCARE)+  skope=termPattern ')'  #quantForm
+   '(' quantifier=(EXISTS|FORALL) boundVars+=(SID|ID|DONTCARE)+  skope=termPattern ')' bindClause?  #quantForm
     |  termPattern MUL termPattern                              #mult
     | <assoc=right> termPattern op=(DIV|MOD) termPattern        #divMod
     | termPattern op=(PLUS|MINUS) termPattern                   #plusMinus

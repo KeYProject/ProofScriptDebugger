@@ -211,37 +211,40 @@ public class MatcherFacadeTest {
 
     @Test
     public void seqTest() throws Exception {
-        //testcases for empty matches
-        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", " ==> _", "[{EMPTY_MATCH=null}]");
+//        shouldMatchSeq("i <= 10 ==>", "i <= ?X ==>");
 
-        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "==>", "[{EMPTY_MATCH=null}]");
-        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> ", "[{EMPTY_MATCH=null}]");
-        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> _", "[{EMPTY_MATCH=null}]");
-        shouldMatchSeq("==> pred(a)", "==>", "[{EMPTY_MATCH=null}]");
-        shouldMatchSeq("pred(a) ==> ", "==>", "[{EMPTY_MATCH=null}]");
-
-
-        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?Y)", "[{?X=a, ?Y=b, ?Z=b}, {?X=b, ?Y=b, ?Z=a}]");
-        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?X)", "[{?X=b, ?Z=a}]");
-        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==>", "[{?X=a, ?Z=b}, {?X=b, ?Z=a}]");
-
-        shouldMatchSeq(
-                "pred(f(a)), pred(b) ==> pred(b)",
-                "pred(?X), pred(?Z) ==>",
-                "[{?X=b, ?Z=f(a)}, {?X=f(a), ?Z=b}]");
-
-        shouldMatchSeq(
-                "pred(f(a)), pred(b) ==> pred(b)",
-                "pred(...?X...) ==>",
-                "[{?X=a}, {?X=b}, {?X=f(a)}]");
-
-        shouldMatchSeq(
-                "fint2(1,2), fint2(2,3), !p ==> pred(a), p",
-                "fint2(1, ?X), fint2(?X, ?Y) ==> p",
-                "[{EMPTY_MATCH=null, ?X=Z(2(#)), ?Y=Z(3(#))}]");
-        shouldMatchSeq("2 >= 1, h2(1,2) = h2(2,3), h2(2,3) = 0 ==> p, !p", "?X=0 ==>", "[{?X=h2(Z(2(#)),Z(3(#)))}]");
-
-        shouldMatchSeq("pred(a) <-> pred(b), pred(a), pred(b) ==> p", "?X <-> ?Y ==> ", "[{?X=pred(a), ?Y=pred(b)}]");
+        shouldMatchSeq("==> (\\forall int i; \\exists int j; fint2(j,i)) , pred(a)", "==> (\\forall i (\\exists j _))");
+//        //testcases for empty matches
+//        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", " ==> _", "[{EMPTY_MATCH=null}]");
+//
+//        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "==>", "[{EMPTY_MATCH=null}]");
+//        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> ", "[{EMPTY_MATCH=null}]");
+//        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> _", "[{EMPTY_MATCH=null}]");
+//        shouldMatchSeq("==> pred(a)", "==>", "[{EMPTY_MATCH=null}]");
+//        shouldMatchSeq("pred(a) ==> ", "==>", "[{EMPTY_MATCH=null}]");
+//
+//
+//        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?Y)", "[{?X=a, ?Y=b, ?Z=b}, {?X=b, ?Y=b, ?Z=a}]");
+//        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?X)", "[{?X=b, ?Z=a}]");
+//        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==>", "[{?X=a, ?Z=b}, {?X=b, ?Z=a}]");
+//
+//        shouldMatchSeq(
+//                "pred(f(a)), pred(b) ==> pred(b)",
+//                "pred(?X), pred(?Z) ==>",
+//                "[{?X=b, ?Z=f(a)}, {?X=f(a), ?Z=b}]");
+//
+//        shouldMatchSeq(
+//                "pred(f(a)), pred(b) ==> pred(b)",
+//                "pred(...?X...) ==>",
+//                "[{?X=a}, {?X=b}, {?X=f(a)}]");
+//
+//        shouldMatchSeq(
+//                "fint2(1,2), fint2(2,3), !p ==> pred(a), p",
+//                "fint2(1, ?X), fint2(?X, ?Y) ==> p",
+//                "[{EMPTY_MATCH=null, ?X=Z(2(#)), ?Y=Z(3(#))}]");
+//        shouldMatchSeq("2 >= 1, h2(1,2) = h2(2,3), h2(2,3) = 0 ==> p, !p", "?X=0 ==>", "[{?X=h2(Z(2(#)),Z(3(#)))}]");
+//
+//        shouldMatchSeq("pred(a) <-> pred(b), pred(a), pred(b) ==> p", "?X <-> ?Y ==> ", "[{?X=pred(a), ?Y=pred(b)}]");
     }
 
     private void shouldMatchSeq(String seq, String seqPattern, String exp) throws ParserException {
