@@ -142,12 +142,13 @@ public class ScriptArea extends BorderPane {
             codeArea.setMinSize(scrollPane.getWidth(), scrollPane.getHeight());
         });
 
+        /*
         scrollPane.estimatedScrollYProperty().addListener(new ChangeListener<Double>() {
             @Override
             public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue) {
                 System.out.println("SCROLL:" + newValue);
             }
-        });
+        });*/
 
         codeArea.setWrapText(true);
         gutter = new GutterFactory();

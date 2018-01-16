@@ -43,11 +43,8 @@ public class InteractiveModeController {
     private static final Logger LOGGER = LogManager.getLogger(InteractiveModeController.class);
 
     private final Map<Node, Statements> cases = new HashMap<>();
-
-    private BooleanProperty activated = new SimpleBooleanProperty();
-
     private final ScriptController scriptController;
-
+    private BooleanProperty activated = new SimpleBooleanProperty();
     private ScriptArea scriptArea;
 
     private InspectionModel model;
@@ -157,10 +154,13 @@ public class InteractiveModeController {
             ImmutableList<Goal> ngoals = g.proof().getSubtreeGoals(g.node());
 
             goals.remove(expandedNode);
+            GoalNode<KeyData> last = null;
             for (Goal newGoalNode : ngoals) {
                 KeyData kdn = new KeyData(kd, newGoalNode.node());
-                goals.add(new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
+                goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
             }
+            if (last != null)
+                model.setSelectedGoalNodeToShow(last);
         } catch (Exception e) {
             if (e.getClass().equals(ScriptException.class)) {
                 System.out.println("e.getMessage() = " + e.getMessage());
