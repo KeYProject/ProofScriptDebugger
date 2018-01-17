@@ -1,6 +1,7 @@
 package edu.kit.iti.formal.psdbg.termmatcher.mp;
 
 import de.uka.ilkd.key.logic.*;
+import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -27,14 +28,50 @@ public abstract class MatchPath<T, P> {
 
     public abstract PosInOccurrence pio();
 
-    public abstract Sequent getSequent();
 
-    public abstract SequentFormula getSequentFormula();
+    public Sequent getSequent() {
+        if (getParent() != null)
+            return getParent().getSequent();
+        return null;
+    }
+
+    public SequentFormula getSequentFormula() {
+        if (getParent() != null)
+            return getParent().getSequentFormula();
+        return null;
+    }
 
     public abstract int depth();
 
     public String toString() {
         return unit.toString();
+    }
+
+    public static final class MPQuantifiableVarible extends MatchPath<QuantifiableVariable, Object> {
+
+        public MPQuantifiableVarible(MatchPath<? extends Object, ?> parent, QuantifiableVariable unit, int pos) {
+            super(parent, unit, pos);
+        }
+
+        @Override
+        public PosInOccurrence pio() {
+            return null;
+        }
+
+        @Override
+        public Sequent getSequent() {
+            return null;
+        }
+
+        @Override
+        public SequentFormula getSequentFormula() {
+            return null;
+        }
+
+        @Override
+        public int depth() {
+            return getParent().depth() + 1;
+        }
     }
 
     public static class MPTerm extends MatchPath<Term, Object> {
@@ -49,16 +86,6 @@ public abstract class MatchPath<T, P> {
             if(getPosInParent()==SEQUENT_FORMULA_ROOT)
                 return pio;
             return pio.down(getPosInParent());
-        }
-
-        @Override
-        public Sequent getSequent() {
-            return null;
-        }
-
-        @Override
-        public SequentFormula getSequentFormula() {
-            return null;
         }
 
         @Override

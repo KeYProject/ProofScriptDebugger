@@ -32,6 +32,13 @@ public abstract class MatchPatternDualVisitor<T, S> extends MatchPatternBaseVisi
     public abstract T visitSequentArrow(MatchPatternParser.SequentArrowContext ctx, S peek);
 
     @Override
+    public T visitQuantForm(MatchPatternParser.QuantFormContext ctx) {
+        return visitQuantForm(ctx, stack.peek());
+    }
+
+    public abstract T visitQuantForm(MatchPatternParser.QuantFormContext ctx, S peek);
+
+    @Override
     public final T visitSemiSeqPattern(MatchPatternParser.SemiSeqPatternContext ctx) {
         return visitSemiSeqPattern(ctx, stack.peek());
     }

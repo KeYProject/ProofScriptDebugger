@@ -17,8 +17,6 @@ import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
-import edu.kit.iti.formal.psdbg.interpreter.dbg.DebuggerFramework;
-import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.iti.formal.psdbg.parser.PrettyPrinter;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
@@ -32,10 +30,7 @@ import lombok.val;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
-import recoder.util.Debug;
 
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,80 +43,23 @@ public class InteractiveModeController {
     private static final Logger LOGGER = LogManager.getLogger(InteractiveModeController.class);
 
     private final Map<Node, Statements> cases = new HashMap<>();
-
-    private BooleanProperty activated = new SimpleBooleanProperty();
-
     private final ScriptController scriptController;
-
+    private BooleanProperty activated = new SimpleBooleanProperty();
     private ScriptArea scriptArea;
 
     private InspectionModel model;
 
-    private DebuggerFramework<KeyData> debuggerFramework;
-    private PTreeNode<KeyData> nodeAtInteractionStart;
-
-    //needed for Undo-Operation
-    private ArrayList<CallStatement> savepointsstatement;
-    private ArrayList<Node> savepointslist;
-
-    private Proof currentProof;
 
     public void start(Proof currentProof, InspectionModel model) {
         Events.register(this);
         cases.clear();
-        this.currentProof = currentProof;
         currentProof.getSubtreeGoals(currentProof.root()).forEach(goal -> {
             cases.put(goal.node(), new Statements());
         });
         this.scriptArea = scriptController.newScript();
         this.model = model;
 
-        savepointslist = new ArrayList<>();
-        savepointsstatement = new ArrayList<>();
-        nodeAtInteractionStart = debuggerFramework.getStatePointer();
 
-    }
-
-
-    /**
-     * Undo the application of the last rule
-     */
-    public void undo(javafx.event.ActionEvent actionEvent) {
-        if(savepointslist.isEmpty()) {
-            Debug.log("Kein vorheriger Zustand."); //TODO: events fire
-            return;
-        }
-
-        val pruneNode = savepointslist.get(savepointslist.size()-1);
-        savepointslist.remove(pruneNode);
-        ImmutableList<Goal> goalsbeforePrune = currentProof.getSubtreeGoals(pruneNode);
-
-        currentProof.pruneProof(pruneNode);
-        ImmutableList<Goal> goalsafterPrune = currentProof.getSubtreeGoals(pruneNode);
-
-        ObservableList<GoalNode<KeyData>> goals = model.getGoals();
-        List<GoalNode<KeyData>> prunedChildren = goals.stream()
-                .filter(keyDataGoalNode -> goalsbeforePrune.contains(keyDataGoalNode.getData().getGoal()))
-                .collect(Collectors.toList());
-
-        KeyData kd = prunedChildren.get(0).getData();
-        goals.removeAll(prunedChildren);
-        GoalNode<KeyData> lastGoalNode = null;
-        for (Goal newGoalNode : goalsafterPrune) {
-            KeyData kdn = new KeyData(kd, newGoalNode.node());
-            goals.add(
-                    lastGoalNode = new GoalNode<>(prunedChildren.get(0).getParent().getParent(), kdn, kdn.getNode().isClosed()));
-        }
-
-        model.setSelectedGoalNodeToShow(lastGoalNode );
-
-        //TODO: undo: map.foreach(k,v) -> v.remove().last
-        val pruneStatement = savepointsstatement.get(savepointsstatement.size()-1);
-        cases.forEach((k,v) -> v.remove(pruneStatement));
-
-        String c = getCasesAsString();
-        scriptArea.setText("" +
-                "//Preview \n" + c);
     }
 
     public void stop() {
@@ -189,9 +127,6 @@ public class InteractiveModeController {
     }
 
     private void applyRule(CallStatement call, Goal g) {
-        savepointslist.add(g.node());
-        savepointsstatement.add(call);
-
         ObservableList<GoalNode<KeyData>> goals = model.getGoals();
         GoalNode<KeyData> expandedNode;
         List<GoalNode<KeyData>> collect = goals.stream().filter(keyDataGoalNode -> keyDataGoalNode.getData().getGoal().equals(g)).collect(Collectors.toList());
@@ -219,10 +154,13 @@ public class InteractiveModeController {
             ImmutableList<Goal> ngoals = g.proof().getSubtreeGoals(g.node());
 
             goals.remove(expandedNode);
+            GoalNode<KeyData> last = null;
             for (Goal newGoalNode : ngoals) {
                 KeyData kdn = new KeyData(kd, newGoalNode.node());
-                goals.add(new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
+                goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
             }
+            if (last != null)
+                model.setSelectedGoalNodeToShow(last);
         } catch (Exception e) {
             if (e.getClass().equals(ScriptException.class)) {
                 System.out.println("e.getMessage() = " + e.getMessage());
@@ -234,8 +172,6 @@ public class InteractiveModeController {
         }
 
     }
-
-
 
     public boolean isActivated() {
         return activated.get();

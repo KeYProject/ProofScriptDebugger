@@ -5,12 +5,14 @@ import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
 
 import java.util.*;
 
-/**
- * Class Matching contains a hashmap of string to term
- */
 public class Matchings extends TreeSet<Map<String, MatchPath>> {
     public Matchings() {
         super(new VariableAssignmentComparator());
+    }
+
+    public Matchings(TreeMap<String, MatchPath> m) {
+        this();
+        add(m);
     }
 
     public static Matchings singleton(String name, MatchPath term) {

@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 
 /**
- * Step Over Command, to step Over a proof command
+ * Continue Command if interpreter stopped at a breakpoint
  *
  * @param <T>
  */
-public class StepOverCommand<T> extends DebuggerCommand<T> {
+public class ContinueCommand<T> extends DebuggerCommand<T> {
     @Override
     public void execute(DebuggerFramework<T> dbg) {
         PTreeNode<T> statePointer = dbg.getStatePointer();
@@ -29,13 +29,10 @@ public class StepOverCommand<T> extends DebuggerCommand<T> {
             }
 
             Supplier<Integer> currenDepth = () -> dbg.getStatePointer().getContext().length;
-
-            //Blocker.BlockPredicate predicate = new Blocker.ParentInContext(ctx);
-            Blocker.SmallerContext predicate = new Blocker.SmallerContext(
-                    currenDepth.get(), currenDepth);
-            dbg.releaseUntil(predicate);
+            dbg.release();
         } else {
 
         }
     }
 }
+

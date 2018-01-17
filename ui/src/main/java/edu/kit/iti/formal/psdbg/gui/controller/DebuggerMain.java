@@ -33,6 +33,7 @@ import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -64,12 +65,11 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.time.Duration;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+
+import org.reactfx.util.Timer;
 
 /**
  * Controller for the Debugger MainWindow
@@ -131,9 +131,6 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     private ToggleButton btnInteractiveMode;
-
-    @FXML
-    private Button interactive_undo;
 
     private JavaArea javaArea = new JavaArea();
 
@@ -200,6 +197,10 @@ public class DebuggerMain implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        init();
+    }
+
+    private void init() {
         Events.register(this);
         model.setDebugMode(false);
         scriptController = new ScriptController(dockStation);
@@ -219,9 +220,16 @@ public class DebuggerMain implements Initializable {
                         proofTree.setRoot(null);
                     } else {
                         proofTree.setRoot(n.root());
-                        getInspectionViewsController().
-                                getActiveInspectionViewTab()
-                                .getModel().getGoals().setAll(FACADE.getPseudoGoals());
+                        InspectionViewsController inspectionViewsController = getInspectionViewsController();
+                        InspectionView activeInspectionViewTab = inspectionViewsController.getActiveInspectionViewTab();
+                        InspectionModel model = activeInspectionViewTab.getModel();
+                        ObservableList<GoalNode<KeyData>> goals = model.getGoals();
+                        goals.setAll(FACADE.getPseudoGoals());
+                        model.setSelectedGoalNodeToShow(null);
+
+                        // frames / contextes zurück setzen
+                        activeInspectionViewTab.getModel();
+                        scriptController.getOpenScripts().keySet().forEach(ScriptArea::removeExecutionMarker);
                     }
                     proofTree.setProof(n);
                 }
@@ -298,6 +306,9 @@ public class DebuggerMain implements Initializable {
         if (node != null) {
             getInspectionViewsController().getActiveInspectionViewTab().activate(node, node.getStateBeforeStmt());
             scriptController.getDebugPositionHighlighter().highlight(node.getStatement());
+        } else {
+            getInspectionViewsController().getActiveInspectionViewTab().getFrames().getItems().clear();
+            scriptController.getDebugPositionHighlighter().remove();
         }
     }
 
@@ -609,9 +620,9 @@ public class DebuggerMain implements Initializable {
     public void executeToBreakpoint() {
         Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
         if (breakpoints.size() == 0) {
-            //System.out.println(scriptController.mainScriptProperty().get().getLineNumber());
-            //we need to add breakpoint at end if no breakpoint exists
+            statusBar.publishMessage("There was is no breakpoint set");
         }
+
         executeScript(false);
     }
 
@@ -699,10 +710,61 @@ public class DebuggerMain implements Initializable {
 
     }
 
+    /**
+     * Continue after the interpreter has reached a breakpoint
+     *
+     * @param event
+     */
+    @FXML
+    public void continueAfterRun(ActionEvent event) {
+        LOGGER.debug("DebuggerMain.continueAfterBreakpoint");
+        try {
+            assert model.getDebuggerFramework() != null : "You should have started the prove";
+            model.getDebuggerFramework().execute(new ContinueCommand<>());
+        } catch (DebuggerException e) {
+            Utils.showExceptionDialog("", "", "", e);
+            LOGGER.error(e);
+        }
+    }
 
-    //endregion
+    /**
+     * Reload a problem from the beginning
+     * @param event
+     */
+    @FXML
+    public void reloadProblem(ActionEvent event) {
+        //abort current execution();
+        //save old information and refresh models
+        File lastLoaded;
+        if (model.getKeyFile() != null) {
+            lastLoaded = model.getKeyFile();
+        } else {
+            Contract chosen = model.getChosenContract();
+            lastLoaded = model.getJavaFile();
+        }
+        //model.reload();
+        abortExecution();
+        handleStatePointerUI(null);
+        model.setStatePointer(null);
+        //reload getInspectionViewsController().getActiveInspectionViewTab().getModel()
+        InspectionModel iModel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
+        iModel.setHighlightedJavaLines(null);
+        iModel.getGoals().clear();
+        iModel.setSelectedGoalNodeToShow(null);
 
-    //region Actions: Menu
+        try {
+            FACADE.reload(lastLoaded);
+            if (iModel.getGoals().size() > 0) {
+                iModel.setSelectedGoalNodeToShow(iModel.getGoals().get(0));
+            }
+        } catch (ProofInputException e) {
+            e.printStackTrace();
+        } catch (ProblemLoaderException e) {
+            e.printStackTrace();
+        }
+
+
+    }
     @FXML
     public void closeProgram() {
         System.exit(0);
@@ -851,7 +913,7 @@ public class DebuggerMain implements Initializable {
 
     /**
      * Perform a step back
-     *
+     * Does stepinto back
      * @param actionEvent
      */
     public void stepBack(ActionEvent actionEvent) {
@@ -864,26 +926,36 @@ public class DebuggerMain implements Initializable {
         }
     }
 
-    public void undo(ActionEvent actionEvent) {
-        LOGGER.debug("DebuggerMain.undo");
-        interactiveModeController.undo(actionEvent);
-
-
-
-        /*
+    public void stepIntoReverse(ActionEvent actionEvent) {
+        LOGGER.debug("DebuggerMain.stepOverReverse");
         try {
-            model.getDebuggerFramework().execute(new UndoCommand<>());
+            model.getDebuggerFramework().execute(new StepIntoReverseCommand<>());
         } catch (DebuggerException e) {
             Utils.showExceptionDialog("", "", "", e);
             LOGGER.error(e);
         }
-        */
     }
 
     public void stopDebugMode(ActionEvent actionEvent) {
         scriptController.getDebugPositionHighlighter().remove();
         Button stop = (Button) actionEvent.getSource();
-        stop.setText("Reload");
+        javafx.scene.Node graphic = stop.getGraphic();
+        if (graphic instanceof MaterialDesignIconView) {
+            MaterialDesignIconView buttonLabel = (MaterialDesignIconView) graphic;
+            if (buttonLabel.getGlyphName().equals("STOP")) {
+                stop.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.RELOAD, "24.0"));
+                stop.setTooltip(new Tooltip("Reload Problem"));
+            } else {
+                if (buttonLabel.getGlyphName().equals("RELOAD")) {
+                    stop.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.STOP, "24.0"));
+                    stop.setTooltip(new Tooltip("Stop Debugging"));
+                    reloadProblem(actionEvent);
+                }
+            }
+        } else {
+            throw new RuntimeException("Something went wrong when reading stop button");
+        }
+
     }
 
   /*  public void handle(Events.TacletApplicationEvent tap){
@@ -902,16 +974,13 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void interactiveMode(ActionEvent actionEvent) {
-        if (btnInteractiveMode.isSelected()) {
-            assert model.getDebuggerFramework() != null;
-            interactiveModeController.setDebuggerFramework(model.getDebuggerFramework());
+        if (!btnInteractiveMode.isSelected()) {
             interactiveModeController.setActivated(true);
+            //SaG: this needs to be set to filter inapplicable rules
+            this.getFacade().getEnvironment().getProofControl().setMinimizeInteraction(true);
             interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
-
-            interactive_undo.setDisable(false);
         } else {
             interactiveModeController.stop();
-            interactive_undo.setDisable(true);
         }
     }
 
@@ -1058,22 +1127,41 @@ public class DebuggerMain implements Initializable {
         public void acceptUI() {
             model.getDebuggerFramework().getStatePointerListener().remove(this);
             GoalNode<KeyData> beforeNode = original.getStateBeforeStmt().getSelectedGoalNode();
+            List<GoalNode<KeyData>> stateAfterStmt = original.getStateAfterStmt().getGoals();
+
             ProofTree ptree = new ProofTree();
             Proof proof = beforeNode.getData().getProof();
+
             Node pnode = beforeNode.getData().getNode();
+            //      stateAfterStmt.forEach(keyDataGoalNode -> System.out.println("keyDataGoalNode.getData().getNode().serialNr() = " + keyDataGoalNode.getData().getNode().serialNr()));
 
             ptree.setProof(proof);
             ptree.setRoot(pnode);
+            ptree.addNodeColor(pnode, "blueviolet");
             ptree.setDeactivateRefresh(true);
 
+            if (stateAfterStmt.size() > 0) {
+                Set<Node> sentinels = proof.getSubtreeGoals(pnode)
+                        .stream()
+                        .map(Goal::node)
+                        .collect(Collectors.toSet());
+                ptree.getSentinels().addAll(sentinels);
+                sentinels.forEach(node -> ptree.addNodeColor(node, "blueviolet"));
+            } else {
+                Set<Node> sentinels = new HashSet<>();
+                Iterator<Node> nodeIterator = beforeNode.getData().getNode().leavesIterator();
+                while (nodeIterator.hasNext()) {
+                    Node next = nodeIterator.next();
 
-            Set<Node> sentinels = proof.getSubtreeGoals(pnode)
-                    .stream()
-                    .map(Goal::node)
-                    .collect(Collectors.toSet());
-            ptree.getSentinels().addAll(sentinels);
-            ptree.expandRootToLeaves();
-            //TODO set coloring of starting and end node
+                    sentinels.add(next);
+                }
+                ptree.getSentinels().addAll(sentinels);
+                sentinels.forEach(node -> ptree.addNodeColor(node, "blueviolet"));
+                //traverseProofTreeAndAddSentinelsToLeaves();
+            }
+
+
+            ptree.expandRootToSentinels();
             DockNode node = new DockNode(ptree, "Proof Tree for Step Into: " +
                     original.getStatement().accept(new ShortCommandPrinter())
             );
@@ -1081,6 +1169,7 @@ public class DebuggerMain implements Initializable {
             node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
         }
     }
+
 //endregion
 }
 //deprecated
