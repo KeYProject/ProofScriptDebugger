@@ -79,17 +79,28 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     private boolean catchAll = false;
 
     private static HashMap<String, MatchPath> reduceConform(Map<String, MatchPath> h1, Map<String, MatchPath> h2) {
+        HashMap<String, MatchPath> listOfElementsofH1 = new HashMap<>(h1);
 
-        HashMap<String, MatchPath> h3 = new HashMap<>(h1);
+        for (String s1 : listOfElementsofH1.keySet()) {
 
-        for (String s1 : h3.keySet()) {
-            if (!s1.equals("EMPTY_MATCH") && (h2.containsKey(s1) && !h2.get(s1).equals(h1.get(s1)))) {
-                return null;
+            if (!s1.equals("EMPTY_MATCH") && h2.containsKey(s1)) {
+                if (h2.get(s1) instanceof MatchPath.MPQuantifiableVariable &&
+                        !((QuantifiableVariable) h2.get(s1).getUnit()).name().toString().equals(h1.get(s1).toString())) {
+                    return null;
+                }
+                if (h1.get(s1) instanceof MatchPath.MPQuantifiableVariable &&
+                        !((QuantifiableVariable) h1.get(s1).getUnit()).name().toString().equals(h2.get(s1).toString())) {
+                    return null;
+                }
+
+                if (!h2.get(s1).equals(h1.get(s1))) {
+                    return null;
+                }
+
             }
-
         }
-        h3.putAll(h2);
-        return h3;
+        listOfElementsofH1.putAll(h2);
+        return listOfElementsofH1;
     }
 
     /**
@@ -121,6 +132,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         }
         return oneMatch ? m3 : NO_MATCH;
     }
+
 
     /**
      * Transform a number term into an int value.
@@ -449,11 +461,12 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
             QuantifiableVariable qv = toMatch.boundVars().get(i);
 
             if (qfPattern.getType() == MatchPatternLexer.DONTCARE) {
-                match = reduceConform(match, Matchings.singleton(qfPattern.getText(), new MatchPath.MPQuantifiableVarible(peek, qv, i)));
+                //match = reduceConform(match, Matchings.singleton(qfPattern.getText(), new MatchPath.MPQuantifiableVarible(peek, qv, i)));
+                match = reduceConform(match, EMPTY_MATCH);
                 continue;
             }
             if (qfPattern.getType() == MatchPatternLexer.SID) {
-                match = reduceConform(match, Matchings.singleton(qfPattern.getText(), new MatchPath.MPQuantifiableVarible(peek, qv, i)));
+                match = reduceConform(match, Matchings.singleton(qfPattern.getText(), new MatchPath.MPQuantifiableVariable(peek, qv, i)));
             } else {
                 if (!qv.name().toString().equals(qfPattern.getText())) {
                     return NO_MATCH;
@@ -464,8 +477,17 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
 
 
         Matchings fromTerm = accept(ctx.skope, create(peek, 0));
-        //return handleBindClause(ctx.bindClause(), path, m);
-        Matchings retM = reduceConformQuant(fromTerm, match);
+        Matchings retM = reduceConform(fromTerm, match);
+        retM.forEach(stringMatchPathMap -> {
+            stringMatchPathMap.forEach((s, matchPath) -> {
+                        if (matchPath instanceof MatchPath.MPQuantifiableVariable) {
+
+                            //create term from variablename and put instead into map
+                        }
+                    }
+
+            );
+        });
         return handleBindClause(ctx.bindClause(), peek, retM);
     }
 
@@ -532,32 +554,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
 
     }
 
-    private Matchings reduceConformQuant(Matchings fromTerm, Matchings match) {
-        Matchings ret = new Matchings();
-        Map<String, MatchPath> quantifiedVarMap = match.first();
 
-        List<Map<String, MatchPath>> list = fromTerm.stream().filter(
-                map -> map.entrySet().stream().allMatch(
-                        entry -> {
-                            if (entry.getValue() != null) {
-                                MatchPath mp = (MatchPath) entry.getValue();
-                                Term mterm = (Term) mp.getUnit();
-                                if (quantifiedVarMap.containsKey(entry.getKey())) {
-                                    return ((QuantifiableVariable) quantifiedVarMap.get(entry.getKey()).getUnit()).name().toString().
-                                            equals(mterm.op().name().toString());
-                                } else {
-                                    return true;
-                                }
-                            } else {
-                                return true;
-                            }
-                        }
-                )
-        ).collect(Collectors.toList());
-
-        ret.addAll(list);
-        return ret;
-    }
 
 
     @Override
@@ -621,3 +618,36 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
         return random.nextInt();
     }
 }
+/*    private Matchings reduceConformQuant(Matchings fromTerm, Matchings match) {
+        Matchings ret = new Matchings();
+        Map<String, MatchPath> quantifiedVarMap = match.first();
+
+        System.out.println("quantifiedVarMap = " + quantifiedVarMap);
+
+      List<Map<String, MatchPath>> list = fromTerm.stream().filter(
+        map -> map.entrySet().stream().allMatch(
+                entry -> {
+                    System.out.println("entry = " + entry);
+                    if (entry.getValue() != null) {
+                        MatchPath mp = (MatchPath) entry.getValue();
+                        Term mterm = (Term) mp.getUnit();
+                        if (quantifiedVarMap.containsKey(entry.getKey())) {
+                            QuantifiableVariable unit = (QuantifiableVariable) quantifiedVarMap.get(entry.getKey()).getUnit();
+                            return unit.name().toString().
+                                    equals(mterm.op().name().toString());
+                        } else {
+
+                            return true;
+                        }
+                    } else {
+                        //in this case we have an empty match, however, we may have bound quantVars, we need to add them
+                        System.out.println("entry.getKey() = " + entry.getKey());
+                        return true;
+                    }
+                }
+        )
+).collect(Collectors.toList());
+
+        ret.addAll(list);
+                return ret;
+                }*/

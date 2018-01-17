@@ -59,7 +59,11 @@ public class MatcherFacadeTest {
 
         shouldMatchForm("fint2(1,i)", "fint2(1,i)");
 
-        shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists _ _)");
+        shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists _ ?Term)");
+
+        shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists ?X _)");
+        shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists ?X (fint2(1,?X)))");
+
 
         shouldMatchForm("\\exists int i; \\exists int j; fint2(j,i)", "(\\exists i (\\exists j _))");
 

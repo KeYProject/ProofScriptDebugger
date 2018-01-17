@@ -1,3 +1,26 @@
+script split_from_quicksort_nice1() {
+  autopilot_prep;
+  foreach{
+    tryclose;
+  }
+  foreach{
+    simp_upd;
+    seqPermFromSwap;
+    andRight;
+  }
+
+
+  cases{
+    case match `==> seqDef(_,_,_) = seqDef(_, _, _)`:
+        auto;
+    case match `==> (\exists ?X (\exists ?Y _))`: //this should match
+        instantiate  var=`?X`[?X \ X] with=`i_0`;
+        instantiate  var=`?Y`[?Y \ Y] with=`j_0`;
+        auto;
+  }
+}
+
+
 script split_from_quicksort_nice() {
   autopilot_prep;
   foreach{

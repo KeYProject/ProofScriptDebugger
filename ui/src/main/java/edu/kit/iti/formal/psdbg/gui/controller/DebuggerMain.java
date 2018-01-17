@@ -926,6 +926,17 @@ public class DebuggerMain implements Initializable {
         }
     }
 
+    public void stepOverReverse(ActionEvent actionEvent) {
+        LOGGER.debug("DebuggerMain.stepBack");
+        try {
+            model.getDebuggerFramework().execute(new StepOverReverseCommand<>());
+        } catch (DebuggerException e) {
+            Utils.showExceptionDialog("", "", "", e);
+            LOGGER.error(e);
+        }
+    }
+
+
     public void stepIntoReverse(ActionEvent actionEvent) {
         LOGGER.debug("DebuggerMain.stepOverReverse");
         try {
@@ -1114,7 +1125,9 @@ public class DebuggerMain implements Initializable {
             return FACADE.getContractsForJavaFileTask(model.getJavaFile());
         }
     }
+    //endregion
 
+    //region: StepIntoHandlers
     @RequiredArgsConstructor
     private class StepIntoHandler implements java.util.function.Consumer<PTreeNode<KeyData>> {
         private final PTreeNode<KeyData> original;
@@ -1169,8 +1182,7 @@ public class DebuggerMain implements Initializable {
             node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
         }
     }
-
-//endregion
+    //endregion
 }
 //deprecated
    /* @FXML
