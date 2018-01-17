@@ -1,15 +1,14 @@
 package edu.kit.iti.formal.psdbg.termmatcher;
 
 import com.google.common.collect.Sets;
-import de.uka.ilkd.key.logic.Semisequent;
-import de.uka.ilkd.key.logic.SequentFormula;
-import de.uka.ilkd.key.logic.Term;
+import de.uka.ilkd.key.java.Services;
+import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 import edu.kit.formal.psdb.termmatcher.MatchPatternLexer;
 import edu.kit.formal.psdb.termmatcher.MatchPatternParser;
 import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
-import static edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPathFacade.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.Token;
@@ -20,21 +19,24 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPathFacade.*;
+
 /**
  * Matchpattern visitor visits the matchpatterns of case-statements
  *
  * @author Alexander Weigl
  * @author S. Grebing
  */
+@RequiredArgsConstructor
 class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     static final Matchings NO_MATCH = new Matchings();
 
     static final Matchings EMPTY_MATCH = Matchings.singleton("EMPTY_MATCH", null);
 
     static final Map<String, MatchPath> EMPTY_VARIABLE_ASSIGNMENT = EMPTY_MATCH.first();
-
+    @Getter
+    private final Services services;
     Random random = new Random(42L);
-
     /*
      * Reduce two matchinfos
      *
@@ -67,7 +69,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     }
     */
     private List<Integer> currentPosition = new ArrayList<>();
-
     /**
      * If true, we assume every term in the pattern has a binder.
      * The binding names are generated.
@@ -466,7 +467,12 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
                 continue;
             }
             if (qfPattern.getType() == MatchPatternLexer.SID) {
-                match = reduceConform(match, Matchings.singleton(qfPattern.getText(), new MatchPath.MPQuantifiableVariable(peek, qv, i)));
+                TermFactory tf = new TermFactory(new HashMap<>());
+                TermBuilder tb = new TermBuilder(tf, services);
+                Term termQVariable = tb.var(qv);
+
+                match = reduceConform(match, Matchings.singleton(qfPattern.getText(),
+                        new MatchPath.MPTerm(peek, termQVariable, -i)));
             } else {
                 if (!qv.name().toString().equals(qfPattern.getText())) {
                     return NO_MATCH;
@@ -555,8 +561,6 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     }
 
 
-
-
     @Override
     public Matchings visitExprParen(MatchPatternParser.ExprParenContext ctx, MatchPath peek) {
         return handleBindClause(ctx.bindClause(), peek, accept(ctx.termPattern(), peek));
@@ -615,7 +619,7 @@ class MatcherImpl extends MatchPatternDualVisitor<Matchings, MatchPath> {
     }
 
     public int getRandomNumber() {
-        return random.nextInt();
+        return Math.abs(random.nextInt());
     }
 }
 /*    private Matchings reduceConformQuant(Matchings fromTerm, Matchings match) {

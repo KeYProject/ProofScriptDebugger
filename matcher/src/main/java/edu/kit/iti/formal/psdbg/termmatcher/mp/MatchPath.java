@@ -75,7 +75,7 @@ public abstract class MatchPath<T, P> {
     }
 
     public static class MPTerm extends MatchPath<Term, Object> {
-        MPTerm(MatchPath<? extends Object, ?> parent, Term unit, int pos) {
+        public MPTerm(MatchPath<? extends Object, ?> parent, Term unit, int pos) {
             super(parent, unit, pos);
         }
 

@@ -1,25 +1,13 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import org.dockfx.DockNode;
-
-import java.util.function.Function;
 
 public class SequentOptionsMenu extends ContextMenu {
 
@@ -38,7 +26,9 @@ public class SequentOptionsMenu extends ContextMenu {
 
 
                 try {
-                    SequentMatcher root1 = new SequentMatcher();
+                    // passt schon!
+                    KeyData data = (KeyData) model.getSelectedGoalNodeToShow().getData();
+                    SequentMatcher root1 = new SequentMatcher(data.getProof().getServices());
                     root1.setGoals(model.getGoals());
                     root1.setSelectedGoalNodeToShow(model.getSelectedGoalNodeToShow());
                     root1.getStyleClass().add("sequent-view");

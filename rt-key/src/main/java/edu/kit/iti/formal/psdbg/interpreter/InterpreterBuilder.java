@@ -114,8 +114,7 @@ public class InterpreterBuilder {
     }
 
     public InterpreterBuilder addKeyMatcher(ProofApi api) {
-        ScriptApi scriptApi = api.getScriptApi();
-        interpreter.setMatcherApi(new KeYMatcher(scriptApi, interpreter));
+        interpreter.setMatcherApi(new KeYMatcher(api.getEnv().getServices()));
         return this;
     }
 
