@@ -1,7 +1,7 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
-import de.uka.ilkd.key.api.ScriptApi;
-import de.uka.ilkd.key.api.VariableAssignments;
+import de.uka.ilkd.key.api.ProofApi;
+import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Name;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.SchemaVariable;
@@ -18,14 +18,13 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SortType;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.Signature;
-import edu.kit.iti.formal.psdbg.parser.ast.Variable;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import edu.kit.iti.formal.psdbg.parser.types.TermType;
-import edu.kit.iti.formal.psdbg.parser.types.Type;
 import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
 import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
 import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
@@ -44,13 +43,13 @@ public class KeYMatcher implements MatcherApi<KeyData> {
     private static final Logger LOGGER = LogManager.getLogger(KeYMatcher.class);
 
     private static final Name CUT_TACLET_NAME = new Name("cut");
-    private ScriptApi scrapi;
-    private KeyInterpreter interpreter;
     private List<MatchResult> resultsFromLabelMatch;
 
-    public KeYMatcher(ScriptApi scrapi, KeyInterpreter interpreter) {
-        this.scrapi = scrapi;
-        this.interpreter = interpreter;
+    @Getter
+    private Services services;
+
+    public KeYMatcher(Services services) {
+        this.services = services;
     }
 
     /**
@@ -162,75 +161,6 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         return assignments.isEmpty()? null: assignments;
     }
 
-    /**
-     * Match against a sequent of a goal node
-     * @param currentState
-     * @param term
-     * @param signature
-     * @return
-     */
-    //@Override
-    public List<VariableAssignment> matchSeqKeY(GoalNode<KeyData> currentState,
-                                             String term,
-                                             Signature signature) {
-
-        VariableAssignment interpreterAssignments = currentState.getAssignments();
-        VariableAssignments keyAssignments = new VariableAssignments(null);
-        interpreterAssignments.getTypes().forEach((k, v) -> keyAssignments.getTypeMap().put(k.getIdentifier(), interpreter.getTypeConversionBiMap().get(v)));
-        interpreterAssignments.getValues().forEach((k, v) -> {
-            try {
-                keyAssignments.addAssignment(k.getIdentifier(), v);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        Set<Map.Entry<Variable, Type>> sigEntrySet = signature.entrySet();
-        sigEntrySet.forEach(e -> {
-            try {
-                keyAssignments.addType(e.getKey().getIdentifier(), interpreter.getTypeConversionBiMap().get(e.getValue()));
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
-        });
-
-        //   System.out.println("Matching: "+term.toString()+"\n================\n"+currentState.getData().getNode().sequent()+"\n================\n");
-        List<VariableAssignments> keyMatchResult = scrapi.matchPattern(term, currentState.getData().getNode().sequent(), keyAssignments);
-
-        //empty keyassignments
-        // System.out.println("Matched " + keyMatchResult.size() + " goals from " + currentState.toString() + " with pattern " + term);
-        List<VariableAssignment> transformedMatchResults = new ArrayList<>();
-        for (VariableAssignments mResult : keyMatchResult) {
-            transformedMatchResults.add(from(mResult, currentState.getData()));
-        }
-        //keyMatchResult.forEach(r -> transformedMatchResults.add(from(r)));
-        return transformedMatchResults;
-
-    }
-
-    /**
-     * Transforms a KeY Variable Assignment into an assignment for the interpreter
-     *
-     * @param keyAssignments
-     * @param currentState
-     * @return
-     */
-    public VariableAssignment from(VariableAssignments keyAssignments, KeyData currentState) {
-
-        VariableAssignment interpreterAssignments = new VariableAssignment(null);
-
-        Map<String, VariableAssignments.VarType> keyTypeMap = keyAssignments.getTypeMap();
-        keyTypeMap.entrySet().forEach(e -> interpreterAssignments.declare(e.getKey(), interpreter.getTypeConversionBiMap().inverse().get(e.getValue())));
-        keyTypeMap.keySet().forEach(k -> {
-            try {
-                interpreterAssignments.assign(k, toValueTerm(currentState, (Term) keyAssignments.getVarValue(k)));
-                //System.out.println(keyAssignments.getVarValue(k));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        return interpreterAssignments;
-    }
-
     private Value<String> toValueTerm(KeyData currentState, Term matched) {
         String reprTerm = LogicPrinter.quickPrintTerm(matched, currentState.getEnv().getServices());
 
@@ -241,11 +171,14 @@ public class KeYMatcher implements MatcherApi<KeyData> {
     }
 
     @Override
-    public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState, String data, Signature sig) {
+    public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState,
+                                             String data,
+                                             Signature sig) {
         //System.out.println("State that will be matched " + currentState.getData().getNode().sequent() + " with pattern " + data);
         //System.out.println("Signature " + sig.toString());
 
-        Matchings m = MatcherFacade.matches(data, currentState.getData().getNode().sequent(), false);
+        Matchings m = MatcherFacade.matches(data,
+                currentState.getData().getNode().sequent(), false, services);
 
         if (m.isEmpty()) {
             LOGGER.debug("currentState has no match= " + currentState.getData().getNode().sequent());

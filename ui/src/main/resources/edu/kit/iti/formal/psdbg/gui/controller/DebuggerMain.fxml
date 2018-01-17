@@ -113,10 +113,20 @@
                                 </graphic>
                             </MenuItem>
 
-                            <MenuItem onAction="#stepBack"
+                            <MenuItem onAction="#stepOverReverse"
                                       accelerator="F7"
 
-                                      text="Step Back"
+                                      text="Step Over Reverse"
+                                      disable="${controller.stepNotPossible}">
+                                <graphic>
+                                    <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0" scaleX="-1"/>
+                                </graphic>
+                            </MenuItem>
+
+                            <MenuItem onAction="#stepIntoReverse"
+                                      accelerator="F8"
+
+                                      text="Step Into Reverse"
                                       disable="${controller.stepNotPossible}">
                                 <graphic>
                                     <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0" scaleX="-1"/>
@@ -125,7 +135,7 @@
 
 
                             <MenuItem disable="${controller.stepNotPossible}"
-                                      accelerator="F8"
+                                      accelerator="F9"
                                       text="Step Out">
                                 <graphic>
                                     <MaterialDesignIconView glyphName="DEBUG_STEP_OUT" size="24.0"/>
@@ -266,7 +276,7 @@
                             </tooltip>
                         </Button>
 
-                        <Button onAction="#stepBack" disable="${controller.stepNotPossible}">
+                        <Button onAction="#stepOverReverse" disable="${controller.stepNotPossible}">
                             <graphic>
                                 <MaterialDesignIconView glyphName="DEBUG_STEP_OVER" size="24.0" scaleX="-1"/>
                             </graphic>

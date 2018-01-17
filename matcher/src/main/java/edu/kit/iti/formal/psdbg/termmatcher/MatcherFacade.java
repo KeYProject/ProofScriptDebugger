@@ -1,5 +1,6 @@
 package edu.kit.iti.formal.psdbg.termmatcher;
 
+import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Semisequent;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.Term;
@@ -21,8 +22,8 @@ import org.apache.logging.log4j.Logger;
 public class MatcherFacade {
     private static Logger logger = LogManager.getLogger(MatcherFacade.class);
 
-    public static Matchings matches(String pattern, Term keyTerm) {
-        MatcherImpl matcher = new MatcherImpl();
+    public static Matchings matches(String pattern, Term keyTerm, Services services) {
+        MatcherImpl matcher = new MatcherImpl(services);
         matcher.setCatchAll(false);
         MatchPatternParser mpp = getParser(pattern);
         MatchPatternParser.TermPatternContext ctx = mpp.termPattern();
@@ -50,12 +51,13 @@ public class MatcherFacade {
      * @param pattern  Semisequent pattern e.g. f(x), f(x)
      * @param semiSeq  Concrete KeY Semisequent
      * @param catchAll
+     * @param services
      * @return Matchings
      */
-    public static Matchings matches(String pattern, Semisequent semiSeq, boolean catchAll) {
+    public static Matchings matches(String pattern, Semisequent semiSeq, boolean catchAll, Services services) {
         MatchPatternParser mpp = getParser(pattern);
         MatchPatternParser.SemiSeqPatternContext ctx = mpp.semiSeqPattern();
-        MatcherImpl matcher = new MatcherImpl();
+        MatcherImpl matcher = new MatcherImpl(services);
         matcher.setCatchAll(catchAll);
         Matchings m = matcher.accept(ctx, MatchPathFacade.createRoot(semiSeq));
         return m;
@@ -67,9 +69,10 @@ public class MatcherFacade {
      *
      * @param pattern e.g., f(x) ==> f(y)
      * @param sequent
+     * @param services
      * @return
      */
-    public static Matchings matches(String pattern, Sequent sequent, boolean catchAll) {
+    public static Matchings matches(String pattern, Sequent sequent, boolean catchAll, Services services) {
         MatchPatternParser mpp = getParser(pattern);
         MatchPatternParser.SequentPatternContext ctx = mpp.sequentPattern();
         logger.info("Matching \n" + pattern + "\n" + sequent.toString());
@@ -78,21 +81,22 @@ public class MatcherFacade {
             return new Matchings();
         }
 
-        MatcherImpl matcher = new MatcherImpl();
+        MatcherImpl matcher = new MatcherImpl(services);
         matcher.setCatchAll(catchAll);
         Matchings m = matcher.accept(ctx, MatchPathFacade.create(sequent));
         return m;
     }
 
     /**
-     * Like {@link #matches(String, Sequent)} but allows to use
+     * Like {@link #matches(String, Sequent, Services)} but allows to use
      * MatcherImpl#isCatchAll.
      *
      * @param pattern
      * @param sequent
+     * @param services
      * @return
      */
-    public static Matchings matches(String pattern, Sequent sequent) {
-        return matches(pattern, sequent, true);
+    public static Matchings matches(String pattern, Sequent sequent, Services services) {
+        return matches(pattern, sequent, true, services);
     }
 }

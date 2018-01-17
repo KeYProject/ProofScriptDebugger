@@ -207,7 +207,7 @@ public class SequentView extends CodeArea {
         }
 
         if (node.get().sequent() != null) {
-            Matchings m = MatcherFacade.matches(pattern, node.get().sequent(), true);
+            Matchings m = MatcherFacade.matches(pattern, node.get().sequent(), true, services);
             if (m.size() == 0) return false;
             Map<String, MatchPath> va = m.first();
             //System.out.println(va);//TODO remove

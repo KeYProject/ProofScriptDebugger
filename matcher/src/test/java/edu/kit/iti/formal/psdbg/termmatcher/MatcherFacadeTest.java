@@ -59,7 +59,11 @@ public class MatcherFacadeTest {
 
         shouldMatchForm("fint2(1,i)", "fint2(1,i)");
 
-        shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists _ _)");
+        shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists _ ?Term)");
+
+        shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists ?X _)");
+        shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists ?X (fint2(1,?X)))");
+
 
         shouldMatchForm("\\exists int i; \\exists int j; fint2(j,i)", "(\\exists i (\\exists j _))");
 
@@ -119,26 +123,26 @@ public class MatcherFacadeTest {
 
     private void shouldMatch(String key, String pattern) throws ParserException {
         Term term = parseKeyTerm(key);
-        Matchings m = MatcherFacade.matches(pattern, term);
+        Matchings m = MatcherFacade.matches(pattern, term, services);
         System.out.println(m);
     }
 
     private void shouldMatch(String key, String pattern, String exp) throws ParserException {
         Term term = parseKeyTerm(key);
-        Matchings m = MatcherFacade.matches(pattern, term);
+        Matchings m = MatcherFacade.matches(pattern, term, services);
         System.out.println(m);
         Assert.assertEquals(exp, m.toString());
     }
 
     private void shouldMatchForm(String form, String pattern) throws ParserException {
         Term formula = parserFormula(form);
-        Matchings m = MatcherFacade.matches(pattern, formula);
+        Matchings m = MatcherFacade.matches(pattern, formula, services);
         System.out.println(m);
     }
 
     private void shouldMatchForm(String form, String pattern, String exp) throws ParserException {
         Term formula = parserFormula(form);
-        Matchings m = MatcherFacade.matches(pattern, formula);
+        Matchings m = MatcherFacade.matches(pattern, formula, services);
         System.out.println(m);
         Assert.assertEquals(exp, m.toString());
     }
@@ -193,14 +197,14 @@ public class MatcherFacadeTest {
 
     private void shouldMatchSemiSeq(String s, String s1, String exp) throws ParserException {
         Sequent term = parseSeq(s);
-        Matchings m = MatcherFacade.matches(s1, term);
+        Matchings m = MatcherFacade.matches(s1, term, services);
         System.out.println(m);
         Assert.assertEquals(exp, m.toString());
     }
 
     private void shouldMatchSemiSeq(String s, String s1) throws ParserException {
         Sequent term = parseSeq(s);
-        Matchings m = MatcherFacade.matches(s1, term);
+        Matchings m = MatcherFacade.matches(s1, term, services);
         System.out.println(m);
     }
 
@@ -290,7 +294,7 @@ public class MatcherFacadeTest {
 
     private void shouldMatchSeq(String seq, String seqPattern, String exp) throws ParserException {
         Sequent sequent = parseSeq(seq);
-        Matchings m = MatcherFacade.matches(seqPattern, sequent);
+        Matchings m = MatcherFacade.matches(seqPattern, sequent, services);
         System.out.println(m);
         Assert.assertEquals(removeNumbersInBinders(m), exp);
     }
@@ -304,7 +308,7 @@ public class MatcherFacadeTest {
 
     private void shouldMatchSeq(String seq, String seqPattern) throws ParserException {
         Sequent sequent = parseSeq(seq);
-        Matchings m = MatcherFacade.matches(seqPattern, sequent);
+        Matchings m = MatcherFacade.matches(seqPattern, sequent, services);
         System.out.println(m);
     }
 }

@@ -1,17 +1,18 @@
 # Language Constructs
 
 Proof scripts are textual representations of rule applications, settings changes
-and macro invocations.
+and strategy invocations (in the case of KeY as underlying verification 
+system also referred to as macros).
 
 
 ## Variables and Types
 
 We need to distinguish between: logic, program, and script variables.
 
-* **logic variable**: Occurs on sequences, only bounded to an quantifier
+* **logic variable**: Occur on sequents, bounded by a quantifier or in an update
 
 * **program variable**: declared and used in Java programs. They are constants
-  on the sequence.
+  on the sequent.
 
 * **script variable**: declared and assignable within a script
 

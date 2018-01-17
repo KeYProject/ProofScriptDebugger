@@ -47,9 +47,9 @@ public abstract class MatchPath<T, P> {
         return unit.toString();
     }
 
-    public static final class MPQuantifiableVarible extends MatchPath<QuantifiableVariable, Object> {
+    public static final class MPQuantifiableVariable extends MatchPath<QuantifiableVariable, Object> {
 
-        public MPQuantifiableVarible(MatchPath<? extends Object, ?> parent, QuantifiableVariable unit, int pos) {
+        public MPQuantifiableVariable(MatchPath<? extends Object, ?> parent, QuantifiableVariable unit, int pos) {
             super(parent, unit, pos);
         }
 
@@ -75,7 +75,7 @@ public abstract class MatchPath<T, P> {
     }
 
     public static class MPTerm extends MatchPath<Term, Object> {
-        MPTerm(MatchPath<? extends Object, ?> parent, Term unit, int pos) {
+        public MPTerm(MatchPath<? extends Object, ?> parent, Term unit, int pos) {
             super(parent, unit, pos);
         }
 

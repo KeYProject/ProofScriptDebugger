@@ -15,5 +15,6 @@ public class StepIntoReverseCommand<T> extends DebuggerCommand<T> {
             info("There is no previous state to the current one.");
         }
         dbg.setStatePointer(stepBack);
+
     }
 }
