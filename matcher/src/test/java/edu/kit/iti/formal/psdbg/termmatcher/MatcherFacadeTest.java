@@ -209,49 +209,97 @@ public class MatcherFacadeTest {
         return dtp.parseSeq(in, services, namespace, abbrev);
     }
 
+
+    // Sollverhalten: Wenn es keinen Variablenbinder gibt, aber z.B. '_' oder '...',
+    // und positiv auf den Ausdruck gematcht wird,
+    // dann soll der Term des Matchs in Form von anonymen Variablen gebunden werden
+
     @Test
     public void seqTest() throws Exception {
-//        shouldMatchSeq("i <= 10 ==>", "i <= ?X ==>");
+        shouldMatchSeq("i <= 10 ==>",
+                "i <= ?X ==>",
+                "[{??_=leq(i,Z(0(1(#)))), ?X=Z(0(1(#))), ??_=i}]");
 
-        shouldMatchSeq("==> (\\forall int i; \\exists int j; fint2(j,i)) , pred(a)", "==> (\\forall i (\\exists j _))");
-//        //testcases for empty matches
-//        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", " ==> _", "[{EMPTY_MATCH=null}]");
-//
-//        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "==>", "[{EMPTY_MATCH=null}]");
-//        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> ", "[{EMPTY_MATCH=null}]");
-//        shouldMatchSeq("pred(a) ==> pred(a), pred(b)", "_ ==> _", "[{EMPTY_MATCH=null}]");
-//        shouldMatchSeq("==> pred(a)", "==>", "[{EMPTY_MATCH=null}]");
-//        shouldMatchSeq("pred(a) ==> ", "==>", "[{EMPTY_MATCH=null}]");
-//
-//
-//        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?Y)", "[{?X=a, ?Y=b, ?Z=b}, {?X=b, ?Y=b, ?Z=a}]");
-//        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==> pred(?X)", "[{?X=b, ?Z=a}]");
-//        shouldMatchSeq("pred(a), pred(b) ==> pred(b)", "pred(?X), pred(?Z) ==>", "[{?X=a, ?Z=b}, {?X=b, ?Z=a}]");
-//
-//        shouldMatchSeq(
-//                "pred(f(a)), pred(b) ==> pred(b)",
-//                "pred(?X), pred(?Z) ==>",
+        shouldMatchSeq("==> (\\forall int i; \\exists int j; fint2(j,i)) , pred(a)",
+                "==> (\\forall i (\\exists j _))",
+                "[{??_=exists{j:int}(fint2(j,i)), ??_=all{i:int}(exists{j:int}(fint2(j,i))), ??_=fint2(j,i)}]");
+
+        shouldMatchSeq("pred(a) ==> pred(a), pred(b)",
+                " ==> _",
+                "[{??_=pred(a)}, {??_=pred(b)}]");
+
+        shouldMatchSeq("pred(a) ==> pred(a), pred(b)",
+                "==>",
+                "[{EMPTY_MATCH=null}]");
+        shouldMatchSeq("pred(a) ==> pred(a), pred(b)",
+                "_ ==> ",
+                "[{??_=pred(a)}]");
+        shouldMatchSeq("pred(a) ==> pred(a), pred(b)",
+                "_ ==> _",
+                "[{??_=pred(b), ??_=pred(a)}, {??_=pred(a), ??_=pred(a)}]");
+        shouldMatchSeq("==> pred(a)",
+                "==>",
+                "[{EMPTY_MATCH=null}]");
+        shouldMatchSeq("pred(a) ==> ",
+                "==>",
+                "[{EMPTY_MATCH=null}]");
+
+
+        shouldMatchSeq("pred(a), pred(b) ==> pred(b)",
+                "pred(?X), pred(?Z) ==> pred(?Y)",
+                "[{??_=pred(a), ?X=b, ?Y=b, ??_=pred(b), ?Z=a, ??_=pred(b)}, {?X=a, ??_=pred(a), ?Y=b, ??_=pred(b), ?Z=b, ??_=pred(b)}]");
+        //"[{?X=a, ?Y=b, ?Z=b}, {?X=b, ?Y=b, ?Z=a}]");
+
+        shouldMatchSeq("pred(a), pred(b) ==> pred(b)",
+                "pred(?X), pred(?Z) ==> pred(?X)",
+                "[{??_=pred(a), ?X=b, ??_=pred(b), ?Z=a, ??_=pred(b)}]");
+//                "[{?X=b, ?Z=a}]");
+
+        shouldMatchSeq("pred(a), pred(b) ==> pred(b)",
+                "pred(?X), pred(?Z) ==>",
+                "[{??_=pred(a), ?X=b, ?Z=a, ??_=pred(b)}, {?X=a, ??_=pred(a), ?Z=b, ??_=pred(b)}]");
+//                "[{?X=a, ?Z=b}, {?X=b, ?Z=a}]");
+
+        shouldMatchSeq(
+                "pred(f(a)), pred(b) ==> pred(b)",
+                "pred(?X), pred(?Z) ==>",
+                "[{??_=pred(f(a)), ?X=b, ?Z=f(a), ??_=pred(b)}, {?X=f(a), ??_=pred(f(a)), ?Z=b, ??_=pred(b)}]");
 //                "[{?X=b, ?Z=f(a)}, {?X=f(a), ?Z=b}]");
-//
-//        shouldMatchSeq(
-//                "pred(f(a)), pred(b) ==> pred(b)",
-//                "pred(...?X...) ==>",
+
+        shouldMatchSeq(
+                "pred(f(a)), pred(b) ==> pred(b)",
+                "pred(...?X...) ==>",
+                "[{??_=pred(b), ?X=b}, {?X=a, ??_=pred(f(a))}, {?X=f(a), ??_=pred(f(a))}]");
 //                "[{?X=a}, {?X=b}, {?X=f(a)}]");
-//
-//        shouldMatchSeq(
-//                "fint2(1,2), fint2(2,3), !p ==> pred(a), p",
-//                "fint2(1, ?X), fint2(?X, ?Y) ==> p",
+
+        shouldMatchSeq(
+                "fint2(1,2), fint2(2,3), !p ==> pred(a), p",
+                "fint2(1, ?X), fint2(?X, ?Y) ==> p",
+                "[{??_=fint2(Z(2(#)),Z(3(#))), ?X=Z(2(#)), ?Y=Z(3(#)), ??_=fint2(Z(1(#)),Z(2(#))), ??_=p}]");
 //                "[{EMPTY_MATCH=null, ?X=Z(2(#)), ?Y=Z(3(#))}]");
-//        shouldMatchSeq("2 >= 1, h2(1,2) = h2(2,3), h2(2,3) = 0 ==> p, !p", "?X=0 ==>", "[{?X=h2(Z(2(#)),Z(3(#)))}]");
-//
-//        shouldMatchSeq("pred(a) <-> pred(b), pred(a), pred(b) ==> p", "?X <-> ?Y ==> ", "[{?X=pred(a), ?Y=pred(b)}]");
+        shouldMatchSeq("2 >= 1, h2(1,2) = h2(2,3), h2(2,3) = 0 ==> p, !p",
+                "?X=0 ==>",
+                "[{?X=h2(Z(2(#)),Z(3(#))), ??_=equals(h2(Z(2(#)),Z(3(#))),Z(0(#)))}]");
+//                "[{?X=h2(Z(2(#)),Z(3(#)))}]");
+
+        shouldMatchSeq("pred(a) <-> pred(b), pred(a), pred(b) ==> p",
+                "?X <-> ?Y ==> ",
+                "[{?X=pred(a), ?Y=pred(b), ??_=equiv(pred(a),pred(b))}]");
+//                "[{?X=pred(a), ?Y=pred(b)}]");
     }
 
     private void shouldMatchSeq(String seq, String seqPattern, String exp) throws ParserException {
         Sequent sequent = parseSeq(seq);
         Matchings m = MatcherFacade.matches(seqPattern, sequent);
         System.out.println(m);
-        Assert.assertEquals(exp, m.toString());
+        Assert.assertEquals(removeNumbersInBinders(m), exp);
+    }
+
+    private String removeNumbersInBinders(Matchings m) {
+        String matchingsAsString = m.toString();
+        String toCheck = matchingsAsString.replaceAll("\\?\\?_\\d+=", "??_=");
+        String toCheck2 = toCheck.replaceAll("\\?\\?_-\\d+=", "??_=");
+        return toCheck2;
     }
 
     private void shouldMatchSeq(String seq, String seqPattern) throws ParserException {
