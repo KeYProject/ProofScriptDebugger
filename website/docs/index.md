@@ -1,5 +1,4 @@
 <style>
-
         #content {
             width: 60em;
             margin: auto;
@@ -20,49 +19,53 @@
             width: 150px;
             text-align: center;
         }
+        
+        img.thumb {
+            width:300px; 
+            height:300px;
+            border-radius:150px;
+        }
 </style>
 
-<h1>Proof Script Debugger for the KeY System</h1>
+# Proof Script Debugger for the KeY System
 
-<p>The proof script debugger is a prototypical implementation
+The proof script debugger is a prototypical implementation
 of an interaction concept for program verification systems that are rule based and
 use a program logic.
 The prototype is implemented on top of the interactive program verification system
-<a href="http://www.key-project.org">KeY</a>. KeY is an interactive program verification
+[KeY](http://www.key-project.org. KeY is an interactive program verification
 system for Java program annotated with the Java Modeling Language (JML).
-</p>
 
-<p>
+
 The protypical implementation includes a proof scripting language that is tailored to the
 problem domain of program verification.
 The main features of the language are:
-<ol>
-<li> integration of domain specific entities like goal, formula, term and rule as
+
+1. integration of domain specific entities like goal, formula, term and rule as
 first-class citizens into the language;</li>
-<li> an expressive proof goal selection mechanism
-<ul>
-    <li>to identify and select individual proof branches,</li>
-    <li>to easily switch between proof branches,</li>
-    <li>to select multiple branches for uniform treatment (multi-matching);</li>
-</ul>
-that is resilient to small changes in the proof</li>
-<li> a repetition construct which allows repeated application of proof strategies;</li>
-<li> support for proof exploration within the language.</li>
+1. an expressive proof goal selection mechanism
+  * to identify and select individual proof branches,
+  * to easily switch between proof branches,
+  * to select multiple branches for uniform treatment (multi-matching);
+  that is resilient to small changes in the proof
+1. a repetition construct which allows repeated application of proof strategies;</li>
+1. support for proof exploration within the language.</li>
 
 
-</ol>
 Together with the proof scripting language a debugging concept for failed proof attempts
 is implemented that leverages well-known concepts from program debugging to
 the analysis of failed proof attempts.
 
-</p>
-<h2>Publications</h2>
-A full description of the language and debugging-concept is published at <a href="">HVC 2017</a>.
+## Publications
 
-<h2>Features</h2>
+A full description of the language and debugging-concept 
+is published at [HVC 2017](hvc2017.pdf)
+
+
+## Features
 
 <div class="column">
-    <div >
+    <div>
         <h3>Inspection of different parts of the proof state</h3>
         <p> 
         The different parts of the proof state can be inspected:
@@ -75,40 +78,49 @@ A full description of the language and debugging-concept is published at <a href
     </div>
     <div >
         <h3>Adjustable view on list of open goals</h3>
-        <img src="img/ScreenshotState.png" style="width:304px;height:228px;"  />
+        <img class="thumb" src="img/thumb_ScreenshotGoalList.png" />
     </div>
     <div >
         <h3>Explore the proof tree of KeY</h3>
-         <img src="img/ScreenshotProofTree.png" style="width:304px;height:228px;"  />
+         <img class="thumb" src="img/thumb_ScreenshotProofTree.png"/>
     </div>
 </div>
 <div style="clear: both;"/>
     <div class="column">
         <div >
-            <h3>Stepwise evaluation of the proof script</h3>
-            <p>
-            The proof script can be evaluated stepwise and by running to a set breakpoint.
-            </p>
-        </div>
-        <div >
             <h3>Set a breakpoint and run execution to breakpoint</h3>
-             <img src="img/ScreenshotBreakpoint.png"  style="width:304px;height:228px;"/>
+            <img src="img/thumb_ScreenshotBreakpoint.png" class="thumb"/>
+            <div class="feature-caption">
+                Mark lines with an (conditional) breakpoint to pause the script execution.
+            </div
         </div>
-        <div > 
-            <h3> Step forward and step backward</h3>
-            <img src="img/ScreenshotStep.png" style="width:304px;height:228px;" />
+        <div> 
+            <h3>Stepwise evaluation for time travellers</h3>
+            <img src="img/thumb_ScreenshotStep.png" class="thumb" />
+            <div class="feature-caption">
+                Stepwise script execution: step over and into.
+                Our special offers for time travellers: Go backwards in time
+                and then Back to the Future,again!
+            </div>
         </div>
-        <div > 
+        <div> 
         <h3> Interactive Rule Application</h3>
-                    <img src="img/ScreenshotInteractive.png" style="width:304px;height:228px;" />
-                </div>
+            <img src="img/thumb_ScreenshotInteractive.png" class="thumb" />
+            <div class="feature-caption">
+            Select rules for interactive application.
+            </div>
     </div>
-    <div style="clear: both;"/> 
-    <p>
+</div>
+
+<div style="clear: both;"/> 
+    
     
 
-For Accessing the prototype, please contact the authors.
-<footer style="border-top: #ccc 1px solid">
-            Contact: <a href="https://formal.iti.kit.edu/~grebing/">Sarah Grebing</a>
-        </footer>
-        </p>
+## Downloads
+
+* PSDBG - **Version 1.0-FM** [JAR](~/releases/psdbg-1.0-fm.jar)
+    Special Version for Formal Methods
+
+
+<div style="clear: both;"/>
+

@@ -76,7 +76,7 @@ public class ProofTreeManager<T> {
         int ctxLength = node.getContext().length;
 
         // We got a step deeper in the ASTNode stack.
-        // So we a caller
+        // So we have a caller
         if (getContextDepth() < ctxLength) {
             pushContext();
             intoCurrentContext(node);

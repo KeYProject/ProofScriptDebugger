@@ -29,6 +29,7 @@ import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.application.Platform;
@@ -506,11 +507,11 @@ public class DebuggerMain implements Initializable {
             btnInteractiveMode.setDisable(false);
             assert model.getDebuggerFramework() != null;
             btnInteractiveMode.setSelected(true);
-            /*PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
+            PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
             assert statePointer!=null;
             State<KeyData> lastState = statePointer.getStateAfterStmt();
             getInspectionViewsController().getActiveInspectionViewTab().activate(statePointer, lastState);
-            */
+
         });
     }
 
