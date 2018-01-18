@@ -1,20 +1,22 @@
 package edu.kit.iti.formal.psdbg.interpreter.dbg;
 
-import lombok.val;
-
 public class StepIntoReverseCommand<T> extends DebuggerCommand<T> {
 
     @Override
     public void execute(DebuggerFramework<T> dbg) throws DebuggerException {
-        val statePointer = dbg.getCurrentStatePointer();
-        PTreeNode<T> stepBack = statePointer.getStepInvInto() != null ?
-                statePointer.getStepInvInto() :
-                statePointer.getStepInvOver();
+        PTreeNode<T> statePointer = dbg.getStatePointer();
+        assert statePointer != null;
 
-        if (stepBack == null) {
-            info("There is no previous state to the current one.");
-        }
-        dbg.setStatePointer(stepBack);
+        if (statePointer.getStepInvInto() != null) {
+            dbg.setStatePointer(statePointer.getStepInvInto());
+        } else {
+            if (statePointer.getStepInvOver() != null) {
+                PTreeNode<T> statementBefore = statePointer.getStepInvOver();
+                dbg.setStatePointer(statementBefore);
+
+            }
+        } 
+
 
     }
 }

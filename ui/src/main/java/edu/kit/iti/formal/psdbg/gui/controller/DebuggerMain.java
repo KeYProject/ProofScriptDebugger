@@ -15,7 +15,6 @@ import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
-import edu.kit.iti.formal.psdbg.StepIntoCommand;
 import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.fmt.DefaultFormatter;
 import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
@@ -70,6 +69,8 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+
+import org.reactfx.util.Timer;
 
 /**
  * Controller for the Debugger MainWindow
@@ -907,7 +908,7 @@ public class DebuggerMain implements Initializable {
      * @param actionEvent
      */
     public void stepInto(ActionEvent actionEvent) {
-        LOGGER.debug("DebuggerMain.stepOver");
+        LOGGER.debug("DebuggerMain.stepInto");
         try {
             if (model.getDebuggerFramework().getStatePointer().isAtomic()) {
                 model.getDebuggerFramework().getStatePointerListener()
@@ -931,6 +932,7 @@ public class DebuggerMain implements Initializable {
      *
      * @param actionEvent
      */
+    @Deprecated
     public void stepBack(ActionEvent actionEvent) {
         LOGGER.debug("DebuggerMain.stepBack");
         try {
@@ -953,13 +955,26 @@ public class DebuggerMain implements Initializable {
 
 
     public void stepIntoReverse(ActionEvent actionEvent) {
-        LOGGER.debug("DebuggerMain.stepOverReverse");
+        LOGGER.debug("DebuggerMain.stepIntoReverser");
         try {
+            if (model.getDebuggerFramework().getStatePointer().isAtomic()) {
+                model.getDebuggerFramework().getStatePointerListener()
+                        .add(new StepIntoReverseHandler(model.getStatePointer()));
+            }
             model.getDebuggerFramework().execute(new StepIntoReverseCommand<>());
         } catch (DebuggerException e) {
             Utils.showExceptionDialog("", "", "", e);
             LOGGER.error(e);
         }
+
+
+/*        LOGGER.debug("DebuggerMain.stepOverReverse");
+        try {
+            model.getDebuggerFramework().execute(new StepIntoReverseCommand<>());
+        } catch (DebuggerException e) {
+            Utils.showExceptionDialog("", "", "", e);
+            LOGGER.error(e);
+        }*/
     }
 
     public void stopDebugMode(ActionEvent actionEvent) {
@@ -1197,6 +1212,64 @@ public class DebuggerMain implements Initializable {
             node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
         }
     }
+
+    @RequiredArgsConstructor
+    private class StepIntoReverseHandler implements java.util.function.Consumer<PTreeNode<KeyData>> {
+        private final PTreeNode<KeyData> original;
+
+        @Override
+        public void accept(PTreeNode<KeyData> keyDataPTreeNode) {
+            Platform.runLater(this::acceptUI);
+        }
+
+        public void acceptUI() {
+            model.getDebuggerFramework().getStatePointerListener().remove(this);
+            PTreeNode<KeyData> stepInvOver = model.getDebuggerFramework().getStatePointer();
+            GoalNode<KeyData> beforeNode = stepInvOver.getStateBeforeStmt().getSelectedGoalNode();
+            List<GoalNode<KeyData>> stateAfterStmt = stepInvOver.getStateAfterStmt().getGoals();
+
+            ProofTree ptree = new ProofTree();
+            Proof proof = beforeNode.getData().getProof();
+
+            Node pnode = beforeNode.getData().getNode();
+            //      stateAfterStmt.forEach(keyDataGoalNode -> System.out.println("keyDataGoalNode.getData().getNode().serialNr() = " + keyDataGoalNode.getData().getNode().serialNr()));
+
+            ptree.setProof(proof);
+            ptree.setRoot(pnode);
+            ptree.addNodeColor(pnode, "blueviolet");
+            ptree.setDeactivateRefresh(true);
+
+            if (stateAfterStmt.size() > 0) {
+                Set<Node> sentinels = proof.getSubtreeGoals(pnode)
+                        .stream()
+                        .map(Goal::node)
+                        .collect(Collectors.toSet());
+                ptree.getSentinels().addAll(sentinels);
+                sentinels.forEach(node -> ptree.addNodeColor(node, "blueviolet"));
+            } else {
+                Set<Node> sentinels = new HashSet<>();
+                Iterator<Node> nodeIterator = beforeNode.getData().getNode().leavesIterator();
+                while (nodeIterator.hasNext()) {
+                    Node next = nodeIterator.next();
+
+                    sentinels.add(next);
+                }
+                ptree.getSentinels().addAll(sentinels);
+                sentinels.forEach(node -> ptree.addNodeColor(node, "blueviolet"));
+                //traverseProofTreeAndAddSentinelsToLeaves();
+            }
+
+
+            ptree.expandRootToSentinels();
+            DockNode node = new DockNode(ptree, "Proof Tree for Step Inverse Into: " +
+                    original.getStatement().accept(new ShortCommandPrinter())
+            );
+
+            node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
+
+        }
+    }
+
     //endregion
 }
 //deprecated
