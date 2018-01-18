@@ -11,7 +11,8 @@
 
         .column>div{
             float: left;
-            width: 33%;
+            width: 30%;
+            margin:1%;
             text-align: left;
         }
 
@@ -21,10 +22,20 @@
         }
         
         img.thumb {
-            width:300px; 
-            height:300px;
+            width:100%;           
             border-radius:150px;
         }
+       
+       .column h3 {
+       
+       }
+       
+       div.feature-caption {
+            text-align: block;           
+           text-align: justify;
+           font-size: 80%;
+       }
+       
 </style>
 
 # Proof Script Debugger for the KeY System
@@ -70,57 +81,64 @@ is published at [HVC 2017](hvc2017.pdf)
         <p> 
         The different parts of the proof state can be inspected:
         <ul>
-         <li>list of open goals</li>
-         <li>sequent of selected open goal</li>
-         <li>path through program (if existing) for selected open goal</li>
-         </ul>
+        <li>list of open goals</li>
+        <li>sequent of selected open goal</li>
+        <li>path through program (if existing) for selected open goal</li>
+        </ul>
         </p> 
     </div>
     <div >
         <h3>Adjustable view on list of open goals</h3>
         <img class="thumb" src="img/thumb_ScreenshotGoalList.png" />
+        <div class="feature-caption"/></div>
     </div>
     <div >
         <h3>Explore the proof tree of KeY</h3>
-         <img class="thumb" src="img/thumb_ScreenshotProofTree.png"/>
+        <img class="thumb" src="img/thumb_ScreenshotProofTree.png"/>
+        <div class="feature-caption"/></div>
     </div>
 </div>
 <div style="clear: both;"/>
-    <div class="column">
-        <div >
-            <h3>Set a breakpoint and run execution to breakpoint</h3>
-            <img src="img/thumb_ScreenshotBreakpoint.png" class="thumb"/>
-            <div class="feature-caption">
-                Mark lines with an (conditional) breakpoint to pause the script execution.
-            </div
+
+<div class="column">
+    <div>
+        <h3>Set a breakpoint and run execution to breakpoint</h3>
+        <img src="img/thumb_ScreenshotBreakpoint.png" class="thumb"/>
+        <div class="feature-caption">
+            Mark lines with an (conditional) breakpoint to pause the script execution.
         </div>
-        <div> 
-            <h3>Stepwise evaluation for time travellers</h3>
-            <img src="img/thumb_ScreenshotStep.png" class="thumb" />
-            <div class="feature-caption">
-                Stepwise script execution: step over and into.
-                Our special offers for time travellers: Go backwards in time
-                and then Back to the Future,again!
-            </div>
-        </div>
-        <div> 
-        <h3> Interactive Rule Application</h3>
-            <img src="img/thumb_ScreenshotInteractive.png" class="thumb" />
-            <div class="feature-caption">
-            Select rules for interactive application.
-            </div>
     </div>
+    <div> 
+        <h3>Stepwise evaluation for time travellers</h3>
+        <img src="img/thumb_ScreenshotStep.png" class="thumb" />
+        <div class="feature-caption">
+            Stepwise script execution: step over and into.
+            Our special offers for time travellers: Go backwards in time
+            and then Back to the Future,again!
+        </div>
+    </div>
+    <div> 
+      <h3> Interactive Rule Application</h3>
+        <img src="img/thumb_ScreenshotInteractive.png" class="thumb" />
+        <div class="feature-caption">
+        Select rules for interactive application.
+        </div>
+  </div>
 </div>
 
 <div style="clear: both;"/> 
-    
-    
 
-## Downloads
+<h2>Getting Started</h2>
 
-* PSDBG - **Version 1.0-FM** [JAR](~/releases/psdbg-1.0-fm.jar)
-    Special Version for Formal Methods
+<h2>Downloads</h2>
 
+<ul>
+ <li>PSDBG - <strong>Version 1.0-FM</strong> 
+    <a href="~/releases/psdbg-1.0-fm.jar">psdbg-1.0-fm.jar</a>
+    <br>
+    Special Version for the tool paper at Formal Methods 2018. 
+ </li>
+</ul>
 
 <div style="clear: both;"/>
 
