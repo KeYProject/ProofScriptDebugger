@@ -42,7 +42,6 @@
 
   }
 
-
   .EXE_MARKER {
     -fx-fill: @violet;
     -fx-border-color: red;
@@ -135,7 +134,6 @@
   -fx-font-size: 9pt;
 }
 
-
 .java-area {
   -fx-background-color: @basenavy;
   //  -fx-background-color: @base3;
@@ -143,7 +141,6 @@
   -fx-font-size: 12pt;
   //-fx-font-size: 18pt;
   -fx-fill: @base01;
-
 
   .ABSTRACT, .ASSERT, .BOOLEAN, .BREAK, .BYTE, .CASE, .CATCH, .CHAR, .CLASS, .CONST,
   .CONTINUE, .DEFAULT, .DO, .DOUBLE, .ELSE, .ENUM, .EXTENDS, .FINAL, .FINALLY,
@@ -197,9 +194,9 @@
   .line-highlight {
     -rtfx-background-color: @cyan;
   }
-    .line-un-highlight {
-      -rtfx-background-color: @basenavy;
-    }
+  .line-un-highlight {
+    -rtfx-background-color: @basenavy;
+  }
 
 }
 
@@ -325,6 +322,7 @@
     -fx-background-color: blueviolet;
   }
 }
+
 /**********************************************************************************************************************/
 
 .context-menu {
@@ -333,3 +331,68 @@
   -fx-font-size: 9pt;
   //-fx-font-size: 9pt;
 }
+
+/**********************************************************************************************************************/
+
+.graph {
+  -fx-background-color: white;
+}
+
+.graph-cell {
+  -fx-background-color: @base2;
+  /*-fx-border-color: black;
+  -fx-border-width: 1pt;
+  -fx-border-radius: 10pt;*/
+  -fx-text-alignment: center;
+  -fx-row-valignment: center;
+}
+
+.graph-cell.vbox {
+  -fx-spacing:3pt;
+  -fx-alignment: center;
+  -fx-fill-width: true;
+}
+
+.graph-cell.current-node  {
+  -fx-background-color: firebrick;
+  -fx-stroke: white;
+
+  .label {
+    -fx-text-alignment:center;
+    -fx-alignment: center;
+    -fx-font-size: 120%;
+    -fx-text-fill: white;
+  }
+
+}
+
+
+.graph-cell .label {
+  -fx-text-alignment: center;
+}
+
+.edge.intro {
+  -fx-stroke: #6679aa;
+}
+
+.edge.over {
+  -fx-stroke: #200080;
+}
+
+.edge.otni {
+  -fx-stroke: #AA9766;
+}
+
+.edge.revo {
+  -fx-stroke: #DFFF80;
+}
+
+.edge.rtrn {
+  -fx-stroke: orangered;
+}
+
+.edge-label {
+  -fx-background-color: antiquewhite;
+  -fx-stroke: navy;
+}
+

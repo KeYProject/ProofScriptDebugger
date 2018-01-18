@@ -161,10 +161,10 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     }
 
     private Value evaluate(GoalNode<T> g, Expression expr) {
-        enterScope(expr);
+        //enterScope(expr);
         Evaluator<T> evaluator = new Evaluator<>(g.getAssignments(), g);
         evaluator.setMatcher(matcherApi);
-        exitScope(expr);
+        //exitScope(expr);
         return evaluator.eval(expr);
     }
 

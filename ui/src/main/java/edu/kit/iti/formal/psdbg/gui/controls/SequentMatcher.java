@@ -117,7 +117,7 @@ public class SequentMatcher extends BorderPane {
                 services);
         ObservableList<Map<String, MatchPath>> resultlist = FXCollections.observableArrayList(matchings);
 
-        //If no matchings found, add "No matchings found"
+        //If no matchings found, addCell "No matchings found"
         if (resultlist.isEmpty()) {
             matchingsView.setVisible(false);
             nomatchings.setVisible(true);

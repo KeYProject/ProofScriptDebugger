@@ -344,9 +344,9 @@ public class ProofTree extends BorderPane {
 
            /* if(!label.equals("Proof")) {
                 TreeItem<TreeNode> self = new TreeItem<>(new TreeNode(n.serialNr() + ": " + toString(n), n));
-                ti.getChildren().add(self);
+                ti.getChildren().addCell(self);
             }*/
-            // ti.getChildren().add(e);
+            // ti.getChildren().addCell(e);
 
 
             return ti;
@@ -373,7 +373,7 @@ public class ProofTree extends BorderPane {
 
                     TreeItem<TreeNode> populate = populate(childNode.getNodeInfo().getBranchLabel(), childNode);
                     // TreeItem<TreeNode> self = new TreeItem<>(new TreeNode(childNode.serialNr() + ": " + toString(childNode), childNode));
-                    // populate.getChildren().add(0, self);
+                    // populate.getChildren().addCell(0, self);
                     ti.getChildren().add(populate);
 
                 } else {
@@ -385,11 +385,11 @@ public class ProofTree extends BorderPane {
                 }
             }
 
-/*            node.childrenIterator().forEachRemaining(child -> ti.getChildren().add(
+/*            node.childrenIterator().forEachRemaining(child -> ti.getChildren().addCell(
                     populate(child.getNodeInfo().getBranchLabel(), child)));
 */
             //node.children().forEach(child ->
-            //        ti.getChildren().add(populate(child.getNodeInfo().getBranchLabel(), child)));
+            //        ti.getChildren().addCell(populate(child.getNodeInfo().getBranchLabel(), child)));
         }
 
         return ti;

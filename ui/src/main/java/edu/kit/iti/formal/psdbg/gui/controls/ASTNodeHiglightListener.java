@@ -41,7 +41,7 @@ public class ASTNodeHiglightListener<T> {
         if (currentInterpreter != null) deinstall(interpreter);
         int i = interpreter.getEntryListeners().size();
         interpreter.getEntryListeners().add(0, list);
-        //    interpreter.getExitListeners().add(0, exitListener);
+        //    interpreter.getExitListeners().addCell(0, exitListener);
         currentInterpreter = interpreter;
     }
 
