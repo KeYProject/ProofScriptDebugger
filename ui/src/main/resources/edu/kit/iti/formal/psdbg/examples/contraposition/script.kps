@@ -1,16 +1,21 @@
 // Please select one of the following scripts.
 //
 
+script autoScript(){
+    auto;
+}
+
 script test1234(){
     impRight;
+    autoScript;
     //auto;
 }
 
 script test23(){
 impRight;
-x:term := find(match `?rt ==>`);
-impLeft formula=x;
-
+//x:term := find(match `?rt ==>`);
+//impLeft formula=x;
+impLeft formula=find(match `?rt ==>`);
 
 cases{
     case match `q==>`:
