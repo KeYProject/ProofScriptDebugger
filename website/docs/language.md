@@ -27,7 +27,7 @@ var1 : type :=  value;
 var2 :=  value;
 ```
 
-Both statements declare a variable, in the later we directly assign a value, in
+Both statements declare a variable, in the latter  case (`var1` and `var2`) we directly assign a value, in
 the first form `var0` receives a default value.
 
 ### Types and Literals
@@ -42,7 +42,7 @@ We have following types: `INT`, `TERM<Sort>`, `String`.
 
 
 * `TERM<S>` represents a term of sort `S` in KeY.
-  `S` can be any sort of KeY. If the sort is ommitied, then `S=Any`.
+  `S` can be any sort given by KeY. If the sort is ommitied, then `S=Any`.
 
   ```
   `f(x)`
@@ -59,9 +59,9 @@ We have following types: `INT`, `TERM<Sort>`, `String`.
 
 ### Special Variables
 
-Not all variables are equal
+To expose settings of the underlying prover to the user we include special variables:
 
-* `MAX_STEPS` : amount
+* `MAX_STEPS` : amount denotes the maximum number of proof steps the underlying prover is allowed to perform
 
 
 
