@@ -114,6 +114,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
             s.setSignature(sig);
         }
         s.setBody((Statements) ctx.body.accept(this));
+        s.getBody().setParent(s);
         return s;
     }
 

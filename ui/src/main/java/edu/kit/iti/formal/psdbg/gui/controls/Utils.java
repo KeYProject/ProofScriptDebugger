@@ -261,8 +261,8 @@ public class Utils {
 
         GridPane expContent = new GridPane();
         expContent.setMaxWidth(Double.MAX_VALUE);
-        expContent.add(label, 0, 0);
-        expContent.add(textArea, 0, 1);
+        expContent.addCell(label, 0, 0);
+        expContent.addCell(textArea, 0, 1);
 
         alert.getDialogPane().setExpandableContent(expContent);
         */

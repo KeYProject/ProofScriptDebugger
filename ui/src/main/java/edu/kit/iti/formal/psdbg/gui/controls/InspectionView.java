@@ -143,7 +143,7 @@ public class InspectionView extends BorderPane {
                     Mode.LIVING.name(),
                     Mode.POSTMORTEM.name()
             );
-            getStyleClass().add(mode.get().name());
+            getStyleClass().addCell(mode.get().name());
         });
          */
     }

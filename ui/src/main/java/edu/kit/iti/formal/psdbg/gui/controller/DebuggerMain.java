@@ -20,6 +20,8 @@ import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.fmt.DefaultFormatter;
 import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
 import edu.kit.iti.formal.psdbg.gui.controls.*;
+import edu.kit.iti.formal.psdbg.gui.graph.Graph;
+import edu.kit.iti.formal.psdbg.gui.graph.GraphView;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.gui.model.InterpreterThreadState;
@@ -69,8 +71,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
-import org.reactfx.util.Timer;
-
 /**
  * Controller for the Debugger MainWindow
  *
@@ -88,76 +88,53 @@ public class DebuggerMain implements Initializable {
 
     @Getter
     private final DebuggerMainModel model = new DebuggerMainModel();
+    private final GraphView graphView = new GraphView();
+    private final Graph.PTreeGraph graph = graphView.getGraph();
 
+    private final DockNode graphViewNode = new DockNode(graphView, "Debug graph");
     private InspectionViewsController inspectionViewsController;
-
     private ScriptController scriptController;
-
     @FXML
     private DebuggerStatusBar statusBar;
-
     @FXML
     private DockPane dockStation;
-
     @FXML
     private ToggleButton togBtnCommandHelp;
-
     @FXML
     private ToggleButton togBtnProofTree;
-
     @FXML
     private ToggleButton togBtnActiveInspector;
-
     @FXML
     private ToggleButton togBtnWelcome;
-
     @FXML
     private ToggleButton togBtnCodeDock;
-
     @FXML
     private CheckMenuItem miCommandHelp;
-
     @FXML
     private CheckMenuItem miCodeDock;
-
     @FXML
     private CheckMenuItem miWelcomeDock;
-
     @FXML
     private CheckMenuItem miActiveInspector;
-
     @FXML
     private CheckMenuItem miProofTree;
-
     @FXML
     private ToggleButton btnInteractiveMode;
-
     private JavaArea javaArea = new JavaArea();
-
     private DockNode javaAreaDock = new DockNode(javaArea, "Java Source",
             new MaterialDesignIconView(MaterialDesignIcon.CODEPEN)
     );
-
     //-----------------------------------------------------------------------------------------------------------------
     private ProofTree proofTree = new ProofTree();
-
     private DockNode proofTreeDock = new DockNode(proofTree, "Proof Tree");
-
     private WelcomePane welcomePane = new WelcomePane(this);
-
     private DockNode welcomePaneDock = new DockNode(welcomePane, "Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
-
     private DockNode activeInspectorDock;
-
     private CommandHelp commandHelp = new CommandHelp();
-
     private DockNode commandHelpDock = new DockNode(commandHelp, "DebuggerCommand Help");
-
     private InteractiveModeController interactiveModeController;
-
     @FXML
     private Menu examplesMenu;
-
     private Timer interpreterThreadTimer;
 
     @Subscribe
@@ -303,6 +280,8 @@ public class DebuggerMain implements Initializable {
      * @see {@link #handleStatePointer(PTreeNode)}
      */
     private void handleStatePointerUI(PTreeNode<KeyData> node) {
+        graph.addPartiallyAndMark(node);
+
         if (node != null) {
             getInspectionViewsController().getActiveInspectionViewTab().activate(node, node.getStateBeforeStmt());
             scriptController.getDebugPositionHighlighter().highlight(node.getStatement());
@@ -326,7 +305,7 @@ public class DebuggerMain implements Initializable {
             showCodeDock(null);
         });
 
-        //add listener for linehighlighting when changing selection in inspectionview
+        //addCell listener for linehighlighting when changing selection in inspectionview
         getInspectionViewsController().getActiveInspectionViewTab().getModel().highlightedJavaLinesProperty().
                 addListener((observable, oldValue, newValue) -> {
                     if (newValue != null) {
@@ -346,6 +325,19 @@ public class DebuggerMain implements Initializable {
 
     }
 
+    //region Actions: Menu
+
+    /*@FXML
+    public void saveAsScript() throws IOException {
+        File f = openFileChooserSaveDialog("Save script", "Save Script files", "kps");
+        if (f != null) {
+           /* if(!f.exists()){
+                f.createNewFile();
+            }
+            saveScript(f);
+        }
+    }*/
+
     public KeYProofFacade getFacade() {
         return FACADE;
     }
@@ -364,19 +356,6 @@ public class DebuggerMain implements Initializable {
             examplesMenu.getItems().add(item);
         });
     }
-
-    //region Actions: Menu
-
-    /*@FXML
-    public void saveAsScript() throws IOException {
-        File f = openFileChooserSaveDialog("Save script", "Save Script files", "kps");
-        if (f != null) {
-           /* if(!f.exists()){
-                f.createNewFile();
-            }
-            saveScript(f);
-        }
-    }*/
 
     public void showCodeDock(ActionEvent actionEvent) {
         if (!javaAreaDock.isDocked()) {
@@ -474,7 +453,6 @@ public class DebuggerMain implements Initializable {
         }
     }
 
-
     /**
      * Execute the script that with using the interpreter that is build using the interpreterbuilder
      *
@@ -536,11 +514,45 @@ public class DebuggerMain implements Initializable {
     }
 
     @FXML
+    public void debugGraph(ActionEvent event) {
+        if (!graphViewNode.isDocked() && !graphViewNode.isFloating()) {
+            graphViewNode.dock(dockStation, DockPos.CENTER);
+        }
+
+        graph.clear(true);
+
+        for (PTreeNode<KeyData> n : model.getDebuggerFramework().getStates()) {
+            graph.addCell(n);
+        }
+
+        for (PTreeNode<KeyData> n : model.getDebuggerFramework().getStates()) {
+            if (n.getStepOver() != null) {
+                graph.addEdge(n, n.getStepOver(), "over");
+            }
+            if (n.getStepInto() != null) {
+                graph.addEdge(n, n.getStepInto(), "into");
+            }
+            if (n.getStepInvOver() != null) {
+                graph.addEdge(n, n.getStepInvOver(), "revo");
+            }
+            if (n.getStepInvInto() != null) {
+                graph.addEdge(n, n.getStepInvInto(), "otni");
+            }
+            if (n.getStepReturn() != null) {
+                graph.addEdge(n, n.getStepReturn(), "rtrn");
+            }
+        }
+    }
+
+    @FXML
     public void debugPrintDot(@Nullable ActionEvent ae) {
         if (model.getDebuggerFramework() == null) {
             statusBar.publishErrorMessage("can print debug info, no debugger started!");
             return;
         }
+
+        debugGraph(ae);
+
         try (PrintWriter out = new PrintWriter(new FileWriter("debug.dot"))) {
             out.println("digraph G {");
             for (PTreeNode<KeyData> n : model.getDebuggerFramework().getStates()) {
@@ -729,6 +741,7 @@ public class DebuggerMain implements Initializable {
 
     /**
      * Reload a problem from the beginning
+     *
      * @param event
      */
     @FXML
@@ -765,6 +778,7 @@ public class DebuggerMain implements Initializable {
 
 
     }
+
     @FXML
     public void closeProgram() {
         System.exit(0);
@@ -914,6 +928,7 @@ public class DebuggerMain implements Initializable {
     /**
      * Perform a step back
      * Does stepinto back
+     *
      * @param actionEvent
      */
     public void stepBack(ActionEvent actionEvent) {
@@ -1048,7 +1063,7 @@ public class DebuggerMain implements Initializable {
         webEngine.load(url);
         DockNode dn = new DockNode(browser);
         dn.setTitle("ScriptLanguage Description");
-        //this.dockStation.getChildren().add(dn);
+        //this.dockStation.getChildren().addCell(dn);
         dn.dock(dockStation, DockPos.LEFT);
     }
 

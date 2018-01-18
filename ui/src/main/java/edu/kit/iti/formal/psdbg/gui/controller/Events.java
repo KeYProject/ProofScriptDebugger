@@ -77,7 +77,7 @@ public class Events {
     @RequiredArgsConstructor
     /**
      * Event that should be fired when a new goal node was created to inform view
-     * components s.t. they can update their view
+     * components s.t. they can updateTarget their view
      */
     public static class EventForNewGoalView {
         private final ASTNode correspodingASTNode;

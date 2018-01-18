@@ -257,7 +257,7 @@ public class TacletContextMenu extends ContextMenu {
 
             // Items for insertion of hidden terms appear in a submenu.
             /*if (insertHiddenController.isResponsible(item)) {
-                insertHiddenController.add(item);
+                insertHiddenController.addCell(item);
             } else */
             {
                 // If one of the sets contains the rule it is considered rare
@@ -415,10 +415,10 @@ public class TacletContextMenu extends ContextMenu {
                                     String inputText) {
         TextInputDialog dialog = new TextInputDialog(inputText);
 
-        // Get the Stage and add KeY Icon.
+        // Get the Stage and addCell KeY Icon.
        /* Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
         stage.getIcons()
-                .add(new Image(NUIConstants.KEY_APPLICATION_WINDOW_ICON_PATH));
+                .addCell(new Image(NUIConstants.KEY_APPLICATION_WINDOW_ICON_PATH));
         dialog.setTitle("Abbreviation Dialog");
         dialog.setHeaderText(header);
         dialog.setContentText(message);
