@@ -13,14 +13,14 @@ public class StepIntoReverseCommand<T> extends DebuggerCommand<T> {
             if (statePointer.getStepInvOver() != null) {
                 PTreeNode<T> statementBefore = statePointer.getStepInvOver();
                 dbg.setStatePointer(statementBefore);
+            } else{
+                dbg.setStatePointer(statePointer);
 
             } else {
                 if (statePointer.isLastNode() || statePointer.isFirstNode()) {
                     System.out.println("We need Sonderbehandlung here");
                 }
             }
-        } 
-
-
+        }
     }
 }
