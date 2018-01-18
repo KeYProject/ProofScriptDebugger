@@ -134,7 +134,7 @@ public class DebuggerFramework<T> {
     private void run() {
         try {
             interpreter.interpret(mainScript);
-            //dummyproofnode
+            ptreeManager.fireStatePointerChanged();
             succeedListener.accept(this);
         } catch (Exception e) {
             error = e;

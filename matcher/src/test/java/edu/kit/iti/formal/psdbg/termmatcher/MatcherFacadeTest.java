@@ -98,12 +98,8 @@ public class MatcherFacadeTest {
         shouldMatch("1*j", "1 + ?Y", "[]");
         shouldMatch("1*j", "1 * ?Y", "[{?Y=j}]");
 
+        //does not match
         shouldMatch("1*j", "?Y * 1", "[{?Y=j}]");
-
-
-        //shouldMatch("f(a) ==> f(a), f(b)" , "==> f(?X)", [{?X=a}]);
-        //shouldMatch("f(a) ==> f(a), f(b)" , "f(a) ==> f(?X)", [{?X=a}]);
-        //shouldNotMatch("f(a) ==> f(a), f(b)" , "f(?X) ==> f(?X), f(a)");
 
     }
 

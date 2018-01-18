@@ -17,8 +17,8 @@ markdown_extensions:
       permalink: True
       separator: "_"
   - sane_lists
-  - mdx_math:
-      enable_dollar_delimiter: True #for use of inline $..$
+    #  - mdx_math:
+    #  enable_dollar_delimiter: True #for use of inline $..$
 
-extra_javascript: ['https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML']
+    #extra_javascript: ['https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML']
 

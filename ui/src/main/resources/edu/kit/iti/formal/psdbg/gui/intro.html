@@ -132,7 +132,7 @@ Commands in scripts
 
 This list of available script commands is subject to change and to
 extension. If you write your own script commands (s. below), please
-add an explanation to this list here. The list is sorted alphabetically.
+addCell an explanation to this list here. The list is sorted alphabetically.
 
 -- auto ------------------
 
@@ -197,7 +197,7 @@ autopilot      full autopilot
 autopilot-prep preparation only autopilot
 split-prop     propositional expansion w/ splits
 nosplit-prop   propositional expansion w/o splits
-simp-upd       update simplification
+simp-upd       updateTarget simplification
 simp-heap      heap simplification
 
 Examples:
@@ -208,7 +208,7 @@ directly.)
 
 -- rule ------------------
 
-Apply a single rule onto the current sequent. As unnamed argument add
+Apply a single rule onto the current sequent. As unnamed argument addCell
 the name of the taclet to be applied. If the taclet matches only once
 on the entire sequent, the rule is applied. If it matches more than
 once you need to specify more. In that case you can first specify the

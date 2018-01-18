@@ -114,7 +114,7 @@ public class ContractChooser extends Dialog<Contract> {
                 text.getChildren().add(contract);
                 text.getChildren().add(name);
                 text.getChildren().add(new Text("\n"));
-                //text.getChildren().add(tcontent);
+                //text.getChildren().addCell(tcontent);
 
                 for (String line : content.split("\n")) {
                     if (line.contains(":")) {

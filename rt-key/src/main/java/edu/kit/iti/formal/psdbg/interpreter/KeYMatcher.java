@@ -1,6 +1,5 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
-import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Name;
 import de.uka.ilkd.key.logic.Term;
@@ -163,10 +162,11 @@ public class KeYMatcher implements MatcherApi<KeyData> {
 
     private Value<String> toValueTerm(KeyData currentState, Term matched) {
         String reprTerm = LogicPrinter.quickPrintTerm(matched, currentState.getEnv().getServices());
-
+        //Hack: to avoid newlines
+        String reprTermReformatted = reprTerm.trim();
         return new Value<>(
                 new TermType(new SortType(matched.sort())),
-                reprTerm
+                reprTermReformatted
         );
     }
 

@@ -337,13 +337,13 @@ public class ScriptArea extends BorderPane {
             codeArea.setStyleSpans(0, codeArea.getStyleSpans(0, getExecutionMarkerPosition()).mapStyles(styleMapper));
 
 
-            //this results in a NotSupportedOperation Exception because the add to an immutable list is not allowed
+            //this results in a NotSupportedOperation Exception because the addCell to an immutable list is not allowed
            /* getStyleSpans(0, getExecutionMarkerPosition()).forEach(span -> {
                 Collection<String> style = span.getStyle();
                 if (style.isEmpty()) {
                     setStyle(0, getExecutionMarkerPosition(), Collections.singleton("NON_EXE_AREA"));
                 } else {
-                    style.add("NON_EXE_AREA");
+                    style.addCell("NON_EXE_AREA");
                 }
             });
 */

@@ -15,11 +15,12 @@ import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
-import edu.kit.iti.formal.psdbg.StepIntoCommand;
 import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.fmt.DefaultFormatter;
 import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
 import edu.kit.iti.formal.psdbg.gui.controls.*;
+import edu.kit.iti.formal.psdbg.gui.graph.Graph;
+import edu.kit.iti.formal.psdbg.gui.graph.GraphView;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.gui.model.InterpreterThreadState;
@@ -28,6 +29,7 @@ import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.application.Platform;
@@ -88,76 +90,53 @@ public class DebuggerMain implements Initializable {
 
     @Getter
     private final DebuggerMainModel model = new DebuggerMainModel();
+    private final GraphView graphView = new GraphView();
+    private final Graph.PTreeGraph graph = graphView.getGraph();
 
+    private final DockNode graphViewNode = new DockNode(graphView, "Debug graph");
     private InspectionViewsController inspectionViewsController;
-
     private ScriptController scriptController;
-
     @FXML
     private DebuggerStatusBar statusBar;
-
     @FXML
     private DockPane dockStation;
-
     @FXML
     private ToggleButton togBtnCommandHelp;
-
     @FXML
     private ToggleButton togBtnProofTree;
-
     @FXML
     private ToggleButton togBtnActiveInspector;
-
     @FXML
     private ToggleButton togBtnWelcome;
-
     @FXML
     private ToggleButton togBtnCodeDock;
-
     @FXML
     private CheckMenuItem miCommandHelp;
-
     @FXML
     private CheckMenuItem miCodeDock;
-
     @FXML
     private CheckMenuItem miWelcomeDock;
-
     @FXML
     private CheckMenuItem miActiveInspector;
-
     @FXML
     private CheckMenuItem miProofTree;
-
     @FXML
     private ToggleButton btnInteractiveMode;
-
     private JavaArea javaArea = new JavaArea();
-
     private DockNode javaAreaDock = new DockNode(javaArea, "Java Source",
             new MaterialDesignIconView(MaterialDesignIcon.CODEPEN)
     );
-
     //-----------------------------------------------------------------------------------------------------------------
     private ProofTree proofTree = new ProofTree();
-
     private DockNode proofTreeDock = new DockNode(proofTree, "Proof Tree");
-
     private WelcomePane welcomePane = new WelcomePane(this);
-
     private DockNode welcomePaneDock = new DockNode(welcomePane, "Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
-
     private DockNode activeInspectorDock;
-
     private CommandHelp commandHelp = new CommandHelp();
-
     private DockNode commandHelpDock = new DockNode(commandHelp, "DebuggerCommand Help");
-
     private InteractiveModeController interactiveModeController;
-
     @FXML
     private Menu examplesMenu;
-
     private Timer interpreterThreadTimer;
 
     @Subscribe
@@ -303,6 +282,8 @@ public class DebuggerMain implements Initializable {
      * @see {@link #handleStatePointer(PTreeNode)}
      */
     private void handleStatePointerUI(PTreeNode<KeyData> node) {
+        graph.addPartiallyAndMark(node);
+
         if (node != null) {
             getInspectionViewsController().getActiveInspectionViewTab().activate(node, node.getStateBeforeStmt());
             scriptController.getDebugPositionHighlighter().highlight(node.getStatement());
@@ -326,7 +307,7 @@ public class DebuggerMain implements Initializable {
             showCodeDock(null);
         });
 
-        //add listener for linehighlighting when changing selection in inspectionview
+        //addCell listener for linehighlighting when changing selection in inspectionview
         getInspectionViewsController().getActiveInspectionViewTab().getModel().highlightedJavaLinesProperty().
                 addListener((observable, oldValue, newValue) -> {
                     if (newValue != null) {
@@ -346,6 +327,19 @@ public class DebuggerMain implements Initializable {
 
     }
 
+    //region Actions: Menu
+
+    /*@FXML
+    public void saveAsScript() throws IOException {
+        File f = openFileChooserSaveDialog("Save script", "Save Script files", "kps");
+        if (f != null) {
+           /* if(!f.exists()){
+                f.createNewFile();
+            }
+            saveScript(f);
+        }
+    }*/
+
     public KeYProofFacade getFacade() {
         return FACADE;
     }
@@ -364,19 +358,6 @@ public class DebuggerMain implements Initializable {
             examplesMenu.getItems().add(item);
         });
     }
-
-    //region Actions: Menu
-
-    /*@FXML
-    public void saveAsScript() throws IOException {
-        File f = openFileChooserSaveDialog("Save script", "Save Script files", "kps");
-        if (f != null) {
-           /* if(!f.exists()){
-                f.createNewFile();
-            }
-            saveScript(f);
-        }
-    }*/
 
     public void showCodeDock(ActionEvent actionEvent) {
         if (!javaAreaDock.isDocked()) {
@@ -474,7 +455,6 @@ public class DebuggerMain implements Initializable {
         }
     }
 
-
     /**
      * Execute the script that with using the interpreter that is build using the interpreterbuilder
      *
@@ -527,12 +507,43 @@ public class DebuggerMain implements Initializable {
             btnInteractiveMode.setDisable(false);
             assert model.getDebuggerFramework() != null;
             btnInteractiveMode.setSelected(true);
-            /*PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
+            PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
             assert statePointer!=null;
             State<KeyData> lastState = statePointer.getStateAfterStmt();
             getInspectionViewsController().getActiveInspectionViewTab().activate(statePointer, lastState);
-            */
+
         });
+    }
+
+    @FXML
+    public void debugGraph(ActionEvent event) {
+        if (!graphViewNode.isDocked() && !graphViewNode.isFloating()) {
+            graphViewNode.dock(dockStation, DockPos.CENTER);
+        }
+
+        graph.clear(true);
+
+        for (PTreeNode<KeyData> n : model.getDebuggerFramework().getStates()) {
+            graph.addCell(n);
+        }
+
+        for (PTreeNode<KeyData> n : model.getDebuggerFramework().getStates()) {
+            if (n.getStepOver() != null) {
+                graph.addEdge(n, n.getStepOver(), "over");
+            }
+            if (n.getStepInto() != null) {
+                graph.addEdge(n, n.getStepInto(), "into");
+            }
+            if (n.getStepInvOver() != null) {
+                graph.addEdge(n, n.getStepInvOver(), "revo");
+            }
+            if (n.getStepInvInto() != null) {
+                graph.addEdge(n, n.getStepInvInto(), "otni");
+            }
+            if (n.getStepReturn() != null) {
+                graph.addEdge(n, n.getStepReturn(), "rtrn");
+            }
+        }
     }
 
     @FXML
@@ -541,6 +552,9 @@ public class DebuggerMain implements Initializable {
             statusBar.publishErrorMessage("can print debug info, no debugger started!");
             return;
         }
+
+        debugGraph(ae);
+
         try (PrintWriter out = new PrintWriter(new FileWriter("debug.dot"))) {
             out.println("digraph G {");
             for (PTreeNode<KeyData> n : model.getDebuggerFramework().getStates()) {
@@ -729,6 +743,7 @@ public class DebuggerMain implements Initializable {
 
     /**
      * Reload a problem from the beginning
+     *
      * @param event
      */
     @FXML
@@ -765,6 +780,7 @@ public class DebuggerMain implements Initializable {
 
 
     }
+
     @FXML
     public void closeProgram() {
         System.exit(0);
@@ -893,7 +909,7 @@ public class DebuggerMain implements Initializable {
      * @param actionEvent
      */
     public void stepInto(ActionEvent actionEvent) {
-        LOGGER.debug("DebuggerMain.stepOver");
+        LOGGER.debug("DebuggerMain.stepInto");
         try {
             if (model.getDebuggerFramework().getStatePointer().isAtomic()) {
                 model.getDebuggerFramework().getStatePointerListener()
@@ -914,8 +930,10 @@ public class DebuggerMain implements Initializable {
     /**
      * Perform a step back
      * Does stepinto back
+     *
      * @param actionEvent
      */
+    @Deprecated
     public void stepBack(ActionEvent actionEvent) {
         LOGGER.debug("DebuggerMain.stepBack");
         try {
@@ -938,13 +956,26 @@ public class DebuggerMain implements Initializable {
 
 
     public void stepIntoReverse(ActionEvent actionEvent) {
-        LOGGER.debug("DebuggerMain.stepOverReverse");
+        LOGGER.debug("DebuggerMain.stepIntoReverser");
         try {
+            if (model.getDebuggerFramework().getStatePointer().isAtomic()) {
+                model.getDebuggerFramework().getStatePointerListener()
+                        .add(new StepIntoReverseHandler(model.getStatePointer()));
+            }
             model.getDebuggerFramework().execute(new StepIntoReverseCommand<>());
         } catch (DebuggerException e) {
             Utils.showExceptionDialog("", "", "", e);
             LOGGER.error(e);
         }
+
+
+/*        LOGGER.debug("DebuggerMain.stepOverReverse");
+        try {
+            model.getDebuggerFramework().execute(new StepIntoReverseCommand<>());
+        } catch (DebuggerException e) {
+            Utils.showExceptionDialog("", "", "", e);
+            LOGGER.error(e);
+        }*/
     }
 
     public void stopDebugMode(ActionEvent actionEvent) {
@@ -1048,7 +1079,7 @@ public class DebuggerMain implements Initializable {
         webEngine.load(url);
         DockNode dn = new DockNode(browser);
         dn.setTitle("ScriptLanguage Description");
-        //this.dockStation.getChildren().add(dn);
+        //this.dockStation.getChildren().addCell(dn);
         dn.dock(dockStation, DockPos.LEFT);
     }
 
@@ -1182,6 +1213,64 @@ public class DebuggerMain implements Initializable {
             node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
         }
     }
+
+    @RequiredArgsConstructor
+    private class StepIntoReverseHandler implements java.util.function.Consumer<PTreeNode<KeyData>> {
+        private final PTreeNode<KeyData> original;
+
+        @Override
+        public void accept(PTreeNode<KeyData> keyDataPTreeNode) {
+            Platform.runLater(this::acceptUI);
+        }
+
+        public void acceptUI() {
+            model.getDebuggerFramework().getStatePointerListener().remove(this);
+            PTreeNode<KeyData> stepInvOver = model.getDebuggerFramework().getStatePointer();
+            GoalNode<KeyData> beforeNode = stepInvOver.getStateBeforeStmt().getSelectedGoalNode();
+            List<GoalNode<KeyData>> stateAfterStmt = stepInvOver.getStateAfterStmt().getGoals();
+
+            ProofTree ptree = new ProofTree();
+            Proof proof = beforeNode.getData().getProof();
+
+            Node pnode = beforeNode.getData().getNode();
+            //      stateAfterStmt.forEach(keyDataGoalNode -> System.out.println("keyDataGoalNode.getData().getNode().serialNr() = " + keyDataGoalNode.getData().getNode().serialNr()));
+
+            ptree.setProof(proof);
+            ptree.setRoot(pnode);
+            ptree.addNodeColor(pnode, "blueviolet");
+            ptree.setDeactivateRefresh(true);
+
+            if (stateAfterStmt.size() > 0) {
+                Set<Node> sentinels = proof.getSubtreeGoals(pnode)
+                        .stream()
+                        .map(Goal::node)
+                        .collect(Collectors.toSet());
+                ptree.getSentinels().addAll(sentinels);
+                sentinels.forEach(node -> ptree.addNodeColor(node, "blueviolet"));
+            } else {
+                Set<Node> sentinels = new HashSet<>();
+                Iterator<Node> nodeIterator = beforeNode.getData().getNode().leavesIterator();
+                while (nodeIterator.hasNext()) {
+                    Node next = nodeIterator.next();
+
+                    sentinels.add(next);
+                }
+                ptree.getSentinels().addAll(sentinels);
+                sentinels.forEach(node -> ptree.addNodeColor(node, "blueviolet"));
+                //traverseProofTreeAndAddSentinelsToLeaves();
+            }
+
+
+            ptree.expandRootToSentinels();
+            DockNode node = new DockNode(ptree, "Proof Tree for Step Inverse Into: " +
+                    original.getStatement().accept(new ShortCommandPrinter())
+            );
+
+            node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
+
+        }
+    }
+
     //endregion
 }
 //deprecated
