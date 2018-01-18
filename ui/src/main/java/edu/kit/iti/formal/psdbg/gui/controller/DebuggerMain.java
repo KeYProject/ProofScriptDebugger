@@ -282,6 +282,7 @@ public class DebuggerMain implements Initializable {
      * @see {@link #handleStatePointer(PTreeNode)}
      */
     private void handleStatePointerUI(PTreeNode<KeyData> node) {
+
         graph.addPartiallyAndMark(node);
 
         if (node != null) {

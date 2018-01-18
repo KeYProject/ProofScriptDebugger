@@ -16,10 +16,9 @@ public class StepIntoReverseCommand<T> extends DebuggerCommand<T> {
             } else{
                 dbg.setStatePointer(statePointer);
 
-            } else {
-                if (statePointer.isLastNode() || statePointer.isFirstNode()) {
+                /*if (statePointer.isLastNode() || statePointer.isFirstNode()) {
                     System.out.println("We need Sonderbehandlung here");
-                }
+                }*/
             }
         }
     }
