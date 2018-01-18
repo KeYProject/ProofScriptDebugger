@@ -283,9 +283,10 @@ public class DebuggerMain implements Initializable {
      */
     private void handleStatePointerUI(PTreeNode<KeyData> node) {
 
-        graph.addPartiallyAndMark(node);
 
         if (node != null) {
+            graph.addPartiallyAndMark(node);
+
             getInspectionViewsController().getActiveInspectionViewTab().activate(node, node.getStateBeforeStmt());
             scriptController.getDebugPositionHighlighter().highlight(node.getStatement());
         } else {
