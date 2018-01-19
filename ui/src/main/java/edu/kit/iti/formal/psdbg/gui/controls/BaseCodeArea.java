@@ -62,9 +62,14 @@ public class BaseCodeArea extends CodeArea {
     }
 
     protected void hightlightLine(LineMapping lm, int line, String clazz) {
-        final int start = lm.getLineStart(line);
-        final int end = lm.getLineEnd(line);
-        setStyle(start, end, Collections.singleton(clazz));
+        try {
+            final int start = lm.getLineStart(line);
+            final int end = lm.getLineEnd(line);
+            setStyle(start, end, Collections.singleton(clazz));
+        } catch (ArrayIndexOutOfBoundsException e) {
+
+        }
+
     }
 
     public ObservableMap<Integer, String> getLineToClass() {

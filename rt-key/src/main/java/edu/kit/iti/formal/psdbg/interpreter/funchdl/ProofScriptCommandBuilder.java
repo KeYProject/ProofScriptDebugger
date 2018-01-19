@@ -65,7 +65,7 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
         KeyData kd = expandedNode.getData();
         Map<String, String> map = new HashMap<>();
         params.asMap().forEach((k, v) -> {
-                    System.out.println("v.getData().toString() = " + v.getData().toString());
+            //    System.out.println("v.getData().toString() = " + v.getData().toString());
                     map.put(k.getIdentifier(), v.getData().toString());
                 }
         );

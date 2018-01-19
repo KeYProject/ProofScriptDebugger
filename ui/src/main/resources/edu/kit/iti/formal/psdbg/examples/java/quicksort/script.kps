@@ -1,4 +1,4 @@
-script split_from_quicksort_nice1() {
+script split_from_quicksort() {
   autopilot_prep;
   foreach{
     tryclose;
@@ -20,76 +20,3 @@ script split_from_quicksort_nice1() {
   }
 }
 
-
-script split_from_quicksort_nice() {
-  autopilot_prep;
-  foreach{
-    tryclose;
-  }
-  foreach{
-    simp_upd;
-    seqPermFromSwap;
-    andRight;
-  }
-
-
-  cases{
-    case match `==> seqDef(_,_,_) = seqDef(_, _, _)`:
-        auto;
-    case match `==> \exists iv (\exists jv _)`: //this should match
-        instantiate  var=`iv` with=`i_0`;
-        instantiate  var=`jv` with=`j_0`;
-        auto;
-  }
-}
-
-
-
-
-script split_from_quicksort() {
-autopilot_prep;
-foreach{
-	tryclose;
-}
-
-cases{
-	default:
-		simp_upd;  //only 2nd open goal needs this
-		seqPermFromSwap;
-		andRight;
-}
-
-
-cases{
-	case match '#0.*':
-		auto;
-	case match '#1.*':
-				instantiate  var=`iv` with=`i_0`;
-				instantiate  var=`jv` with=`j_0`;
-				auto;
-}
-}
-
-
-
-script split_from_quicksort_rev() {
-  autopilot_prep;
-  foreach{
-    tryclose;
-  }
-  foreach{
-    simp_upd;
-    seqPermFromSwap;
-    andRight;
-  }
-
-
-  cases{
-    case match '#0.*': //hier sollten bessere branchnamen hin
-        auto;
-    case match '#1.*': //hier sollten bessere branchnamen hin
-        instantiate  var=`iv` with=`i_0`;
-        instantiate  var=`jv` with=`j_0`;
-        auto;
-  }
-}
