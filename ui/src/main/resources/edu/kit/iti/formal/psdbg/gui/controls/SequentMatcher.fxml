@@ -12,7 +12,8 @@
 <?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
 <?import edu.kit.iti.formal.psdbg.gui.controls.SectionPane?>
 <?import javafx.scene.layout.Pane?>
-<?import edu.kit.iti.formal.psdbg.gui.controls.SequentView?>
+<?import edu.kit.iti.formal.psdbg.gui.controls.SequentViewForMatcher?>
+
 <fx:root xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
          type="edu.kit.iti.formal.psdbg.gui.controls.SequentMatcher">
     <center>
@@ -35,7 +36,7 @@
                     <SectionPane title="Sequent" minHeight="0.0" minWidth="0.0" prefHeight="633.0"
                                  prefWidth="341.0">
                         <center>
-                                <SequentView fx:id="sequentView"/>
+                                <SequentViewForMatcher fx:id="sequentView"/>
                         </center>
                     </SectionPane>
                         <SplitPane dividerPositions="0.28551136363636365" layoutX="11.0" layoutY="12.0"
