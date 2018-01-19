@@ -282,17 +282,15 @@ public class DebuggerMain implements Initializable {
      * @see {@link #handleStatePointer(PTreeNode)}
      */
     private void handleStatePointerUI(PTreeNode<KeyData> node) {
-
-
         if (node != null) {
-            graph.addPartiallyAndMark(node);
-
             getInspectionViewsController().getActiveInspectionViewTab().activate(node, node.getStateBeforeStmt());
             scriptController.getDebugPositionHighlighter().highlight(node.getStatement());
         } else {
             getInspectionViewsController().getActiveInspectionViewTab().getFrames().getItems().clear();
             scriptController.getDebugPositionHighlighter().remove();
         }
+        graph.addPartiallyAndMark(node);
+
     }
 
     private void marriageJavaCode() {
@@ -513,6 +511,7 @@ public class DebuggerMain implements Initializable {
             assert statePointer!=null;
             State<KeyData> lastState = statePointer.getStateAfterStmt();
             getInspectionViewsController().getActiveInspectionViewTab().activate(statePointer, lastState);
+
 
         });
     }
@@ -1008,7 +1007,7 @@ public class DebuggerMain implements Initializable {
                 }
             }
         } else {
-            throw new RuntimeException("Something went wrong when reading stop button");
+            throw new RuntimeException("Something went wrong when reloading");
         }
 
     }
@@ -1224,6 +1223,7 @@ public class DebuggerMain implements Initializable {
             );
 
             node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
+            node.requestFocus();
         }
     }
 

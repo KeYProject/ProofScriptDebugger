@@ -1,10 +1,23 @@
 // This file is not written yet!!
+
 script main() {
+    feqff : TERM := `f(c) = f(f(c))`;
+    ffeqf : TERM := `f(f(c)) = f(c)`;
+    feqfff: TERM :=  `f(c) = f(f(f(c)))`;
+
+    impRight;
+    instantiate var=`x` with=`c`;
+    applyEq on=`f(f(c))` formula=feqfff;
+    eqSymm on=feqff;
+    close;
+}
+
+script main1() {
     impRight;
 
     //instantiate var=`x` with=`c`;
     //allLeft formula=`\forall` with=`a`;
-    allLeft on=`\forall s x; f(f(x)) = f(x)` inst_t=`c`;
+    //allLeft on=`\forall s x; f(f(x)) = f(x)` inst_t=`c`;
 
 }
 

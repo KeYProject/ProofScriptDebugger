@@ -41,6 +41,7 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 public class RuleCommandHandler implements CommandHandler<KeyData> {
+
     private static final Logger LOGGER = LogManager.getLogger(RuleCommandHandler.class);
 
     @Getter
@@ -122,14 +123,17 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
                 KeyData kdn = new KeyData(kd, g.node());
                 state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
             }
-        } catch (Exception e) {
-            if (e.getClass().equals(ScriptException.class)) {
-                System.out.println("e.getMessage() = " + e.getMessage());
+        } catch (ScriptException e) {
+            if (interpreter.isStrictMode()) {
                 throw new ScriptCommandNotApplicableException(e, c, map);
-
             } else {
-                throw new RuntimeException(e);
+                //Utils necessary oder schmeißen
+                LOGGER.error("Command " + call.getCommand() + " is not applicable in line " + call.getRuleContext().getStart().getLine());
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -4,7 +4,6 @@ import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
-import de.uka.ilkd.key.macros.scripts.meta.ProofScriptArgument;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
@@ -15,10 +14,14 @@ import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -104,17 +107,17 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
     @Override
     public String getHelp(CallStatement call) {
         ProofScriptCommand c = commands.get(call.getCommand());
-       /* URL res = getClass().getResource("/edu/kit/iti/formal/psdbg/commands/" + call.getCommand() + ".html");
+        URL res = getClass().getResource("/edu/kit/iti/formal/psdbg/commands/" + call.getCommand() + ".html");
         try {
             return IOUtils.toString(res.toURI(), "utf-8");
         } catch (NullPointerException | IOException | URISyntaxException e) {
             return "No Help found for " + call.getCommand();
 
-        }*/
+        }
 
 
 
-        StringBuilder html = new StringBuilder();
+  /*      StringBuilder html = new StringBuilder();
 
 
         html.append("<html><head><style>body {font-family: monospace;}</style></head><body>");
@@ -164,6 +167,6 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
 
         html.append("</body></html>");
         return html.toString();
-
+*/
     }
 }

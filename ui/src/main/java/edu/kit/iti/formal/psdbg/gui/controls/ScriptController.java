@@ -312,7 +312,7 @@ public class ScriptController {
                 getDockNode(area).focus();
                 area.requestFocus();
                 //area.scrollBy(new Point2D(0, scrollY));
-                area.selectRange(0, r.start, 0, r.stop);
+                area.selectRange(0, r.start, 0, r.start);
 
                 lastScriptArea = area;
                 lastRegion = r;

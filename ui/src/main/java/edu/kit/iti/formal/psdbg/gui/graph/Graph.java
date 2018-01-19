@@ -72,29 +72,33 @@ public class Graph<T> {
         }
 
         public void addPartiallyAndMark(PTreeNode<KeyData> node) {
-            Cell cell = addCell(node);
-
-            if (node.getStepOver() != null) {
-                addEdge(node, node.getStepOver(), "over");
-            }
-            if (node.getStepInto() != null) {
-                addEdge(node, node.getStepInto(), "into");
-            }
-            if (node.getStepInvOver() != null) {
-                addEdge(node, node.getStepInvOver(), "revo");
-            }
-            if (node.getStepInvInto() != null) {
-                addEdge(node, node.getStepInvInto(), "otni");
-            }
-            if (node.getStepReturn() != null) {
-                addEdge(node, node.getStepReturn(), "rtrn");
-            }
-
             if (lastHighlightedCell != null) {
                 lastHighlightedCell.getStyleClass().remove("current-node");
             }
-            cell.getStyleClass().add("current-node");
-            lastHighlightedCell = cell;
+
+            if (node != null) {
+                Cell cell = addCell(node);
+
+                if (node.getStepOver() != null) {
+                    addEdge(node, node.getStepOver(), "over");
+                }
+                if (node.getStepInto() != null) {
+                    addEdge(node, node.getStepInto(), "into");
+                }
+                if (node.getStepInvOver() != null) {
+                    addEdge(node, node.getStepInvOver(), "revo");
+                }
+                if (node.getStepInvInto() != null) {
+                    addEdge(node, node.getStepInvInto(), "otni");
+                }
+                if (node.getStepReturn() != null) {
+                    addEdge(node, node.getStepReturn(), "rtrn");
+                }
+
+                cell.getStyleClass().add("current-node");
+                lastHighlightedCell = cell;
+
+            }
         }
     }
 }
