@@ -503,7 +503,7 @@ public class DebuggerMain implements Initializable {
             statusBar.publishSuccessMessage("Interpreter finished.");
             btnInteractiveMode.setDisable(false);
             assert model.getDebuggerFramework() != null;
-            btnInteractiveMode.setSelected(true);
+            btnInteractiveMode.setSelected(false);
             PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
             assert statePointer!=null;
             State<KeyData> lastState = statePointer.getStateAfterStmt();
