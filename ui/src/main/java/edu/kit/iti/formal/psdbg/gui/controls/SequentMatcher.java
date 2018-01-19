@@ -40,7 +40,8 @@ public class SequentMatcher extends BorderPane {
     private final ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShow = new SimpleObjectProperty<>(this, "selectedGoalNodeToShow");
     public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
     @FXML
-    private SequentView sequentView;
+    private SequentViewForMatcher sequentView;
+
     @FXML
     private ListView<GoalNode<KeyData>> goalView;
     @FXML
@@ -73,6 +74,8 @@ public class SequentMatcher extends BorderPane {
 
         goals.addListener((observable, oldValue, newValue) -> goalView.setItems(newValue));
 
+
+        //Highlight Matchings
         matchingsView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 newValue.forEach((name, mp) -> {
@@ -113,8 +116,12 @@ public class SequentMatcher extends BorderPane {
     }
 
     public void startMatch() {
+        sequentView.clearHighlight();
+
         Matchings matchings = MatcherFacade.matches(matchpattern.getText(), getSelectedGoalNodeToShow().getData().getNode().sequent(), true,
                 services);
+
+
         ObservableList<Map<String, MatchPath>> resultlist = FXCollections.observableArrayList(matchings);
 
         //If no matchings found, addCell "No matchings found"

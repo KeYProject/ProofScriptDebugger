@@ -48,6 +48,40 @@ cases{
 
 }
 
+script sort() {
+	autopilot_prep;
+
+	foreach{
+		simp_upd;
+		tryclose;
+	}
+
+// one open goal in der Bedingung: if(from < to) -> Post (split) -> Post (sort) ->
+
+seqPermSym formula = `seqPerm(seqDef{int u;}(Z(0(#)),length(array), any::select(heapAfter_split, array, arr(u))),
+         seqDef{int u;}(Z(0(#)), length(array), int::select(heap, array, arr(u))))`;
+
+seqPermSym formula = `seqPerm(seqDef{int u;}(Z(0(#)), length(array), any::select(heapAfter_sort, array, arr(u))),
+         seqDef{int u;}(Z(0(#)), length(array), any::select(heapAfter_split, array, arr(u))))`;
+
+
+seqPermSym formula = `seqPerm(seqDef{int u;}(Z(0(#)), length(array), any::select(heapAfter_sort_0, array, arr(u))),
+         seqDef{int u;}(Z(0(#)), length(array), any::select(heapAfter_sort, array, arr(u))))`;
+
+seqPermTrans formula = `seqPerm(seqDef{int u;}(Z(0(#)), length(array), int::select(heap, array, arr(u))),
+         seqDef{int u;}(Z(0(#)), length(array), any::select(heapAfter_split, array, arr(u))))`;
+
+seqPermTrans formula = `seqPerm(seqDef{int u;}(Z(0(#)), length(array), int::select(heap, array, arr(u))),
+         seqDef{int u;}(Z(0(#)), length(array), any::select(heapAfter_sort, array, arr(u))))`;
+
+seqPermSym formula = `seqPerm(seqDef{int u;}(Z(0(#)), length(array), int::select(heap, array, arr(u))),
+         seqDef{int u;}(Z(0(#)), length(array), any::select(heapAfter_sort_0, array, arr(u))))`;
+
+auto;
+
+
+}
+
 script shorter(){
 	
 autopilot_prep;

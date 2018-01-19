@@ -122,6 +122,10 @@ public class DebuggerMain implements Initializable {
     private CheckMenuItem miProofTree;
     @FXML
     private ToggleButton btnInteractiveMode;
+
+    @FXML
+    private Button interactive_undo;
+
     private JavaArea javaArea = new JavaArea();
     private DockNode javaAreaDock = new DockNode(javaArea, "Java Source",
             new MaterialDesignIconView(MaterialDesignIcon.CODEPEN)
@@ -329,18 +333,11 @@ public class DebuggerMain implements Initializable {
 
     }
 
-    //region Actions: Menu
+    @FXML
+    private void undo (ActionEvent e) {
+        interactiveModeController.undo(e);
+    }
 
-    /*@FXML
-    public void saveAsScript() throws IOException {
-        File f = openFileChooserSaveDialog("Save script", "Save Script files", "kps");
-        if (f != null) {
-           /* if(!f.exists()){
-                f.createNewFile();
-            }
-            saveScript(f);
-        }
-    }*/
 
     public KeYProofFacade getFacade() {
         return FACADE;
@@ -1029,13 +1026,18 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void interactiveMode(ActionEvent actionEvent) {
-        if (!btnInteractiveMode.isSelected()) {
+        if (btnInteractiveMode.isSelected()) {
+            assert model.getDebuggerFramework() != null;
+            interactiveModeController.setDebuggerFramework(model.getDebuggerFramework());
             interactiveModeController.setActivated(true);
             //SaG: this needs to be set to filter inapplicable rules
             this.getFacade().getEnvironment().getProofControl().setMinimizeInteraction(true);
             interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
+
+            interactive_undo.setDisable(false);
         } else {
             interactiveModeController.stop();
+            interactive_undo.setDisable(true);
         }
     }
 
@@ -1246,6 +1248,7 @@ public class DebuggerMain implements Initializable {
             Proof proof = beforeNode.getData().getProof();
 
             Node pnode = beforeNode.getData().getNode();
+            //      stateAfterStmt.forEach(keyDataGoalNode -> System.out.println("keyDataGoalNode.getData().getNode().serialNr() = " + keyDataGoalNode.getData().getNode().serialNr()));
 
             ptree.setProof(proof);
             ptree.setRoot(pnode);
