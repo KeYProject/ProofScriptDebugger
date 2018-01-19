@@ -282,9 +282,11 @@ public class DebuggerMain implements Initializable {
      * @see {@link #handleStatePointer(PTreeNode)}
      */
     private void handleStatePointerUI(PTreeNode<KeyData> node) {
-        graph.addPartiallyAndMark(node);
+
 
         if (node != null) {
+            graph.addPartiallyAndMark(node);
+
             getInspectionViewsController().getActiveInspectionViewTab().activate(node, node.getStateBeforeStmt());
             scriptController.getDebugPositionHighlighter().highlight(node.getStatement());
         } else {
@@ -958,11 +960,22 @@ public class DebuggerMain implements Initializable {
     public void stepIntoReverse(ActionEvent actionEvent) {
         LOGGER.debug("DebuggerMain.stepIntoReverser");
         try {
-            if (model.getDebuggerFramework().getStatePointer().isAtomic()) {
-                model.getDebuggerFramework().getStatePointerListener()
-                        .add(new StepIntoReverseHandler(model.getStatePointer()));
+            PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
+            if (statePointer.getStepInvInto() == null) {
+                if (statePointer.getStepInvOver() != null) {
+                    if (statePointer.getStepInvOver().isAtomic()) {
+                        model.getDebuggerFramework().getStatePointerListener()
+                                .add(new StepIntoReverseHandler(model.getStatePointer()));
+                    }
+                    model.getDebuggerFramework().execute(new StepIntoReverseCommand<>());
+                } else {
+                    if (statePointer.isLastNode() || statePointer.isFirstNode()) {
+                        LOGGER.error("We need a special treatment");
+                    } else {
+                        LOGGER.error("There is no state to step into reverse");
+                    }
+                }
             }
-            model.getDebuggerFramework().execute(new StepIntoReverseCommand<>());
         } catch (DebuggerException e) {
             Utils.showExceptionDialog("", "", "", e);
             LOGGER.error(e);
@@ -1233,7 +1246,6 @@ public class DebuggerMain implements Initializable {
             Proof proof = beforeNode.getData().getProof();
 
             Node pnode = beforeNode.getData().getNode();
-            //      stateAfterStmt.forEach(keyDataGoalNode -> System.out.println("keyDataGoalNode.getData().getNode().serialNr() = " + keyDataGoalNode.getData().getNode().serialNr()));
 
             ptree.setProof(proof);
             ptree.setRoot(pnode);

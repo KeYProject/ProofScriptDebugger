@@ -6,14 +6,19 @@ public class StepOverReverseCommand<T> extends DebuggerCommand<T> {
     @Override
     public void execute(DebuggerFramework<T> dbg) throws DebuggerException {
         val statePointer = dbg.getCurrentStatePointer();
-        PTreeNode<T> stepOverReverse = statePointer.getStepInvInto() != null ?
-                statePointer.getStepInvInto() :
-                statePointer.getStepInvOver();
-
+        PTreeNode<T> stepOverReverse = statePointer.getStepInvOver();
         if (stepOverReverse == null) {
-            info("There is no previous state to the current one.");
-        }
-        dbg.setStatePointer(stepOverReverse);
+            int size = statePointer.getContextNodes().size();
+            dbg.setStatePointer(statePointer.getContextNodes().get(size - 1));
+            /*if(statePointer.isAtomic()) {
+                dbg.setStatePointer(statePointer);
+            }else{
+                info("There is no previous state to the current one.");
 
+            }*/
+            //state before statement
+        } else {
+            dbg.setStatePointer(stepOverReverse);
+        }
     }
 }
