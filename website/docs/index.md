@@ -44,7 +44,7 @@ The proof script debugger is a prototypical implementation
 of an interaction concept for program verification systems that are rule based and
 use a program logic.
 The prototype is implemented on top of the interactive program verification system
-[KeY](http://www.key-project.org. KeY is an interactive program verification
+[KeY](http://www.key-project.org). KeY is an interactive program verification
 system for Java program annotated with the Java Modeling Language (JML).
 
 
@@ -70,7 +70,7 @@ the analysis of failed proof attempts.
 ## Publications
 
 A full description of the language and debugging-concept 
-is published at [HVC 2017](hvc2017.pdf)
+is published at [HVC 2017](http://rdcu.be/E4fF)
 
 
 ## Features

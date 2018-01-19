@@ -13,10 +13,14 @@ import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,5 +89,19 @@ public class MacroCommandHandler implements CommandHandler<KeyData> {
         } finally {
             LOGGER.debug("Execution of {} took {} ms", call.getCommand(), (System.currentTimeMillis() - startTime));
         }
+    }
+
+    @Override
+    public String getHelp(CallStatement call) {
+        ProofMacro macro = macros.get(call.getCommand());
+        URL res = getClass().getResource("/edu/kit/iti/formal/psdbg/macros/" + call.getCommand() + ".html");
+        try {
+            return IOUtils.toString(res.toURI(), "utf-8");
+        } catch (NullPointerException | IOException | URISyntaxException e) {
+            return "No Help found for " + call.getCommand();
+
+        }
+
+
     }
 }
