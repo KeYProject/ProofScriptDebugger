@@ -136,7 +136,11 @@ is published at [HVC 2017](http://rdcu.be/E4fF)
  <li>PSDBG - <strong>Version 1.0-FM</strong> 
     <a href="~/releases/psdbg-1.0-fm.jar">psdbg-1.0-fm.jar</a>
     <br>
-    Special Version for the tool paper at Formal Methods 2018. 
+    Special Version for the tool paper at Formal Methods 2018.
+    Including examples and all dependencies.
+    <br>
+    <a href="https://www.gnu.org/licenses/gpl-3.0.txt">License: GPLv3</a>
+    <a href="THIRD_PARTIES/">Third Party Licenses</a> 
  </li>
 </ul>
 

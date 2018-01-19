@@ -41,11 +41,14 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.RecognitionException;
@@ -452,6 +455,26 @@ public class DebuggerMain implements Initializable {
         }
     }
 
+    @FXML
+    public void showAbout(ActionEvent event) {
+        try {
+            BorderPane content = FXMLLoader.load(AboutDialog.class.getResource("AboutDialog.fxml"));
+
+            Dialog dialog = new Dialog();
+            DialogPane pane = new DialogPane();
+            pane.setContent(content);
+            pane.getButtonTypes().add(ButtonType.OK);
+            dialog.setDialogPane(pane);
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setWidth(800);
+            dialog.setHeight(600);
+            dialog.setResizable(true);
+            dialog.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Execute the script that with using the interpreter that is build using the interpreterbuilder
      *
@@ -505,7 +528,7 @@ public class DebuggerMain implements Initializable {
             assert model.getDebuggerFramework() != null;
             btnInteractiveMode.setSelected(false);
             PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
-            assert statePointer!=null;
+            assert statePointer != null;
             State<KeyData> lastState = statePointer.getStateAfterStmt();
             getInspectionViewsController().getActiveInspectionViewTab().activate(statePointer, lastState);
 
@@ -1138,6 +1161,7 @@ public class DebuggerMain implements Initializable {
             keyWindow.setVisible(true);
         });
     }
+
 
 
     public class ContractLoaderService extends Service<List<Contract>> {
