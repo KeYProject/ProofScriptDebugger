@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>edu.kit.iti.formal.psdbg</groupId>
 		<artifactId>psdbg</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>1.0-FM</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -17,7 +17,7 @@
 		<dependency>
 			<groupId>edu.kit.iti.formal.psdbg</groupId>
 			<artifactId>rt</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>1.0-FM</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.kit.iti.formal.psdbg</groupId>
@@ -27,7 +27,7 @@
         <dependency>
             <groupId>edu.kit.iti.formal.psdbg</groupId>
             <artifactId>matcher</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>1.0-FM</version>
         </dependency>
 	</dependencies>
 </project>

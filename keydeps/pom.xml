@@ -6,7 +6,7 @@
     <parent>
         <artifactId>psdbg</artifactId>
         <groupId>edu.kit.iti.formal.psdbg</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <version>1.0-FM</version>
     </parent>
 
     <artifactId>keydeps</artifactId>

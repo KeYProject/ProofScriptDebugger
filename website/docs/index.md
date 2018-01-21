@@ -1,6 +1,6 @@
 <style>
         #content {
-            width: 60em;
+            width: 50em;
             margin: auto;
             border: 1px #ccc solid;
             border-bottom-left-radius: 2em;
@@ -23,17 +23,18 @@
         
         img.thumb {
             width:100%;           
-            border-radius:150px;
+            border-radius:50%;
         }
        
        .column h3 {
-       
+            text-align:center;
        }
        
        div.feature-caption {
-            text-align: block;           
+           text-align: block;           
            text-align: justify;
            font-size: 80%;
+           font-weight:bold;
        }
        
 </style>
@@ -72,6 +73,14 @@ the analysis of failed proof attempts.
 A full description of the language and debugging-concept 
 is published at [HVC 2017](http://rdcu.be/E4fF)
 
+## Debugging Quicksort
+
+<center>
+<video width="80%"  controls>
+  <source src="quicksort.webm" type="video/webm">
+Your browser does not support the video tag or WebM.
+</video>
+</center>
 
 ## Features
 
@@ -128,8 +137,6 @@ is published at [HVC 2017](http://rdcu.be/E4fF)
 
 <div style="clear: both;"/> 
 
-<h2>Getting Started</h2>
-
 <h2>Downloads</h2>
 
 <ul>
@@ -140,7 +147,9 @@ is published at [HVC 2017](http://rdcu.be/E4fF)
     Including examples and all dependencies.
     <br>
     <a href="https://www.gnu.org/licenses/gpl-3.0.txt">License: GPLv3</a>
-    <a href="THIRD_PARTIES/">Third Party Licenses</a> 
+    <a href="thirdparty.txt">Third Party Licenses</a> 
+    <br>
+    Executable with <code>java -jar psdbg-1.0-fm.jar</code>
  </li>
 </ul>
 
