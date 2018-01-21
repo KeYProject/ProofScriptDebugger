@@ -459,8 +459,8 @@ public class DebuggerMain implements Initializable {
     public void showAbout(ActionEvent event) {
         try {
             BorderPane content = FXMLLoader.load(AboutDialog.class.getResource("AboutDialog.fxml"));
-
             Dialog dialog = new Dialog();
+            dialog.setTitle("About PSDBG");
             DialogPane pane = new DialogPane();
             pane.setContent(content);
             pane.getButtonTypes().add(ButtonType.OK);

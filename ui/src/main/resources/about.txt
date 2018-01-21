@@ -1,0 +1,15 @@
+PSDBG
+
+Licensed under GPLv3
+
+Homepage: https://formal.iti.kit.edu/psdbg
+
+Authors:
+
+* Sarah Grebing <grebing@ira.uka.de>
+  https://formal.iti.kit.edu/~grebing
+
+* Alexander Weigl <weigl@ira.uka.de>
+  https://formal.iti.kit.edu/~weigl
+
+* Lulu Lulong

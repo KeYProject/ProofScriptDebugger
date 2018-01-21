@@ -21,38 +21,23 @@ public class AboutDialog implements Initializable {
     private StringProperty programName = new SimpleStringProperty();
     private SimpleStringProperty version = new SimpleStringProperty();
     private SimpleStringProperty subtitle = new SimpleStringProperty();
-
     private SimpleStringProperty license = new SimpleStringProperty();
     private SimpleStringProperty keyLicense = new SimpleStringProperty();
     private SimpleStringProperty thridPartyLicense = new SimpleStringProperty();
-
     private SimpleStringProperty aboutText = new SimpleStringProperty();
-
     @FXML
     private WebView webView;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        setProgramName(ProofScriptDebugger.NAME);
-        setVersion(ProofScriptDebugger.VERSION);
+        setProgramName(ProofScriptDebugger.NAME + "-" + ProofScriptDebugger.VERSION);
         setSubtitle("KeY Version: " + ProofScriptDebugger.KEY_VERSION);
 
-
         try {
-            InputStream is = getClass().getResourceAsStream("/about.html");
-
+            InputStream is = getClass().getResourceAsStream("/about.txt");
             if (is != null)
-                webView.getEngine().loadContent(IOUtils.toString(is,"utf-8"));
+                aboutText.set(IOUtils.toString(is, "utf-8"));
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            InputStream is = getClass().getResourceAsStream("/LICENSE");
-            if (is != null)
-                setLicense(IOUtils.toString(is, "utf-8"));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         try {
@@ -60,10 +45,15 @@ public class AboutDialog implements Initializable {
             if (is != null)
                 setThridPartyLicense(IOUtils.toString(is, "utf-8"));
         } catch (IOException e) {
-            e.printStackTrace();
+        }
+
+        try {
+            InputStream is = getClass().getResourceAsStream("/LICENSE");
+            if (is != null)
+                setLicense(IOUtils.toString(is, "utf-8"));
+        } catch (IOException e) {
         }
     }
-
 
     public String getProgramName() {
         return programName.get();
@@ -141,11 +131,11 @@ public class AboutDialog implements Initializable {
         return aboutText.get();
     }
 
-    public SimpleStringProperty aboutTextProperty() {
-        return aboutText;
-    }
-
     public void setAboutText(String aboutText) {
         this.aboutText.set(aboutText);
+    }
+
+    public SimpleStringProperty aboutTextProperty() {
+        return aboutText;
     }
 }

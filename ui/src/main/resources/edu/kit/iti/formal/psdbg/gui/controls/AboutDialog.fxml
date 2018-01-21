@@ -4,7 +4,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.web.WebView?>
 <BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.kit.iti.formal.psdbg.gui.controls.AboutDialog">
     <top>
@@ -39,7 +38,7 @@
             <tabs>
                 <Tab text="About PSDBG">
                     <content>
-                        <WebView fx:id="webView"></WebView>
+                        <TextArea text="${controller.aboutText}"/>
                     </content>
                 </Tab>
                 <Tab text="License">
