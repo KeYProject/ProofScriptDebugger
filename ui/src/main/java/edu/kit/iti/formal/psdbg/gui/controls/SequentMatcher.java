@@ -26,7 +26,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class SequentMatcher extends BorderPane {
 
@@ -77,6 +79,7 @@ public class SequentMatcher extends BorderPane {
 
         //Highlight Matchings
         matchingsView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            sequentView.clearHighlight();
             if (newValue != null) {
                 newValue.forEach((name, mp) -> {
                     PosInOccurrence pio = mp.pio();
@@ -121,7 +124,6 @@ public class SequentMatcher extends BorderPane {
         Matchings matchings = MatcherFacade.matches(matchpattern.getText(), getSelectedGoalNodeToShow().getData().getNode().sequent(), true,
                 services);
 
-
         ObservableList<Map<String, MatchPath>> resultlist = FXCollections.observableArrayList(matchings);
 
         //If no matchings found, addCell "No matchings found"
@@ -131,10 +133,37 @@ public class SequentMatcher extends BorderPane {
         } else {
             nomatchings.setVisible(false);
             matchingsView.setItems(resultlist);
+            matchingsView.setCellFactory(param -> new ListCell<Map<String, MatchPath>>() {
+
+                //needed to hide position information of match paths
+                @Override
+                protected void updateItem(Map<String, MatchPath> item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText("Match " + (resultlist.indexOf(item) +1)
+                                + ": " + matchingsToString(item));
+                    }
+                }
+            });
+
             matchingsView.setVisible(true);
         }
 
 
+    }
+
+    /**
+     * Removes position information of the MatchPath
+     * @param match
+     * @return string without position information
+     */
+    private String matchingsToString(Map<String, MatchPath> match) {
+        String string = match.toString();
+        string = string.replaceAll("[?]{2}_([0-9]*)=", "");
+        return string;
     }
 
     public ObservableList<GoalNode<KeyData>> getMatchingresults() {
