@@ -1,5 +1,7 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.logic.op.IProgramMethod;
 import de.uka.ilkd.key.pp.ProgramPrinter;
 import de.uka.ilkd.key.speclang.Contract;
@@ -11,13 +13,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.util.Pair;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 import org.apache.logging.log4j.LogManager;
@@ -268,6 +271,37 @@ public class Utils {
         */
         alert.showAndWait();
     }
+
+    public static void showOpenProofNotificationDialog(int noOfGoals) {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Interpreter Finished Successfully");
+        dialog.setHeaderText("Interactive Mode Possible");
+        dialog.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.HAND_POINTING_RIGHT, "24.0"));
+
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType);
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+//        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        grid.add(new Label("Interpreter finished successfully"), 0, 0);
+        String msg = String.format("%s %d %s ", "There were still", noOfGoals,
+                "open goals.");
+        String msg2 = "You can continue the proof interactively by using the interactive button.\n This enables to point and click onto the sequents and apply rules";
+        grid.add(new Label(msg), 0, 1);
+        grid.add(new MaterialDesignIconView(MaterialDesignIcon.HAND_POINTING_RIGHT, "24.0"), 1, 1);
+
+        //dialog.getDialogPane().setContent(grid);
+        Label ta = new Label(msg2);
+        ta.setWrapText(true);
+        Pane p = new VBox(grid, ta);
+        dialog.getDialogPane().setContent(p);
+        dialog.showAndWait();
+
+    }
+
+
 
     public static void intoClipboard(String s) {
         Map<DataFormat, Object> map = Collections.singletonMap(DataFormat.PLAIN_TEXT, s);

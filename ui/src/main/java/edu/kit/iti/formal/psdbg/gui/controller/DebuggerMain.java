@@ -531,7 +531,13 @@ public class DebuggerMain implements Initializable {
             assert statePointer != null;
             State<KeyData> lastState = statePointer.getStateAfterStmt();
             getInspectionViewsController().getActiveInspectionViewTab().activate(statePointer, lastState);
-
+            if (lastState.getGoals().isEmpty()) {
+                statusBar.setNumberOfGoals(0);
+                Utils.showClosedProofDialog("the script " + scriptController.getMainScript().getScriptName());
+            } else {
+                Utils.showOpenProofNotificationDialog(lastState.getGoals().size());
+                //(lastState.getGoals().size());
+            }
 
         });
     }

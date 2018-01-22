@@ -48,7 +48,7 @@ public class DebuggerStatusBar extends StatusBar {
 
     private IntegerProperty numberOfGoals = new SimpleIntegerProperty(0);
 
-    private Label lblCurrentNodes = new Label("#nodes: %s");
+    private Label lblCurrentNodes = new Label("#open goals: " + numberOfGoals.intValue());
 
     private Label lblMainscript = new Label();
 
@@ -68,9 +68,10 @@ public class DebuggerStatusBar extends StatusBar {
                 lblMainscript,
                 new Separator(),
                 interpreterStatusView
-                //lblCurrentNodes,
+                //lblCurrentNodes
                 //progressIndicator
         );
+
 
         interpreterStatusModel.addListener((p, o, n) -> {
             interpreterStatusView.setIcon(n.getIcon());
@@ -81,7 +82,11 @@ public class DebuggerStatusBar extends StatusBar {
         });
 
         numberOfGoals.addListener((observable, oldValue, newValue) -> {
-            lblCurrentNodes.setText("#nodes: " + newValue);
+            if (newValue.intValue() > 0) {
+                lblCurrentNodes.setText("#open Goals: " + newValue);
+            } else {
+                lblCurrentNodes.setText("No open goals");
+            }
         });
 
         mainScriptIdentifier.addListener((ov, o, n) -> {

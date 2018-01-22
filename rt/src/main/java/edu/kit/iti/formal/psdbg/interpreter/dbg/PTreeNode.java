@@ -91,12 +91,17 @@ public class PTreeNode<T> {
     }
 
     public String getSingleRepresentation() {
-        if (getStatement().getStartPosition() != null)
-            return String.format("%d: %s",
-                    getStatement().getStartPosition().getLineNumber(),
-                    getStatement().accept(new ShortCommandPrinter()));
-        else
+        if (getStatement().getStartPosition() != null) {
+            if (getStatement().getStartPosition().getLineNumber() >= 0) {
+                return String.format("%d: %s",
+                        getStatement().getStartPosition().getLineNumber(),
+                        getStatement().accept(new ShortCommandPrinter()));
+            } else {
+                return "End of Script";
+            }
+        } else {
             return (String) getStatement().accept(new ShortCommandPrinter());
+        }
     }
 
     @Override
