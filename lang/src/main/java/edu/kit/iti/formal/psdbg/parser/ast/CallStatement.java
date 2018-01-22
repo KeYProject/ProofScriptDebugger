@@ -37,14 +37,13 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@RequiredArgsConstructor
 @AllArgsConstructor
 public class CallStatement extends Statement<ScriptLanguageParser.ScriptCommandContext> {
     /**
      * The name of the command.
      */
     @NonNull
-    private String command;
+    private String command = "";
 
     /**
      * The list of parameters.

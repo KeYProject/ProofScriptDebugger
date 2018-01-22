@@ -254,6 +254,9 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
                 newStateAfterCases = new State<T>(openGoalListAfterCases, null);
             }
             stateStack.push(newStateAfterCases);
+
+        } else {
+            stateStack.push(new State<>());
         }
 
         //stateStack.peek().getGoals().removeAll(beforeCases.getGoals());
@@ -532,26 +535,29 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     @Override
     public Object visit(CallStatement call) {
         enterScope(call);
-        // System.out.println(stateStack.peek().hashCode());
-        //neuer VarScope
-        //enter new variable scope
-        VariableAssignment params = evaluateParameters(call.getParameters());
-        GoalNode<T> g = getSelectedNode();
-        g.enterScope();
-        try {
-            functionLookup.callCommand(this, call, params);
-        } catch (RuntimeException e) {
-            System.err.println("Call command not applicable");
-            throw e;
-            //TODO handling of error state for each visit
-            //State<T> newErrorState = newState(null, null);
-            //newErrorState.setErrorState(true);
-            //pushState(newErrorState);
-        } finally {
-            g.exitScope();
-            //  System.out.println(stateStack.peek().hashCode());
-            exitScope(call);
+        if (!call.getCommand().isEmpty()) //real call, can handle pseudo calls!
+        {
+            // System.out.println(stateStack.peek().hashCode());
+            //neuer VarScope
+            //enter new variable scope
+            VariableAssignment params = evaluateParameters(call.getParameters());
+            GoalNode<T> g = getSelectedNode();
+            g.enterScope();
+            try {
+                functionLookup.callCommand(this, call, params);
+            } catch (RuntimeException e) {
+                System.err.println("Call command not applicable");
+                throw e;
+                //TODO handling of error state for each visit
+                //State<T> newErrorState = newState(null, null);
+                //newErrorState.setErrorState(true);
+                //pushState(newErrorState);
+            } finally {
+                g.exitScope();
+                //  System.out.println(stateStack.peek().hashCode());
+            }
         }
+        exitScope(call);
         return null;
     }
 

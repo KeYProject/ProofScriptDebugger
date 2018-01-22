@@ -4,6 +4,7 @@ import com.google.common.graph.MutableValueGraph;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowNode;
 import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowTypes;
+import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import lombok.Getter;
 import lombok.Setter;
@@ -134,7 +135,8 @@ public class DebuggerFramework<T> {
     private void run() {
         try {
             interpreter.interpret(mainScript);
-            ptreeManager.fireStatePointerChanged();
+            interpreter.visit(new CallStatement());
+//            ptreeManager.fireStatePointerChanged();
             succeedListener.accept(this);
         } catch (Exception e) {
             error = e;

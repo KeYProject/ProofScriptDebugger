@@ -13,7 +13,7 @@ script split_from_quicksort() {
   cases{
     case match `==> seqDef(_,_,_) = seqDef(_, _, _)`:
         auto;
-    case match `==> (\exists ?X (\exists ?Y _))`: //this should match
+    case match `==> (\exists ?X (\exists ?Y _))`:
         instantiate  var=`?X`[?X \ X] with=`i_0`;
         instantiate  var=`?Y`[?Y \ Y] with=`j_0`;
         auto;

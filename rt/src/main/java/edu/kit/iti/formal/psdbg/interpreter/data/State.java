@@ -49,6 +49,14 @@ public class State<T> {
         setSelectedGoalNode(goal);
     }
 
+    /**
+     * creates a state with no goals.
+     */
+    public State() {
+        goals = new ArrayList<>();
+        setSelectedGoalNode(null);
+    }
+
 
     public List<GoalNode<T>> getGoals() {
         return goals;
