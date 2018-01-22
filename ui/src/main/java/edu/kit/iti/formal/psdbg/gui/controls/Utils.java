@@ -288,9 +288,9 @@ public class Utils {
         grid.add(new Label("Interpreter finished successfully"), 0, 0);
         String msg = String.format("%s %d %s ", "There were still", noOfGoals,
                 "open goals.");
-        String msg2 = "You can continue the proof interactively by using the interactive button.\n This enables to point and click onto the sequents and apply rules";
+        String msg2 = "You can continue the proof interactively by using the interactive button.\nThis enables to point and click onto the sequents and apply rules";
         grid.add(new Label(msg), 0, 1);
-        grid.add(new MaterialDesignIconView(MaterialDesignIcon.HAND_POINTING_RIGHT, "24.0"), 1, 1);
+        grid.add(new MaterialDesignIconView(MaterialDesignIcon.HAND_POINTING_RIGHT, "24.0"), 3, 1);
 
         //dialog.getDialogPane().setContent(grid);
         Label ta = new Label(msg2);

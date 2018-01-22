@@ -115,12 +115,16 @@ public class TacletContextMenu extends ContextMenu {
         ProofControl c = DebuggerMain.FACADE.getEnvironment().getUi().getProofControl();
         final ImmutableList<BuiltInRule> builtInRules = c.getBuiltInRule(goal, occ);
 
-        ImmutableList<TacletApp> findTaclet = c.getFindTaclet(goal, occ);
+        try {
+            ImmutableList<TacletApp> findTaclet = c.getFindTaclet(goal, occ);
 
-        createTacletMenu(
-                removeRewrites(findTaclet)
-                        .prepend(c.getRewriteTaclet(goal, occ)),
-                c.getNoFindTaclet(goal), builtInRules);
+            createTacletMenu(
+                    removeRewrites(findTaclet)
+                            .prepend(c.getRewriteTaclet(goal, occ)),
+                    c.getNoFindTaclet(goal), builtInRules);
+        } catch (NullPointerException e) {
+
+        }
 
         //proofMacroMenuController.initViewController(getMainApp(), getContext());
         //proofMacroMenuController.init(occ);

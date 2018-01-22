@@ -113,9 +113,9 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         //compile pattern
         Pattern regexpForLabel = Pattern.compile(label);
 
-
         String branchLabel = currentState.getData().getBranchingLabel();
         Matcher branchLabelMatcher = regexpForLabel.matcher(branchLabel);
+
 
         if (branchLabelMatcher.matches()) {
             VariableAssignment va = new VariableAssignment(null);

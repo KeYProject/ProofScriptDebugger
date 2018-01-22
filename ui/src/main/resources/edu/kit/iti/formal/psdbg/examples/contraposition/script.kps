@@ -5,54 +5,23 @@ script autoScript(){
     auto;
 }
 
-script test1234(){
-    impRight;
-    autoScript;
-    //auto;
-}
-
-script test23(){
-impRight;
-//x:term := find(match `?rt ==>`);
-//impLeft formula=x;
-impLeft formula=find(match `?rt ==>`);
-
-cases{
-    case match `q==>`:
-      impRight;
-      notRight;
-
-    case match `==>`:
-      impRight;
-      notRight;
-      close;
-    }
-
-        auto;
-
-}
-
-
-script test(){
-
-}
-
-script test1(){
+script interactive(){
   impRight;
   impRight;
+  impLeft;
+  cases {
+  	case match '#0 // .*':
+  		notRight formula=`(!p)`;
+  		close formula=`p`;
+
+  	case match '#1 // .*':
+  		notRight formula=`(!p)`;
+  		notLeft formula=`(!q)`;
+  		close formula=`q`;
+  }
 }
 
-script test_2(){
-impRight;
-impLeft;
-cases{
-    case match `q ==> ?X -> ?Y`:
-      impRight;
-
-}
-}
-
-script test2(){
+script interactive_with_match(){
 impRight;
 impLeft;
 cases{
@@ -60,26 +29,6 @@ cases{
       notLeft;
     default:
       notRight;
-}
-
-}
-script cpClosable(){
-    impRight;
-    impRight;
-    cases{
-
-       case match `?X -> ?Y ==> not(?Z)`:
-            notLeft;
-
-        try:
-            notLeft;
-            notRight;
-            replace_known_left occ='2';
-            concrete_impl_1;
-            close;
-
-        default:
-            auto;
-
     }
+
 }

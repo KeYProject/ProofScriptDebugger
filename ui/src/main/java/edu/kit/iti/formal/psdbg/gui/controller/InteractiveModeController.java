@@ -34,7 +34,6 @@ import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 import recoder.util.Debug;
 
-import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -172,7 +171,7 @@ public class InteractiveModeController {
             val gcs = new GuardedCaseStatement();
             val m = new MatchExpression();
             m.setPattern(new StringLiteral(
-                    LabelFactory.getBranchingLabel(k)
+                    format(LabelFactory.getBranchingLabel(k))
             ));
             gcs.setGuard(m);
             gcs.setBody(v);
@@ -183,6 +182,18 @@ public class InteractiveModeController {
         c.accept(pp);
         return pp.toString();
     }
+
+    private String format(String branchingLabel) {
+        System.out.println("branchingLabel = " + branchingLabel);
+        String newLabel = branchingLabel;
+        if (branchingLabel.endsWith("$$")) {
+            newLabel = branchingLabel.substring(0, branchingLabel.length() - 2);
+            newLabel += ".*";
+            System.out.println("newLabel = " + newLabel);
+        }
+        return newLabel;
+    }
+
 
     private void applyRule(CallStatement call, Goal g) {
         savepointslist.add(g.node());
