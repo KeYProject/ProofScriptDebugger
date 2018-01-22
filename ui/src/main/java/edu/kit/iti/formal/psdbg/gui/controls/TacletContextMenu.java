@@ -21,6 +21,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -123,7 +125,7 @@ public class TacletContextMenu extends ContextMenu {
                             .prepend(c.getRewriteTaclet(goal, occ)),
                     c.getNoFindTaclet(goal), builtInRules);
         } catch (NullPointerException e) {
-
+            createDummyMenuItem();
         }
 
         //proofMacroMenuController.initViewController(getMainApp(), getContext());
@@ -185,6 +187,7 @@ public class TacletContextMenu extends ContextMenu {
                                   ImmutableList<TacletApp> noFind,
                                   ImmutableList<BuiltInRule> builtInList) {
 
+
         List<TacletApp> findTaclets = find.stream().collect(Collectors.toList());
         List<TacletApp> noFindTaclets = noFind.stream().collect(Collectors.toList());
 
@@ -211,6 +214,17 @@ public class TacletContextMenu extends ContextMenu {
 
         if (occ != null)
             createAbbrevSection(pos.getPosInOccurrence().subTerm());
+
+
+    }
+
+    private void createDummyMenuItem() {
+        Text t = new Text("This is not a goal state.\nSelect a goal state from the list.");
+        t.setFill(Color.RED);
+
+        MenuItem item = new MenuItem();
+        item.setGraphic(t);
+        rootMenu.getItems().add(0, item);
 
     }
 
@@ -350,6 +364,7 @@ public class TacletContextMenu extends ContextMenu {
     private void handleCopyToClipboard(ActionEvent event) {
         final Clipboard clipboard = Clipboard.getSystemClipboard();
         final ClipboardContent content = new ClipboardContent();
+
         //content.putString(parentController.getProofString()
         //        .substring(pos.getBounds().start(), pos.getBounds().end()));
         clipboard.setContent(content);

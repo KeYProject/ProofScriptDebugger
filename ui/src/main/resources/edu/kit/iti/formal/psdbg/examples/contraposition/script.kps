@@ -9,16 +9,6 @@ script interactive(){
   impRight;
   impRight;
   impLeft;
-  cases {
-  	case match '#0 // .*':
-  		notRight formula=`(!p)`;
-  		close formula=`p`;
-
-  	case match '#1 // .*':
-  		notRight formula=`(!p)`;
-  		notLeft formula=`(!q)`;
-  		close formula=`q`;
-  }
 }
 
 script interactive_with_match(){
