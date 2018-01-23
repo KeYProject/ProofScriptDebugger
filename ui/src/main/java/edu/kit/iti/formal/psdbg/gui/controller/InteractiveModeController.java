@@ -3,6 +3,8 @@ package edu.kit.iti.formal.psdbg.gui.controller;
 import com.google.common.eventbus.Subscribe;
 import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
+import de.uka.ilkd.key.java.Services;
+import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.RuleCommand;
@@ -13,6 +15,7 @@ import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.LabelFactory;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptArea;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptController;
+import edu.kit.iti.formal.psdbg.gui.controls.Utils;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -22,6 +25,8 @@ import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.iti.formal.psdbg.parser.PrettyPrinter;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
+import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
+import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
@@ -61,6 +66,7 @@ public class InteractiveModeController {
     private ArrayList<Node> savepointslist;
 
     private Proof currentProof;
+    private Services keYServices;
 
     public void start(Proof currentProof, InspectionModel model) {
         Events.register(this);
@@ -83,12 +89,12 @@ public class InteractiveModeController {
      * Undo the application of the last rule
      */
     public void undo(javafx.event.ActionEvent actionEvent) {
-        if(savepointslist.isEmpty()) {
+        if (savepointslist.isEmpty()) {
             Debug.log("Kein vorheriger Zustand."); //TODO: events fire
             return;
         }
 
-        val pruneNode = savepointslist.get(savepointslist.size()-1);
+        val pruneNode = savepointslist.get(savepointslist.size() - 1);
         savepointslist.remove(pruneNode);
         ImmutableList<Goal> goalsbeforePrune = currentProof.getSubtreeGoals(pruneNode);
 
@@ -109,10 +115,10 @@ public class InteractiveModeController {
                     lastGoalNode = new GoalNode<>(prunedChildren.get(0).getParent().getParent(), kdn, kdn.getNode().isClosed()));
         }
 
-        model.setSelectedGoalNodeToShow(lastGoalNode );
+        model.setSelectedGoalNodeToShow(lastGoalNode);
 
-        val pruneStatement = savepointsstatement.get(savepointsstatement.size()-1);
-        cases.forEach((k,v) -> v.remove(pruneStatement));
+        val pruneStatement = savepointsstatement.get(savepointsstatement.size() - 1);
+        cases.forEach((k, v) -> v.remove(pruneStatement));
 
         String c = getCasesAsString();
         scriptArea.setText("" +
@@ -134,26 +140,46 @@ public class InteractiveModeController {
 
         SequentFormula seqForm = tap.getPio().sequentFormula();
         //transform term to parsable string representation
+        Sequent seq = g.sequent();
         String term = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(seqForm.formula());
+        //check whether more than one possibility for match
+        Matchings matches = MatcherFacade.matches(term, seq, true, keYServices);
+
         Parameters params = new Parameters();
         params.put(new Variable("formula"), new TermLiteral(term));
+      /*  if(matches.size() > 1) {
+            System.out.println("matches = " + matches);
+
+            Integer integ = new Integer(tap.getPio().sequentFormula().formula().serialNumber());
+            System.out.println("integ = " + integ);
+            params.put(new Variable("occ"), new IntegerLiteral(BigInteger.valueOf(integ)));
+
+        }*/
         VariableAssignment va = new VariableAssignment(null);
         CallStatement call = new CallStatement(tapName, params);
 
+        try {
+            applyRule(call, g);
+            // Insert into the right cases
+            Node currentNode = g.node();
+            cases.get(findRoot(currentNode)).add(call);
 
-        // Insert into the right cases
-        Node currentNode = g.node();
-        cases.get(findRoot(currentNode)).add(call);
+            // How to Play this on the Proof?
+            // How to Build a new StatePointer? Is it still possible?
+            //  or only at #stop()?
 
-        // How to Play this on the Proof?
-        // How to Build a new StatePointer? Is it still possible?
-        //  or only at #stop()?
+            String c = getCasesAsString();
+            scriptArea.setText("" +
+                    "//Preview \n" + c);
 
-        String c = getCasesAsString();
-        scriptArea.setText("" +
-                "//Preview \n" + c);
 
-        applyRule(call, g);
+        } catch (ScriptCommandNotApplicableException e) {
+            Utils.showExceptionDialog("Proof Command was not Applicable",
+                    "Proof Command was not Applicable",
+                    "The script command " + call.getCommand().toString() + " was not applicable. " + e.getMessage(), e);
+        }
+
+
     }
 
     private Node findRoot(Node cur) {
@@ -195,7 +221,7 @@ public class InteractiveModeController {
     }
 
 
-    private void applyRule(CallStatement call, Goal g) {
+    private void applyRule(CallStatement call, Goal g) throws ScriptCommandNotApplicableException {
         savepointslist.add(g.node());
         savepointsstatement.add(call);
 
@@ -255,5 +281,9 @@ public class InteractiveModeController {
 
     public BooleanProperty activatedProperty() {
         return activated;
+    }
+
+    public void setKeYServices(Services keYServices) {
+        this.keYServices = keYServices;
     }
 }
