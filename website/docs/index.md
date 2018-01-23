@@ -89,7 +89,7 @@ Java method `split` has to be selected. After loading the problem the program to
 shown in an own view on the right side, the script is shown on the left side and in the middle the proof obligation and the list of open goals is shown. 
 Views can be selected and docked to other places on the screen.
 
-Please note that after a succesful loadthe statusbar indicates that the contract was loaded.
+Please note that after a succesful load the statusbar indicates that the contract was loaded.
 
 ### Setting a breakpoint and starting the Interpreter
 
@@ -136,7 +136,7 @@ Your browser does not support the video tag or WebM.
 </video>
 </center>
 
-In this video we demonstrate the interactive point and click rule applications after selecting the interactive button.We further demonstrate how the interaction is included to the original script.
+In this video we demonstrate the interactive point and click rule applications after selecting the interactive button. We further demonstrate how the interaction is included to the original script.
 
 <center>
 <video width="80%"  controls>
