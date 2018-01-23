@@ -25,16 +25,16 @@ package edu.kit.iti.formal.psdbg.parser.ast;
 
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.Objects;
 
 /**
  * @author Alexander Weigl
  * @version 1 (27.04.17)
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ProofScript extends ASTNode<ScriptLanguageParser.ScriptContext> {
     @NonNull
     @Getter
@@ -73,4 +73,19 @@ public class ProofScript extends ASTNode<ScriptLanguageParser.ScriptContext> {
         return getBody() != null ? getBody().eq(that.getBody()) : that.getBody() == null;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProofScript that = (ProofScript) o;
+        return Objects.equals(getName(), that.getName()) &&
+                Objects.equals(getSignature(), that.getSignature()) &&
+                Objects.equals(getBody(), that.getBody());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getName(), getSignature(), getBody());
+    }
 }

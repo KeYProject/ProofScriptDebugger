@@ -31,12 +31,12 @@ import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * @author Alexander Weigl
  * @version 1 (27.04.17)
  */
-@EqualsAndHashCode
 public abstract class ASTNode<T extends ParserRuleContext>
         implements Visitable, Copyable<ASTNode<T>> {
     /**
@@ -138,5 +138,18 @@ public abstract class ASTNode<T extends ParserRuleContext>
             depth++;
         } while (n != null);
         return depth;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ASTNode<?> astNode = (ASTNode<?>) o;
+        return Objects.equals(getRuleContext(), astNode.getRuleContext());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getRuleContext());
     }
 }
