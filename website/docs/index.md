@@ -75,17 +75,80 @@ is published at [HVC 2017](http://rdcu.be/E4fF)
 
 ## Debugging Script for Quicksort's `split` method.
 
+### Selecting the proof script
+<center>
+<video width="80%"  controls>
+  <source src="../psdbg_videos/selection.webm" type="video/webm">
+Your browser does not support the video tag.
+</video>
+</center>
+
+In this video the selection of the Quicksort example from the paper is shown.
+After loading the example a dialog appears in which the appropriate contract for the 
+Java method `split` has to be selected. After loading the problem the program to be verified is 
+shown in an own view on the right side, the script is shown on the left side and in the middle the proof obligation and the list of open goals is shown. 
+Views can be selected and docked to other places on the screen.
+
+Please note that after a succesful loadthe statusbar indicates that the contract was loaded.
+
+### Setting a breakpoint and starting the Interpreter
 
 <center>
-The video will be uploaded on 23th, January. 
-
-<!--
 <video width="80%"  controls>
-  <source src="quicksort.webm" type="video/webm">
+  <source src="../psdbg_videos/breakpoint.webm" type="video/webm">
 Your browser does not support the video tag or WebM.
 </video>
--->
 </center>
+
+In this video it is shown how to set a breakpoint and how to start the debugger/interpreter. Please note that if no script is set as main script the first script in the open editor is taken as main script an set. This can be seen in the status bar.
+Furthermore the status of the interprter is shown with small icons in the right lower corner of the status bar. A running interpreter is indicated by a running figure. A paused interpreter is indicated by a timer. 
+If the interpreter reaches the end of the proof script the status is shown as a tick.
+The video does not include the full execution until the breakpoint, as executing certain proof commands may take time.
+
+### Stepping into, over and reverse and continue
+<center>
+<video width="80%"  controls>
+  <source src="../psdbg_videos/stepping_new.webm" type="video/webm">
+Your browser does not support the video tag or WebM.
+</video>
+</center>
+
+After reaching the breakpoint set in the video before, we are left with 4 open goals, visible in the goal list.
+In this video the stepping functionalities are demonstrated. Stepping into proof commands of the underlying verification system
+results in a view of the partial proof tree corresponding to the execution of this command.
+It can also be seen to which sequents the matching expression matches. 
+
+### Successful Proof Indication
+<center>
+<video width="80%"  controls>
+  <source src="../psdbg_videos/proof_new.webm" type="video/webm">
+Your browser does not support the video tag or WebM.
+</video>
+</center>
+
+In this video the successful proof is shown and it is demonstrated how to access the full proof tree of the proof for the `split` method.
+
+### SequentMatcher and Interactive Rule Application
+<center>
+<video width="80%"  controls>
+  <source src="../psdbg_videos/interactive.webm" type="video/webm">
+Your browser does not support the video tag or WebM.
+</video>
+</center>
+
+In this video we demonstrate the interactive point and click rule applications after selecting the interactive button.We further demonstrate how the interaction is included to the original script.
+
+<center>
+<video width="80%"  controls>
+  <source src="../psdbg_videos/sequentmatcher.webm" type="video/webm">
+Your browser does not support the video tag or WebM.
+</video>
+</center>
+
+Furthermore, we show how to use our SequentMatcher Window to enhance the auto-generated matching expressions from the 
+interactive rule applications.
+
+
 
 ## Features
 
@@ -128,7 +191,7 @@ Your browser does not support the video tag or WebM.
         <div class="feature-caption">
             Stepwise script execution: step over and into.
             Our special offers for time travellers: Go backwards in time
-            and then Back to the Future,again!
+            and then Back to the Future, again!
         </div>
     </div>
     <div> 
@@ -145,8 +208,8 @@ Your browser does not support the video tag or WebM.
 <h2>Downloads</h2>
 
 <ul>
- <li>PSDBG - <strong>Version 1.0-FM will be available at 23th, January</strong> 
-    <a href="~/releases/psdbg-1.0-fm.jar">psdbg-1.0-fm.jar</a>
+ <li>PSDBG - <strong>Version 1.0-FM</strong> 
+    <a href="../psdbg_releases/psdbg-1.0-fm.jar">psdbg-1.0-fm.jar</a>
     <br>
     Special Version for the tool paper at Formal Methods 2018.
     Including examples and all dependencies.
