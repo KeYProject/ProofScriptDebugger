@@ -191,6 +191,9 @@ public class Utils {
 
         alert.getDialogPane().setExpandableContent(expContent);
 
+        alert.setHeight(600);
+        alert.setWidth(400);
+
         alert.showAndWait();
     }
 

@@ -21,7 +21,6 @@ import org.key_project.util.collection.ImmutableList;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -201,6 +200,9 @@ public class KeYProofFacade {
 
     public void setEnvironment(KeYEnvironment environment) {
         this.environment.set(environment);
+        if (environment != null) {
+            getEnvironment().getUi().getProofControl().setMinimizeInteraction(true);
+        }
     }
 
     public SimpleObjectProperty<KeYEnvironment> environmentProperty() {
@@ -233,7 +235,7 @@ public class KeYProofFacade {
         ImmutableList<Goal> openGoals = p.getSubtreeGoals(p.root());
         List<GoalNode<KeyData>> goals = openGoals.stream().map(g ->
                 new GoalNode<>(null, new KeyData(g, env, p), false))
-                        .collect(Collectors.toList());
+                .collect(Collectors.toList());
         return goals;
     }
 

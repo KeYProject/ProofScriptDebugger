@@ -6,13 +6,17 @@ import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
+import de.uka.ilkd.key.logic.Term;
+import de.uka.ilkd.key.logic.op.SchemaVariable;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.RuleCommand;
 import de.uka.ilkd.key.macros.scripts.ScriptException;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
+import de.uka.ilkd.key.rule.inst.InstantiationEntry;
 import edu.kit.iti.formal.psdbg.LabelFactory;
+import edu.kit.iti.formal.psdbg.RuleCommandHelper;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptArea;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptController;
 import edu.kit.iti.formal.psdbg.gui.controls.Utils;
@@ -27,8 +31,6 @@ import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicabl
 import edu.kit.iti.formal.psdbg.parser.PrettyPrinter;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
-import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
-import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
@@ -39,12 +41,11 @@ import lombok.val;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableMapEntry;
 import recoder.util.Debug;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigInteger;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -147,19 +148,44 @@ public class InteractiveModeController {
         SequentFormula seqForm = tap.getPio().sequentFormula();
         //transform term to parsable string representation
         Sequent seq = g.sequent();
-        String term = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(seqForm.formula());
-        //check whether more than one possibility for match
-        Matchings matches = MatcherFacade.matches(term, seq, true, keYServices);
+        String sfTerm = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(seqForm.formula());
+        String onTerm = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(tap.getPio().subTerm());
 
-        Parameters params = new Parameters();
+        //check whether more than one possibility for match
+        //Matchings matches = MatcherFacade.matches(term, seq, true, keYServices);
+
+        /*Parameters params = new Parameters();
         params.put(new Variable("formula"), new TermLiteral(term));
         if (matches.size() > 1) {
             moreThanOneMatch = true;
             params.put(new Variable("occ"), new StringLiteral("0"));
 
-        }
+        }*/
+
+        RuleCommand.Parameters params = new RuleCommand.Parameters();
+        params.formula = seqForm.formula();
+        params.rulename = tap.getApp().taclet().name().toString();
+        params.on = tap.getPio().subTerm();
+
+        RuleCommandHelper rch = new RuleCommandHelper(g, params);
+        int occ = rch.getOccurence(tap.getApp());
+
+        Parameters callp = new Parameters();
+        callp.put(new Variable("formula"), new TermLiteral(sfTerm));
+        callp.put(new Variable("occ"), new IntegerLiteral(BigInteger.valueOf(occ)));
+        callp.put(new Variable("on"), new TermLiteral(onTerm));
+
         VariableAssignment va = new VariableAssignment(null);
-        CallStatement call = new CallStatement(tapName, params);
+        CallStatement call = new CallStatement(tapName, callp);
+
+        /*
+        Iterator<ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>>> iter = tap.getApp().instantiations().pairIterator();
+        while (iter.hasNext()) {
+            ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>> entry = iter.next();
+            String p = "inst_" + entry.key().proofToString();
+            String v = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm((Term) entry.value().getInstantiation());
+            call.getParameters().put(new Variable(p), new TermLiteral(v));
+        }*/
 
         try {
 
@@ -178,9 +204,14 @@ public class InteractiveModeController {
 
 
         } catch (ScriptCommandNotApplicableException e) {
-            Utils.showExceptionDialog("Proof Command was not Applicable",
-                    "Proof Command was not Applicable",
-                    "The script command " + call.getCommand().toString() + " was not applicable. " + e.getMessage(), e);
+            StringBuilder sb = new StringBuilder("The script command ");
+            sb.append(call.getCommand()).append(" was not applicable.");
+            sb.append("\nSequent Formula: formula=").append(sfTerm);
+            sb.append("\nOn Sub Term: on=").append(onTerm);
+
+            Utils.showExceptionDialog("Proof Command was not applicable",
+                    "Proof Command was not applicable.",
+                    sb.toString(), e);
         }
 
 
