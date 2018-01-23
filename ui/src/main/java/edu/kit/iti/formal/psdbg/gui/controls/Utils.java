@@ -188,7 +188,8 @@ public class Utils {
         expContent.setMaxWidth(Double.MAX_VALUE);
         expContent.add(label, 0, 0);
         expContent.add(textArea, 0, 1);
-
+        alert.setWidth(400);
+        alert.setHeight(400);
         alert.getDialogPane().setExpandableContent(expContent);
 
         alert.setHeight(600);
@@ -250,6 +251,9 @@ public class Utils {
         alert.setTitle("Proof Closed");
         alert.setHeaderText("The proof is closed");
         alert.setContentText("The proof using " + scriptName + " is closed");
+        alert.setWidth(400);
+        alert.setHeight(400);
+
         /*StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         ex.printStackTrace(pw);
