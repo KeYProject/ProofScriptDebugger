@@ -242,7 +242,7 @@ public class ScriptController {
      */
     public void saveCurrentScript() throws IOException {
         for (ScriptArea scriptArea : openScripts.keySet()) {
-            if (scriptArea.isFocused()) {
+            if (scriptArea.isFocused() || openScripts.size() == 1) {
                 saveCurrentScriptAs(scriptArea.getFilePath());
             }
         }

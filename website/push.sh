@@ -2,4 +2,4 @@
 
 
 mkdocs build --clean
-#rsync --delete -vr site/ i57adm.ira.uka.de:htdocs/grebing/psdbg/
+rsync --delete -vr site/ grebing@i57adm.ira.uka.de:.public_html/psdbg/

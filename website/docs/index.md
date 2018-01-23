@@ -73,13 +73,18 @@ the analysis of failed proof attempts.
 A full description of the language and debugging-concept 
 is published at [HVC 2017](http://rdcu.be/E4fF)
 
-## Debugging Quicksort
+## Debugging Script for Quicksort's `split` method.
+
 
 <center>
+The video will be uploaded on 23th, January. 
+
+<!--
 <video width="80%"  controls>
   <source src="quicksort.webm" type="video/webm">
 Your browser does not support the video tag or WebM.
 </video>
+-->
 </center>
 
 ## Features
@@ -140,7 +145,7 @@ Your browser does not support the video tag or WebM.
 <h2>Downloads</h2>
 
 <ul>
- <li>PSDBG - <strong>Version 1.0-FM</strong> 
+ <li>PSDBG - <strong>Version 1.0-FM will be available at 23th, January</strong> 
     <a href="~/releases/psdbg-1.0-fm.jar">psdbg-1.0-fm.jar</a>
     <br>
     Special Version for the tool paper at Formal Methods 2018.
