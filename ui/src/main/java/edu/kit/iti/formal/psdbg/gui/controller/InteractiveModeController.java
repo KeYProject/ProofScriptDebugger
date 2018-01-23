@@ -17,6 +17,7 @@ import edu.kit.iti.formal.psdbg.gui.controls.ScriptArea;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptController;
 import edu.kit.iti.formal.psdbg.gui.controls.Utils;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
+import edu.kit.iti.formal.psdbg.interpreter.Evaluator;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
@@ -25,6 +26,7 @@ import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.iti.formal.psdbg.parser.PrettyPrinter;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
+import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
 import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
 import javafx.beans.property.BooleanProperty;
@@ -67,6 +69,8 @@ public class InteractiveModeController {
 
     private Proof currentProof;
     private Services keYServices;
+
+    private boolean moreThanOneMatch = false;
 
     public void start(Proof currentProof, InspectionModel model) {
         Events.register(this);
@@ -134,7 +138,9 @@ public class InteractiveModeController {
 
     @Subscribe
     public void handle(Events.TacletApplicationEvent tap) {
+
         LOGGER.debug("Handling {}", tap);
+        moreThanOneMatch = false;
         String tapName = tap.getApp().taclet().displayName();
         Goal g = tap.getCurrentGoal();
 
@@ -147,18 +153,16 @@ public class InteractiveModeController {
 
         Parameters params = new Parameters();
         params.put(new Variable("formula"), new TermLiteral(term));
-      /*  if(matches.size() > 1) {
-            System.out.println("matches = " + matches);
+        if (matches.size() > 1) {
+            moreThanOneMatch = true;
+            params.put(new Variable("occ"), new StringLiteral("0"));
 
-            Integer integ = new Integer(tap.getPio().sequentFormula().formula().serialNumber());
-            System.out.println("integ = " + integ);
-            params.put(new Variable("occ"), new IntegerLiteral(BigInteger.valueOf(integ)));
-
-        }*/
+        }
         VariableAssignment va = new VariableAssignment(null);
         CallStatement call = new CallStatement(tapName, params);
 
         try {
+
             applyRule(call, g);
             // Insert into the right cases
             Node currentNode = g.node();
@@ -181,6 +185,7 @@ public class InteractiveModeController {
 
 
     }
+
 
     private Node findRoot(Node cur) {
         while (cur != null) {
@@ -237,8 +242,16 @@ public class InteractiveModeController {
         }
         RuleCommand c = new RuleCommand();
         // KeyData kd = g.getData();
+        Evaluator eval = new Evaluator(expandedNode.getAssignments(), expandedNode);
+
         Map<String, String> map = new HashMap<>();
-        // call.getParameters().forEach((k, v) -> map.put(k.getIdentifier(), v.getData().toString()));
+        call.getParameters().forEach((variable, expression) -> {
+
+            Value exp = eval.eval(expression);
+            map.put(variable.getIdentifier(), exp.getData().toString());
+        });
+
+//        call.getParameters().forEach((k, v) -> map.put(k.getIdentifier(),));
         LOGGER.info("Execute {} with {}", call, map);
         try {
             KeyData kd = expandedNode.getData();
@@ -246,6 +259,7 @@ public class InteractiveModeController {
             EngineState estate = new EngineState(g.proof());
             estate.setGoal(g);
             RuleCommand.Parameters cc = c.evaluateArguments(estate, map); //reflection exception
+
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
 
@@ -286,4 +300,6 @@ public class InteractiveModeController {
     public void setKeYServices(Services keYServices) {
         this.keYServices = keYServices;
     }
+
+
 }

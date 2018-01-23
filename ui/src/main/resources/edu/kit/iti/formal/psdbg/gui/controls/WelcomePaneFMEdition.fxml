@@ -7,18 +7,23 @@
 <?import javafx.scene.text.Font?>
 <fx:root prefHeight="485.0" prefWidth="716.0" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.121"
          xmlns:fx="http://javafx.com/fxml/1">
-    <children>
-        <Label layoutX="14.0" layoutY="14.0" text="Welcome to the ProofScriptDebugger">
-            <font>
-                <Font size="24.0"/>
-            </font>
-        </Label>
-        <Label text="FM 2018 - Edition">
-            <font>
-                <Font size="20.0"/>
-            </font>
-        </Label>
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
 
+    <children>
+        <VBox>
+            <Label layoutX="14.0" layoutY="14.0" text="Welcome to the ProofScriptDebugger">
+                <font>
+                    <Font size="24.0"/>
+                </font>
+            </Label>
+            <Label text="FM 2018 - Edition">
+                <font>
+                    <Font size="20.0"/>
+                </font>
+            </Label>
+        </VBox>
         <Label alignment="TOP_LEFT" layoutX="14.0" layoutY="71.0" prefHeight="129.0" prefWidth="573.0"
                text="This application is the Proof Script debugger for the KeY system. It allows to perform proofs using a proof scripting language on top of the KeY system."
                wrapText="true"/>
@@ -99,8 +104,10 @@
                         </Button>
 
 
-                        <!-- <Button contentDisplay="TOP" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                                 onAction="#loadJavaTest" text="Java Test Example" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Button contentDisplay="TOP" maxHeight="1.7976931348623157E308"
+                                maxWidth="1.7976931348623157E308"
+                                onAction="#loadQuicksort" text="Quicksort Example" GridPane.columnIndex="1"
+                                GridPane.rowIndex="1">
                              <graphic>
                                  <MaterialDesignIconView glyphName="NEW_BOX" size="24" />
                              </graphic>
@@ -113,7 +120,7 @@
                                  <MaterialDesignIconView glyphName="NEW_BOX" size="24" />
                              </graphic>
                          </Button>
-                        -->
+
                     </children>
                     <StackPane.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>

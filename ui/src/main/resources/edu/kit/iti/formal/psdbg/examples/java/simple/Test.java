@@ -12,6 +12,6 @@ public class Test{
         }else{
             x++;
         }
-        return x++;
+        return ++x;
     }
 }
