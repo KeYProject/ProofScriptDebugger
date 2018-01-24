@@ -72,50 +72,29 @@
 
     <build>
         <plugins>
-
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>appassembler-maven-plugin</artifactId>
-                <version>1.10</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <repositoryLayout>flat</repositoryLayout>
-                    <repositoryName>libs</repositoryName>
-                    <binFolder>./</binFolder>
-                    <!-- Set the target configuration directory to be used in the bin scripts -->
-                    <configurationDirectory>conf</configurationDirectory>
-                    <!-- Copy the contents from "/src/main/config" to the target
-                         configuration directory in the assembled application -->
-                    <copyConfigurationDirectory>true</copyConfigurationDirectory>
-                    <!-- Include the target configuration directory in the beginning of
-                         the classpath declaration in the bin scripts -->
-                    <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
-                    <!-- set alternative assemble directory -->
-                    <assembleDirectory>${project.build.directory}/dist</assembleDirectory>
-                    <!-- Extra JVM arguments that will be included in the bin scripts -->
-                    <extraJvmArguments>-Xms128m</extraJvmArguments>
-                    <!-- Generate bin scripts for windows and unix pr default -->
-                    <platforms>
-                        <platform>windows</platform>
-                        <platform>unix</platform>
-                    </platforms>
-                    <programs>
-                        <program>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
                             <mainClass>edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger</mainClass>
-                            <id>psdbg</id>
-                            <!-- Only generate unix shell script for this application -->
-                            <platforms>
-                                <platform>unix</platform>
-                                <platform>windows</platform>
-                            </platforms>
-                        </program>
-                    </programs>
+                        </manifest>
+                    </archive>
                 </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
+            <!--HIER EVTL. PLUGIN HIN-->
 
 
             <plugin>

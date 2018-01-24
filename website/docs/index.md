@@ -208,16 +208,18 @@ interactive rule applications.
 <h2>Downloads</h2>
 
 <ul>
- <li>PSDBG - <strong>Version 1.0-FM</strong> 
-    <a href="../psdbg_releases/psdbg-1.0-fm.jar">psdbg-1.0-fm.jar</a>
+ <li>PSDBG - <strong>Version 1.0.1b-FM</strong> 
+    <a href="../psdbg_releases/psdbg-1.0.1b-fm.jar">psdbg-1.0.1b-fm.jar</a>
     <br>
     Special Version for the tool paper at Formal Methods 2018.
     Including examples and all dependencies.
     <br>
+   <!-- Requires Java version 1.8.0_121 or higher -->
+    <br>
     <a href="https://www.gnu.org/licenses/gpl-3.0.txt">License: GPLv3</a>
     <a href="thirdparty.txt">Third Party Licenses</a> 
     <br>
-    Executable with <code>java -jar psdbg-1.0-fm.jar</code>
+    Executable with <code>java -jar psdbg-1.0.1b-fm.jar</code>
  </li>
 </ul>
 

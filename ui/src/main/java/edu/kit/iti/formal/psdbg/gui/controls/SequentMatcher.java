@@ -26,9 +26,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class SequentMatcher extends BorderPane {
 
@@ -86,7 +84,7 @@ public class SequentMatcher extends BorderPane {
                     Range r = cursorPosition.get(pio);
                     sequentView.setStyleClass(r.start(), r.end(), "sequent-highlight");
 
-                    System.out.println("Highlight " + r.start() + " " + r.end());
+                    //System.out.println("Highlight " + r.start() + " " + r.end());
                 });
 
             }

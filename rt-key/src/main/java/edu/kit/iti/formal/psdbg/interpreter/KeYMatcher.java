@@ -156,7 +156,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         }
 
 
-        assignments.forEach(variableAssignment -> System.out.println(variableAssignment));
+        // assignments.forEach(variableAssignment -> System.out.println(variableAssignment));
         return assignments.isEmpty()? null: assignments;
     }
 
@@ -198,11 +198,11 @@ public class KeYMatcher implements MatcherApi<KeyData> {
                     Value<String> value = toValueTerm(currentState.getData(), matched);
                     va.declare(s, value.getType());
                     va.assign(s, value);
-                    LOGGER.error("Variables to match " + s + " : " + value);
+                    //LOGGER.info("Variables to match " + s + " : " + value);
                 }
             }
             List<VariableAssignment> retList = new LinkedList();
-            LOGGER.error("Matched Variables " + va.toString());
+            LOGGER.info("Matched Variables " + va.toString());
             retList.add(va);
             return retList;
         }
