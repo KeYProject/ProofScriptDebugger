@@ -15,9 +15,12 @@ import java.nio.charset.Charset;
 public class JavaExample extends Example {
 
 
+    private URL projectFile;
+
     public void setJavaFile(URL javaFile) {
         this.javaFile = javaFile;
     }
+    //public void setProjectFile(URL projectFile){this.projectFile = projectFile;}
 
     protected URL javaFile;
 

@@ -6,15 +6,12 @@ import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
-import de.uka.ilkd.key.logic.Term;
-import de.uka.ilkd.key.logic.op.SchemaVariable;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.RuleCommand;
 import de.uka.ilkd.key.macros.scripts.ScriptException;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.rule.inst.InstantiationEntry;
 import edu.kit.iti.formal.psdbg.LabelFactory;
 import edu.kit.iti.formal.psdbg.RuleCommandHelper;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptArea;
@@ -41,11 +38,13 @@ import lombok.val;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableMapEntry;
 import recoder.util.Debug;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -171,6 +170,7 @@ public class InteractiveModeController {
         int occ = rch.getOccurence(tap.getApp());
 
         Parameters callp = new Parameters();
+//        callp.put(new Variable("formula"), new TermLiteral(sfTerm));
         callp.put(new Variable("formula"), new TermLiteral(sfTerm));
         callp.put(new Variable("occ"), new IntegerLiteral(BigInteger.valueOf(occ)));
         callp.put(new Variable("on"), new TermLiteral(onTerm));
@@ -289,6 +289,9 @@ public class InteractiveModeController {
             map.put("#2", call.getCommand());
             EngineState estate = new EngineState(g.proof());
             estate.setGoal(g);
+            // System.out.println("on = " + map.get("on"));
+            // System.out.println("formula = " +map.get("formula"));
+            // System.out.println("occ = " + map.get("occ"));
             RuleCommand.Parameters cc = c.evaluateArguments(estate, map); //reflection exception
 
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
