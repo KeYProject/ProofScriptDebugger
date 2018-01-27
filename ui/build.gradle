@@ -1,0 +1,22 @@
+apply plugin: 'antlr'
+
+description = 'ui'
+
+generateGrammarSource {
+    arguments += ["-long-messages", "-package","antlrgrammars"]
+}
+
+dependencies {
+    compile group: 'de.jensd', name: 'fontawesomefx-materialdesignfont', version: '1.7.22-4'
+    compile group: 'de.jensd', name: 'fontawesomefx-commons', version: '8.15'
+    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '1.0.0-SNAPSHOT'
+    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.12'
+
+    compile group: 'org.antlr', name: 'antlr4', version: '4.7'
+    antlr group: 'org.antlr', name: 'antlr4', version: '4.7'
+
+    compile project(':rt-key')
+    compile project(':matcher')
+    compile project(':DockFX')
+    compile project(':lint')
+}

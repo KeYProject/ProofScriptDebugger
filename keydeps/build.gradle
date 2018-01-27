@@ -1,0 +1,11 @@
+
+description = ''
+dependencies {
+    compile group: 'key-project-psdbg', name: 'key.core', version:'2.7-SNAPSHOT'
+    compile group: 'key-project-psdbg', name: 'key.ui', version:'2.7-SNAPSHOT'
+    compile group: 'key-project-psdbg', name: 'key.util', version:'2.7-SNAPSHOT'
+    compile group: 'org.antlr', name: 'antlr', version:'3.5.2'
+    compile group: 'antlr', name: 'antlr', version:'2.7.7'
+    compile group: 'net.java.dev.javacc', name: 'javacc', version:'4.0'
+    compile group: 'key-project-psdbg', name: 'recoder', version:'2.7'
+}

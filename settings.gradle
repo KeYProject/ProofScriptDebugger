@@ -1,0 +1,18 @@
+rootProject.name = 'psdbg'
+include ':lang'
+include ':rt'
+include ':rt-key'
+include ':ui'
+include ':DockFX'
+include ':lint'
+include ':keydeps'
+include ':matcher'
+
+project(':lang').projectDir = "$rootDir/lang" as File
+project(':rt').projectDir = "$rootDir/rt" as File
+project(':rt-key').projectDir = "$rootDir/rt-key" as File
+project(':ui').projectDir = "$rootDir/ui" as File
+project(':DockFX').projectDir = "$rootDir/DockFX" as File
+project(':lint').projectDir = "$rootDir/lint" as File
+project(':keydeps').projectDir = "$rootDir/keydeps" as File
+project(':matcher').projectDir = "$rootDir/matcher" as File
