@@ -294,10 +294,9 @@ public class InteractiveModeController {
             goals.remove(expandedNode);
             GoalNode<KeyData> last = null;
 
-           /* currentProof.getSubtreeGoals(currentProof.root()).forEach(goal -> {
-                cases.put(goal.node(), new Statements());
-            });*/
+
             if (ngoals.size() > 1) {
+                cases.get(findRoot(ngoals.get(0).node())).add(call);
                 for (Goal newGoalNode : ngoals) {
                     KeyData kdn = new KeyData(kd, newGoalNode.node());
                     goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
