@@ -1,92 +1,140 @@
-<html>
-<head>
-    <title>Introduction to Proof Scripting Language for the KeY system</title>
-    <meta content="">
-    <style></style>
-</head>
-<body>
-<h1>Language Constructs</h1>
-This description is an adapted version of the README for script commands in KeY by Mattias Ulbrich.
-<br>
-Proof scripts are textual representations of rule applications,
-settings changes and macro invocations.
-
-<h2>Proof Commands</h2>
-
-Proof commands start with an identifier followed by optional
-arguments:
-<br>
-command argName="argument" "argument without name" ;
-<br>
-Every command is terminated with a semicolon. There are named
-arguments in the form argName="argument" and unnamed argument without
-name. Single '...'and double quotes "..." can both be used.
-<br>
-Single-line comments are start with //.
-
-<h3>KeY Rules/Taclets</h3>
-All KeY rules can be used as proof command.
-The following command structure is used to apply single KeY rules onto the sequent of a selected goal node.
-If no argument is following the proof command the taclet corresponding to this command has to match at most once on the
-sequent.
-If more terms or formulas to which a proof command is applicable exist, arguments have to be
-given that indicate the where to apply the rule to.
-<br>
-A rule command has the following syntax:<br>
-RULENAME (on="TERM")? (formula="TOP_LEVEL_FORMULA")? (occ="OCCURENCE_IN_SEQUENT")? (inst_="TERM")? (maxSteps=INT)
-<br>with:
+<h1 id="language_constructs">Language Constructs</h1>
+<p>Proof scripts are textual representations of rule applications, settings changes
+    and strategy invocations (in the case of KeY as underlying verification
+    system also referred to as macros).</p>
+<h2 id="variables_and_types">Variables and Types</h2>
+<p>We need to distinguish between: logic, program, and script variables.</p>
 <ul>
-    <li>TERM: specific sub-term</li>
-    <li>TOP_LEVEL_FORMULA: specific top level formula</li>
-    <li>OCCURENCE_IN_SEQUENT: Number of occurence in the sequent</li>
-    <li>maxSteps: the number of steps KEY should at most use until it terminateds teh proof search</li>
+    <li>
+        <p><strong>logic variable</strong>: Occur on sequents, bounded by a quantifier or in an update</p>
+    </li>
+    <li>
+        <p><strong>program variable</strong>: declared and used in Java programs. They are constants
+            on the sequent.</p>
+    </li>
+    <li>
+        <p><strong>script variable</strong>: declared and assignable within a script</p>
+    </li>
 </ul>
+<p>Proof Script Language has script variables.</p>
+<p>A script variable has a name, a type and a value.
+    Variables are declared by</p>
+<div class="codehilite"><pre><span class="n">var0</span> <span class="o">:</span> <span class="n">type</span><span
+        class="o">;</span>
+<span class="n">var1</span> <span class="o">:</span> <span class="n">type</span> <span class="o">:=</span>  <span
+            class="n">value</span><span class="o">;</span>
+<span class="n">var2</span> <span class="o">:=</span>  <span class="n">value</span><span class="o">;</span>
+</pre>
+</div>
 
-If a rule has schema variables which must be instantiated manually,
-such instantiations can be provided as arguments. A schema variable
-named sv can be instantiated by setting the argument sv="..." or by
-setting inst_sv="..." (the latter works also for conflict cases like
-inst_occ="...").
 
-
-<h4>Examples</h4>
+<p>Both statements declare a variable, in the latter case (<code>var1</code> and <code>var2</code>) we directly assign a
+    value, in
+    the first form <code>var0</code> receives a default value.</p>
+<h3 id="types_and_literals">Types and Literals</h3>
+<p>We have following types: <code>INT</code>, <code>TERM&lt;Sort&gt;</code>, <code>String</code>.</p>
 <ul>
-    <li>andRight;</li>
-    <br>
-    Applicable iff there is only one matching spot on the sequent
-
-    <li>eqSymm formula="a=b";</li>
-    <br>
-    This command changes the sequent "a=b ==> c=d" to "b=a ==> c=d"
-    Using only "eqSymm;" alone would have been ambiguous.
-
-    <li>eqSymm formula="a=b->c=d" occ=2;</li>
-    <br>
-    This command changes sequent "a=b->c=d ==>" to "a=b->d=c ==>".
-    The occurrence number is needed since there are two possible applications on the formula
-
-    <li>eqSymm formula="a=b->c=d" on="c=d";</li>
-    <br>
-    This command changes the sequent "a=b->c=d ==>" to "a=b->d=c ==>".
-    It is simialr to the example above, but here the option to specify a
-    subterm instead of an occurrence number is used.
-
-    <li>cut cutFormula="x > y";</li>
-    <br>
-    This command is almost the same as 'cut "x>y"'
-
+    <li>
+        <p><code>INT</code> represents integer of arbitrary size.
+            <code>42
+                -134</code></p>
+    </li>
+    <li>
+        <p><code>TERM&lt;S&gt;</code> represents a term of sort <code>S</code> in KeY.
+            <code>S</code> can be any sort given by KeY. If the sort is ommitied, then <code>S=Any</code>.</p>
+    </li>
 </ul>
-<h3>Macro-Commands</h3>
-In the KeY system macro commands are proof strategies tailored to specific proof tasks.
-The available macro commands can be found using the command help.
-Using them in a script is similar to using rule commands:
-<br>
-MACRONAME (PARAMETERS)?
-<br>
-Often used macro commands are:
+<p><code>`f(x)`
+    `g(a)`
+    `imp(p,q)`</code></p>
+<ul>
+    <li><code>STRING</code></li>
+</ul>
+<p><code>"i am a string"</code></p>
+<h3 id="special_variables">Special Variables</h3>
+<p>To expose settings of the underlying prover to the user we include special variables:</p>
+<ul>
+    <li><code>MAX_STEPS</code> : amount denotes the maximum number of proof steps the underlying prover is allowed to
+        perform
+    </li>
+</ul>
+<h2 id="proof_commands">Proof Commands</h2>
+<p>Proof commands start with an identifier followed by optional arguments:</p>
+<div class="codehilite"><pre>command argName=&quot;argument&quot; &quot;positional argument&quot; ;
+</pre>
+</div>
+
+
+<p>Every command is terminated with a semicolon. There are named arguments in the
+    form argName=&rdquo;argument&rdquo; and unnamed argument without name. Single <code>'...'</code> and
+    double quotes <code>"..."</code> can both be used.</p>
+<p>Single-line comments are start with <code>//</code>.</p>
+<h2 id="key_rulestaclets">KeY Rules/Taclets</h2>
+<p>All KeY rules can be used as proof command. The following command structure is
+    used to apply single KeY rules onto the sequent of a selected goal node. If no
+    argument is following the proof command the taclet corresponding to this command
+    has to match at most once on the sequent.</p>
+<p>If more terms or formulas to which a proof command is applicable exist,
+    arguments have to be given that indicate the where to apply the rule to.</p>
+<p>A rule command has the following syntax:</p>
+<div class="codehilite"><pre>RULENAME [on=TERM]?
+         [formula=TERM]
+         [occ=INT]
+         [inst_*=TERM]
+</pre>
+</div>
+
+
+<p>with:</p>
+<ul>
+    <li><code>TERM</code> specific sub-term</li>
+    <li><code>TOP_LEVEL_FORMULA</code>: specific top level formula</li>
+    <li><code>OCCURENCE_IN_SEQUENT</code>: Number of occurence in the sequent</li>
+    <li><code>maxSteps</code> the number of steps KEY should at most use until it terminateds teh proof search</li>
+</ul>
+<p>If a rule has schema variables which must be instantiated manually,
+    such instantiations can be provided as arguments. A schema variable
+    named sv can be instantiated by setting the argument sv=&rdquo;&hellip;&rdquo; or by
+    setting inst_sv=&rdquo;&hellip;&rdquo; (the latter works also for conflict cases like
+    inst_occ=&rdquo;&hellip;&rdquo;).</p>
+<h3 id="examples">Examples</h3>
+<ul>
+    <li><code>andRight;</code></li>
+</ul>
+<p>Applicable iff there is only one matching spot on the sequent</p>
+<ul>
+    <li>
+        <p><code>eqSymm formula="a=b";</code></p>
+        <p>This command changes the sequent <code>a=b ==&gt; c=d</code> to <code>b=a ==&gt; c=d</code> Using only
+            <code>eqSymm;</code> alone would have been ambiguous.</p>
+    </li>
+    <li>
+        <p><code>eqSymm formula="a=b-&gt;c=d" occ=2;</code></p>
+        <p>This command changes sequent <code>a=b-&gt;c=d ==&gt;</code> to <code>a=b-&gt;d=c ==&gt;</code>. The
+            occurrence number is needed since there are two possible applications on the
+            formula</p>
+    </li>
+    <li>
+        <p><code>eqSymm formula="a=b-&gt;c=d" on="c=d";</code></p>
+        <p>This command changes the sequent &ldquo;a=b-&gt;c=d ==&gt;&rdquo; to &ldquo;a=b-&gt;d=c ==&gt;&rdquo;.
+            It is simialr to the example above, but here the option to specify a
+            subterm instead of an occurrence number is used.</p>
+    </li>
+    <li>
+        <p><code>cut cutFormula="x &gt; y";</code></p>
+    </li>
+</ul>
+<p>This command is almost the same as <code>cut \</code>x&gt;y``</p>
+<h3 id="macro-commands">Macro-Commands</h3>
+<p>In the KeY system macro commands are proof strategies tailored to specific proof tasks.
+    The available macro commands can be found using the command help.
+    Using them in a script is similar to using rule commands:</p>
+<p><code>MACRONAME (PARAMETERS)?</code></p>
+<p>Often used macro commands are:</p>
 <ul>
     <li>symbex : performs symbolic execution</li>
     <li>auto: invokes the automatic strategy of key</li>
+    <li>heap_simp: performs heap simplification</li>
     <li>autopilot: full autopilot</li>
     <li>autopilot_prep: preparation only autopilot</li>
     <li>split_prop: propositional expansion w/ splits</li>
@@ -96,9 +144,8 @@ Often used macro commands are:
 
 </ul>
 
-Example:
-
-auto;
+<p>Example:</p>
+<p>auto;
 <h2>Selectors</h2>
 As nited before proof commands are implemented as single goal statements.
 Some proof commands split a proof into more than one goal.
@@ -110,187 +157,13 @@ case MATCHER: <br>
 STATEMENTS <br>
 [default: <br>
 STATEMENTS]?<br>
-}
-
+}</p>
 <h2>Control Flow Statements</h2>
-The script language allows different statements for control-flow.
-Control-Flow statements define blocks, therefor it is neccessary to use curly braces after a control-flow statement.
+
+<p>The script language allows different statements for control-flow.
+    Control-Flow statements define blocks, therefor it is neccessary to use curly braces after a control-flow statement.
 <ul>
     <li>foreach {STATEMENTS}</li>
     <li>theOnly {STATEMENTS}</li>
-    <li>repeat {STATEMENTS}</li>
-
+    <li>repeat {STATEMENTS}</li></p>
 </ul>
-
-
-<!--
-
-
-
-Commands in scripts
--------------------
-
-This list of available script commands is subject to change and to
-extension. If you write your own script commands (s. below), please
-addCell an explanation to this list here. The list is sorted alphabetically.
-
--- auto ------------------
-
-Apply the automatic KeY strategy on the current goal. Optinally you
-can specify the number of steps to run.
-
-Examples:
-auto steps=30000;
-# run at most 30000 steps automatically.
-
--- cut -------------------
-
-Performs a cut and thus splits the sequent into two goals. The unnamed
-argument is the formula to cut with
-
-Examples:
-cut "value1 = value2";
-
--- exit ------------------
-
-Terminate the script prematurely at that point. Used mainly for debug
-purposes.
-
-Examples:
-exit;
-
--- instantiate -----------
-
-Quantifier instantiation is a task that often occurs. Instead of
-specifying the entire formula, it suffices here to name the variable
-that is to be instantiated. If that is not unique, the number of the
-occurrence of that quantified variable can be specified as well.
-
-Examples:
-instantiate var="x" occ="3" with="42"
-# Instantiate the third instantiateable formula whose bound
-# variable is called "x" with the value 42
-
-instantiate formula="\forall int x; f(x) = 42" with="23"
-# The quantified formula can also be specified if wanted.
-# This here for the antecedent.
-
-instantiate formula="\exists int x; f(x) = 42" with="23"
-# Existentially quantified variables can be instantiated if they
-# occur on the succedent side.
-
-instantiate hide var=x value="x_0"
-# instantiate x and hide the quantified formula
-
--- leave -----------------
-
-Mark the currently active goal as non-interactive (the orange hand
-symbol in the GUI). It is then excluded from further analysis by
-scripts. This is good for debugging unfinished proof scripts.
-
--- macro -----------------
-
-Invoke a macro on the current goal. The names of available macros
-include:
-
-autopilot      full autopilot
-autopilot-prep preparation only autopilot
-split-prop     propositional expansion w/ splits
-nosplit-prop   propositional expansion w/o splits
-simp-upd       updateTarget simplification
-simp-heap      heap simplification
-
-Examples:
-macro autopilot-prep;
-
-(Future version may drop the macro keyword and allow macro invocations
-directly.)
-
--- rule ------------------
-
-Apply a single rule onto the current sequent. As unnamed argument addCell
-the name of the taclet to be applied. If the taclet matches only once
-on the entire sequent, the rule is applied. If it matches more than
-once you need to specify more. In that case you can first specify the
-sequence formula and then the number of the occurrence in the formula
-or the specific subterm via the 'on' keyword.
-If a rule has schema variables which must be instantiated manually,
-such instantiations can be provided as arguments. A schema variable
-named sv can be instantiated by setting the argument sv="..." or by
-setting inst_sv="..." (the latter works also for conflict cases like
-inst_occ="...").
-
-Examples:
-rule andRight;
-# if there is only one matching spot on the sequent
-
-rule eqSymm formula="a=b";
-# changes sequent "a=b ==> c=d" to "b=a ==> c=d"
-# "rule eqSymm;" alone would have been ambiguous.
-
-rule eqSymm formula="a=b->c=d" occ=2;
-# changes sequent "a=b->c=d ==>" to "a=b->d=c ==>".
-# occurrence number needed since there are
-# two possible applications on the formula
-
-rule eqSymm formula="a=b->c=d" on="c=d";
-# changes sequent "a=b->c=d ==>" to "a=b->d=c ==>".
-# same as above, but using the option to specify a
-# subterm instead of an occurrence number.
-
-rule cut cutFormula="x > y";
-# almost the same as 'cut "x>y"'
-
--- script ----------------
-
-Invoke another script which resides in an external file.
-
-Example:
-script '/path/to/other/file.script';
-
--- select ----------------
-
-Unlike most other commands, this command does not change the proof but
-chooses the goal on which the next step operates. Currently you can
-specify a formula. The goal is chosen such that the formula appears
-(toplevel) on the sequent (antecedent or succedent). You can limit the
-search to antecedent or succedent.
-
-Examples:
-select formula="{ x:=1 }y < x";
-# search for the formula anywhere
-select succedent formula="wellFormed(someHeap)";
-# search only the succedent for the formula
-
--- smt -------------------
-
-Invoke an external SMT solver. That solver must be adequately
-configured outside the script mechanism. By default, Z3 is invoked,
-but that can be chosen.
-
-Examples:
-smt;
-# invoke Z3
-smt solver="Z3,yices";
-# a comma separated list of solvers can be specified.
-
--- tryclose --------------
-
-Unlike other commands this command operates on ALL open goals and
-effectively applies the "try provable goals below" macro to all of
-them. A number of steps can optionally be given.
-
-Examples:
-tryclose;
-tryclose steps=2000;
-# spend 2000 steps on each open goal
-
-
-Write your on proof commands
-----------------------------
-
-to be done.
-Contact Mattias, if you are interested.
--->
-</body>
-</html>

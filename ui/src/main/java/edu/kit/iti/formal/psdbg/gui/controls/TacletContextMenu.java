@@ -206,6 +206,14 @@ public class TacletContextMenu extends ContextMenu {
             toAdd.addAll(noFindTaclets);
         }
 
+        /*toAdd=toAdd.stream().filter(tapp->{
+            try{
+                return tapp.isExecutable(goal.proof().getServices());
+            }catch (NullPointerException e) {
+                return false;
+            }
+        }).collect(Collectors.toList());*/
+
         if (rulesAvailable) {
             createMenuItems(toAdd);
         } else {
@@ -338,7 +346,6 @@ public class TacletContextMenu extends ContextMenu {
                 pos.getPosInOccurrence());*/
 
         //System.out.println("event = [" + event + "]");
-
         Events.fire(new Events.TacletApplicationEvent(event, pos.getPosInOccurrence(), goal));
     }
 

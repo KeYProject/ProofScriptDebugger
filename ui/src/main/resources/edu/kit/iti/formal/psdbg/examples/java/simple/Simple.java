@@ -1,4 +1,4 @@
-public class Test{
+public class Simple{
 
 
 
@@ -6,12 +6,12 @@ public class Test{
       @ requires x >= 0;
       @ ensures \result >0;
       @*/
-    public int foo(int x){
+    public int very_simple(int x){
         if(x > 0){
             x--;
         }else{
             x++;
         }
-        return x++;
+        return ++x;
     }
 }

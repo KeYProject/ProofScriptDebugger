@@ -121,9 +121,20 @@ public class CommandHelp extends BorderPane {
     class CommandEntry {
         String name, additionalInformation;
 
+
         @Override
         public String toString() {
-            return name + " (" + additionalInformation + ")";
+            return beautifyName(name) + " (" + additionalInformation + ")";
+        }
+
+        private String beautifyName(String cname) {
+            String ret;
+            if (cname.contains("-")) {
+                ret = cname.replace("-", "_");
+                return ret;
+            } else {
+                return cname;
+            }
         }
     }
 }

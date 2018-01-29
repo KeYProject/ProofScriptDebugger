@@ -45,13 +45,18 @@ public class WelcomePaneFMEdition extends AnchorPane {
      * Load a test example
      * @param event
      */
-    public void loadJavaTest(ActionEvent event) {
+    public void loadQuicksort(ActionEvent event) {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(null);
+        Examples.loadExamples().forEach(example -> {
+            if (example.getName().equals("Quicksort example")) {
+                example.open(proofScriptDebugger);
+            }
+        });
     }
 
     /**
-     * Load teh help page documentation
+     * Load the help page documentation
      * @param event
      */
     public void loadHelpPage(ActionEvent event) {

@@ -12,25 +12,3 @@ script main() {
     close;
 }
 
-script main1() {
-    impRight;
-
-    //instantiate var=`x` with=`c`;
-    //allLeft formula=`\forall` with=`a`;
-    //allLeft on=`\forall s x; f(f(x)) = f(x)` inst_t=`c`;
-
-}
-
-script proj() {
-impRight;
-eqSymm formula = `f(c) = f(f(f(c)))`;
-instantiate var=`x` with=`f(f(c))`;
-//allLeft on =`\forall s x; f(f(x)) = f(x)` inst_t=`f(f(c))`;
-allLeft on =`\forall s x; f(f(x)) = f(x)` inst_t=`c`;
-//applyEqRigid;
-//applyEq formula=`f(f(f(c))) = f(c)` occ=`f(f(c))`;
-//applyEq formula=`f(f(f(c))) = f(c)` occ=4;
-applyEq on=`f(f(c))` formula=`f(f(f(c))) = f(c)` ;
-close;
-//close formula=`f(f(c))=f(c)`;
-}

@@ -13,10 +13,12 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.LabelFactory;
+import edu.kit.iti.formal.psdbg.RuleCommandHelper;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptArea;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptController;
 import edu.kit.iti.formal.psdbg.gui.controls.Utils;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
+import edu.kit.iti.formal.psdbg.interpreter.Evaluator;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
@@ -25,8 +27,7 @@ import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.iti.formal.psdbg.parser.PrettyPrinter;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
-import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
-import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
+import edu.kit.iti.formal.psdbg.parser.data.Value;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
@@ -39,6 +40,7 @@ import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 import recoder.util.Debug;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +69,8 @@ public class InteractiveModeController {
 
     private Proof currentProof;
     private Services keYServices;
+
+    private boolean moreThanOneMatch = false;
 
     public void start(Proof currentProof, InspectionModel model) {
         Events.register(this);
@@ -134,31 +138,57 @@ public class InteractiveModeController {
 
     @Subscribe
     public void handle(Events.TacletApplicationEvent tap) {
+
         LOGGER.debug("Handling {}", tap);
+        moreThanOneMatch = false;
         String tapName = tap.getApp().taclet().displayName();
         Goal g = tap.getCurrentGoal();
 
         SequentFormula seqForm = tap.getPio().sequentFormula();
         //transform term to parsable string representation
         Sequent seq = g.sequent();
-        String term = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(seqForm.formula());
+        String sfTerm = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(seqForm.formula());
+        String onTerm = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(tap.getPio().subTerm());
+
         //check whether more than one possibility for match
-        Matchings matches = MatcherFacade.matches(term, seq, true, keYServices);
+        //Matchings matches = MatcherFacade.matches(term, seq, true, keYServices);
 
-        Parameters params = new Parameters();
+        /*Parameters params = new Parameters();
         params.put(new Variable("formula"), new TermLiteral(term));
-      /*  if(matches.size() > 1) {
-            System.out.println("matches = " + matches);
-
-            Integer integ = new Integer(tap.getPio().sequentFormula().formula().serialNumber());
-            System.out.println("integ = " + integ);
-            params.put(new Variable("occ"), new IntegerLiteral(BigInteger.valueOf(integ)));
+        if (matches.size() > 1) {
+            moreThanOneMatch = true;
+            params.put(new Variable("occ"), new StringLiteral("0"));
 
         }*/
+
+        RuleCommand.Parameters params = new RuleCommand.Parameters();
+        params.formula = seqForm.formula();
+        params.rulename = tap.getApp().taclet().name().toString();
+        params.on = tap.getPio().subTerm();
+
+        RuleCommandHelper rch = new RuleCommandHelper(g, params);
+        int occ = rch.getOccurence(tap.getApp());
+
+        Parameters callp = new Parameters();
+//        callp.put(new Variable("formula"), new TermLiteral(sfTerm));
+        callp.put(new Variable("formula"), new TermLiteral(sfTerm));
+        callp.put(new Variable("occ"), new IntegerLiteral(BigInteger.valueOf(occ)));
+        callp.put(new Variable("on"), new TermLiteral(onTerm));
+
         VariableAssignment va = new VariableAssignment(null);
-        CallStatement call = new CallStatement(tapName, params);
+        CallStatement call = new CallStatement(tapName, callp);
+
+        /*
+        Iterator<ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>>> iter = tap.getApp().instantiations().pairIterator();
+        while (iter.hasNext()) {
+            ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>> entry = iter.next();
+            String p = "inst_" + entry.key().proofToString();
+            String v = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm((Term) entry.value().getInstantiation());
+            call.getParameters().put(new Variable(p), new TermLiteral(v));
+        }*/
 
         try {
+
             applyRule(call, g);
             // Insert into the right cases
             Node currentNode = g.node();
@@ -174,13 +204,19 @@ public class InteractiveModeController {
 
 
         } catch (ScriptCommandNotApplicableException e) {
-            Utils.showExceptionDialog("Proof Command was not Applicable",
-                    "Proof Command was not Applicable",
-                    "The script command " + call.getCommand().toString() + " was not applicable. " + e.getMessage(), e);
+            StringBuilder sb = new StringBuilder("The script command ");
+            sb.append(call.getCommand()).append(" was not applicable.");
+            sb.append("\nSequent Formula: formula=").append(sfTerm);
+            sb.append("\nOn Sub Term: on=").append(onTerm);
+
+            Utils.showExceptionDialog("Proof Command was not applicable",
+                    "Proof Command was not applicable.",
+                    sb.toString(), e);
         }
 
 
     }
+
 
     private Node findRoot(Node cur) {
         while (cur != null) {
@@ -237,15 +273,27 @@ public class InteractiveModeController {
         }
         RuleCommand c = new RuleCommand();
         // KeyData kd = g.getData();
+        Evaluator eval = new Evaluator(expandedNode.getAssignments(), expandedNode);
+
         Map<String, String> map = new HashMap<>();
-        // call.getParameters().forEach((k, v) -> map.put(k.getIdentifier(), v.getData().toString()));
+        call.getParameters().forEach((variable, expression) -> {
+
+            Value exp = eval.eval(expression);
+            map.put(variable.getIdentifier(), exp.getData().toString());
+        });
+
+//        call.getParameters().forEach((k, v) -> map.put(k.getIdentifier(),));
         LOGGER.info("Execute {} with {}", call, map);
         try {
             KeyData kd = expandedNode.getData();
             map.put("#2", call.getCommand());
             EngineState estate = new EngineState(g.proof());
             estate.setGoal(g);
+            System.out.println("on = " + map.get("on"));
+            System.out.println("formula = " + map.get("formula"));
+            System.out.println("occ = " + map.get("occ"));
             RuleCommand.Parameters cc = c.evaluateArguments(estate, map); //reflection exception
+
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
 
@@ -286,4 +334,6 @@ public class InteractiveModeController {
     public void setKeYServices(Services keYServices) {
         this.keYServices = keYServices;
     }
+
+
 }

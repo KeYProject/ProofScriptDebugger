@@ -442,9 +442,8 @@ public class DebuggerMain implements Initializable {
 
                 // wait a second!
                 future.get(1, TimeUnit.SECONDS);
-                // ungently stop
+                // urgently stop
                 model.getDebuggerFramework().hardStop();
-
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 e.printStackTrace();
             } finally {
@@ -453,6 +452,7 @@ public class DebuggerMain implements Initializable {
         } else {
             LOGGER.info("no interpreter running");
         }
+        assert model.getDebuggerFramework() == null;
     }
 
     @FXML

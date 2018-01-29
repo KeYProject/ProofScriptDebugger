@@ -317,7 +317,7 @@ public class ScriptController {
                 lastScriptArea = area;
                 lastRegion = r;
             } else {
-                logger.error("Could not find editor for: " + node.getOrigin());
+                logger.error("Could not find editor for the node to highlight: " + node.getOrigin());
             }
         }
 

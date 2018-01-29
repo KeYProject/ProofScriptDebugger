@@ -1,0 +1,42 @@
+<html>
+<body>
+<h1>Quicksort's split methods</h1>
+<p>This script is part of a case study to evaluate our language KPS. It is used to
+    prove the Split method of a Quicksort implementation.</p>
+<p> This script is used to guide the proof for the method
+    split() of a Quicksort implementation.</p>
+<p>In the first
+    lines the proof state is pre-processed, i.e., the program is symbolically.
+    The user is now left with a proof in which the proof goals each
+    correspond a program state and a part of the proof obligation that needs to be shown for this path.
+    For each of the more than 30 proof goals the next foreach block in the script invokes the
+    prover's strategy tryclose, which tries to close the proof goal with built-in strategies or,
+    if this is not successful, prunes the proof back to the goal the user has seen last.
+
+    In the two remaining proof goals, it needs to be shown that during the
+    loop execution the permutation property of the input array and the partial sorted array
+    is preserved and
+    that the loop invariant together with the rest of the program implies the post condition.
+    To show that the permutation property holds, we make use of the taclet seqPermFromSwap:
+    This taclet states that if we know that A is a permutation of B and we have to show that C is a permutation of D,
+    then it suffices to prove that
+<ol>
+    <li>B is equal to D</li>
+    <li>and there exist two indices in A such that if the elements at these positions are swapped we obtain B.</li>
+</ol>
+The two proof obligations to show are added to the sequents suceedent and after applying the rule andRight
+four proof goals remain: two where we have to show case (1) and two where we have to show case (2).
+
+
+</p>
+
+<p> In the cases block, a distinction according to the shape of the proof
+    obligation introduced by the seqPermFromSwap taclet is done and those proof branches that
+    could be handled by the prover's auto strategy are captured by the first
+    case. In the second case the prover needs guidance in the form of quantifier
+    instantiations before it is able to find a proof.
+</p>
+
+</body>
+
+</html>

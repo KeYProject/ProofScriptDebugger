@@ -1,10 +1,6 @@
 script t1(){
     symbex;
-    cases{
-       case match `?X >= 0,?X > 0  ==>`:
-           cut `?X = 0`[?X \ X];
-           foreach{
-             auto;
-           }
+    foreach{
+      tryclose;
     }
 }

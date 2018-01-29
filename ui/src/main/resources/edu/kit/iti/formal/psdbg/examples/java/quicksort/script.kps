@@ -14,8 +14,8 @@ script split_from_quicksort() {
     case match `==> seqDef(_,_,_) = seqDef(_, _, _)`:
         auto;
     case match `==> (\exists ?X (\exists ?Y _))`:
-        instantiate  var=`?X`[?X \ X] with=`i_0`;
-        instantiate  var=`?Y`[?Y \ Y] with=`j_0`;
+        instantiate  var=X with=`i_0`;
+        instantiate  var=Y with=`j_0`;
         auto;
   }
 }

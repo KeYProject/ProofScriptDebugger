@@ -9,7 +9,7 @@ public class QuickSort extends JavaExample {
 
         setName("Quicksort example");
 
-        setHelpText(null);
+        setHelpText(getClass().getResource("help.html"));
 
         setJavaFile(getClass().
 
