@@ -1,6 +1,12 @@
 edu.kit.iti.formal.psdbg.examples.contraposition.ContrapositionExample
 edu.kit.iti.formal.psdbg.examples.fol.FirstOrderLogicExample
+edu.kit.iti.formal.psdbg.examples.java.simple.JavaSimpleExample
+edu.kit.iti.formal.psdbg.examples.java.transitive.PaperExample
+edu.kit.iti.formal.psdbg.examples.java.dpqs.DualPivotExample
 edu.kit.iti.formal.psdbg.examples.java.quicksort.QuickSort
 edu.kit.iti.formal.psdbg.examples.agatha.AgathaExample
-edu.kit.iti.formal.psdbg.examples.java.simple.JavaSimpleExample
-
+edu.kit.iti.formal.psdbg.examples.java.bubbleSort.BubbleSortExample
+edu.kit.iti.formal.psdbg.examples.java.sumAndMax.SumAndMaxExample
+edu.kit.iti.formal.psdbg.examples.lulu.LuLuDoubleLinkedList
+edu.kit.iti.formal.psdbg.examples.lulu.LuLuQuickSort
+edu.kit.iti.formal.psdbg.examples.lulu.LuLuSumAndMax

@@ -136,7 +136,7 @@ public class DebuggerMain implements Initializable {
     //-----------------------------------------------------------------------------------------------------------------
     private ProofTree proofTree = new ProofTree();
     private DockNode proofTreeDock = new DockNode(proofTree, "Proof Tree");
-    private WelcomePaneFMEdition welcomePane = new WelcomePaneFMEdition(this);
+    private WelcomePane welcomePane = new WelcomePane(this);
     private DockNode welcomePaneDock = new DockNode(welcomePane, "Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
     private DockNode activeInspectorDock;
     private CommandHelp commandHelp = new CommandHelp();
