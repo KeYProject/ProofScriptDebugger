@@ -162,6 +162,9 @@ public class InspectionModel {
         return isInterpreterTab;
     }
 
+    public void clearHighlightLines() {
+        highlightedJavaLinesProperty().clear();
+    }
 
     enum Mode {
         LIVING, DEAD, POSTMORTEM,

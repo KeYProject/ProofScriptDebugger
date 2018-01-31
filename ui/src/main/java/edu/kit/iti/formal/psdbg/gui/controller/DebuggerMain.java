@@ -428,31 +428,50 @@ public class DebuggerMain implements Initializable {
         executeScript(FACADE.buildInterpreter(), addInitBreakpoint);
     }
 
+    /**
+     * Reload a problem from the beginning
+     *
+     * @param event
+     */
     @FXML
-    public void abortExecution() {
-
-        if (model.getDebuggerFramework() != null) {
-            try {
-                // try to friendly
-                Future future = executorService.submit(() -> {
-                    model.getDebuggerFramework().stop();
-                    model.getDebuggerFramework().unregister();
-                    model.getDebuggerFramework().release();
-                });
-
-                // wait a second!
-                future.get(1, TimeUnit.SECONDS);
-                // urgently stop
-                model.getDebuggerFramework().hardStop();
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                e.printStackTrace();
-            } finally {
-                model.setDebuggerFramework(null);
-            }
+    public void reloadProblem(ActionEvent event) {
+        //abort current execution();
+        //save old information and refresh models
+        statusBar.publishMessage("Reloading...");
+        File lastLoaded;
+        if (model.getKeyFile() != null) {
+            lastLoaded = model.getKeyFile();
         } else {
-            LOGGER.info("no interpreter running");
+            Contract chosen = model.getChosenContract();
+            lastLoaded = model.getJavaFile();
         }
-        assert model.getDebuggerFramework() == null;
+        //model.reload();
+        abortExecution();
+        handleStatePointerUI(null);
+        model.setStatePointer(null);
+        //reload getInspectionViewsController().getActiveInspectionViewTab().getModel()
+        InspectionModel iModel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
+        //iModel.setHighlightedJavaLines(FXCollections.emptyObservableSet());
+        iModel.clearHighlightLines();
+        iModel.getGoals().clear();
+        iModel.setSelectedGoalNodeToShow(null);
+
+        try {
+            FACADE.reload(lastLoaded);
+            if (iModel.getGoals().size() > 0) {
+                iModel.setSelectedGoalNodeToShow(iModel.getGoals().get(0));
+            }
+            if (FACADE.getReadyToExecute()) {
+                LOGGER.info("Reloaded Successfully");
+                statusBar.publishMessage("Reloaded Sucessfully");
+            }
+        } catch (ProofInputException e) {
+            e.printStackTrace();
+        } catch (ProblemLoaderException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     @FXML
@@ -768,44 +787,32 @@ public class DebuggerMain implements Initializable {
         }
     }
 
-    /**
-     * Reload a problem from the beginning
-     *
-     * @param event
-     */
     @FXML
-    public void reloadProblem(ActionEvent event) {
-        //abort current execution();
-        //save old information and refresh models
-        File lastLoaded;
-        if (model.getKeyFile() != null) {
-            lastLoaded = model.getKeyFile();
-        } else {
-            Contract chosen = model.getChosenContract();
-            lastLoaded = model.getJavaFile();
-        }
-        //model.reload();
-        abortExecution();
-        handleStatePointerUI(null);
-        model.setStatePointer(null);
-        //reload getInspectionViewsController().getActiveInspectionViewTab().getModel()
-        InspectionModel iModel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
-        iModel.setHighlightedJavaLines(null);
-        iModel.getGoals().clear();
-        iModel.setSelectedGoalNodeToShow(null);
+    public void abortExecution() {
+        statusBar.publishMessage("Aborting Execution...");
+        if (model.getDebuggerFramework() != null) {
+            try {
+                // try to friendly
+                Future future = executorService.submit(() -> {
+                    model.getDebuggerFramework().stop();
+                    model.getDebuggerFramework().unregister();
+                    model.getDebuggerFramework().release();
+                });
 
-        try {
-            FACADE.reload(lastLoaded);
-            if (iModel.getGoals().size() > 0) {
-                iModel.setSelectedGoalNodeToShow(iModel.getGoals().get(0));
+                // wait a second!
+                future.get(1, TimeUnit.SECONDS);
+                // urgently stop
+                model.getDebuggerFramework().hardStop();
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                e.printStackTrace();
+            } finally {
+                model.setDebuggerFramework(null);
+                statusBar.publishMessage("Execution aborted.");
             }
-        } catch (ProofInputException e) {
-            e.printStackTrace();
-        } catch (ProblemLoaderException e) {
-            e.printStackTrace();
+        } else {
+            LOGGER.info("no interpreter running");
         }
-
-
+        assert model.getDebuggerFramework() == null;
     }
 
     @FXML

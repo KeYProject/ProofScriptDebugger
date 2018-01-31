@@ -56,10 +56,12 @@ public class JavaArea extends BaseCodeArea {
      * highlight new lines
      */
     private void highlightLineSet() {
-        linesToHighlightProperty().get().forEach(integer -> {
-            lineToClassProperty().get().put(integer - 1, "line-highlight");
-        });
-        highlightLines();
+        if (!linesToHighlight.get().isEmpty()) {
+            linesToHighlightProperty().get().forEach(integer -> {
+                lineToClassProperty().get().put(integer - 1, "line-highlight");
+            });
+            highlightLines();
+        }
     }
 
     private void updateView() {

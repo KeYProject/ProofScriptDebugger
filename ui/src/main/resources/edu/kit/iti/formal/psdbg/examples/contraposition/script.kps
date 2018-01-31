@@ -2,7 +2,7 @@
 //
 
 script autoScript(){
-    auto;
+    //auto;
 }
 
 script interactive(){
