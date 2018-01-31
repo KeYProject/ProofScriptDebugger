@@ -119,7 +119,6 @@ public class TacletContextMenu extends ContextMenu {
 
         try {
             ImmutableList<TacletApp> findTaclet = c.getFindTaclet(goal, occ);
-
             createTacletMenu(
                     removeRewrites(findTaclet)
                             .prepend(c.getRewriteTaclet(goal, occ)),
