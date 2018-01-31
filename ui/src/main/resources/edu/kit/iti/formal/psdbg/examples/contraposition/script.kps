@@ -2,7 +2,8 @@
 //
 
 script autoScript(){
-    //auto;
+    __STRICT_MODE := true;
+    auto;
 }
 
 script interactive(){
