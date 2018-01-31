@@ -9,6 +9,7 @@ import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.RuleCommand;
 import de.uka.ilkd.key.macros.scripts.ScriptException;
+import de.uka.ilkd.key.pp.LogicPrinter;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
@@ -54,6 +55,7 @@ public class InteractiveModeController {
     private static final Logger LOGGER = LogManager.getLogger(InteractiveModeController.class);
 
     private final Map<Node, Statements> cases = new HashMap<>();
+
     private final ScriptController scriptController;
     private BooleanProperty activated = new SimpleBooleanProperty();
     private ScriptArea scriptArea;
@@ -147,19 +149,9 @@ public class InteractiveModeController {
         SequentFormula seqForm = tap.getPio().sequentFormula();
         //transform term to parsable string representation
         Sequent seq = g.sequent();
-        String sfTerm = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(seqForm.formula());
-        String onTerm = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(tap.getPio().subTerm());
+        String sfTerm = LogicPrinter.quickPrintTerm(seqForm.formula(), keYServices, false, false);
+        String onTerm = LogicPrinter.quickPrintTerm(tap.getPio().subTerm(), keYServices, false, false);
 
-        //check whether more than one possibility for match
-        //Matchings matches = MatcherFacade.matches(term, seq, true, keYServices);
-
-        /*Parameters params = new Parameters();
-        params.put(new Variable("formula"), new TermLiteral(term));
-        if (matches.size() > 1) {
-            moreThanOneMatch = true;
-            params.put(new Variable("occ"), new StringLiteral("0"));
-
-        }*/
 
         RuleCommand.Parameters params = new RuleCommand.Parameters();
         params.formula = seqForm.formula();
@@ -170,7 +162,6 @@ public class InteractiveModeController {
         int occ = rch.getOccurence(tap.getApp());
 
         Parameters callp = new Parameters();
-//        callp.put(new Variable("formula"), new TermLiteral(sfTerm));
         callp.put(new Variable("formula"), new TermLiteral(sfTerm));
         callp.put(new Variable("occ"), new IntegerLiteral(BigInteger.valueOf(occ)));
         callp.put(new Variable("on"), new TermLiteral(onTerm));
@@ -191,8 +182,8 @@ public class InteractiveModeController {
 
             applyRule(call, g);
             // Insert into the right cases
-            Node currentNode = g.node();
-            cases.get(findRoot(currentNode)).add(call);
+            // Node currentNode = g.node();
+            // cases.get(findRoot(currentNode)).add(call);
 
             // How to Play this on the Proof?
             // How to Build a new StatePointer? Is it still possible?
@@ -245,18 +236,6 @@ public class InteractiveModeController {
         return pp.toString();
     }
 
-    private String format(String branchingLabel) {
-        System.out.println("branchingLabel = " + branchingLabel);
-        String newLabel = branchingLabel;
-        if (branchingLabel.endsWith("$$")) {
-            newLabel = branchingLabel.substring(0, branchingLabel.length() - 2);
-            newLabel += ".*";
-            System.out.println("newLabel = " + newLabel);
-        }
-        return newLabel;
-    }
-
-
     private void applyRule(CallStatement call, Goal g) throws ScriptCommandNotApplicableException {
         savepointslist.add(g.node());
         savepointsstatement.add(call);
@@ -297,13 +276,28 @@ public class InteractiveModeController {
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
 
-            ImmutableList<Goal> ngoals = g.proof().getSubtreeGoals(g.node());
+            ImmutableList<Goal> ngoals = g.proof().getSubtreeGoals(expandedNode.getData().getNode());
 
             goals.remove(expandedNode);
             GoalNode<KeyData> last = null;
-            for (Goal newGoalNode : ngoals) {
-                KeyData kdn = new KeyData(kd, newGoalNode.node());
+
+
+            if (ngoals.size() > 1) {
+                cases.get(findRoot(ngoals.get(0).node())).add(call);
+                cases.get(findRoot(ngoals.get(0).node())).add(new CasesStatement());
+
+                for (Goal newGoalNode : ngoals) {
+                    KeyData kdn = new KeyData(kd, newGoalNode.node());
+                    goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
+                    cases.put(last.getData().getNode(), new Statements());
+
+
+                }
+            } else {
+                KeyData kdn = new KeyData(kd, ngoals.get(0).node());
                 goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
+                Node currentNode = last.getData().getNode();
+                cases.get(findRoot(currentNode)).add(call);
             }
             if (last != null)
                 model.setSelectedGoalNodeToShow(last);
@@ -317,6 +311,17 @@ public class InteractiveModeController {
             }
         }
 
+    }
+
+    private String format(String branchingLabel) {
+        // System.out.println("branchingLabel = " + branchingLabel);
+        String newLabel = branchingLabel;
+        if (branchingLabel.endsWith("$$")) {
+            newLabel = branchingLabel.substring(0, branchingLabel.length() - 2);
+            newLabel += ".*";
+            //   System.out.println("newLabel = " + newLabel);
+        }
+        return newLabel;
     }
 
     public boolean isActivated() {
