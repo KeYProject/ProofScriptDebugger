@@ -39,7 +39,8 @@ public abstract class DefaultAssignmentHook<T> implements VariableAssignmentHook
             Variable<T, S> variable = (Variable<T, S>) variables.get(variableName);
             return variable.setter.apply(data, value);
         }
-        return true;
+        //@AW: TODO was true: Why?
+        return false;
     }
 
 
