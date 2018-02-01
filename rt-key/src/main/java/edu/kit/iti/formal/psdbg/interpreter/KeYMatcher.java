@@ -102,7 +102,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
      * Match the label of a goal node
      *
      * @param currentState goal node as possible match cancidate
-     * @param label        String representation for regualr expression for label to match
+     * @param label        String representation for regular expression for label to match
      * @return List of matches if match was sucessful, empty list otherwise
      */
     @Override
@@ -111,10 +111,14 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         List<VariableAssignment> assignments = new ArrayList<>();
         resultsFromLabelMatch = new ArrayList<>();
         //compile pattern
-        Pattern regexpForLabel = Pattern.compile(label);
+        String cleanLabel = label.replaceAll(" ", "");
+        Pattern regexpForLabel = Pattern.compile(cleanLabel);
+
 
         String branchLabel = currentState.getData().getBranchingLabel();
-        Matcher branchLabelMatcher = regexpForLabel.matcher(branchLabel);
+        String cleanBranchLabel = branchLabel.replaceAll(" ", "");
+        Matcher branchLabelMatcher = regexpForLabel.matcher(cleanBranchLabel);
+
 
 
         if (branchLabelMatcher.matches()) {

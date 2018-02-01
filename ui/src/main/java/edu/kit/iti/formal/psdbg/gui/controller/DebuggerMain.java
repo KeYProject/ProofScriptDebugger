@@ -447,8 +447,9 @@ public class DebuggerMain implements Initializable {
         }
         //model.reload();
         abortExecution();
+        Platform.runLater(() -> model.setStatePointer(null));
         handleStatePointerUI(null);
-        model.setStatePointer(null);
+
         //reload getInspectionViewsController().getActiveInspectionViewTab().getModel()
         InspectionModel iModel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
         //iModel.setHighlightedJavaLines(FXCollections.emptyObservableSet());
