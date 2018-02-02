@@ -112,11 +112,14 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         resultsFromLabelMatch = new ArrayList<>();
         //compile pattern
         String cleanLabel = label.replaceAll(" ", "");
-        Pattern regexpForLabel = Pattern.compile(cleanLabel);
+        String cleanLabel2 = cleanLabel.replaceAll("\\(", "\\\\(");
+        cleanLabel = cleanLabel2.replaceAll("\\)", "\\\\)");
 
 
         String branchLabel = currentState.getData().getBranchingLabel();
         String cleanBranchLabel = branchLabel.replaceAll(" ", "");
+
+        Pattern regexpForLabel = Pattern.compile(cleanLabel);
         Matcher branchLabelMatcher = regexpForLabel.matcher(cleanBranchLabel);
 
 
