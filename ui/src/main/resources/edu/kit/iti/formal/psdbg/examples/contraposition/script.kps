@@ -2,6 +2,9 @@
 //
 
 script autoScript(){
+    __KEY_NON_LINEAR_ARITHMETIC := 'defops';
+    __STRICT_MODE := true;
+
     auto;
 }
 
@@ -16,8 +19,8 @@ script interactive_with_match(){
 impRight;
 impLeft;
 cases{
-    case match `?X -> ?Y ==> not(?Z)`:
-      notLeft;
+    case match ` not(?Z)==>`:
+      notLeft;;
     default:
       notRight;
     }

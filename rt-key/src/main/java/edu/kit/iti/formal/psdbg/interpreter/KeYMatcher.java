@@ -102,7 +102,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
      * Match the label of a goal node
      *
      * @param currentState goal node as possible match cancidate
-     * @param label        String representation for regualr expression for label to match
+     * @param label        String representation for regular expression for label to match
      * @return List of matches if match was sucessful, empty list otherwise
      */
     @Override
@@ -111,10 +111,17 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         List<VariableAssignment> assignments = new ArrayList<>();
         resultsFromLabelMatch = new ArrayList<>();
         //compile pattern
-        Pattern regexpForLabel = Pattern.compile(label);
+        String cleanLabel = label.replaceAll(" ", "");
+        String cleanLabel2 = cleanLabel.replaceAll("\\(", "\\\\(");
+        cleanLabel = cleanLabel2.replaceAll("\\)", "\\\\)");
+
 
         String branchLabel = currentState.getData().getBranchingLabel();
-        Matcher branchLabelMatcher = regexpForLabel.matcher(branchLabel);
+        String cleanBranchLabel = branchLabel.replaceAll(" ", "");
+
+        Pattern regexpForLabel = Pattern.compile(cleanLabel);
+        Matcher branchLabelMatcher = regexpForLabel.matcher(cleanBranchLabel);
+
 
 
         if (branchLabelMatcher.matches()) {
@@ -160,16 +167,6 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         return assignments.isEmpty()? null: assignments;
     }
 
-    private Value<String> toValueTerm(KeyData currentState, Term matched) {
-        String reprTerm = LogicPrinter.quickPrintTerm(matched, currentState.getEnv().getServices());
-        //Hack: to avoid newlines
-        String reprTermReformatted = reprTerm.trim();
-        return new Value<>(
-                new TermType(new SortType(matched.sort())),
-                reprTermReformatted
-        );
-    }
-
     @Override
     public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState,
                                              String data,
@@ -178,7 +175,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         //System.out.println("Signature " + sig.toString());
 
         Matchings m = MatcherFacade.matches(data,
-                currentState.getData().getNode().sequent(), false, services);
+                currentState.getData().getNode().sequent(), false, currentState.getData().getProof().getServices());
 
         if (m.isEmpty()) {
             LOGGER.debug("currentState has no match= " + currentState.getData().getNode().sequent());
@@ -206,6 +203,17 @@ public class KeYMatcher implements MatcherApi<KeyData> {
             retList.add(va);
             return retList;
         }
+    }
+
+    private Value<String> toValueTerm(KeyData currentState, Term matched) {
+
+        String reprTerm = LogicPrinter.quickPrintTerm(matched, currentState.getProof().getServices());
+        //Hack: to avoid newlines
+        String reprTermReformatted = reprTerm.trim();
+        return new Value<>(
+                new TermType(new SortType(matched.sort())),
+                reprTermReformatted
+        );
     }
 
 

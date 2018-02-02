@@ -140,6 +140,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
                 if (fireVariableAssignmentHook(node, var.getIdentifier(), v)) {
                     node.setVariableValue(var, v);
                 }
+                node.setVariableValue(var, v);
             }
         }
         exitScope(assignmentStatement);
