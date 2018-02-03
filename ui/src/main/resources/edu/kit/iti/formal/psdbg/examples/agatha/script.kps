@@ -1,4 +1,5 @@
 script test(){
+    __STRICT_MODE := true;
     impRight;
     andLeft;
     notLeft;
@@ -11,6 +12,7 @@ script test(){
 }
 
 script SolveAgathaRiddle_1() {
+    __STRICT_MODE := true;
     impRight;
     andLeft;
     notLeft;
