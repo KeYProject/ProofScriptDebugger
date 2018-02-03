@@ -284,7 +284,8 @@ public class InteractiveModeController {
 
             if (ngoals.size() > 1) {
                 cases.get(findRoot(ngoals.get(0).node())).add(call);
-                cases.get(findRoot(ngoals.get(0).node())).add(new CasesStatement());
+                CasesStatement inner = new CasesStatement();
+                cases.get(findRoot(ngoals.get(0).node())).add(inner);
 
                 for (Goal newGoalNode : ngoals) {
                     KeyData kdn = new KeyData(kd, newGoalNode.node());
