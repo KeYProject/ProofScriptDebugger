@@ -1,4 +1,5 @@
 script test(){
+    __STRICT_MODE := true;
     impRight;
     andLeft;
     notLeft;
@@ -7,10 +8,12 @@ script test(){
     andLeft;
     eqSymm formula = `agatha = butler`;
     nnf_imp2or formula=`\forall S w6;(hates(agatha,w6) -> hates(butler,w6))`;
+    auto;
 
 }
 
 script SolveAgathaRiddle_1() {
+    __STRICT_MODE := true;
     impRight;
     andLeft;
     notLeft;

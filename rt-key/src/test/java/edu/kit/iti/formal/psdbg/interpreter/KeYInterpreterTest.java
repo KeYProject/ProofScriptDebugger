@@ -73,5 +73,13 @@ public class KeYInterpreterTest {
 
     }
 
+    @Test
+    public void testHookAssignments() throws IOException, ProblemLoaderException {
+        facade.loadKeyFileSync(new File("src/test/resources/edu/kit/iti/formal/psdbg/interpreter/contraposition/contraposition.key"));
+        Interpreter<KeyData> i = execute(getClass().getResourceAsStream("contraposition/hookTestScript.kps"));
+        Assert.assertTrue(i.isStrictMode());
+
+    }
+
 
 }

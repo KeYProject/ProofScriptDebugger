@@ -146,7 +146,7 @@ Your browser does not support the video tag or WebM.
 </center>
 
 Furthermore, we show how to use our SequentMatcher Window to enhance the auto-generated matching expressions from the 
-interactive rule applications.
+interactive rule applications. We are currently working on the support of interactively applying splitting rules and genearting the corresponding script.
 
 
 
@@ -208,8 +208,8 @@ interactive rule applications.
 <h2>Downloads</h2>
 
 <ul>
- <li>PSDBG - <strong>Version 1.0.1c-FM</strong> 
-    <a href="../psdbg_releases/psdbg-1.0.1c-fm.jar">psdbg-1.0.1c-fm.jar</a>
+ <li>PSDBG - <strong>Version 1.0.1d-FM</strong> 
+    <a href="../psdbg_releases/psdbg-1.0.1d-fm.jar">psdbg-1.0.1d-fm.jar</a>
     <br>
     Special Version for the tool paper at Formal Methods 2018.
     Including examples and all dependencies.
@@ -219,7 +219,7 @@ interactive rule applications.
     <a href="https://www.gnu.org/licenses/gpl-3.0.txt">License: GPLv3</a>
     <a href="thirdparty.txt">Third Party Licenses</a> 
     <br>
-    Executable with <code>java -jar psdbg-1.0.1c-fm.jar</code>
+    Executable with <code>java -jar psdbg-1.0.1d-fm.jar</code>
  </li>
 </ul>
 
