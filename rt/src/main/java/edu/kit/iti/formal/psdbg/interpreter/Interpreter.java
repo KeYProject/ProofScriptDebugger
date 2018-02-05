@@ -85,11 +85,25 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             throw new InterpreterRuntimeException("no state on stack. call newState before interpret");
         }
 
-        //initialize environment variables
-        for (VariableAssignmentHook<T> hook : variableHooks) {
-            VariableAssignment va = hook.getStartAssignment(getSelectedNode().getData());
-            getSelectedNode().setAssignments(
-                    getSelectedNode().getAssignments().push(va));
+
+        if (getSelectedNode() != null) {
+            //initialize environment variables
+            for (VariableAssignmentHook<T> hook : variableHooks) {
+                VariableAssignment va = hook.getStartAssignment(getSelectedNode().getData());
+                getSelectedNode().setAssignments(
+                        getSelectedNode().getAssignments().push(va));
+            }
+        } else {
+            List<GoalNode<T>> currentGoals = getCurrentGoals();
+            for (GoalNode<T> currentGoal : currentGoals) {
+                for (VariableAssignmentHook<T> hook : variableHooks) {
+                    VariableAssignment va = hook.getStartAssignment(currentGoal.getData());
+                    currentGoal.setAssignments(
+                            getSelectedNode().getAssignments().push(va));
+                }
+            }
+
+
         }
         script.accept(this);
         //exitScope(script);
@@ -628,7 +642,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
                 Set<GoalNode<T>> prevNodes = new HashSet<>(prev.getGoals());
                 Set<GoalNode<T>> endNodes = new HashSet<>(end.getGoals());
                 b = prevNodes.equals(endNodes);
-                b = b && counter <= maxIterationsRepeat;
+                b = !b && counter <= maxIterationsRepeat;
             } while (b);
         } catch (InterpreterRuntimeException e) {
             logger.debug("Catched!", e);
