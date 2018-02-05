@@ -8,6 +8,7 @@ script main() {
     impRight;
     instantiate var=`x` with=`c`;
     applyEq on=`f(f(c))` formula=feqfff;
+
     eqSymm on=feqff;
     close;
 }
