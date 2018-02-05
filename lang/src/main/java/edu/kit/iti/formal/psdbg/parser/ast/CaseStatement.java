@@ -39,7 +39,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public abstract class CaseStatement extends Statement<ScriptLanguageParser.CasesListContext> {
-    protected Statements body;
+    protected Statements body = new Statements();
 
     /**
      * {@inheritDoc}

@@ -74,6 +74,8 @@ public class InteractiveModeController {
 
     private boolean moreThanOneMatch = false;
 
+    private CasesStatement casesStatement;
+
     public void start(Proof currentProof, InspectionModel model) {
         Events.register(this);
         cases.clear();
@@ -83,7 +85,17 @@ public class InteractiveModeController {
         });
         this.scriptArea = scriptController.newScript();
         this.model = model;
-
+        casesStatement = new CasesStatement();
+        cases.forEach((k, v) -> {
+            val gcs = new GuardedCaseStatement();
+            val m = new MatchExpression();
+            m.setPattern(new StringLiteral(
+                    format(LabelFactory.getBranchingLabel(k))
+            ));
+            gcs.setGuard(m);
+            gcs.setBody(v);
+            casesStatement.getCases().add(gcs);
+        });
         savepointslist = new ArrayList<>();
         savepointsstatement = new ArrayList<>();
         nodeAtInteractionStart = debuggerFramework.getStatePointer();
@@ -219,20 +231,8 @@ public class InteractiveModeController {
     }
 
     public String getCasesAsString() {
-        CasesStatement c = new CasesStatement();
-        cases.forEach((k, v) -> {
-            val gcs = new GuardedCaseStatement();
-            val m = new MatchExpression();
-            m.setPattern(new StringLiteral(
-                    format(LabelFactory.getBranchingLabel(k))
-            ));
-            gcs.setGuard(m);
-            gcs.setBody(v);
-            c.getCases().add(gcs);
-        });
-
         PrettyPrinter pp = new PrettyPrinter();
-        c.accept(pp);
+        casesStatement.accept(pp);
         return pp.toString();
     }
 
@@ -290,9 +290,14 @@ public class InteractiveModeController {
                 for (Goal newGoalNode : ngoals) {
                     KeyData kdn = new KeyData(kd, newGoalNode.node());
                     goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
-                    cases.put(last.getData().getNode(), new Statements());
-
-
+                    val caseForSubNode = new GuardedCaseStatement();
+                    val m = new MatchExpression();
+                    m.setPattern(new StringLiteral(
+                            format(LabelFactory.getBranchingLabel(newGoalNode.node()))
+                    ));
+                    caseForSubNode.setGuard(m);
+                    inner.getCases().add(caseForSubNode);
+                    cases.put(last.getData().getNode(), caseForSubNode.getBody());
                 }
             } else {
                 KeyData kdn = new KeyData(kd, ngoals.get(0).node());
