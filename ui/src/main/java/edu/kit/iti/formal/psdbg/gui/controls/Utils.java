@@ -2,8 +2,10 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.logic.op.IProgramMethod;
 import de.uka.ilkd.key.pp.ProgramPrinter;
+import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -316,5 +318,10 @@ public class Utils {
         Map<DataFormat, Object> map = Collections.singletonMap(DataFormat.PLAIN_TEXT, s);
         Clipboard.getSystemClipboard().setContent(map);
         System.err.println(s);
+    }
+
+    public static void dumpSettings(KeYEnvironment env, Proof p) {
+        System.out.println("Settings\n" + env.getInitConfig().getSettings().settingsToString());
+        //p.getEnv().getInitConfigForEnvironment().getSettings().settingsToString();
     }
 }

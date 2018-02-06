@@ -8,8 +8,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +27,7 @@ import java.util.Locale;
 public class ProofScriptDebugger extends Application {
     public static final String NAME = "Proof Script Debugger";
 
-    public static final String VERSION = "1.0-FM";
+    public static final String VERSION = "1.0.1e-FM";
 
     public static final String KEY_VERSION = KeYConstants.VERSION;
 
@@ -43,6 +41,10 @@ public class ProofScriptDebugger extends Application {
     public void start(Stage primaryStage) {
         Locale.setDefault(Locale.ENGLISH);
         try {
+            /*if(System.getProperty("keyhome")!=null) {
+                PathConfig.setKeyConfigDir(System.getProperty("keyhome"));
+            }*/
+
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/edu/kit/iti/formal/psdbg/gui/controller/DebuggerMain.fxml"));
             Parent root = fxmlLoader.load();
             DebuggerMain controller = fxmlLoader.getController();

@@ -314,7 +314,7 @@ public class DebuggerMain implements Initializable {
             showCodeDock(null);
         });
 
-        //addCell listener for linehighlighting when changing selection in inspectionview
+        //addCell listener for line-highlighting when changing selection in inspectionview
         getInspectionViewsController().getActiveInspectionViewTab().getModel().highlightedJavaLinesProperty().
                 addListener((observable, oldValue, newValue) -> {
                     if (newValue != null) {

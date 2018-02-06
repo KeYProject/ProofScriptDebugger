@@ -12,10 +12,12 @@ script split_from_quicksort() {
 
   cases{
     case match `==> seqDef(_,_,_) = seqDef(_, _, _)`:
+        __KEY_MAX_STEPS:=10000;
         auto;
     case match `==> (\exists ?X (\exists ?Y _))`:
         instantiate  var=X with=`i_0`;
         instantiate  var=Y with=`j_0`;
+        __KEY_MAX_STEPS:=10000;
         auto;
   }
 }
