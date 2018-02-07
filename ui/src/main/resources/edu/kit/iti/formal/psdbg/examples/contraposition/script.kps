@@ -21,12 +21,15 @@ script interactive(){
 
 script interactive_with_match(){
 impRight;
+impRight;
 impLeft;
 cases{
-    case match `?X -> ?Y ==> not(?Z)`:
-      notLeft;
-    default:
+    case match `==> not(?Z), ?Z`:
       notRight;
+
+    default:
+      notLeft;
+
     }
 
 }
