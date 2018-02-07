@@ -268,9 +268,9 @@ public class InteractiveModeController {
             map.put("#2", call.getCommand());
             EngineState estate = new EngineState(g.proof());
             estate.setGoal(g);
-            System.out.println("on = " + map.get("on"));
-            System.out.println("formula = " + map.get("formula"));
-            System.out.println("occ = " + map.get("occ"));
+            //System.out.println("on = " + map.get("on"));
+            //System.out.println("formula = " + map.get("formula"));
+            //System.out.println("occ = " + map.get("occ"));
             RuleCommand.Parameters cc = c.evaluateArguments(estate, map); //reflection exception
 
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
@@ -300,10 +300,14 @@ public class InteractiveModeController {
                     cases.put(last.getData().getNode(), caseForSubNode.getBody());
                 }
             } else {
-                KeyData kdn = new KeyData(kd, ngoals.get(0).node());
-                goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
-                Node currentNode = last.getData().getNode();
-                cases.get(findRoot(currentNode)).add(call);
+                if (ngoals.size() == 0) {
+                    cases.get(g).add(call);
+                } else {
+                    KeyData kdn = new KeyData(kd, ngoals.get(0).node());
+                    goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
+                    Node currentNode = last.getData().getNode();
+                    cases.get(findRoot(currentNode)).add(call);
+                }
             }
             if (last != null)
                 model.setSelectedGoalNodeToShow(last);

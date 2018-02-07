@@ -197,7 +197,11 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
 
     @Override
     public Void visit(TermLiteral termLiteral) {
-        s.append(String.format("`%s`", termLiteral.getText()));
+        String termLit = termLiteral.getText();
+        if (termLit.contains("\n")) {
+            termLit = termLit.trim();
+        }
+        s.append(String.format("`%s`", termLit));
         return super.visit(termLiteral);
     }
 
