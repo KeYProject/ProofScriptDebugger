@@ -85,11 +85,29 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             throw new InterpreterRuntimeException("no state on stack. call newState before interpret");
         }
 
-        //initialize environment variables
-        for (VariableAssignmentHook<T> hook : variableHooks) {
-            VariableAssignment va = hook.getStartAssignment(getSelectedNode().getData());
-            getSelectedNode().setAssignments(
-                    getSelectedNode().getAssignments().push(va));
+        if(getSelectedNode() != null) {
+            //initialize environment variables
+            for (VariableAssignmentHook<T> hook : variableHooks) {
+                VariableAssignment va = hook.getStartAssignment(getSelectedNode().getData());
+                getSelectedNode().setAssignments(
+                        getSelectedNode().getAssignments().push(va));
+            }
+        } else {
+            List<GoalNode<T>> currentgoals = getCurrentGoals();
+            logger.info("Loaded Proof with multiple Open Goals");
+            if (currentgoals.size() == 0) {
+                logger.debug("Current Goals empty");
+                return;
+            }
+
+            for (GoalNode<T> goal : currentgoals) {
+                for (VariableAssignmentHook<T> hook : variableHooks) {
+                    VariableAssignment va = hook.getStartAssignment(goal.getData());
+                    goal.setAssignments(
+                            goal.getAssignments().push(va));
+                }
+            }
+
         }
         script.accept(this);
         //exitScope(script);
@@ -641,10 +659,26 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
     @Override
     public Object visit(Signature signature) {
         //  enterScope(signature);
-        GoalNode<T> node = getSelectedNode();
-        node.enterScope();
-        signature.forEach(node::declareVariable);
-        // exitScope(signature);
+
+        // TODO: quickfix
+
+        List<GoalNode<T>> currentGoals = getCurrentGoals();
+        if(getCurrentGoals().size() > 1) {
+            if(getSelectedNode() == null) {
+                for(GoalNode<T> goal: currentGoals) {
+
+                    goal.enterScope();
+                    signature.forEach(goal::declareVariable);
+                    // exitScope(signature);
+
+                }
+            }
+        } else {
+            GoalNode<T> node = getSelectedNode();
+            node.enterScope();
+            signature.forEach(node::declareVariable);
+            // exitScope(signature);
+        }
         return null;
     }
 

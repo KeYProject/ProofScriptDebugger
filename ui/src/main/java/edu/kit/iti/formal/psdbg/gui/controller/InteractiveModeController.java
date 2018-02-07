@@ -283,6 +283,7 @@ public class InteractiveModeController {
 
 
             if (ngoals.size() > 1) {
+
                 cases.get(findRoot(ngoals.get(0).node())).add(call);
                 CasesStatement inner = new CasesStatement();
                 cases.get(findRoot(ngoals.get(0).node())).add(inner);
