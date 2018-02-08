@@ -176,7 +176,7 @@ public class InteractiveModeController {
 
         LOGGER.debug("Handling {}", tap);
         moreThanOneMatch = false;
-        String tapName = tap.getApp().taclet().name().toString();
+        String tapName = tap.getApp().taclet().displayName();
         Goal g = tap.getCurrentGoal();
 
         SequentFormula seqForm = tap.getPio().sequentFormula();
