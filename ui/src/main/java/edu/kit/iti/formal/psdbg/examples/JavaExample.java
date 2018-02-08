@@ -1,10 +1,12 @@
 package edu.kit.iti.formal.psdbg.examples;
 
+import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 
@@ -24,6 +26,12 @@ public class JavaExample extends Example {
 
     protected URL javaFile;
 
+    protected URL settingsFile;
+
+    public void setSettingsFile(URL settingsFile) {
+        this.settingsFile = settingsFile;
+    }
+
     @Override
     public void open(DebuggerMain debuggerMain) {
         //TODO should be reworked if we have an example
@@ -39,7 +47,11 @@ public class JavaExample extends Example {
             //System.out.println(java.getAbsolutePath());
             //debuggerMain.openKeyFile(key);
             debuggerMain.openJavaFile(java);
-
+            if (settingsFile != null) {
+                File settings = newTempFile(settingsFile, getName() + ".props");
+                ProofListener pl = new ProofListener(debuggerMain, settings);
+                debuggerMain.getFacade().proofProperty().addListener(pl);
+            }
             debuggerMain.showActiveInspector(null);
             if (helpText != null) {
                 String content = IOUtils.toString(helpText, Charset.defaultCharset());
@@ -49,4 +61,31 @@ public class JavaExample extends Example {
             e.printStackTrace();
         }
     }
+
+    public class ProofListener implements ChangeListener<Proof> {
+        File settingsFile;
+        DebuggerMain debuggerMain;
+
+        public ProofListener(DebuggerMain debuggerMain, File settingsFile) {
+            this.debuggerMain = debuggerMain;
+            this.settingsFile = settingsFile;
+
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Proof> observable, Proof oldValue, Proof newValue) {
+            if (newValue != null) {
+                try {
+                    BufferedReader reader = new BufferedReader(new FileReader(settingsFile));
+                    newValue.getSettings().loadSettingsFromStream(reader);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                debuggerMain.getFacade().proofProperty().removeListener(this);
+
+
+            }
+        }
+    }
 }
+
