@@ -155,7 +155,7 @@ public class InteractiveModeController {
 
         LOGGER.debug("Handling {}", tap);
         moreThanOneMatch = false;
-        String tapName = tap.getApp().taclet().displayName();
+        String tapName = tap.getApp().taclet().name().toString();
         Goal g = tap.getCurrentGoal();
 
         SequentFormula seqForm = tap.getPio().sequentFormula();
@@ -302,7 +302,7 @@ public class InteractiveModeController {
                 }
             } else {
                 if (ngoals.size() == 0) {
-                    cases.get(g).add(call);
+                    cases.get(findRoot(expandedNode.getData().getNode())).add(call);
                 } else {
                     KeyData kdn = new KeyData(kd, ngoals.get(0).node());
                     goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
