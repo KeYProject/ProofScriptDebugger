@@ -92,6 +92,8 @@ public class TacletContextMenu extends ContextMenu {
     private MenuItem disableAbbr;
     @FXML
     private MenuItem changeAbbr;
+    @FXML
+    private MenuItem showParam;
 
 
     private Goal goal;
@@ -498,4 +500,13 @@ public class TacletContextMenu extends ContextMenu {
             //  parentController.forceRefresh();
         }
     }
+
+    @FXML
+    private void showParameter(ActionEvent event) {
+
+        System.out.println("Formula: " + pos.getPosInOccurrence().sequentFormula());
+        System.out.println("Subterm: " + pos.getPosInOccurrence().subTerm() );
+        System.out.println("Occ: " + occ.getIndex() );
+    }
+
 }

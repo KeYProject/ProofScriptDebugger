@@ -32,6 +32,8 @@
                   visible="false" onAction="#handleDisableAbbreviation" text="Disable abbreviation"/>
         <MenuItem mnemonicParsing="false" fx:id="changeAbbr" visible="false"
                   onAction="#handleChangeAbbreviation" text="Change abbreviation"/>
+        <MenuItem mnemonicParsing="false" fx:id="showParam" visible="true"
+                  onAction="#showParameter" text="Show Parameter"/>
 
     </items>
 </fx:root>
