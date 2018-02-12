@@ -140,6 +140,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
                 if (fireVariableAssignmentHook(node, var.getIdentifier(), v)) {
                     node.setVariableValue(var, v);
                 }
+                node.setVariableValue(var, v);
             }
         }
         exitScope(assignmentStatement);
@@ -628,7 +629,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
                 Set<GoalNode<T>> prevNodes = new HashSet<>(prev.getGoals());
                 Set<GoalNode<T>> endNodes = new HashSet<>(end.getGoals());
                 b = prevNodes.equals(endNodes);
-                b = b && counter <= maxIterationsRepeat;
+                b = !b && counter <= maxIterationsRepeat;
             } while (b);
         } catch (InterpreterRuntimeException e) {
             logger.debug("Catched!", e);

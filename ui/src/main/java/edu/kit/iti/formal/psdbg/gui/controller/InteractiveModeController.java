@@ -9,6 +9,7 @@ import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.RuleCommand;
 import de.uka.ilkd.key.macros.scripts.ScriptException;
+import de.uka.ilkd.key.pp.LogicPrinter;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
@@ -54,6 +55,7 @@ public class InteractiveModeController {
     private static final Logger LOGGER = LogManager.getLogger(InteractiveModeController.class);
 
     private final Map<Node, Statements> cases = new HashMap<>();
+
     private final ScriptController scriptController;
     private BooleanProperty activated = new SimpleBooleanProperty();
     private ScriptArea scriptArea;
@@ -72,6 +74,8 @@ public class InteractiveModeController {
 
     private boolean moreThanOneMatch = false;
 
+    private CasesStatement casesStatement;
+
     public void start(Proof currentProof, InspectionModel model) {
         Events.register(this);
         cases.clear();
@@ -81,7 +85,17 @@ public class InteractiveModeController {
         });
         this.scriptArea = scriptController.newScript();
         this.model = model;
-
+        casesStatement = new CasesStatement();
+        cases.forEach((k, v) -> {
+            val gcs = new GuardedCaseStatement();
+            val m = new MatchExpression();
+            m.setPattern(new StringLiteral(
+                    format(LabelFactory.getBranchingLabel(k))
+            ));
+            gcs.setGuard(m);
+            gcs.setBody(v);
+            casesStatement.getCases().add(gcs);
+        });
         savepointslist = new ArrayList<>();
         savepointsstatement = new ArrayList<>();
         nodeAtInteractionStart = debuggerFramework.getStatePointer();
@@ -147,19 +161,9 @@ public class InteractiveModeController {
         SequentFormula seqForm = tap.getPio().sequentFormula();
         //transform term to parsable string representation
         Sequent seq = g.sequent();
-        String sfTerm = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(seqForm.formula());
-        String onTerm = edu.kit.iti.formal.psdbg.termmatcher.Utils.toPrettyTerm(tap.getPio().subTerm());
+        String sfTerm = LogicPrinter.quickPrintTerm(seqForm.formula(), keYServices, false, false);
+        String onTerm = LogicPrinter.quickPrintTerm(tap.getPio().subTerm(), keYServices, false, false);
 
-        //check whether more than one possibility for match
-        //Matchings matches = MatcherFacade.matches(term, seq, true, keYServices);
-
-        /*Parameters params = new Parameters();
-        params.put(new Variable("formula"), new TermLiteral(term));
-        if (matches.size() > 1) {
-            moreThanOneMatch = true;
-            params.put(new Variable("occ"), new StringLiteral("0"));
-
-        }*/
 
         RuleCommand.Parameters params = new RuleCommand.Parameters();
         params.formula = seqForm.formula();
@@ -170,7 +174,6 @@ public class InteractiveModeController {
         int occ = rch.getOccurence(tap.getApp());
 
         Parameters callp = new Parameters();
-//        callp.put(new Variable("formula"), new TermLiteral(sfTerm));
         callp.put(new Variable("formula"), new TermLiteral(sfTerm));
         callp.put(new Variable("occ"), new IntegerLiteral(BigInteger.valueOf(occ)));
         callp.put(new Variable("on"), new TermLiteral(onTerm));
@@ -191,8 +194,8 @@ public class InteractiveModeController {
 
             applyRule(call, g);
             // Insert into the right cases
-            Node currentNode = g.node();
-            cases.get(findRoot(currentNode)).add(call);
+            // Node currentNode = g.node();
+            // cases.get(findRoot(currentNode)).add(call);
 
             // How to Play this on the Proof?
             // How to Build a new StatePointer? Is it still possible?
@@ -228,34 +231,10 @@ public class InteractiveModeController {
     }
 
     public String getCasesAsString() {
-        CasesStatement c = new CasesStatement();
-        cases.forEach((k, v) -> {
-            val gcs = new GuardedCaseStatement();
-            val m = new MatchExpression();
-            m.setPattern(new StringLiteral(
-                    format(LabelFactory.getBranchingLabel(k))
-            ));
-            gcs.setGuard(m);
-            gcs.setBody(v);
-            c.getCases().add(gcs);
-        });
-
         PrettyPrinter pp = new PrettyPrinter();
-        c.accept(pp);
+        casesStatement.accept(pp);
         return pp.toString();
     }
-
-    private String format(String branchingLabel) {
-        System.out.println("branchingLabel = " + branchingLabel);
-        String newLabel = branchingLabel;
-        if (branchingLabel.endsWith("$$")) {
-            newLabel = branchingLabel.substring(0, branchingLabel.length() - 2);
-            newLabel += ".*";
-            System.out.println("newLabel = " + newLabel);
-        }
-        return newLabel;
-    }
-
 
     private void applyRule(CallStatement call, Goal g) throws ScriptCommandNotApplicableException {
         savepointslist.add(g.node());
@@ -289,21 +268,46 @@ public class InteractiveModeController {
             map.put("#2", call.getCommand());
             EngineState estate = new EngineState(g.proof());
             estate.setGoal(g);
-            // System.out.println("on = " + map.get("on"));
-            // System.out.println("formula = " +map.get("formula"));
-            // System.out.println("occ = " + map.get("occ"));
+            //System.out.println("on = " + map.get("on"));
+            //System.out.println("formula = " + map.get("formula"));
+            //System.out.println("occ = " + map.get("occ"));
             RuleCommand.Parameters cc = c.evaluateArguments(estate, map); //reflection exception
 
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
 
-            ImmutableList<Goal> ngoals = g.proof().getSubtreeGoals(g.node());
+            ImmutableList<Goal> ngoals = g.proof().getSubtreeGoals(expandedNode.getData().getNode());
 
             goals.remove(expandedNode);
             GoalNode<KeyData> last = null;
-            for (Goal newGoalNode : ngoals) {
-                KeyData kdn = new KeyData(kd, newGoalNode.node());
-                goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
+
+
+            if (ngoals.size() > 1) {
+                cases.get(findRoot(ngoals.get(0).node())).add(call);
+                CasesStatement inner = new CasesStatement();
+                cases.get(findRoot(ngoals.get(0).node())).add(inner);
+
+                for (Goal newGoalNode : ngoals) {
+                    KeyData kdn = new KeyData(kd, newGoalNode.node());
+                    goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
+                    val caseForSubNode = new GuardedCaseStatement();
+                    val m = new MatchExpression();
+                    m.setPattern(new StringLiteral(
+                            format(LabelFactory.getBranchingLabel(newGoalNode.node()))
+                    ));
+                    caseForSubNode.setGuard(m);
+                    inner.getCases().add(caseForSubNode);
+                    cases.put(last.getData().getNode(), caseForSubNode.getBody());
+                }
+            } else {
+                if (ngoals.size() == 0) {
+                    cases.get(g).add(call);
+                } else {
+                    KeyData kdn = new KeyData(kd, ngoals.get(0).node());
+                    goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
+                    Node currentNode = last.getData().getNode();
+                    cases.get(findRoot(currentNode)).add(call);
+                }
             }
             if (last != null)
                 model.setSelectedGoalNodeToShow(last);
@@ -317,6 +321,17 @@ public class InteractiveModeController {
             }
         }
 
+    }
+
+    private String format(String branchingLabel) {
+        // System.out.println("branchingLabel = " + branchingLabel);
+        String newLabel = branchingLabel;
+        if (branchingLabel.endsWith("$$")) {
+            newLabel = branchingLabel.substring(0, branchingLabel.length() - 2);
+            newLabel += ".*";
+            //   System.out.println("newLabel = " + newLabel);
+        }
+        return newLabel;
     }
 
     public boolean isActivated() {

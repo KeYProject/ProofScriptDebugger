@@ -1,7 +1,14 @@
 // Please select one of the following scripts.
 //
 
+script toRemove(){
+  impRight;
+  useContract type='dependency' on=`p`;
+
+}
+
 script autoScript(){
+    __STRICT_MODE := true;
     auto;
 }
 
