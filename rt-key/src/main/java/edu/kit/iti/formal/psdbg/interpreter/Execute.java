@@ -56,9 +56,7 @@ public class Execute {
 
             //pa.getProof().getProofIndependentSettings().getGeneralSettings().setOneStepSimplification(false);
 
-            Interpreter<KeyData> inter = interpreterBuilder.build();
-            KeyData keyData = new KeyData(root.getProofNode(), pa.getEnv(), pa.getProof());
-            inter.newState(new GoalNode<>(null, keyData, keyData.isClosedNode()));
+            Interpreter<KeyData> inter = interpreterBuilder.startState().build();
             inter.interpret(ast.get(0));
             return inter;
         } catch (ProblemLoaderException | IOException e) {
