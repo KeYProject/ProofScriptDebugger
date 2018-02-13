@@ -1,75 +1,61 @@
-# This is the Gradle build system for JVM applications
-# https://gradle.org/
-# https://github.com/gradle/gradle
-image: key-dev-jdk8
+image: key-ant-openjdk-8:latest
 
 cache:
   paths:
     - .m2/
-    - .gradle/
-
-# Disable the Gradle daemon for Continuous Integration servers as correctness
-# is usually a priority over speed in CI environments. Using a fresh
-# runtime for each build is more reliable since the runtime is completely
-# isolated from any previous builds.
-variables:
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-
-before_script:
-  - export GRADLE_USER_HOME=`pwd`/.gradle
 
 variables:
+  MAVEN_OPTS: >-
+    -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2
+    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
+    -Dorg.slf4j.simpleLogger.showDateTime=true
   GIT_SSL_NO_VERIFY: "true"
 
 stages:
+  - setup
   - build
   - test
   - deploy
 
-build:jdk9:
-  stage: build
-  image: key-dev-jdk9
-  script: gradle --build-cache assemble
-  allow_failure: true
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
-    paths:
-      - build
-      - .gradle
+setup:
+  stage: setup
+  script:
+    - COMPONENTS=keydeps/lib/components/
+    - GID=key-project-psdbg
+    - V=2.7-SNAPSHOT
+    - mvn install:install-file -Dfile=$COMPONENTS/key.core.jar -DartifactId=key.core  -DgroupId=$GID -Dversion=$V -Dpackaging=jar
+    - mvn install:install-file -Dfile=$COMPONENTS/key.ui.jar -DartifactId=key.ui -DgroupId=$GID -Dversion=$V -Dpackaging=jar
+    - mvn install:install-file -Dfile=$COMPONENTS/key.util.jar -DartifactId=key.util -DgroupId=$GID -Dversion=$V -Dpackaging=jar
+    - mvn install:install-file -Dfile=$COMPONENTS/../libs/recoderKey.jar -DartifactId=recoder  -DgroupId=$GID -Dversion=2.7 -Dpackaging=jar
 
-
-build:jdk8:
+build:
   stage: build
-  script: gradle --build-cache assemble
-  image: key-dev-jdk8
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
-    paths:
-      - build
-      - .gradle
+  script: "mvn compile -B -T 2"
 
 test:
   stage: test
-  script: gradle check
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - build
-      - .gradle
+  script: "mvn test -B"
 
 deploy:
   stage: deploy
-  script: gradle distJar
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
+  script: 
+    - "mvn package -DperformRelease=true -DcreateChecksum=true -DskipTests=true -B"
+  artifacts: 
     paths:
-      - build
-      - .gradle
+      - "*/target/*.jar"
+  allow_failure: true
+
+sonar:
+  stage: deploy
+  script:
+    - "mvn org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar  -Dsonar.organization=wadoon-github   -Dsonar.host.url=https://sonarcloud.io   -Dsonar.login=3441b7b4ade9f61b61b75322893d084c51d8acc3"
+  allow_failure: true
+
+site:
+  stage: deploy
+  script:
+    - "mvn site:site -DskipTests=true -B"
   artifacts:
     paths:
-      - "build/libs/*.jar"
+      - "*/target/site/*"
   allow_failure: true
