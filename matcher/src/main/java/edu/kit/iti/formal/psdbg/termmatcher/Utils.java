@@ -23,16 +23,16 @@ public class Utils {
             sb.append("(" + toPrettyTerm(formula.sub(0)) + ") -> (" + toPrettyTerm(formula.sub(1)) + ")");
         } else {
             if (op.equals(Junctor.AND)) {
-                sb.append("(" + toPrettyTerm(formula.sub(0)) + ") && (" + toPrettyTerm(formula.sub(1)) + ")");
+                sb.append("(" + toPrettyTerm(formula.sub(0)) + ") & (" + toPrettyTerm(formula.sub(1)) + ")");
             } else {
                 if (op.equals(Junctor.OR)) {
-                    sb.append("(" + toPrettyTerm(formula.sub(0)) + ") || (" + toPrettyTerm(formula.sub(1)) + ")");
+                    sb.append("(" + toPrettyTerm(formula.sub(0)) + ") | (" + toPrettyTerm(formula.sub(1)) + ")");
                 } else {
                     if (op.equals(Equality.EQV)) {
                         sb.append("(" + toPrettyTerm(formula.sub(0)) + ") <-> (" + toPrettyTerm(formula.sub(1)) + ")");
                     } else {
                         if (op.equals(Equality.EQUALS)) {
-                            sb.append("(" + toPrettyTerm(formula.sub(0)) + ") == (" + toPrettyTerm(formula.sub(1)) + ")");
+                            sb.append("(" + toPrettyTerm(formula.sub(0)) + ") = (" + toPrettyTerm(formula.sub(1)) + ")");
                         } else {
                             if (op.equals(Junctor.NOT)) {
                                 sb.append("(!" + toPrettyTerm(formula.sub(0)) + ")");

@@ -1,0 +1,12 @@
+
+description = ''
+dependencies {
+    compile files('lib/components/key.core.jar')
+    compile files('lib/components/key.ui.jar')
+    compile files('lib/components/key.util.jar')
+    compile files('lib/libs/recoderKey.jar')
+
+    compile group: 'org.antlr', name: 'antlr', version:'3.5.2'
+    compile group: 'antlr', name: 'antlr', version:'2.7.7'
+    compile group: 'net.java.dev.javacc', name: 'javacc', version:'4.0'
+}

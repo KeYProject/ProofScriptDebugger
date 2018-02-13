@@ -1,0 +1,52 @@
+plugins {
+    id "com.github.voplex95.lesscompiler" version "1.0.3"
+}
+
+apply plugin: 'antlr'
+
+description = 'ui'
+
+generateGrammarSource {
+    arguments += ["-long-messages", "-package","antlrgrammars"]
+}
+
+lessCompile {
+    source = file('src/main/resources/edu/kit/iti/formal/psdbg/gui/debugger-ui.less')
+    target = file('build/resources/main/edu/kit/iti/formal/psdbg/gui/')
+    //compress = true
+}
+
+processResources.dependsOn lessCompile
+
+dependencies {
+    compile group: 'de.jensd', name: 'fontawesomefx-materialdesignfont', version: '1.7.22-4'
+    compile group: 'de.jensd', name: 'fontawesomefx-commons', version: '8.15'
+    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '1.0.0-SNAPSHOT'
+    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.12'
+
+    compile group: 'org.antlr', name: 'antlr4', version: '4.7'
+    antlr group: 'org.antlr', name: 'antlr4', version: '4.7'
+
+    compile project(':rt-key')
+    compile project(':matcher')
+    compile project(':DockFX')
+    compile project(':lint')
+}
+
+def mainClassName = 'edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger'
+
+task runApp(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = mainClassName
+}
+
+
+task distJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+    classifier="exe"
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+distJar.dependsOn jar

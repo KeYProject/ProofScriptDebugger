@@ -211,6 +211,8 @@ public class TacletContextMenu extends ContextMenu {
             toAdd.addAll(noFindTaclets);
         }
 
+
+
         /*toAdd=toAdd.stream().filter(tapp->{
             try{
                 return tapp.isExecutable(goal.proof().getServices());
