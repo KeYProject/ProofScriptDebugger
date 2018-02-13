@@ -30,6 +30,7 @@ build:jdk9:
   stage: build
   image: key-dev-jdk9
   script: gradle --build-cache assemble
+  allow_failure: true
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
