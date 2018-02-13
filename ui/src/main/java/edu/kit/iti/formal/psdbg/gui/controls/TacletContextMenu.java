@@ -2,12 +2,11 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 
 import de.uka.ilkd.key.control.ProofControl;
 import de.uka.ilkd.key.gui.nodeviews.TacletMenu.TacletAppComparator;
+import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Name;
 import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Term;
-import de.uka.ilkd.key.pp.AbbrevMap;
-import de.uka.ilkd.key.pp.NotationInfo;
-import de.uka.ilkd.key.pp.PosInSequent;
+import de.uka.ilkd.key.pp.*;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.*;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
@@ -26,6 +25,7 @@ import javafx.scene.text.Text;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -127,6 +127,11 @@ public class TacletContextMenu extends ContextMenu {
             createDummyMenuItem();
         }
 
+      //  copyToClipboard = new MenuItem("Copy To Clipboad");
+      //  copyToClipboard.setOnAction(event -> handleCopyToClipboard(goal, pos, event));
+
+      //  rootMenu.getItems().add(copyToClipboard);
+
         //proofMacroMenuController.initViewController(getMainApp(), getContext());
         //proofMacroMenuController.init(occ);
     }
@@ -194,12 +199,13 @@ public class TacletContextMenu extends ContextMenu {
                 //compare by name
                 Comparator.comparing(o -> o.taclet().name())
         );
+        //findTaclets = replaceCutOccurrence(findTaclets);
 
         List<TacletApp> toAdd = new ArrayList<>(findTaclets.size() + noFindTaclets.size());
         toAdd.addAll(findTaclets);
 
         boolean rulesAvailable = find.size() > 0;
-
+        //remove all cut rules from menu and add cut command for that
         if (pos.isSequent()) {
             rulesAvailable |= noFind.size() > 0;
             toAdd.addAll(noFindTaclets);
@@ -215,6 +221,7 @@ public class TacletContextMenu extends ContextMenu {
 
         if (rulesAvailable) {
             createMenuItems(toAdd);
+          //  createCommandMenuItems();
         } else {
             noRules.setVisible(true);
         }
@@ -223,6 +230,31 @@ public class TacletContextMenu extends ContextMenu {
             createAbbrevSection(pos.getPosInOccurrence().subTerm());
 
 
+
+
+    }
+
+    private void createCommandMenuItems() {
+        Text t = new Text("Cut Command");
+        MenuItem item = new MenuItem();
+        item.setGraphic(t);
+        item.setOnAction(event -> {
+            handleCommandApplication("cut");
+
+        });
+        rootMenu.getItems().add(0, item);
+    }
+
+    private List<TacletApp> replaceCutOccurrence(List<TacletApp> findTaclets) {
+        boolean foundCut = false;
+        for (int i = 0; i < findTaclets.size(); i++) {
+            TacletApp tacletApp =  findTaclets.get(i);
+            if(tacletApp.rule().displayName().startsWith("cut")){
+                findTaclets.remove(tacletApp);
+                foundCut = true;
+            }
+        }
+        return findTaclets;
     }
 
     private void createDummyMenuItem() {
@@ -274,7 +306,7 @@ public class TacletContextMenu extends ContextMenu {
                 continue;
             }*/
 
-            final MenuItem item = new MenuItem(app.taclet().name().toString());
+            final MenuItem item = new MenuItem(app.taclet().displayName().toString());
             item.setOnAction(event -> {
                 handleRuleApplication(app);
             });
@@ -347,6 +379,10 @@ public class TacletContextMenu extends ContextMenu {
         //System.out.println("event = [" + event + "]");
         Events.fire(new Events.TacletApplicationEvent(event, pos.getPosInOccurrence(), goal));
     }
+    private void handleCommandApplication(String event) {
+
+        Events.fire(new Events.CommandApplicationEvent(event, pos.getPosInOccurrence(), goal));
+    }
 
     /**
      * Handles rule application for automode.
@@ -363,14 +399,26 @@ public class TacletContextMenu extends ContextMenu {
 
     /**
      * Handles action of the 'Copy to clipboard' menu item.
-     *
-     * @param event
      */
     @FXML
     private void handleCopyToClipboard(ActionEvent event) {
         final Clipboard clipboard = Clipboard.getSystemClipboard();
         final ClipboardContent content = new ClipboardContent();
+        Term term = pos.getPosInOccurrence().subTerm();
+        Goal g = goal;
+        Services services = goal.proof().getInitConfig().getServices();
+        NotationInfo ni = new NotationInfo();
+        LogicPrinter p = new LogicPrinter(new ProgramPrinter(), ni, services);
+        ni.refresh(services, false, false);
+        String termString = "";
+        try {
+            p.printTerm(term);
+        } catch (IOException ioe) {
+            // t.toString();
+        }
+        termString = p.toString();
 
+        content.putString(termString);
         //content.putString(parentController.getProofString()
         //        .substring(pos.getBounds().start(), pos.getBounds().end()));
         clipboard.setContent(content);

@@ -57,6 +57,17 @@ public class Events {
 
     @Data
     @RequiredArgsConstructor
+    public static class CommandApplicationEvent {
+        private final String commandName;
+        private final PosInOccurrence pio;
+
+        private final Goal currentGoal;
+
+
+    }
+
+    @Data
+    @RequiredArgsConstructor
     public static class ScriptModificationEvent {
         private final int line;
 
