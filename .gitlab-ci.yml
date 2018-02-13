@@ -1,7 +1,7 @@
 # This is the Gradle build system for JVM applications
 # https://gradle.org/
 # https://github.com/gradle/gradle
-image: gradle:alpine
+image: key-dev-jdk9
 
 cache:
   paths:
@@ -26,9 +26,22 @@ stages:
   - test
   - deploy
 
-build:
+build:jdk9:
+  stage: build
+  image: key-dev-jdk9
+  script: gradle --build-cache assemble
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
+
+
+build:jdk8:
   stage: build
   script: gradle --build-cache assemble
+  image: key-dev-jdk9
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -46,8 +59,8 @@ test:
       - build
       - .gradle
 
-test:
-  stage: test
+deploy:
+  stage: deploy
   script: gradle distJar
   cache:
     key: "$CI_COMMIT_REF_NAME"
