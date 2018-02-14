@@ -2,8 +2,13 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import de.uka.ilkd.key.java.Services;
+import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.IProgramMethod;
+import de.uka.ilkd.key.pp.LogicPrinter;
+import de.uka.ilkd.key.pp.NotationInfo;
 import de.uka.ilkd.key.pp.ProgramPrinter;
+import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -314,5 +319,25 @@ public class Utils {
         Map<DataFormat, Object> map = Collections.singletonMap(DataFormat.PLAIN_TEXT, s);
         Clipboard.getSystemClipboard().setContent(map);
         System.err.println(s);
+    }
+
+    public static String printParsableTerm(Term term, Goal goal){
+        Services services = goal.proof().getInitConfig().getServices();
+        return printParsableTerm(term, services);
+    }
+
+    public static String printParsableTerm(Term term, Services services) {
+
+        NotationInfo ni = new NotationInfo();
+        LogicPrinter p = new LogicPrinter(new ProgramPrinter(), ni, services);
+        ni.refresh(services, false, false);
+        String termString = "";
+        try {
+            p.printTerm(term);
+        } catch (IOException ioe) {
+            // t.toString();
+        }
+        termString = p.toString();
+        return termString;
     }
 }
