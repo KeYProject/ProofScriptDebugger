@@ -321,11 +321,23 @@ public class Utils {
         System.err.println(s);
     }
 
+    /**
+     * Prints a KeY-parsable String representation of a term
+     * @param term to print
+     * @param goal containing namespaces
+     * @return
+     */
     public static String printParsableTerm(Term term, Goal goal){
         Services services = goal.proof().getInitConfig().getServices();
         return printParsableTerm(term, services);
     }
 
+    /**
+     * Prints a KeY-parsable String representation of a term
+     * @param term to print
+     * @param services object containing namespaces
+     * @return
+     */
     public static String printParsableTerm(Term term, Services services) {
 
         NotationInfo ni = new NotationInfo();
