@@ -1,6 +1,6 @@
 package edu.kit.iti.formal.psdbg.termmatcher;
 
-import edu.kit.formal.psdb.termmatcher.MatchPatternParser;
+import edu.kit.iti.formal.psdbg.termmatcher.MatchPatternParser;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 

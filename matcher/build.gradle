@@ -1,0 +1,18 @@
+apply plugin: 'antlr'
+
+description = ''
+
+repositories { mavenCentral() }
+
+generateGrammarSource {
+    maxHeapSize = "64m"
+    arguments += ["-visitor", "-long-messages",
+                  "-package", "edu.kit.iti.formal.psdbg.termmatcher"]
+    outputDirectory file("${project.buildDir}/generated-src/antlr/main/")
+}
+
+dependencies {
+    compile group: 'org.antlr', name: 'antlr4', version: '4.7'
+    antlr group: 'org.antlr', name: 'antlr4', version: '4.7'
+    compile project(':keydeps')
+}

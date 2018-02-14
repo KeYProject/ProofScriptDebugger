@@ -1,7 +1,5 @@
 package edu.kit.iti.formal.psdbg.termmatcher;
 
-import edu.kit.formal.psdb.termmatcher.MatchPatternBaseVisitor;
-import edu.kit.formal.psdb.termmatcher.MatchPatternParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Stack;
