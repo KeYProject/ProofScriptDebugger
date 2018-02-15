@@ -408,23 +408,15 @@ public class TacletContextMenu extends ContextMenu {
         final ClipboardContent content = new ClipboardContent();
         Term term = pos.getPosInOccurrence().subTerm();
         Goal g = goal;
-        Services services = goal.proof().getInitConfig().getServices();
-        NotationInfo ni = new NotationInfo();
-        LogicPrinter p = new LogicPrinter(new ProgramPrinter(), ni, services);
-        ni.refresh(services, false, false);
-        String termString = "";
-        try {
-            p.printTerm(term);
-        } catch (IOException ioe) {
-            // t.toString();
-        }
-        termString = p.toString();
+        String termString = Utils.printParsableTerm(term, goal);
 
         content.putString(termString);
         //content.putString(parentController.getProofString()
         //        .substring(pos.getBounds().start(), pos.getBounds().end()));
         clipboard.setContent(content);
     }
+
+
 
     /**
      * Checks whether a string is a valid term abbreviation (is not empty and

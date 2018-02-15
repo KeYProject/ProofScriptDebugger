@@ -111,14 +111,11 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         List<VariableAssignment> assignments = new ArrayList<>();
         resultsFromLabelMatch = new ArrayList<>();
         //compile pattern
-        String cleanLabel = label.replaceAll(" ", "");
-        String cleanLabel2 = cleanLabel.replaceAll("\\(", "\\\\(");
-        cleanLabel = cleanLabel2.replaceAll("\\)", "\\\\)");
+        String cleanLabel = cleanLabel(label);
 
 
         String branchLabel = currentState.getData().getBranchingLabel();
-        String cleanBranchLabel = branchLabel.replaceAll(" ", "");
-
+        String cleanBranchLabel =  branchLabel.replaceAll(" ", "");
         Pattern regexpForLabel = Pattern.compile(cleanLabel);
         Matcher branchLabelMatcher = regexpForLabel.matcher(cleanBranchLabel);
 
@@ -216,6 +213,16 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         );
     }
 
+    private String cleanLabel(String label) {
+
+        String cleaned = label.replaceAll(" ", "");
+        cleaned = cleaned.replaceAll("\\(", "\\\\(");
+        cleaned = cleaned.replaceAll("\\)", "\\\\)");
+        cleaned = cleaned.replaceAll("\\[", "\\\\[");
+        cleaned = cleaned.replaceAll("\\]", "\\\\]");
+
+        return cleaned;
+    }
 
     //private TermLiteral from(SequentFormula sf) {
     //    return new TermLiteral(sf.toString());

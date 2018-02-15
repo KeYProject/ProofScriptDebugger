@@ -161,8 +161,8 @@ public class InteractiveModeController {
         SequentFormula seqForm = tap.getPio().sequentFormula();
         //transform term to parsable string representation
         Sequent seq = g.sequent();
-        String sfTerm = LogicPrinter.quickPrintTerm(seqForm.formula(), keYServices, false, false);
-        String onTerm = LogicPrinter.quickPrintTerm(tap.getPio().subTerm(), keYServices, false, false);
+        String sfTerm = Utils.printParsableTerm(seqForm.formula(), keYServices);
+        String onTerm = Utils.printParsableTerm(tap.getPio().subTerm(), keYServices);
 
 
         RuleCommand.Parameters params = new RuleCommand.Parameters();
