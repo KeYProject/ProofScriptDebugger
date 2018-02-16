@@ -96,6 +96,28 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         });
     }
 
+    /**
+     *
+     * @param text
+     * @return
+     */
+    public static Expression splitIdentifier(final String text) {
+        final String[] ids = text.split("-");
+        List<Expression> literals = new ArrayList<>(ids.length);
+        for (int i = 0; i < ids.length; i++) {
+            if (ids[i].isEmpty()) {
+                literals.add(new UnaryExpression(
+                        Operator.NEGATE,
+                        new Variable(ids[i + 1])
+                ));
+                i++; // overjump next variable, already consumed
+            } else {
+                literals.add(new Variable(ids[i]));
+            }
+        }
+        return literals.stream().reduce((a, b) -> new BinaryExpression(a, Operator.MINUS, b)).orElse(null);
+    }
+
     @Override
     public List<ProofScript> visitStart(ScriptLanguageParser.StartContext ctx) {
         ctx.script().forEach(s ->
@@ -155,7 +177,6 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         }
         return statements;
     }
-
 
     @Override
     public Object visitStatement(ScriptLanguageParser.StatementContext ctx) {
@@ -219,7 +240,6 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     public Object visitExprComparison(ScriptLanguageParser.ExprComparisonContext ctx) {
         return createBinaryExpression(ctx, ctx.expression(), findOperator(ctx.op.getText()));
     }
-
 
     private Operator findOperator(String n) {
         return findOperator(n, 2);
@@ -315,7 +335,12 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
 
     @Override
     public Object visitLiteralID(ScriptLanguageParser.LiteralIDContext ctx) {
-        return new Variable(ctx.ID().getSymbol());
+        String text = ctx.ID().getSymbol().getText();
+        int p = text.indexOf('-');
+        if (p == -1) {
+            return new Variable(ctx.ID().getSymbol());
+        }
+        return (Expression) splitIdentifier(text);
     }
 
     @Override

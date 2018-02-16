@@ -48,7 +48,9 @@ assignment
 
 expression
     :
-      expression MUL expression #exprMultiplication
+      MINUS expression         #exprNegate
+    | NOT expression           #exprNot
+    | expression MUL expression #exprMultiplication
     | <assoc=right> expression DIV expression #exprDivision
     | expression op=(PLUS|MINUS) expression #exprLineOperators
     | expression op=(LE|GE|LEQ|GEQ) expression #exprComparison
@@ -59,8 +61,6 @@ expression
     //|   expression EQUIV expression already covered by EQ/NEQ
     | expression LBRACKET substExpressionList RBRACKET #exprSubst
     | ID LPAREN  (expression (',' expression)*)? RPAREN  #function
-    | MINUS expression         #exprNegate
-    | NOT expression           #exprNot
     | LPAREN expression RPAREN #exprParen
     | literals                 #exprLiterals
     | matchPattern             #exprMatch
@@ -164,7 +164,7 @@ MATCH : 'match';
 SCRIPT : 'script' ;
 TRUE : 'true' ;
 FALSE : 'false' ;
-CALL : 'call' ;
+//CALL : 'call' ;
 REPEAT : 'repeat' ;
 /*INT : 'int' ;
 BOOL: 'bool' ;
@@ -212,4 +212,4 @@ QUESTION_MARK: '?';
 
 DIGITS : DIGIT+ ;
 fragment DIGIT : [0-9] ;
-ID : ([a-zA-Z]|'#'|'_') ([_a-zA-Z0-9] | '.' | '\\'| '#')*;
+ID : ([a-zA-Z] | '#' | '_' | '-') ([_a-zA-Z0-9] | '-' | '.' | '\\'| '#')*;
