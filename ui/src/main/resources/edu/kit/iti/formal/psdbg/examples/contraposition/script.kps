@@ -1,6 +1,8 @@
 // Please select one of the following scripts.
 //
-
+script testSMT(){
+    smt solver='Z3';
+}
 script toRemove(){
   impRight;
   useContract type='dependency' on=`p`;
