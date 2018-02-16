@@ -89,4 +89,13 @@ public class ExecuteTest {
 
 
     }
+    @Test
+    public void testInstantiate() throws IOException, ParseException, ParserException {
+        Execute exec = create("/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/bigIntProof/compareMagnitude_openCases.key.proof",
+        "-s", "/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/bigIntProof/instAll.kps");
+        Interpreter<KeyData> i = exec.run();
+        State<KeyData> currentState = i.getCurrentState();
+        System.out.println(currentState);
+    }
+
 }
