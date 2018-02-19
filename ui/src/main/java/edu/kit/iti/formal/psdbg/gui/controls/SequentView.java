@@ -139,14 +139,14 @@ public class SequentView extends CodeArea {
 
         ProgramPrinter prgPrinter = new ProgramPrinter(new StringWriter());
         this.backend = new LogicPrinter.PosTableStringBackend(80);
-
-        ProofIndependentSettings.DEFAULT_INSTANCE.getViewSettings().setUseUnicode(true);
+        //unicode makes prettier syntax but is bad for matching
+        ProofIndependentSettings.DEFAULT_INSTANCE.getViewSettings().setUseUnicode(false);
         ProofIndependentSettings.DEFAULT_INSTANCE.getViewSettings().setUsePretty(true);
-        NotationInfo.DEFAULT_UNICODE_ENABLED = true;
+        NotationInfo.DEFAULT_UNICODE_ENABLED = false;
         NotationInfo.DEFAULT_PRETTY_SYNTAX = true;
 
         NotationInfo notation = new NotationInfo();
-        notation.refresh(services, true, true);
+        notation.refresh(services, true, false);
 
         lp = new LogicPrinter(prgPrinter, notation, backend, services, false);
         lp.printSequent(sequent);
