@@ -14,4 +14,9 @@ public class SortType implements Type {
     public String symbol() {
         return sort.toString();
     }
+
+    @Override
+    public String interpreterSort() {
+        return symbol();
+    }
 }

@@ -2,6 +2,7 @@ package edu.kit.iti.formal.psdbg.parser.data;
 
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
+import edu.kit.iti.formal.psdbg.parser.types.TermType;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
 import lombok.Getter;

@@ -16,6 +16,7 @@ import de.uka.ilkd.key.proof.rulefilter.TacletFilter;
 import de.uka.ilkd.key.rule.Rule;
 import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.rule.TacletApp;
+import edu.kit.iti.formal.psdbg.ValueInjector;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -23,6 +24,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
+import edu.kit.iti.formal.psdbg.parser.data.Value;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -103,14 +105,16 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         State<KeyData> state = interpreter.getCurrentState();
         GoalNode<KeyData> expandedNode = state.getSelectedGoalNode();
         KeyData kd = expandedNode.getData();
-        Map<String, String> map = new HashMap<>();
-        params.asMap().forEach((k, v) -> map.put(k.getIdentifier(), v.getData().toString()));
+        Map<String, Object> map = new HashMap<>();
+        params.asMap().forEach((k, v) -> map.put(k.getIdentifier(), v.getData()));
         LOGGER.info("Execute {} with {}", call, map);
         try {
             map.put("#2", call.getCommand());
             EngineState estate = new EngineState(kd.getProof());
             estate.setGoal(kd.getNode());
-            RuleCommand.Parameters cc = c.evaluateArguments(estate, map); //reflection exception
+            RuleCommand.Parameters cc = new RuleCommand.Parameters();
+            ValueInjector valueInjector = ValueInjector.createDefault(kd.getNode());
+            cc = valueInjector.inject(c, cc, map);
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
 

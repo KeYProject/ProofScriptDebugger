@@ -245,6 +245,14 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override
+    public Object visitNamespaceset(ScriptLanguageParser.NamespacesetContext ctx) {
+        NamespaceSetExpression nse = new NamespaceSetExpression();
+        nse.setExpression((Expression) ctx.expression().accept(this));
+        nse.setSignature((Signature) ctx.argList().accept(this));
+        return nse;
+    }
+
+    @Override
     public Object visitExprIMP(ScriptLanguageParser.ExprIMPContext ctx) {
         return createBinaryExpression(ctx, ctx.expression(), Operator.IMPLICATION);
 

@@ -226,4 +226,11 @@ public interface ASTTraversal<T> extends Visitor<T> {
         relaxBlock.getBody().accept(this);
         return null;
     }
+
+    @Override
+    default T visit(NamespaceSetExpression nss) {
+        nss.getExpression().accept(this);
+        nss.getSignature().accept(this);
+        return null;
+    }
 }
