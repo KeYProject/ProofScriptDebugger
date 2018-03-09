@@ -113,7 +113,12 @@ public class ValueInjector {
             if (s.getTerm() != null) {
                 return s.getTerm();
             } else {
-                TermConverter converter = new TermConverter(node);
+                NamespaceSet nss = null;
+                if(s.getNs() !=null) {
+                    nss = s.getNs();
+
+                }
+                TermConverter converter = new TermConverter(node, nss);
                 Term t = converter.convert(s.getTermRepr());
                 s.setTerm(t);
                 return t;
@@ -126,6 +131,12 @@ public class ValueInjector {
         private final Node node;
         private final static DefaultTermParser PARSER = new DefaultTermParser();
         private NamespaceSet additionalNamespace;
+
+        public TermConverter(Node node, NamespaceSet additionalNamespace) {
+            this.node = node;
+            this.additionalNamespace = additionalNamespace;
+        }
+
 
         @Override
         public Term convert(String string) throws ParserException {
@@ -147,6 +158,7 @@ public class ValueInjector {
             }
 
             Term formula = PARSER.parse(reader, null, services, ns, node.proof().abbreviations());
+
             return formula;
         }
     }
@@ -273,7 +285,6 @@ public class ValueInjector {
     /**
      * Registers the given converter for the specified class.
      *
-     * @param clazz a class
      * @param conv  a converter for the given class
      * @param <T>   an arbitrary type
      */

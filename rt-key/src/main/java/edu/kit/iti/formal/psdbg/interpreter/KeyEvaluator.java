@@ -37,6 +37,7 @@ public class KeyEvaluator extends Evaluator<KeyData> {
             TermValue data = ((TermValue) term.getData()).copy();
             nss.getSignature().forEach((v,s) -> {
                 Sort sort = asKeySort(s, getGoal().getData().getGoal());
+                QuantifiableVariable gf;
                 data.getNs().variables().add(new LogicVariable(new Name(v.getIdentifier()), sort));
             });
             return new Value(term.getType(), data);

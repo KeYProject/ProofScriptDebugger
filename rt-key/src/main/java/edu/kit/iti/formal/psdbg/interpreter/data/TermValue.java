@@ -44,10 +44,15 @@ public class TermValue {
 
     public TermValue copy() {
         TermValue tv = new TermValue();
+
         tv.keySort = keySort;
         tv.termRepr=termRepr;
         tv.term=term;
-        tv.ns = ns.copy();
+        if(ns !=null) {
+            tv.ns = ns.copy();
+        } else {
+            tv.ns=new NamespaceSet();
+        }
         return tv;
     }
 }
