@@ -61,7 +61,7 @@ public class Variable extends Literal implements Comparable<Variable> {
     @Override
     public Variable copy() {
         Variable v = new Variable(identifier);
-        v.token = token;
+        v.setToken(getToken());
         return v;
     }
 

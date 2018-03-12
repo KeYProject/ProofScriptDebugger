@@ -51,7 +51,7 @@ public class BooleanLiteral extends Literal {
 
     public BooleanLiteral(boolean value, Token token) {
         this.value = value;
-        this.token = token;
+        setToken(token);
     }
 
     BooleanLiteral(boolean b) {
@@ -76,7 +76,7 @@ public class BooleanLiteral extends Literal {
      */
     @Override
     public BooleanLiteral copy() {
-        return new BooleanLiteral(value, token);
+        return new BooleanLiteral(value, getToken());
     }
 
     /**

@@ -142,7 +142,7 @@ public class KeyInterpreter extends Interpreter<KeyData> {
         eval.setTermValueFactory(new Function<TermLiteral, Value>() {
             @Override
             public Value apply(TermLiteral termLiteral) {
-                return  new Value(TypeFacade.ANY_TERM, new TermValue(termLiteral.getText()));
+                return  new Value(TypeFacade.ANY_TERM, new TermValue(termLiteral.getContent()));
             }
         });
         return eval;

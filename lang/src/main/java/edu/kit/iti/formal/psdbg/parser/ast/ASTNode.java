@@ -81,8 +81,8 @@ public abstract class ASTNode<T extends ParserRuleContext>
     }
 
     public void setRuleContext(T c) {
-        startPosition = Position.from(c.getStart());
-        endPosition = Position.from(c.getStop());
+        startPosition = Position.start(c);
+        endPosition = Position.end(c);
         ruleContext = c;
     }
 

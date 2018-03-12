@@ -57,7 +57,7 @@ public class Value<T> {
     }
 
     public static Value<String> from(TermLiteral term) {
-        return new Value<>(TypeFacade.ANY_TERM, term.getText());
+        return new Value<>(TypeFacade.ANY_TERM, term.getContent());
     }
 
     @Override

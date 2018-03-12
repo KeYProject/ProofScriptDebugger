@@ -17,7 +17,6 @@ import jdk.nashorn.internal.objects.annotations.Getter;
 import jdk.nashorn.internal.objects.annotations.Setter;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
-import sun.security.jca.GetInstance;
 
 import java.io.StringReader;
 import java.lang.annotation.Retention;

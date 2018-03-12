@@ -175,9 +175,9 @@ public class InteractiveModeController {
         int occ = rch.getOccurence(tap.getApp());
 
         Parameters callp = new Parameters();
-        callp.put(new Variable("formula"), new TermLiteral(sfTerm));
+        callp.put(new Variable("formula"), TermLiteral.from(sfTerm));
         callp.put(new Variable("occ"), new IntegerLiteral(BigInteger.valueOf(occ)));
-        callp.put(new Variable("on"), new TermLiteral(onTerm));
+        callp.put(new Variable("on"), TermLiteral.from(onTerm));
 
         VariableAssignment va = new VariableAssignment(null);
         CallStatement call = new CallStatement(tapName, callp);
