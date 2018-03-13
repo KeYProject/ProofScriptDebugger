@@ -199,6 +199,11 @@ public class DebuggerMain implements Initializable {
 
         marriageJavaCode();
 
+        getFacade().environmentProperty().addListener(
+                (prop, o, n) -> {
+                    scriptController.getAutoCompleter().getRuleCompleter().setEnvironment(n);
+                });
+
         //marriage key proof facade to proof tree
         getFacade().proofProperty().addListener(
                 (prop, o, n) -> {
@@ -335,7 +340,7 @@ public class DebuggerMain implements Initializable {
     }
 
     @FXML
-    private void undo (ActionEvent e) {
+    private void undo(ActionEvent e) {
         interactiveModeController.undo(e);
     }
 
@@ -1176,7 +1181,6 @@ public class DebuggerMain implements Initializable {
             keyWindow.setVisible(true);
         });
     }
-
 
 
     public class ContractLoaderService extends Service<List<Contract>> {

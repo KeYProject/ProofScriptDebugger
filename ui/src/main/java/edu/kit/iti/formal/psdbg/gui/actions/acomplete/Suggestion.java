@@ -1,4 +1,4 @@
-package edu.kit.iti.formal.psdbg.gui.model;
+package edu.kit.iti.formal.psdbg.gui.actions.acomplete;
 
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import lombok.Getter;
@@ -19,17 +19,21 @@ public class Suggestion implements Comparable<Suggestion> {
         return new Suggestion(keyword, Category.KEYWORD, 4);
     }
 
-    @Override
-    public int compareTo(Suggestion o) {
-        return Integer.compare(priority, o.priority);
-    }
-
     public static Suggestion macro(String name) {
         return new Suggestion(name, Category.MACRO, 3);
     }
 
     public static Suggestion command(String name) {
         return new Suggestion(name, Category.COMMAND, 2);
+    }
+
+    public static Suggestion rule(String name) {
+        return new Suggestion(name, Category.RULE, 5);
+    }
+
+    @Override
+    public int compareTo(Suggestion o) {
+        return Integer.compare(priority, o.priority);
     }
 
     @RequiredArgsConstructor

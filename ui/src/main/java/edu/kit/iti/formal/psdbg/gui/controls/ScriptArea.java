@@ -3,10 +3,12 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import com.google.common.base.Strings;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import edu.kit.iti.formal.psdbg.gui.actions.acomplete.AutoCompletionController;
+import edu.kit.iti.formal.psdbg.gui.actions.acomplete.CompletionPosition;
+import edu.kit.iti.formal.psdbg.gui.actions.acomplete.Suggestion;
 import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
-import edu.kit.iti.formal.psdbg.gui.model.Suggestion;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
 import edu.kit.iti.formal.psdbg.lint.LintProblem;
 import edu.kit.iti.formal.psdbg.lint.LinterStrategy;
@@ -75,7 +77,6 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * ScriptArea is the {@link CodeArea} for writing Proof Scripts.
@@ -111,7 +112,8 @@ public class ScriptArea extends BorderPane {
      */
     @Getter
     @Setter
-    private List<Suggestion> autoCompletionSuggestions = new ArrayList<>(1);
+    private AutoCompletionController autoCompletionController;
+
     private AutoCompletion autoCompletion = new AutoCompletion();
 
     @Getter
@@ -1837,21 +1839,18 @@ public class ScriptArea extends BorderPane {
         public void update() {
             popup = getPopup();
             int end = codeArea.getCaretPosition();
-            String text = codeArea.getText(0, end);
-            int start = text.lastIndexOf(' ');
-            final String searchPrefix = text.substring(start).trim();
-            System.out.println("searchPrefix = " + searchPrefix);
-            List<Suggestion> newS = autoCompletionSuggestions.stream()
-                    .filter(s -> s.getText().startsWith(searchPrefix))
-                    .sorted()
-                    .collect(Collectors.toList());
+            //int start = text.lastIndexOf(' ');
+            //final String searchPrefix = text.substring(start).trim();
+            //System.out.println("searchPrefix = " + searchPrefix);
+
+            CompletionPosition cp = new CompletionPosition(getText(), end);
+            List<Suggestion> newS = autoCompletionController.getSuggestions(cp);
             suggestions.setAll(newS);
 
             Bounds b = codeArea.getCaretBounds().get();
             popup.setX(b.getMaxX());
             popup.setY(b.getMaxY());
-
-            popup.setHeight(25 * newS.size());
+            popup.setHeight(25 * Math.min(Math.max(newS.size(), 3), 10));
 
         }
 

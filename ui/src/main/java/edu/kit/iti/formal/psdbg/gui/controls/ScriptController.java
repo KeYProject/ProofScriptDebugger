@@ -3,13 +3,14 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
-import de.uka.ilkd.key.api.KeYApi;
+import de.uka.ilkd.key.control.KeYEnvironment;
+import edu.kit.iti.formal.psdbg.gui.actions.acomplete.DefaultAutoCompletionController;
 import edu.kit.iti.formal.psdbg.gui.actions.inline.FindLabelInGoalList;
 import edu.kit.iti.formal.psdbg.gui.actions.inline.FindTermLiteralInSequence;
 import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
-import edu.kit.iti.formal.psdbg.gui.model.Suggestion;
+import edu.kit.iti.formal.psdbg.gui.actions.acomplete.Suggestion;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
@@ -33,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A controller for managing the open script files in the dock nodes.
@@ -60,33 +62,12 @@ public class ScriptController {
 
     @Getter
     @Setter
-    private List<Suggestion> autoCompletionWords = new ArrayList<>(1024);
+    private DefaultAutoCompletionController autoCompleter = new DefaultAutoCompletionController();
 
     public ScriptController(DockPane parent) {
         this.parent = parent;
         Events.register(this);
         addDefaultInlineActions();
-        addDefaultsWords();
-    }
-
-    private void addDefaultsWords() {
-        autoCompletionWords.add(Suggestion.keyword("foreach"));
-        autoCompletionWords.add(Suggestion.keyword("repeat"));
-        autoCompletionWords.add(Suggestion.keyword("cases"));
-        autoCompletionWords.add(Suggestion.keyword("case"));
-        autoCompletionWords.add(Suggestion.keyword("while"));
-        autoCompletionWords.add(Suggestion.keyword("if"));
-        autoCompletionWords.add(Suggestion.keyword("theonly"));
-
-        KeYApi.getMacroApi().getMacros().forEach(proofMacro -> {
-            autoCompletionWords.add(Suggestion.macro(proofMacro.getScriptCommandName()));
-        });
-
-        KeYApi.getScriptCommandApi().getScriptCommands().forEach(proofMacro -> {
-            autoCompletionWords.add(Suggestion.command(proofMacro.getName()));
-        });
-
-
     }
 
     private void addDefaultInlineActions() {
@@ -173,7 +154,7 @@ public class ScriptController {
         if (findEditor(filePath) == null) {
             ScriptArea area = new ScriptArea();
             area.setInlineActionSuppliers(getActionSuppliers());
-            area.setAutoCompletionSuggestions(getAutoCompletionWords());
+            area.setAutoCompletionController(getAutoCompleter());
             area.mainScriptProperty().bindBidirectional(mainScript);
             area.setFilePath(filePath);
             DockNode dockNode = createDockNode(area);
@@ -311,10 +292,6 @@ public class ScriptController {
         return mainScript.get();
     }
 
-    public void setMainScript(MainScriptIdentifier mainScript) {
-        this.mainScript.set(mainScript);
-    }
-
     public void setMainScript(ProofScript proofScript) {
         MainScriptIdentifier msi = new MainScriptIdentifier();
         msi.setLineNumber(proofScript.getStartPosition().getLineNumber());
@@ -322,6 +299,10 @@ public class ScriptController {
         msi.setSourceName(proofScript.getRuleContext().getStart().getInputStream().getSourceName());
         msi.setScriptArea(findEditor(new File(proofScript.getOrigin())));
         setMainScript(msi);
+    }
+
+    public void setMainScript(MainScriptIdentifier mainScript) {
+        this.mainScript.set(mainScript);
     }
 
     public ObjectProperty<MainScriptIdentifier> mainScriptProperty() {
@@ -379,4 +360,6 @@ public class ScriptController {
             else return new ScriptArea.RegionStyle(0, 1, "");
         }
     }
+
+
 }

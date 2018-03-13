@@ -24,13 +24,11 @@ import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
-import edu.kit.iti.formal.psdbg.parser.data.Value;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,18 +51,7 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         this(new HashMap<>());
     }
 
-    @Override
-    public boolean handles(CallStatement call, KeyData data) throws IllegalArgumentException {
-        if (rules.containsKey(call.getCommand())) return true;//static/rigid rules
-        if (data != null) {
-            Goal goal = data.getGoal();
-            Set<String> rules = findTaclets(data.getProof(), goal);
-            return rules.contains(call.getCommand());
-        }
-        return false;
-    }
-
-    private Set<String> findTaclets(Proof p, Goal g) {
+    public static Set<String> findTaclets(Proof p, Goal g) {
         Services services = p.getServices();
         TacletFilter filter = new TacletFilter() {
             @Override
@@ -75,7 +62,6 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         RuleAppIndex index = g.ruleAppIndex();
         index.autoModeStopped();
         HashSet<String> set = new HashSet<>();
-        ImmutableList<TacletApp> allApps = ImmutableSLList.nil();
         for (SequentFormula sf : g.node().sequent().antecedent()) {
             ImmutableList<TacletApp> apps = index.getTacletAppAtAndBelow(filter,
                     new PosInOccurrence(sf, PosInTerm.getTopLevel(), true),
@@ -83,13 +69,28 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
             apps.forEach(t -> set.add(t.taclet().name().toString()));
         }
 
-        for (SequentFormula sf : g.node().sequent().succedent()) {
-            ImmutableList<TacletApp> apps = index.getTacletAppAtAndBelow(filter,
-                    new PosInOccurrence(sf, PosInTerm.getTopLevel(), true),
-                    services);
-            apps.forEach(t -> set.add(t.taclet().name().toString()));
+        try {
+            for (SequentFormula sf : g.node().sequent().succedent()) {
+                ImmutableList<TacletApp> apps = index.getTacletAppAtAndBelow(filter,
+                        new PosInOccurrence(sf, PosInTerm.getTopLevel(), true),
+                        services);
+                apps.forEach(t -> set.add(t.taclet().name().toString()));
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
         return set;
+    }
+
+    @Override
+    public boolean handles(CallStatement call, KeyData data) throws IllegalArgumentException {
+        if (rules.containsKey(call.getCommand())) return true;//static/rigid rules
+        if (data != null) {
+            Goal goal = data.getGoal();
+            Set<String> rules = findTaclets(data.getProof(), goal);
+            return rules.contains(call.getCommand());
+        }
+        return false;
     }
 
     @Override
