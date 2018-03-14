@@ -5,6 +5,8 @@ import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.stream.Stream;
 
 /**
  * @author Alexander Weigl
@@ -44,4 +46,7 @@ public interface CommandHandler<T> {
         return "Help is not implemented for " + getClass().getCanonicalName();
     }
 
+    default Stream<String> getArguments(String name) {
+        return Stream.of();
+    }
 }

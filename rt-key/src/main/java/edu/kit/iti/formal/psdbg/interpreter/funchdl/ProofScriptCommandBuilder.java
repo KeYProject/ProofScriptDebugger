@@ -4,6 +4,7 @@ import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
+import de.uka.ilkd.key.macros.scripts.meta.ProofScriptArgument;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.ValueInjector;
@@ -15,7 +16,6 @@ import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,10 +25,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * This class handles the call of key's proof script commands, e.g. select or auto;
@@ -112,6 +110,17 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
         Method method = c.getClass().getMethod("evaluateArguments", EngineState.class, Map.class);
         Class rtclazz = method.getReturnType();
         return (T) rtclazz.newInstance();
+    }
+
+    @Override
+    public Stream<String> getArguments(String name) {
+        if (commands.containsKey(name)) {
+            ProofScriptCommand cmd = commands.get(name);
+            List<ProofScriptArgument<?>> seq = (List<ProofScriptArgument<?>>) cmd.getArguments();
+            return seq.stream()
+                    .map((ProofScriptArgument arg) -> arg.getName());//+ " " + arg.getType());
+        }
+        return Stream.of();
     }
 
     @Override

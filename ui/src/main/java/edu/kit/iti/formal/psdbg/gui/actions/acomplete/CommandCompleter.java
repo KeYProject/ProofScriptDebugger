@@ -14,7 +14,7 @@ public class CommandCompleter implements AutoCompleter {
     private static Collection<Suggestion> suggestions = new ArrayList<>();
     static {
         KeYApi.getScriptCommandApi().getScriptCommands().forEach(proofMacro -> {
-            suggestions.add(Suggestion.macro(proofMacro.getName()));
+            suggestions.add(Suggestion.command(proofMacro.getName()));
         });
     }
 

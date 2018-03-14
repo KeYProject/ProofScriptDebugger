@@ -1865,7 +1865,7 @@ public class ScriptArea extends BorderPane {
 
         public void update() {
             popup = getPopup();
-            int end = codeArea.getCaretPosition();
+            int end = codeArea.getCaretPosition()-1;
             //int start = text.lastIndexOf(' ');
             //final String searchPrefix = text.substring(start).trim();
             //System.out.println("searchPrefix = " + searchPrefix);

@@ -31,17 +31,22 @@ public class Suggestion implements Comparable<Suggestion> {
         return new Suggestion(name, Category.RULE, 5);
     }
 
+    public static Suggestion argument(String s) {
+        return new Suggestion(s, Category.ATTRIBUTE, 1);
+    }
+
     @Override
     public int compareTo(Suggestion o) {
         return Integer.compare(priority, o.priority);
     }
 
+
     @RequiredArgsConstructor
     public static enum Category {
         COMMAND((MaterialDesignIcon.APPLE_KEYBOARD_COMMAND)),
         RULE((MaterialDesignIcon.RULER)),
-        MACRO((MaterialDesignIcon.RULER)),
-        ATTRIBUTE((MaterialDesignIcon.RULER)),
+        MACRO((MaterialDesignIcon.PHARMACY)),
+        ATTRIBUTE((MaterialDesignIcon.ATTACHMENT)),
         KEYWORD((MaterialDesignIcon.KEY_VARIANT));
 
         @Getter
