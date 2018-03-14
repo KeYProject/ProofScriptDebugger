@@ -15,16 +15,17 @@ public class CompletionPosition {
     int pos;
 
     public String getPrefix() {
-        int start;
-        for (start = pos; start >= 0; start--) {
+        if (text.isEmpty()) return "";
+        int start = Math.min(text.length() - 1, pos - 1);
+        for (; start >= 0; start--) {
             if (Character.isWhitespace(text.charAt(start)))
                 break;
         }
-        return text.substring(start, pos).trim();
+        return text.substring(Math.max(0, start), pos).trim();
     }
 
     public boolean onLineBegin() {
-        for (int i = pos; i >= 0; i--) {
+        for (int i = Math.min(text.length() - 1, pos); i >= 0; i--) {
             if (text.charAt(i) == ' ' || text.charAt(i) == '\t') continue;
             if (text.charAt(i) == '\n') return true;
             return false;

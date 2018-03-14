@@ -33,10 +33,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -62,6 +59,9 @@ import org.fxmisc.richtext.*;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.*;
 import org.fxmisc.undo.UndoManager;
+import org.fxmisc.wellbehaved.event.EventPattern;
+import org.fxmisc.wellbehaved.event.InputMap;
+import org.fxmisc.wellbehaved.event.Nodes;
 import org.reactfx.EventStream;
 import org.reactfx.SuspendableNo;
 import org.reactfx.collection.LiveList;
@@ -77,6 +77,11 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
+
+import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
+import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
+import static org.fxmisc.wellbehaved.event.InputHandler.Result.PROCEED;
+import static org.fxmisc.wellbehaved.event.InputMap.*;
 
 /**
  * ScriptArea is the {@link CodeArea} for writing Proof Scripts.
@@ -145,25 +150,43 @@ public class ScriptArea extends BorderPane {
 
     private void init() {
         codeArea.setAutoScrollOnDragDesired(false);
-        codeArea.setOnKeyReleased(event -> {
-            inlineToolbar.hide();
-            if (event.isControlDown() && event.getCode() == KeyCode.ENTER)
-                simpleReformat();
-            if (event.isControlDown() && event.getCode() == KeyCode.H)
-                inlineToolbar.show();
-            if (event.isControlDown() && event.getCode() == KeyCode.SPACE) {
-                autoCompletion.update();
-                autoCompletion.show();
-            }
-            if (autoCompletion.isVisible())
-                autoCompletion.update();
-        });
+        InputMap<KeyEvent> inputMap = sequence(
+                process(EventPattern.keyPressed(),
+                        (e) -> {
+                            if (autoCompletion.isVisible()) autoCompletion.update();
+                            inlineToolbar.hide();
+                            return PROCEED;
+                        }),
+                consumeWhen(keyPressed(KeyCode.ENTER), autoCompletion::isVisible,
+                        e -> autoCompletion.complete()),
+                consume(keyPressed(KeyCode.ENTER, SHORTCUT_DOWN),
+                        (e) -> simpleReformat()),
+                consume(keyPressed(KeyCode.H, SHORTCUT_DOWN),
+                        (e) -> inlineToolbar.show()),
+                consume(keyPressed(KeyCode.SPACE, SHORTCUT_DOWN), e -> {
+                    if (autoCompletion.isVisible()) {
+                        autoCompletion.hide();
+                    } else {
+                        autoCompletion.update();
+                        autoCompletion.show();
+                    }
+                }),
+                consumeWhen(keyPressed(KeyCode.DOWN), autoCompletion::isVisible, e -> autoCompletion.selection(+1)),
+                consumeWhen(keyPressed(KeyCode.UP), autoCompletion::isVisible, e -> autoCompletion.selection(-1)),
+                consumeWhen(keyPressed(KeyCode.PAGE_DOWN), autoCompletion::isVisible, e -> autoCompletion.selection(+3)),
+                consumeWhen(keyPressed(KeyCode.PAGE_UP), autoCompletion::isVisible, e -> autoCompletion.selection(-3)),
+                consume(keyPressed(KeyCode.ESCAPE), e -> {
+                    autoCompletion.hide();
+                    inlineToolbar.hide();
+                }));
+
+        Nodes.addInputMap(codeArea, inputMap);
+
         setCenter(scrollPane);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
 
-        scrollPane.widthProperty().addListener((a, b, c) -> {
-            codeArea.setMinSize(scrollPane.getWidth(), scrollPane.getHeight());
-        });
+        scrollPane.widthProperty().addListener((a, b, c) ->
+                codeArea.setMinSize(scrollPane.getWidth(), scrollPane.getHeight()));
 
         /*
         scrollPane.estimatedScrollYProperty().addListener(new ChangeListener<Double>() {
@@ -551,7 +574,6 @@ public class ScriptArea extends BorderPane {
 
     public CodePointCharStream getStream() {
         return CharStreams.fromString(getText(), getFilePath().getAbsolutePath());
-
     }
 
     public String getText() {
@@ -1801,6 +1823,7 @@ public class ScriptArea extends BorderPane {
         /*private AutoCompletePopup<Suggestion> popup = new AutoCompletePopup<>();
         private ListView<Suggestion> suggestionView;
         private ObservableList<Suggestion> suggestions;*/
+        private int lastSelected = -1;
         private Stage popup;
         private ListView<Suggestion> suggestionView = new ListView<>();
         private ObservableList<Suggestion> suggestions;
@@ -1811,7 +1834,11 @@ public class ScriptArea extends BorderPane {
             popup.setSkin(new AutoCompletePopupSkin<>(popup));
             suggestionView = (ListView<Suggestion>) popup.getSkin().getNode();*/
             suggestions = suggestionView.getItems();
-
+            suggestionView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+            suggestionView.getSelectionModel().getSelectedIndices().addListener((InvalidationListener) observable -> {
+                System.out.println(" = " + suggestionView.getSelectionModel().getSelectedIndex());
+                //lastSelected = suggestionView.getSelectionModel().getSelectedIndex();
+            });
             //popup.setVisibleRowCount(5);
 
             suggestionView.setEditable(false);
@@ -1844,6 +1871,7 @@ public class ScriptArea extends BorderPane {
             //System.out.println("searchPrefix = " + searchPrefix);
 
             CompletionPosition cp = new CompletionPosition(getText(), end);
+            System.out.println("cp.getPrefix() = " + cp.getPrefix());
             List<Suggestion> newS = autoCompletionController.getSuggestions(cp);
             suggestions.setAll(newS);
 
@@ -1857,7 +1885,7 @@ public class ScriptArea extends BorderPane {
         public void show() {
             //popup.show(ScriptArea.this.getScene().getWindow());
             popup.show();
-
+            codeArea.requestFocus();
         }
 
         public void hide() {
@@ -1866,6 +1894,28 @@ public class ScriptArea extends BorderPane {
 
         public boolean isVisible() {
             return popup != null && popup.isShowing();
+        }
+
+        public void complete() {
+            String entry = suggestions.get(lastSelected).getText();
+            codeArea.selectWord();
+            codeArea.replaceSelection(entry);
+            hide();
+            codeArea.requestFocus();
+        }
+
+        public void selection(int relline) {
+            if (lastSelected < 0) {
+                if (relline < 0) {
+                    lastSelected = suggestionView.getItems().size() - 1;
+                } else {
+                    lastSelected = 0;
+                }
+            } else {
+                lastSelected += relline;
+            }
+            suggestionView.getSelectionModel().select(lastSelected);
+            suggestionView.scrollTo(lastSelected);
         }
     }
 }
