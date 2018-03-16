@@ -4,8 +4,10 @@ import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
+import de.uka.ilkd.key.macros.scripts.meta.ProofScriptArgument;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
+import edu.kit.iti.formal.psdbg.ValueInjector;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -20,12 +22,11 @@ import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * This class handles the call of key's proof script commands, e.g. select or auto;
@@ -63,16 +64,16 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
         State<KeyData> state = interpreter.getCurrentState();
         GoalNode<KeyData> expandedNode = state.getSelectedGoalNode();
         KeyData kd = expandedNode.getData();
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         params.asMap().forEach((k, v) -> {
-            //    System.out.println("v.getData().toString() = " + v.getData().toString());
-                    map.put(k.getIdentifier(), v.getData().toString());
+                    map.put(k.getIdentifier(), v.getData());
                 }
         );
         try {
             EngineState estate = new EngineState(kd.getProof());
             estate.setGoal(kd.getNode());
-            Object cc = c.evaluateArguments(estate, map); //exception?
+            ValueInjector vi = ValueInjector.createDefault(kd.getNode());
+            Object cc = vi.inject(c, getParameterInstance(c), map);
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
             //what happens if this is empty -> meaning proof is closed
@@ -102,6 +103,24 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private <T> T getParameterInstance(ProofScriptCommand c) throws NoSuchMethodException, IllegalAccessException,
+            InstantiationException {
+        Method method = c.getClass().getMethod("evaluateArguments", EngineState.class, Map.class);
+        Class rtclazz = method.getReturnType();
+        return (T) rtclazz.newInstance();
+    }
+
+    @Override
+    public Stream<String> getArguments(String name) {
+        if (commands.containsKey(name)) {
+            ProofScriptCommand cmd = commands.get(name);
+            List<ProofScriptArgument<?>> seq = (List<ProofScriptArgument<?>>) cmd.getArguments();
+            return seq.stream()
+                    .map((ProofScriptArgument arg) -> arg.getName());//+ " " + arg.getType());
+        }
+        return Stream.of();
     }
 
     @Override

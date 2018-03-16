@@ -3,6 +3,10 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import com.google.common.base.Strings;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import edu.kit.iti.formal.psdbg.gui.actions.acomplete.AutoCompletionController;
+import edu.kit.iti.formal.psdbg.gui.actions.acomplete.CompletionPosition;
+import edu.kit.iti.formal.psdbg.gui.actions.acomplete.Suggestion;
+import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
@@ -10,36 +14,39 @@ import edu.kit.iti.formal.psdbg.lint.LintProblem;
 import edu.kit.iti.formal.psdbg.lint.LinterStrategy;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageLexer;
+import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -52,6 +59,9 @@ import org.fxmisc.richtext.*;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.*;
 import org.fxmisc.undo.UndoManager;
+import org.fxmisc.wellbehaved.event.EventPattern;
+import org.fxmisc.wellbehaved.event.InputMap;
+import org.fxmisc.wellbehaved.event.Nodes;
 import org.reactfx.EventStream;
 import org.reactfx.SuspendableNo;
 import org.reactfx.collection.LiveList;
@@ -67,6 +77,11 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
+
+import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
+import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
+import static org.fxmisc.wellbehaved.event.InputHandler.Result.PROCEED;
+import static org.fxmisc.wellbehaved.event.InputMap.*;
 
 /**
  * ScriptArea is the {@link CodeArea} for writing Proof Scripts.
@@ -92,30 +107,34 @@ public class ScriptArea extends BorderPane {
      * CSS classes for regions, used for "manually" highlightning. e.g. debugging marker
      */
     private final SetProperty<RegionStyle> markedRegions = new SimpleSetProperty<>(FXCollections.observableSet());
-
     /**
      * set by {@link ScriptController}
      */
     private final ObjectProperty<MainScriptIdentifier> mainScript = new SimpleObjectProperty<>();
+    public InlineToolbar inlineToolbar = new InlineToolbar();
+    /**
+     *
+     */
+    @Getter
+    @Setter
+    private AutoCompletionController autoCompletionController;
+
+    private AutoCompletion autoCompletion = new AutoCompletion();
 
     @Getter
     private CodeArea codeArea = new CodeArea();
-
     @Getter
     private VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
-
     private GutterFactory gutter;
-
     private ANTLR4LexerHighlighter highlighter;
-
     private ListProperty<LintProblem> problems = new SimpleListProperty<>(FXCollections.observableArrayList());
-
     private SimpleObjectProperty<CharacterHit> currentMouseOver = new SimpleObjectProperty<>();
-
     private ScriptAreaContextMenu contextMenu = new ScriptAreaContextMenu();
-
     private Consumer<Token> onPostMortem = token -> {
     };
+    @Getter
+    @Setter
+    private List<InlineActionSupplier> inlineActionSuppliers = new ArrayList<>();
 
     public ScriptArea() {
         init();
@@ -131,16 +150,43 @@ public class ScriptArea extends BorderPane {
 
     private void init() {
         codeArea.setAutoScrollOnDragDesired(false);
-        codeArea.setOnKeyReleased(event -> {
-            if (event.isControlDown() && event.getCode() == KeyCode.ENTER)
-                simpleReformat();
-        });
+        InputMap<KeyEvent> inputMap = sequence(
+                process(EventPattern.keyPressed(),
+                        (e) -> {
+                            if (autoCompletion.isVisible()) autoCompletion.update();
+                            inlineToolbar.hide();
+                            return PROCEED;
+                        }),
+                consumeWhen(keyPressed(KeyCode.ENTER), autoCompletion::isVisible,
+                        e -> autoCompletion.complete()),
+                consume(keyPressed(KeyCode.ENTER, SHORTCUT_DOWN),
+                        (e) -> simpleReformat()),
+                consume(keyPressed(KeyCode.H, SHORTCUT_DOWN),
+                        (e) -> inlineToolbar.show()),
+                consume(keyPressed(KeyCode.SPACE, SHORTCUT_DOWN), e -> {
+                    if (autoCompletion.isVisible()) {
+                        autoCompletion.hide();
+                    } else {
+                        autoCompletion.update();
+                        autoCompletion.show();
+                    }
+                }),
+                consumeWhen(keyPressed(KeyCode.DOWN), autoCompletion::isVisible, e -> autoCompletion.selection(+1)),
+                consumeWhen(keyPressed(KeyCode.UP), autoCompletion::isVisible, e -> autoCompletion.selection(-1)),
+                consumeWhen(keyPressed(KeyCode.PAGE_DOWN), autoCompletion::isVisible, e -> autoCompletion.selection(+3)),
+                consumeWhen(keyPressed(KeyCode.PAGE_UP), autoCompletion::isVisible, e -> autoCompletion.selection(-3)),
+                consume(keyPressed(KeyCode.ESCAPE), e -> {
+                    autoCompletion.hide();
+                    inlineToolbar.hide();
+                }));
+
+        Nodes.addInputMap(codeArea, inputMap);
+
         setCenter(scrollPane);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
 
-        scrollPane.widthProperty().addListener((a, b, c) -> {
-            codeArea.setMinSize(scrollPane.getWidth(), scrollPane.getHeight());
-        });
+        scrollPane.widthProperty().addListener((a, b, c) ->
+                codeArea.setMinSize(scrollPane.getWidth(), scrollPane.getHeight()));
 
         /*
         scrollPane.estimatedScrollYProperty().addListener(new ChangeListener<Double>() {
@@ -158,7 +204,14 @@ public class ScriptArea extends BorderPane {
         getStyleClass().add("script-area");
         installPopup();
 
-        // setOnMouseClicked(this::showContextMenu);
+        setOnMouseClicked(evt -> {
+            System.out.println("ScriptArea.init" + evt.isControlDown());
+            inlineToolbar.hide();
+            if (evt.isControlDown() && evt.getButton() == MouseButton.PRIMARY) {
+                inlineToolbar.show();
+                evt.consume();
+            }
+        });
         codeArea.setContextMenu(contextMenu);
 
         codeArea.textProperty().addListener((prop, oldValue, newValue) -> {
@@ -199,6 +252,7 @@ public class ScriptArea extends BorderPane {
 
         mainScript.addListener((observable) -> updateMainScriptMarker());
     }
+
 
     private void installPopup() {
         javafx.stage.Popup popup = new javafx.stage.Popup();
@@ -520,7 +574,6 @@ public class ScriptArea extends BorderPane {
 
     public CodePointCharStream getStream() {
         return CharStreams.fromString(getText(), getFilePath().getAbsolutePath());
-
     }
 
     public String getText() {
@@ -1408,6 +1461,7 @@ public class ScriptArea extends BorderPane {
         getCodeArea().selectRange(anchorParagraph, anchorColumn, caretPositionParagraph, caretPositionColumn);
     }
 
+
     private static class GutterView extends HBox {
         private final SimpleObjectProperty<GutterAnnotation> annotation = new SimpleObjectProperty<>();
 
@@ -1578,6 +1632,7 @@ public class ScriptArea extends BorderPane {
         public final String clazzName;
     }
 
+
     public class GutterFactory implements IntFunction<Node> {
         private final Background defaultBackground =
                 new Background(new BackgroundFill(Color.web("#ddd"), null, null));
@@ -1658,6 +1713,7 @@ public class ScriptArea extends BorderPane {
             Utils.createWithFXML(this);
         }
 
+        @FXML
         public void setMainScript(ActionEvent event) {
             LOGGER.debug("ScriptAreaContextMenu.setMainScript");
             List<ProofScript> ast = Facade.getAST(getText());
@@ -1672,6 +1728,7 @@ public class ScriptArea extends BorderPane {
                                     proofScript.getName(), ScriptArea.this)));
         }
 
+        @FXML
         public void showPostMortem(ActionEvent event) {
             LOGGER.debug("ScriptAreaContextMenu.showPostMortem " + event);
 
@@ -1694,6 +1751,185 @@ public class ScriptArea extends BorderPane {
             int pos = codeArea.getCaretPosition();
             removeExecutionMarker();
             insertExecutionMarker(pos);
+        }
+    }
+
+    public class InlineToolbar {
+        private Stage inlineToolbar;
+        private Scene scene;
+
+        public void hide() {
+            getInlineToolbar().hide();
+        }
+
+        public void show() {
+            inlineToolbar = getInlineToolbar();
+            VBox vbox = new VBox();
+            //ToolBar tb = new ToolBar();
+            HBox tb = new HBox();
+
+            List<ProofScript> ast = Facade.getAST(getText());
+            int pos = codeArea.getCaretPosition();
+            FindNearestASTNode findNearestASTNode = new FindNearestASTNode(pos);
+            Optional<ASTNode> node = findNearestASTNode.find(ast);
+
+            if (node.isPresent()) {
+                inlineActionSuppliers.stream()
+                        .flatMap(i -> i.get(node.get()).stream())
+                        .sorted()
+                        .forEach(ia -> {
+                            Button btn = new Button("", ia.getGraphics());
+                            btn.setOnAction(ia.getEventHandler());
+                            tb.getChildren().add(btn);
+                        });
+
+                vbox.getChildren().addAll(tb, new Label(node.toString()));
+                inlineToolbar.getScene().setRoot(vbox);
+                Bounds b = getCaretBounds().get();
+                inlineToolbar.setX(b.getMaxX());
+                inlineToolbar.setY(b.getMaxY());
+                inlineToolbar.show();
+            }
+        }
+
+        public Scene getScene() {
+            if (scene == null) {
+                scene = new Scene(new VBox(new Label("dummy")));
+                //scene.getStylesheets().addAll(ScriptArea.this.getScene().getStylesheets());
+            }
+            return scene;
+        }
+
+        public Stage getInlineToolbar() {
+            if (inlineToolbar == null) {
+                inlineToolbar = new Stage();
+                inlineToolbar.setScene(getScene());
+                inlineToolbar.initModality(Modality.NONE);
+                inlineToolbar.initStyle(StageStyle.TRANSPARENT);
+                inlineToolbar.initOwner(ScriptArea.this.getScene().getWindow());
+                inlineToolbar.setAlwaysOnTop(true);
+                inlineToolbar.setResizable(false);
+                inlineToolbar.setIconified(false);
+                inlineToolbar.focusedProperty().addListener((p, o, n) -> {
+                    if (o && !n)
+                        inlineToolbar.hide();
+                });
+            }
+            return inlineToolbar;
+        }
+    }
+
+    public class AutoCompletion {
+        /*private AutoCompletePopup<Suggestion> popup = new AutoCompletePopup<>();
+        private ListView<Suggestion> suggestionView;
+        private ObservableList<Suggestion> suggestions;*/
+        private int lastSelected = -1;
+        private Stage popup;
+        private ListView<Suggestion> suggestionView = new ListView<>();
+        private ObservableList<Suggestion> suggestions;
+
+        public AutoCompletion() {
+            /*popup.setAutoFix(true);
+            popup.setAutoHide(true);
+            popup.setSkin(new AutoCompletePopupSkin<>(popup));
+            suggestionView = (ListView<Suggestion>) popup.getSkin().getNode();*/
+            suggestions = suggestionView.getItems();
+            suggestionView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+            suggestionView.getSelectionModel().getSelectedIndices().addListener((InvalidationListener) observable -> {
+                System.out.println(" = " + suggestionView.getSelectionModel().getSelectedIndex());
+                //lastSelected = suggestionView.getSelectionModel().getSelectedIndex();
+            });
+            //popup.setVisibleRowCount(5);
+
+            suggestionView.setEditable(false);
+            suggestionView.setCellFactory(param -> new SuggestionCell());
+        }
+
+        public Stage getPopup() {
+            if (popup == null) {
+                popup = new Stage();
+                popup.initOwner(ScriptArea.this.getScene().getWindow());
+                popup.initStyle(StageStyle.TRANSPARENT);
+                popup.initModality(Modality.NONE);
+                Scene scene = new Scene(suggestionView);
+                scene.getStylesheets().setAll(getScene().getStylesheets());
+                popup.setScene(scene);
+            }
+            return popup;
+        }
+
+        private void handle(Event event) {
+            System.out.println("event = " + event);
+            event.consume();
+        }
+
+        public void update() {
+            popup = getPopup();
+            int end = codeArea.getCaretPosition()-1;
+            //int start = text.lastIndexOf(' ');
+            //final String searchPrefix = text.substring(start).trim();
+            //System.out.println("searchPrefix = " + searchPrefix);
+
+            CompletionPosition cp = new CompletionPosition(getText(), end);
+            System.out.println("cp.getPrefix() = " + cp.getPrefix());
+            List<Suggestion> newS = autoCompletionController.getSuggestions(cp);
+            suggestions.setAll(newS);
+
+            Bounds b = codeArea.getCaretBounds().get();
+            popup.setX(b.getMaxX());
+            popup.setY(b.getMaxY());
+            popup.setHeight(25 * Math.min(Math.max(newS.size(), 3), 10));
+
+        }
+
+        public void show() {
+            //popup.show(ScriptArea.this.getScene().getWindow());
+            popup.show();
+            codeArea.requestFocus();
+        }
+
+        public void hide() {
+            popup.hide();
+        }
+
+        public boolean isVisible() {
+            return popup != null && popup.isShowing();
+        }
+
+        public void complete() {
+            String entry = suggestions.get(lastSelected).getText();
+            codeArea.selectWord();
+            codeArea.replaceSelection(entry);
+            hide();
+            codeArea.requestFocus();
+        }
+
+        public void selection(int relline) {
+            if (lastSelected < 0) {
+                if (relline < 0) {
+                    lastSelected = suggestionView.getItems().size() - 1;
+                } else {
+                    lastSelected = 0;
+                }
+            } else {
+                lastSelected += relline;
+            }
+            suggestionView.getSelectionModel().select(lastSelected);
+            suggestionView.scrollTo(lastSelected);
+        }
+    }
+}
+
+class SuggestionCell extends ListCell<Suggestion> {
+    @Override
+    protected void updateItem(Suggestion item, boolean empty) {
+        super.updateItem(item, empty);
+        if (empty) {
+            setGraphic(null);
+            setText("");
+        } else {
+            setText(item.getText());
+            setGraphic(new MaterialDesignIconView(item.getCategory().getIcon()));
         }
     }
 }

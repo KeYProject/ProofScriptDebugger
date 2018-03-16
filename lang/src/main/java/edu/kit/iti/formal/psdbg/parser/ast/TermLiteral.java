@@ -23,12 +23,12 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  */
 
 
-
 import edu.kit.iti.formal.psdbg.parser.NotWelldefinedException;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
 import lombok.Data;
+import org.antlr.v4.runtime.Token;
 
 /**
  * @author Alexander Weigl
@@ -36,16 +36,27 @@ import lombok.Data;
  */
 @Data
 public class TermLiteral extends Literal {
-    private final String text;
+    private final String content;
 
-    public TermLiteral(String text) {
+    public TermLiteral(Token token) {
+        setToken(token);
+        String text = token.getText();
         if (text.charAt(0) == '`')
             text = text.substring(1);
         if (text.charAt(text.length() - 1) == '`') //remove last backtick
             text = text.substring(0, text.length() - 1);
         if (text.charAt(0) == '`')
             text = text.substring(0, text.length() - 2);
-        this.text = text;
+        content = text;
+    }
+
+    private TermLiteral(String sfTerm) {
+        content = sfTerm;
+    }
+
+    public static TermLiteral from(String sfTerm) {
+        TermLiteral tl = new TermLiteral(sfTerm);
+        return tl;
     }
 
     /**
@@ -67,7 +78,7 @@ public class TermLiteral extends Literal {
 
     @Override
     public TermLiteral copy() {
-        return new TermLiteral(text);
+        return new TermLiteral(getToken());
     }
 
     /**
@@ -77,5 +88,4 @@ public class TermLiteral extends Literal {
     public Type getType(Signature signature) throws NotWelldefinedException {
         return TypeFacade.ANY_TERM;
     }
-
 }

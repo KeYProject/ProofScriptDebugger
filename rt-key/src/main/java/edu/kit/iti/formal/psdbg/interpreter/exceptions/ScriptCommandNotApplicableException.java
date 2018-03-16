@@ -10,20 +10,15 @@ import java.util.Map;
  * @author grebing
  */
 public class ScriptCommandNotApplicableException extends InterpreterRuntimeException {
-
-    public ScriptCommandNotApplicableException(Exception e) {
-        super(e);
-    }
-
     public ScriptCommandNotApplicableException(Exception e, RuleCommand c) {
         System.out.println("Call " + c.getName() + " was not applicable");
     }
 
-    public ScriptCommandNotApplicableException(Exception e, RuleCommand c, Map<String, String> params) {
+    public ScriptCommandNotApplicableException(Exception e, RuleCommand c, Map<String, Object> params) {
         super(createMessage(c, params), e);
     }
 
-    private static String createMessage(RuleCommand c, Map<String, String> params) {
+    private static String createMessage(RuleCommand c, Map<String, Object> params) {
         StringBuilder sb = new StringBuilder();
         sb.append("Call " + c.getName() + " with parameters ");
         for (String s : params.keySet()) {

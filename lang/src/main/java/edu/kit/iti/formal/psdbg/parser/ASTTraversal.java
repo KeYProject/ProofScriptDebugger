@@ -26,7 +26,9 @@ package edu.kit.iti.formal.psdbg.parser;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * {@link ASTTraversal} provides a visitor with a a default traversal of the given AST.
@@ -35,6 +37,41 @@ import java.util.Map;
  * @version 1 (29.04.17)
  */
 public interface ASTTraversal<T> extends Visitor<T> {
+
+    default Stream<T> allOf(Stream<ASTNode> nodes) {
+        return nodes.map(n -> (T) n.accept(this));
+    }
+
+    default List<T> allOf(Collection<ASTNode> nodes) {
+        if (nodes.size() == 0) return Collections.emptyList();
+        return allOf(nodes.stream()).collect(Collectors.toList());
+    }
+
+    default Stream<T> allOf(ASTNode... nodes) {
+        if (nodes.length == 0) return (Stream<T>) Collections.emptyList().stream();
+        return allOf(Arrays.stream(nodes));
+    }
+
+    default T oneOf(Stream<? extends ASTNode> nodes) {
+        return (T) nodes
+                .filter(Objects::nonNull)
+                .map(n -> (T) n.accept(this))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse((T) null);
+    }
+
+    default T oneOf(ASTNode... nodes) {
+        if (nodes.length == 0) return null;
+        return oneOf(Arrays.stream(nodes));
+    }
+
+    default T oneOf(Collection<ASTNode> nodes) {
+        if (nodes.size() == 0) return null;
+        return oneOf(nodes.stream());
+    }
+
+
     @Override
     default T visit(ProofScript proofScript) {
         proofScript.getSignature().accept(this);
@@ -224,6 +261,13 @@ public interface ASTTraversal<T> extends Visitor<T> {
     @Override
     default T visit(RelaxBlock relaxBlock) {
         relaxBlock.getBody().accept(this);
+        return null;
+    }
+
+    @Override
+    default T visit(NamespaceSetExpression nss) {
+        nss.getExpression().accept(this);
+        nss.getSignature().accept(this);
         return null;
     }
 }

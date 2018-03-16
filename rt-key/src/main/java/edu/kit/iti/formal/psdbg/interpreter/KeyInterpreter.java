@@ -1,23 +1,29 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
 import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import de.uka.ilkd.key.api.VariableAssignments;
+import de.uka.ilkd.key.logic.sort.Sort;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
-import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
-import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
-import edu.kit.iti.formal.psdbg.interpreter.data.State;
-import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
+import edu.kit.iti.formal.psdbg.interpreter.data.*;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.CommandLookup;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.ClosesCase;
 import edu.kit.iti.formal.psdbg.parser.ast.Statements;
+import edu.kit.iti.formal.psdbg.parser.ast.TermLiteral;
 import edu.kit.iti.formal.psdbg.parser.ast.TryCase;
+import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
+import edu.kit.iti.formal.psdbg.parser.types.TermType;
+import edu.kit.iti.formal.psdbg.parser.types.Type;
+import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
 import lombok.Getter;
+import lombok.val;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @author Alexander Weigl
@@ -27,14 +33,16 @@ public class KeyInterpreter extends Interpreter<KeyData> {
     @Getter
     private static final BiMap<SimpleType, VariableAssignments.VarType> typeConversionBiMap =
             new ImmutableBiMap.Builder<SimpleType, VariableAssignments.VarType>()
-                    .put(SimpleType.ANY, VariableAssignments.VarType.ANY)
+      //              .put(SimpleType.ANY, VariableAssignments.VarType.ANY)
                     .put(SimpleType.BOOL, VariableAssignments.VarType.BOOL)
                     //.put(SimpleType.TERM, VariableAssignments.VarType.FORMULA) //TODO: parametrisierte Terms
                     .put(SimpleType.INT, VariableAssignments.VarType.INT)
                     .put(SimpleType.STRING, VariableAssignments.VarType.OBJECT)
-                    .put(SimpleType.INT_ARRAY, VariableAssignments.VarType.INT_ARRAY)
-                    .put(SimpleType.SEQ, VariableAssignments.VarType.SEQ)
+    //                  .put(SimpleType.INT_ARRAY, VariableAssignments.VarType.INT_ARRAY)
+//                    .put(SimpleType.SEQ, VariableAssignments.VarType.SEQ)
                     .build();
+
+
 
     public KeyInterpreter(CommandLookup lookup) {
         super(lookup);
@@ -125,5 +133,18 @@ public class KeyInterpreter extends Interpreter<KeyData> {
             exitListeners = backupExitListener;
             entryListeners = backupEntryListener;
         }
+    }
+
+    @Override
+    protected Evaluator<KeyData> createEvaluator(VariableAssignment assignments, GoalNode<KeyData> g) {
+        KeyEvaluator eval = new KeyEvaluator(assignments, g);
+        eval.setMatcher(getMatcherApi());
+        eval.setTermValueFactory(new Function<TermLiteral, Value>() {
+            @Override
+            public Value apply(TermLiteral termLiteral) {
+                return  new Value(TypeFacade.ANY_TERM, new TermValue(termLiteral.getContent()));
+            }
+        });
+        return eval;
     }
 }

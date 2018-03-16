@@ -14,6 +14,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +35,9 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
     @Getter
     private List<Visitor> entryListeners = new ArrayList<>(),
             exitListeners = new ArrayList<>();
+
+    @Getter @Setter
+    private Function<TermLiteral, Value> termValueFactory = (TermLiteral l) -> Value.from(l);
 
     public Evaluator(VariableAssignment assignment, GoalNode<T> node) {
         state = new VariableAssignment(assignment); // unmodifiable version of assignment
@@ -94,7 +98,7 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
      */
     @Override
     public Value visit(TermLiteral term) {
-        return Value.from(term);
+        return termValueFactory.apply(term);
     }
 
     @Override
@@ -162,5 +166,10 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
     @Override
     public Value visit(FunctionCall func) {
         return func.getFunction().eval(this, func);
+    }
+
+    @Override
+    public Value visit(NamespaceSetExpression nss) {
+        return null;
     }
 }

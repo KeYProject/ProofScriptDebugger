@@ -71,7 +71,7 @@ public class IntegerLiteral extends Literal {
      */
     @Override public IntegerLiteral copy() {
         IntegerLiteral il = new IntegerLiteral(value);
-        il.token = token;
+        il.setToken(getToken());
         return il;
     }
 

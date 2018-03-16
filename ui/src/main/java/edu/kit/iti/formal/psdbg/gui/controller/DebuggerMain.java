@@ -6,6 +6,7 @@ import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.api.ProofApi;
+import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.gui.MainWindow;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
@@ -33,6 +34,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -58,6 +60,7 @@ import org.apache.logging.log4j.Logger;
 import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
+import org.key_project.util.collection.ImmutableList;
 import org.reactfx.util.FxTimer;
 import org.reactfx.util.Timer;
 
@@ -199,6 +202,23 @@ public class DebuggerMain implements Initializable {
 
         marriageJavaCode();
 
+        getFacade().environmentProperty().addListener(
+                (prop, o, n) -> {
+                    scriptController.getAutoCompleter().getRuleCompleter().setEnvironment(n);
+                });
+
+        InvalidationListener invalidationListener = observable -> {
+            Proof p = getFacade().getProof();
+            KeYEnvironment env = getFacade().getEnvironment();
+            if (p == null || env == null) return;
+            ImmutableList<Goal> openGoals = p.getSubtreeGoals(p.root());
+            KeyData kd = new KeyData(openGoals.get(0), env, p);
+            scriptController.getAutoCompleter().getArgumentCompleter().setDefaultKeyData(kd);
+        };
+        getFacade().environmentProperty().addListener(invalidationListener);
+        getFacade().proofProperty().addListener(invalidationListener);
+
+
         //marriage key proof facade to proof tree
         getFacade().proofProperty().addListener(
                 (prop, o, n) -> {
@@ -335,7 +355,7 @@ public class DebuggerMain implements Initializable {
     }
 
     @FXML
-    private void undo (ActionEvent e) {
+    private void undo(ActionEvent e) {
         interactiveModeController.undo(e);
     }
 
@@ -1176,7 +1196,6 @@ public class DebuggerMain implements Initializable {
             keyWindow.setVisible(true);
         });
     }
-
 
 
     public class ContractLoaderService extends Service<List<Contract>> {

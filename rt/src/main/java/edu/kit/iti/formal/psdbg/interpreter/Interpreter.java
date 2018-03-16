@@ -181,11 +181,17 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     private Value evaluate(GoalNode<T> g, Expression expr) {
         //enterScope(expr);
-        Evaluator<T> evaluator = new Evaluator<>(g.getAssignments(), g);
-        evaluator.setMatcher(matcherApi);
+        Evaluator<T> evaluator = createEvaluator(g.getAssignments(), g);
         //exitScope(expr);
         return evaluator.eval(expr);
     }
+
+    protected  Evaluator<T> createEvaluator(VariableAssignment assignments, GoalNode<T> g) {
+        Evaluator<T> evaluator = new Evaluator<>(assignments, g);
+        evaluator.setMatcher(matcherApi);
+        return evaluator;
+    }
+
 
     /**
      * Visiting a statement list results in visiting each statement

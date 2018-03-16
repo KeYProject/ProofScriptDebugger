@@ -121,12 +121,12 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     @Override
     public Signature visitArgList(ScriptLanguageParser.ArgListContext ctx) {
         Signature signature = new Signature();
+        signature.setRuleContext(ctx);
         for (ScriptLanguageParser.VarDeclContext decl : ctx.varDecl()) {
             Variable key = new Variable(decl.name);
             key.setParent(signature);
             signature.put(key, TypeFacade.findType(decl.type.getText()));
         }
-        signature.setRuleContext(ctx);
         return signature;
     }
 
@@ -148,6 +148,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     @Override
     public Statements visitStmtList(ScriptLanguageParser.StmtListContext ctx) {
         Statements statements = new Statements();
+        statements.setRuleContext(ctx);
         for (ScriptLanguageParser.StatementContext stmt : ctx.statement()) {
             Statement<ParserRuleContext> statement = (Statement<ParserRuleContext>) stmt.accept(this);
             statement.setParent(statements);
@@ -245,6 +246,14 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override
+    public Object visitNamespaceset(ScriptLanguageParser.NamespacesetContext ctx) {
+        NamespaceSetExpression nse = new NamespaceSetExpression();
+        nse.setExpression((Expression) ctx.expression().accept(this));
+        nse.setSignature((Signature) ctx.argList().accept(this));
+        return nse;
+    }
+
+    @Override
     public Object visitExprIMP(ScriptLanguageParser.ExprIMPContext ctx) {
         return createBinaryExpression(ctx, ctx.expression(), Operator.IMPLICATION);
 
@@ -325,7 +334,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
 
     @Override
     public Object visitLiteralTerm(ScriptLanguageParser.LiteralTermContext ctx) {
-        return new TermLiteral(ctx.getText());
+        return new TermLiteral(ctx.TERM_LITERAL().getSymbol());
     }
 
     @Override

@@ -23,26 +23,51 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  */
 
 
-
-import lombok.*;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
 /**
  * @author Alexander Weigl
  */
-@Data @Value @RequiredArgsConstructor public class Position implements Copyable<Position> {
+@Data
+@Value
+@RequiredArgsConstructor
+public class Position implements Copyable<Position> {
+    private final int offset;
     private final int lineNumber;
     private final int charInLine;
 
     public Position() {
-        this(-1, -1);
+        this(-1, -1, -1);
     }
 
-    @Override public Position copy() {
-        return new Position(lineNumber, charInLine);
+    public static Position start(Token token) {
+        return new Position(
+                token.getStartIndex(),
+                token.getLine(),
+                token.getCharPositionInLine());
     }
 
-    public static Position from(Token token) {
-        return new Position(token.getLine(), token.getCharPositionInLine());
+    public static Position end(Token token) {
+        return new Position(
+                token.getStopIndex(),
+                token.getLine(),
+                token.getCharPositionInLine());
+    }
+
+    public static Position start(ParserRuleContext token) {
+        return start(token.start);
+    }
+
+    public static Position end(ParserRuleContext token) {
+        return end(token.stop);
+    }
+
+    @Override
+    public Position copy() {
+        return new Position(offset, lineNumber, charInLine);
     }
 }

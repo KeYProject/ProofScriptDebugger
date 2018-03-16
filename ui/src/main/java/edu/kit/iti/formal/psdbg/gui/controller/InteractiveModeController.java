@@ -15,6 +15,7 @@ import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.LabelFactory;
 import edu.kit.iti.formal.psdbg.RuleCommandHelper;
+import edu.kit.iti.formal.psdbg.ValueInjector;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptArea;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptController;
 import edu.kit.iti.formal.psdbg.gui.controls.Utils;
@@ -174,9 +175,9 @@ public class InteractiveModeController {
         int occ = rch.getOccurence(tap.getApp());
 
         Parameters callp = new Parameters();
-        callp.put(new Variable("formula"), new TermLiteral(sfTerm));
+        callp.put(new Variable("formula"), TermLiteral.from(sfTerm));
         callp.put(new Variable("occ"), new IntegerLiteral(BigInteger.valueOf(occ)));
-        callp.put(new Variable("on"), new TermLiteral(onTerm));
+        callp.put(new Variable("on"), TermLiteral.from(onTerm));
 
         VariableAssignment va = new VariableAssignment(null);
         CallStatement call = new CallStatement(tapName, callp);
@@ -254,11 +255,11 @@ public class InteractiveModeController {
         // KeyData kd = g.getData();
         Evaluator eval = new Evaluator(expandedNode.getAssignments(), expandedNode);
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         call.getParameters().forEach((variable, expression) -> {
 
             Value exp = eval.eval(expression);
-            map.put(variable.getIdentifier(), exp.getData().toString());
+            map.put(variable.getIdentifier(), exp.getData());
         });
 
 //        call.getParameters().forEach((k, v) -> map.put(k.getIdentifier(),));
@@ -271,8 +272,9 @@ public class InteractiveModeController {
             //System.out.println("on = " + map.get("on"));
             //System.out.println("formula = " + map.get("formula"));
             //System.out.println("occ = " + map.get("occ"));
-            RuleCommand.Parameters cc = c.evaluateArguments(estate, map); //reflection exception
-
+            ValueInjector valueInjector = ValueInjector.createDefault(kd.getNode());
+            RuleCommand.Parameters cc = new RuleCommand.Parameters();
+            cc = valueInjector.inject(c, cc, map);
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
 

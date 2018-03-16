@@ -2,3 +2,6 @@ target/
 *.iml
 .idea
 website/site/
+*/build/
+*/out/
+.gradle

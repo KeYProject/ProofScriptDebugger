@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * @author Alexander Weigl
@@ -40,6 +41,7 @@ public class ProofScriptHandler implements CommandHandler<Object> {
     public ProofScript getScript(String name) {
         return scripts.get(name);
     }
+
     /**
      * lib/test.test
      *
@@ -103,5 +105,17 @@ public class ProofScriptHandler implements CommandHandler<Object> {
 
     public void addScripts(List<ProofScript> ast) {
         ast.forEach(script -> scripts.put(script.getName(), script));
+    }
+
+    @Override
+    public Stream<String> getArguments(String name) {
+        try {
+            ProofScript ps = find(name);
+            return ps.getSignature().values().stream().map(
+                    arg -> arg.symbol() + ":" + arg.interpreterSort()
+            );
+        } catch (IOException e) {
+            return Stream.of();
+        }
     }
 }

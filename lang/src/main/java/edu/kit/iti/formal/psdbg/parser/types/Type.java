@@ -6,4 +6,5 @@ package edu.kit.iti.formal.psdbg.parser.types;
  */
 public interface Type {
     String symbol();
+    String interpreterSort();
 }

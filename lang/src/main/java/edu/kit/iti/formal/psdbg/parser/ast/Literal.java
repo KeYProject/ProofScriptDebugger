@@ -23,7 +23,6 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  */
 
 
-
 import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -38,7 +37,15 @@ import java.util.Optional;
 public abstract class Literal extends Expression<ParserRuleContext> {
     @Getter
     @Setter
-    protected Token token;
+    private Token token;
+
+    public void setToken(Token token) {
+        this.token = token;
+        if (token != null) {
+            startPosition = Position.start(token);
+            endPosition = Position.end(token);
+        }
+    }
 
     /**
      * {@inheritDoc}

@@ -46,6 +46,7 @@ assignment
     |   variable=ID (COLON type=ID)? ASSIGN expression SEMICOLON
     ;
 
+
 expression
     :
       expression MUL expression #exprMultiplication
@@ -56,6 +57,7 @@ expression
     | expression AND expression   #exprAnd
     | expression OR expression    #exprOr
     | expression IMP expression   #exprIMP
+    | expression USING LBRACKET argList RBRACKET #namespaceset
     //|   expression EQUIV expression already covered by EQ/NEQ
     | expression LBRACKET substExpressionList RBRACKET #exprSubst
     | ID LPAREN  (expression (',' expression)*)? RPAREN  #function

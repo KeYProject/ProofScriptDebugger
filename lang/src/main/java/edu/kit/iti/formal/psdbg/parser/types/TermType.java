@@ -29,4 +29,8 @@ public class TermType implements Type {
                 + ">";
     }
 
+    @Override
+    public String interpreterSort() {
+        return argTypes.get(0).interpreterSort();
+    }
 }

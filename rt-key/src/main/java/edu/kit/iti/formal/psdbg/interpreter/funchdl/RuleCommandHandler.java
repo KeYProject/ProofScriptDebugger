@@ -16,6 +16,7 @@ import de.uka.ilkd.key.proof.rulefilter.TacletFilter;
 import de.uka.ilkd.key.rule.Rule;
 import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.rule.TacletApp;
+import edu.kit.iti.formal.psdbg.ValueInjector;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -28,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,18 +51,7 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         this(new HashMap<>());
     }
 
-    @Override
-    public boolean handles(CallStatement call, KeyData data) throws IllegalArgumentException {
-        if (rules.containsKey(call.getCommand())) return true;//static/rigid rules
-        if (data != null) {
-            Goal goal = data.getGoal();
-            Set<String> rules = findTaclets(data.getProof(), goal);
-            return rules.contains(call.getCommand());
-        }
-        return false;
-    }
-
-    private Set<String> findTaclets(Proof p, Goal g) {
+    public static Set<String> findTaclets(Proof p, Goal g) {
         Services services = p.getServices();
         TacletFilter filter = new TacletFilter() {
             @Override
@@ -73,7 +62,6 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         RuleAppIndex index = g.ruleAppIndex();
         index.autoModeStopped();
         HashSet<String> set = new HashSet<>();
-        ImmutableList<TacletApp> allApps = ImmutableSLList.nil();
         for (SequentFormula sf : g.node().sequent().antecedent()) {
             ImmutableList<TacletApp> apps = index.getTacletAppAtAndBelow(filter,
                     new PosInOccurrence(sf, PosInTerm.getTopLevel(), true),
@@ -81,13 +69,28 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
             apps.forEach(t -> set.add(t.taclet().name().toString()));
         }
 
-        for (SequentFormula sf : g.node().sequent().succedent()) {
-            ImmutableList<TacletApp> apps = index.getTacletAppAtAndBelow(filter,
-                    new PosInOccurrence(sf, PosInTerm.getTopLevel(), true),
-                    services);
-            apps.forEach(t -> set.add(t.taclet().name().toString()));
+        try {
+            for (SequentFormula sf : g.node().sequent().succedent()) {
+                ImmutableList<TacletApp> apps = index.getTacletAppAtAndBelow(filter,
+                        new PosInOccurrence(sf, PosInTerm.getTopLevel(), true),
+                        services);
+                apps.forEach(t -> set.add(t.taclet().name().toString()));
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
         return set;
+    }
+
+    @Override
+    public boolean handles(CallStatement call, KeyData data) throws IllegalArgumentException {
+        if (rules.containsKey(call.getCommand())) return true;//static/rigid rules
+        if (data != null) {
+            Goal goal = data.getGoal();
+            Set<String> rules = findTaclets(data.getProof(), goal);
+            return rules.contains(call.getCommand());
+        }
+        return false;
     }
 
     @Override
@@ -103,14 +106,16 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         State<KeyData> state = interpreter.getCurrentState();
         GoalNode<KeyData> expandedNode = state.getSelectedGoalNode();
         KeyData kd = expandedNode.getData();
-        Map<String, String> map = new HashMap<>();
-        params.asMap().forEach((k, v) -> map.put(k.getIdentifier(), v.getData().toString()));
+        Map<String, Object> map = new HashMap<>();
+        params.asMap().forEach((k, v) -> map.put(k.getIdentifier(), v.getData()));
         LOGGER.info("Execute {} with {}", call, map);
         try {
             map.put("#2", call.getCommand());
             EngineState estate = new EngineState(kd.getProof());
             estate.setGoal(kd.getNode());
-            RuleCommand.Parameters cc = c.evaluateArguments(estate, map); //reflection exception
+            RuleCommand.Parameters cc = new RuleCommand.Parameters();
+            ValueInjector valueInjector = ValueInjector.createDefault(kd.getNode());
+            cc = valueInjector.inject(c, cc, map);
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
 

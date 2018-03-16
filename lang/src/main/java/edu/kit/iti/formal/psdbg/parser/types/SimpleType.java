@@ -23,27 +23,52 @@ package edu.kit.iti.formal.psdbg.parser.types;
  */
 
 
+import javax.annotation.Nullable;
+
 /**
  * Represents the possible types (including scriptVarTypes).
  * <p>
  * Created at 30.04.2017
- *
+ *     INT("\\term int"),
+ BOOL("\\term bool"),
+ ANY("\\term any"),
+ INT_ARRAY("\\term int[]"),
+ OBJECT("\\term Object"),
+ HEAP("\\term Heap"),
+ FIELD("\\term Field"),
+ LOCSET("\\term LocSet"),
+ FORMULA("\\formula"),
+ SEQ("\\term Seq");
  * @author Sarah Grebing
  */
 public enum SimpleType implements Type {
-    STRING("string"), ANY("any"),
-    PATTERN("pattern"),
-    INT("int"), BOOL("bool"), INT_ARRAY("int[]"), OBJECT("object"),
-    HEAP("heap"), FIELD("field"), LOCSET("locset"), NULL("null"), FORMULA("formula"), SEQ("Seq");
+    STRING("string", "string"),
+    //ANY("any", "any"),
+    PATTERN("pattern", null),
+    INT("int", "int"),
+    BOOL("bool", "bool"),
+    /*NULL("null", interpreterSort),
+    FORMULA("formula", interpreterSort),
+    SEQ("Seq", interpreterSort)*/;
+
 
     private final String symbol;
+    private @Nullable  final String interpreterSort;
 
-    SimpleType(String symbol) {
+    SimpleType(String symbol, @Nullable String interpreterSort) {
         this.symbol = symbol;
+        this.interpreterSort = interpreterSort;
     }
+
+
 
     @Override
     public String symbol() {
         return symbol;
+    }
+
+    @Override
+    public String interpreterSort() {
+        return interpreterSort;
     }
 }

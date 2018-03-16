@@ -3,8 +3,14 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import de.uka.ilkd.key.control.KeYEnvironment;
+import edu.kit.iti.formal.psdbg.gui.actions.acomplete.DefaultAutoCompletionController;
+import edu.kit.iti.formal.psdbg.gui.actions.inline.FindLabelInGoalList;
+import edu.kit.iti.formal.psdbg.gui.actions.inline.FindTermLiteralInSequence;
+import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
+import edu.kit.iti.formal.psdbg.gui.actions.acomplete.Suggestion;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
@@ -15,6 +21,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A controller for managing the open script files in the dock nodes.
@@ -47,10 +56,23 @@ public class ScriptController {
 
     private ASTNodeHighlighter postMortemHighlighter = new ASTNodeHighlighter(LINE_HIGHLIGHT_POSTMORTEM);
 
+    @Getter
+    @Setter
+    private List<InlineActionSupplier> actionSuppliers = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private DefaultAutoCompletionController autoCompleter = new DefaultAutoCompletionController();
 
     public ScriptController(DockPane parent) {
         this.parent = parent;
         Events.register(this);
+        addDefaultInlineActions();
+    }
+
+    private void addDefaultInlineActions() {
+        actionSuppliers.add(new FindLabelInGoalList());
+        actionSuppliers.add(new FindTermLiteralInSequence());
     }
 
     @Subscribe
@@ -62,7 +84,7 @@ public class ScriptController {
         if (ps.isPresent()) {
             int index = ps.get().getRuleContext().getStop().getStartIndex();
             logger.debug("Found main script! Insert at {}", index);
-            getMainScript().getScriptArea().insertText(index, t+"\n");
+            getMainScript().getScriptArea().insertText(index, t + "\n");
         }
     }
 
@@ -131,6 +153,8 @@ public class ScriptController {
         filePath = filePath.getAbsoluteFile();
         if (findEditor(filePath) == null) {
             ScriptArea area = new ScriptArea();
+            area.setInlineActionSuppliers(getActionSuppliers());
+            area.setAutoCompletionController(getAutoCompleter());
             area.mainScriptProperty().bindBidirectional(mainScript);
             area.setFilePath(filePath);
             DockNode dockNode = createDockNode(area);
@@ -143,8 +167,6 @@ public class ScriptController {
                 }
                 area.setText(code);
             }
-
-
             return area;
         } else {
             logger.info("File already exists. Will not load it again");
@@ -153,11 +175,11 @@ public class ScriptController {
         }
     }
 
-     /* Create new DockNode for ScriptArea Tab
-     *
-     * @param area ScriptAreaTab
-     * @return
-     */
+    /* Create new DockNode for ScriptArea Tab
+    *
+    * @param area ScriptAreaTab
+    * @return
+    */
     private DockNode createDockNode(ScriptArea area) {
         DockNode dockNode = new DockNode(area, area.getFilePath().getName(), new MaterialDesignIconView(MaterialDesignIcon.FILE_DOCUMENT));
         dockNode.closedProperty().addListener(o -> {
@@ -270,10 +292,6 @@ public class ScriptController {
         return mainScript.get();
     }
 
-    public void setMainScript(MainScriptIdentifier mainScript) {
-        this.mainScript.set(mainScript);
-    }
-
     public void setMainScript(ProofScript proofScript) {
         MainScriptIdentifier msi = new MainScriptIdentifier();
         msi.setLineNumber(proofScript.getStartPosition().getLineNumber());
@@ -283,9 +301,14 @@ public class ScriptController {
         setMainScript(msi);
     }
 
+    public void setMainScript(MainScriptIdentifier mainScript) {
+        this.mainScript.set(mainScript);
+    }
+
     public ObjectProperty<MainScriptIdentifier> mainScriptProperty() {
         return mainScript;
     }
+
 
     public class ASTNodeHighlighter {
         public final String clazzName;
@@ -337,4 +360,6 @@ public class ScriptController {
             else return new ScriptArea.RegionStyle(0, 1, "");
         }
     }
+
+
 }
