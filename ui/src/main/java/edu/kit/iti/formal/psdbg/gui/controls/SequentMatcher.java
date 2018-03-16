@@ -6,9 +6,9 @@ import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.pp.*;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
-import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
-import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
-import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.KeyMatcherFacade;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.MatchPath;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.Matchings;
 import javafx.beans.Observable;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -118,9 +118,10 @@ public class SequentMatcher extends BorderPane {
 
     public void startMatch() {
         sequentView.clearHighlight();
-
-        Matchings matchings = MatcherFacade.matches(matchpattern.getText(), getSelectedGoalNodeToShow().getData().getNode().sequent(), true,
-                services);
+        KeyMatcherFacade kmf = KeyMatcherFacade.builder().environment(getSelectedGoalNodeToShow().getData().getEnv()).sequent(getSelectedGoalNodeToShow().getData().getNode().sequent()).build();
+        Matchings matchings = kmf.matches(matchpattern.getText(), null);
+                //MatcherFacade.matches(matchpattern.getText(), getSelectedGoalNodeToShow().getData().getNode().sequent(), true,
+                //services);
 
         ObservableList<Map<String, MatchPath>> resultlist = FXCollections.observableArrayList(matchings);
 

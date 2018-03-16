@@ -9,9 +9,9 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
-import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
-import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
-import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.KeyMatcherFacade;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.MatchPath;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.Matchings;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -208,7 +208,12 @@ public class SequentView extends CodeArea {
         }
 
         if (node.get().sequent() != null) {
-            Matchings m = MatcherFacade.matches(pattern, node.get().sequent(), true, services);
+            KeyMatcherFacade kmf = KeyMatcherFacade.builder().environment(this.getKeYProofFacade().getEnvironment())
+                    .sequent(node.get().sequent()).build();
+            Matchings m = kmf.matches(pattern, null);
+
+//            Matchings m =
+                    //MatcherFacade.matches(pattern, node.get().sequent(), true, services);
             if (m.size() == 0) return false;
             Map<String, MatchPath> va = m.first();
             //System.out.println(va);//TODO remove
