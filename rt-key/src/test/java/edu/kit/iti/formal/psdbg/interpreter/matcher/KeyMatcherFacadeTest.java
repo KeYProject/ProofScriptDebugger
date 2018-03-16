@@ -42,8 +42,8 @@ public class KeyMatcherFacadeTest {
 
     @Test
     public void matchSeq() throws Exception {
+        shouldMatch("p ==>", "p ==>");
         shouldMatch("==> pred(a), q", "==> pred(?X:S), q");
-
         shouldMatch("==> p, q", "==> ?X:Formula");
         shouldMatch("==> p, q", "==> p, q");
         shouldMatch("==> p, q", "==> q, p");

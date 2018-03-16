@@ -19,7 +19,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
 
     private String randomName;
 
-    MatchPath peek;
+   // MatchPath peek;
 
     private List<Integer> currentposition = new ArrayList<>();
 
@@ -42,18 +42,11 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
 
     public Matchings matchesSequent(Sequent sequent, Sequent pattern) {
         MatchPath.MPSequent mps = MatchPathFacade.create(sequent);
-//        MatchPath.MPSequent mps = new MatchPath.MPSequent(sequent);
-
         Matchings ms = matchesSemisequent(
-                // new MatchPath.MPSemiSequent(mps, sequent.succedent(), false),
                 MatchPathFacade.createSuccedent(mps),
                 pattern.succedent());
-
-        //peek = new MatchPath.MPSemiSequent(mps, sequent.succedent(), true);
-
         Matchings ma = matchesSemisequent(
                 MatchPathFacade.createAntecedent(mps),
-//                new MatchPath.MPSemiSequent(mps, sequent.antecedent(), true),
                 pattern.antecedent());
 
         return reduceConform(ms, ma);
@@ -98,14 +91,6 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
         return ret;
     }
 
-    /*  private MatchPath.MPTerm create(MatchPath.MPSequentFormula sf) {
-          return new MatchPath.MPTerm(sf, sf.getUnit().formula(), MatchPath.SEQUENT_FORMULA_ROOT);
-      }
-
-      private MatchPath.MPSequentFormula create(MatchPath.MPSemiSequent peek, int pos) {
-          return new MatchPath.MPSequentFormula(peek, peek.getUnit().get(pos), pos);
-      }
-  */
 
     /**
      * Visit a '...'MatchPath'...' structure
@@ -116,7 +101,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
     @DispatchOn(EllipsisOp.class)
     public Matchings visitEllipsisOp(Term pattern, MatchPath subject) {
         Matchings matchings = new Matchings();
-        subTerms((MatchPath.MPTerm) peek).forEach(sub -> {
+        subTerms((MatchPath.MPTerm) subject).forEach(sub -> {
             Matchings s = visit(pattern.sub(0), sub);
             matchings.addAll(s);
         });
@@ -236,7 +221,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
         if (matchings != NO_MATCH) {
             String name = pattern.sub(0).op().name().toString();
             for (Map<String, MatchPath> a : matchings) {
-                a.put(name, peek);
+                a.put(name, subject);
             }
         }
         return matchings;
@@ -251,7 +236,8 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
         if (subject.getUnit().subs().size() != pattern.subs().size()) {
             return NO_MATCH;
         }
-
+        if(pattern.equals(subject1.getUnit()))
+            return EMPTY_MATCH;
         for (int i = 0; i < subject.getUnit().subs().size(); i++) {
             Term tt = subject.getUnit().sub(i);
             Term pt = pattern.sub(i);
@@ -268,6 +254,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
 
     //region helper
     private String getBindingName(Name name) {
+
         if (name.toString().equals("?"))
             return getRandomName();
         return name.toString();
