@@ -11,19 +11,28 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
-    static final Matchings NO_MATCH = new Matchings();
+    static  Matchings NO_MATCH;
+            //= new Matchings();
 
-    static final Matchings EMPTY_MATCH = Matchings.singleton("EMPTY_MATCH", null);
+    static  Matchings EMPTY_MATCH;
+            //= Matchings.singleton("EMPTY_MATCH", null);
 
-    static final Map<String, MatchPath> EMPTY_VARIABLE_ASSIGNMENT = EMPTY_MATCH.first();
+    static  Map<String, MatchPath> EMPTY_VARIABLE_ASSIGNMENT;
+    //= EMPTY_MATCH.first();
 
-    private String randomName;
+    Random random = new Random(42L);
 
    // MatchPath peek;
 
     private List<Integer> currentposition = new ArrayList<>();
 
     private boolean catchAll = false;
+
+    public KeyTermMatcher() {
+        NO_MATCH = new Matchings();
+        EMPTY_MATCH = Matchings.singleton("EMPTY_MATCH", null);
+        EMPTY_VARIABLE_ASSIGNMENT = EMPTY_MATCH.first();
+    }
 
     public Matchings matchesToplevel(Sequent sequent, List<Term> patternTerms) {
         MatchPath.MPSequent seq = MatchPathFacade.create(sequent);
@@ -42,12 +51,12 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
 
     public Matchings matchesSequent(Sequent sequent, Sequent pattern) {
         MatchPath.MPSequent mps = MatchPathFacade.create(sequent);
-        Matchings ms = matchesSemisequent(
-                MatchPathFacade.createSuccedent(mps),
-                pattern.succedent());
-        Matchings ma = matchesSemisequent(
-                MatchPathFacade.createAntecedent(mps),
-                pattern.antecedent());
+        Matchings ms = new Matchings();
+        Matchings ma = new Matchings();
+        MatchPath.MPSemiSequent succPath = MatchPathFacade.createSuccedent(mps);
+        ms = matchesSemisequent(succPath, pattern.succedent());
+
+        ma = matchesSemisequent(MatchPathFacade.createAntecedent(mps), pattern.antecedent());
 
         return reduceConform(ms, ma);
     }
@@ -63,9 +72,11 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
 
         Semisequent semiSeq = peek.getUnit();
         if (semiSeq.isEmpty()) {
-            return patterns.isEmpty()
-                    ? EMPTY_MATCH
-                    : NO_MATCH;
+            if(patterns.isEmpty()){
+                return Matchings.singleton("EMPTY_MATCH", null);
+            } else {
+                return new Matchings();
+            }
         }
         HashMap<Term, Map<SequentFormula, Matchings>> map = new HashMap<>();
         List<MatchPath.MPSequentFormula> sequentFormulas =
@@ -238,6 +249,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
         }
         if(pattern.equals(subject1.getUnit()))
             return EMPTY_MATCH;
+            // return Matchings.singleton(pattern.toString(), subject1);
         for (int i = 0; i < subject.getUnit().subs().size(); i++) {
             Term tt = subject.getUnit().sub(i);
             Term pt = pattern.sub(i);
@@ -253,15 +265,13 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
     }
 
     //region helper
-    private String getBindingName(Name name) {
-
-        if (name.toString().equals("?"))
-            return getRandomName();
-        return name.toString();
-    }
 
     public String getRandomName() {
-        return randomName;
+        return "??_" + getRandomNumber();
+    }
+
+    private int getRandomNumber() {
+        return Math.abs(random.nextInt());
     }
 
     private Stream<MatchPath.MPTerm> subTerms(MatchPath.MPTerm peek) {
