@@ -89,7 +89,7 @@ public class KeyMatcherFacadeTest {
         //how to deal with trying to match top-level, w.o. adding the type of the variable
         shouldMatch("f(a)=0 ==> ", "(f(a)=0) : ?Y:Formula ==>", "[{?Y=equals(f(a),Z(0(#)))}]");
         //shouldMatch("f(g(a))", "_ \\as ?Y", "[{?Y=f(g(a))}]");
-        //shouldMatch("i+i+j", "(?X + ?Y) : ?Z", "[{?X=add(i,i), ?Y=j, ?Z=add(add(i,i),j)}]");
+        shouldMatchT("i+i+j", "(?X + ?Y) : ?Z", "[{?X=add(i,i), ?Y=j, ?Z=add(add(i,i),j)}]");
 
 
         shouldMatch("==>f(g(a))= 0", "==> f((...a...):?G) = 0", "[{?G=g(a)}]");
@@ -99,13 +99,25 @@ public class KeyMatcherFacadeTest {
         shouldMatch("pred(f(a)) ==>", "pred((...a...):?Q) ==>","[{?Q=f(a)}]");
         shouldMatch("p ==>", "(p):?X:Formula ==>", "[{?X=p}]");
         shouldMatch("pred(a) ==>", "(pred(?)):?X:Formula ==>");
-        shouldMatch("==>f(f(g(a)))= 0", "==> (f((...g((...a...):?Q)...):?G)):?Y = 0", "[{?G=f(g(a)), ?Q=a, ?Y=f(f(g(a)))}]");
+        shouldMatch("==>f(f(g(a)))= 0", "==> ((f((...g((...a...):?Q)...):?G)):?R):?Y = 0", "[{?G=f(g(a)), ?Q=a, ?R=f(f(g(a))), ?Y=f(f(g(a)))}]");
 
-
-//        shouldMatch("f(f(g(a)))= 0 ==>", "f( (... g( (...a...):?Q ) ...) : ?R) : ?Y = 0 ==>",
-//                "[{EMPTY_MATCH=null, ?Q=a, ?Y=f(f(g(a))), ?R=f(g(a))}]");
     }
 
+    @Test
+    public void testQuantMatch() throws Exception {
+
+       // shouldMatchT("fint2(1,i)", "fint2(1,i)");
+
+        shouldMatch("\\exists int i, int j; fint2(j,i) ==> ", "(\\exists ?Y, ?X; ?Term) ==> ", "[{?Term=fint2(j,i), ?X=j:int, ?Y=i:int}]");
+
+//        shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists ?X _)");
+//        shouldMatchForm("\\exists int i; fint2(1,i)", "(\\exists ?X (fint2(1,?X)))");
+
+        shouldMatch("\\exists int j; fint2(j,i) ==>", "(\\exists int j; ?X)==>", "[{?X=fint2(j,i)}]");
+
+        shouldMatch("\\forall int i; \\exists int j; fint2(j,i) ==>", "(\\forall int i; (\\exists int j; fint2(i,j)))==>", "[{}]");
+
+    }
 
     @Test
     public void hasToplevelComma() throws Exception {

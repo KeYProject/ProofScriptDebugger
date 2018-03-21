@@ -130,63 +130,17 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
         if (!toMatch.op().equals(pattern.op())) {
             return NoMatch.INSTANCE;
         }
+        // Decision: Order of bounded vars
         if (toMatch.boundVars().size() != pattern.boundVars().size()) {
             return NoMatch.INSTANCE;
         }
+        Matchings mm = new MutableMatchings();
 
-        Matchings match = MutableMatchings.emptySingleton();
-
-     /*   for (int i = 0; i < pattern.boundVars().size(); i++) {
-
-            QuantifiableVariable qfPattern = pattern.boundVars().get(i);
-            QuantifiableVariable qv = toMatch.boundVars().get(i);
-
-           if (qfPattern.getType() == MatchPatternLexer.DONTCARE) {
-                //match = reduceConform(match, Matchings.singleton(qfPattern.getText(), new MatchPath.MPQuantifiableVarible(peek, qv, i)));
-                match = reduceConform(match, EmptyMatch.INSTANCE);
-                continue;
-            }
-            if (qfPattern.getType() == MatchPatternLexer.SID) {
-                TermFactory tf = new TermFactory(new HashMap<>());
-                TermBuilder tb = new TermBuilder(tf, services);
-                Term termQVariable = tb.var(qv);
-
-                match = reduceConform(match, Matchings.singleton(qfPattern.getText(),
-                        new MatchPath.MPTerm(peek, termQVariable, -i)));
-            } else {
-                if (!qv.name().toString().equals(qfPattern.getText())) {
-                    return NoMatch.INSTANCE;
-                }
-                match = reduceConform(match, EmptyMatch.INSTANCE);
-            }
-        }
-
-
-        Matchings fromTerm = accept(ctx.skope, create(peek, 0));
-        Matchings retM = reduceConform(fromTerm, match);
-        retM.forEach(stringMatchPathMap -> {
-            stringMatchPathMap.forEach((s, matchPath) -> {
-                        if (matchPath instanceof MatchPath.MPQuantifiableVariable) {
-
-                            //create term from variablename and put instead into map
-                        }
-                    }
-
-            );
-        });
-        return handleBindClause(ctx.bindClause(), peek, retM);
-
-      /*  // Decision: Order of bounded vars
-        Matchings mm = new MutableMatching();
-        if (term.getUnit().boundVars().size() != pattern.boundVars().size()) {
-            return NoMatch.INSTANCE;
-        }
-
-        Map<String, MatchPath> mPaths = new HashMap<>();
+        Match mPaths = new Match();
         mm.add(mPaths);
 
-        for (int i = 0; i < term.getUnit().boundVars().size(); i++) {
-            QuantifiableVariable bv = term.getUnit().boundVars().get(i);
+        for (int i = 0; i < toMatch.boundVars().size(); i++) {
+            QuantifiableVariable bv = toMatch.boundVars().get(i);
             QuantifiableVariable pv = pattern.boundVars().get(i);
 
             if (pv instanceof MatchIdentifierOp) {
@@ -195,16 +149,21 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
                 if (pv.name().toString().equalsIgnoreCase("?")) {
                     name = getRandomName();
                 } else {
-                    name = getBindingName(pv.name());
+                    name = pv.name().toString();
                 }
-
-                mPaths.put(name, term);
-            } else if (!pv.equals(bv)) {
+               MatchPath mp = new MatchPath.MPQuantifiableVariable(subject, bv, -i);
+                mPaths.put(name, mp);
+//                mPaths.put(name, subject);
+            } else if (!pv.name().equals(bv.name())) {
                 return NoMatch.INSTANCE;
             }
         }
-        return mm;*/
-      return null;
+
+        Term scope = toMatch.sub(0);
+        Matchings m = visit(pattern.sub(0), MatchPathFacade.create(subject, 0));
+        mm = m.reduceConform(mm);
+        return mm;
+//      return null;
 
     }
 

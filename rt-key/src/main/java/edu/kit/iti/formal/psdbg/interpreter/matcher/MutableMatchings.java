@@ -29,7 +29,12 @@ public class MutableMatchings implements Matchings {
 
     @Override
     public boolean isEmpty() {
-        return false;
+        if(!inner.isEmpty()){
+            return false;
+        } else {
+            return true;
+        }
+//        return false;
     }
 
     @Override
