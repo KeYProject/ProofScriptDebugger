@@ -3,7 +3,8 @@ package edu.kit.iti.formal.psdbg.interpreter.matcher;
 import com.google.common.collect.Sets;
 import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.logic.op.*;
-import org.antlr.v4.runtime.Token;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,39 +12,24 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
-    static  Matchings NO_MATCH;
-            //= new Matchings();
-
-    static  Matchings EMPTY_MATCH;
-            //= Matchings.singleton("EMPTY_MATCH", null);
-
-    static  Map<String, MatchPath> EMPTY_VARIABLE_ASSIGNMENT;
-    //= EMPTY_MATCH.first();
-
     Random random = new Random(42L);
 
    // MatchPath peek;
-
     private List<Integer> currentposition = new ArrayList<>();
 
-    private boolean catchAll = false;
+    @Setter @Getter private boolean catchAll = false;
 
-    public KeyTermMatcher() {
-        NO_MATCH = new Matchings();
-        EMPTY_MATCH = Matchings.singleton("EMPTY_MATCH", null);
-        EMPTY_VARIABLE_ASSIGNMENT = EMPTY_MATCH.first();
-    }
 
     public Matchings matchesToplevel(Sequent sequent, List<Term> patternTerms) {
         MatchPath.MPSequent seq = MatchPathFacade.create(sequent);
 
-        Matchings ret = new Matchings();
+        Matchings ret = new MutableMatchings();
         Matchings antecMatches = matchesSemisequent(MatchPathFacade.createAntecedent(seq), patternTerms);
         Matchings succMatches = matchesSemisequent(MatchPathFacade.createSuccedent(seq), patternTerms);
 
-        //if(!antecMatches.equals(EMPTY_MATCH))
+        //if(!antecMatches.equals(EmptyMatch.INSTANCE))
         ret.addAll(antecMatches);
-        //if(!succMatches.equals(EMPTY_MATCH))
+        //if(!succMatches.equals(EmptyMatch.INSTANCE))
         ret.addAll(succMatches);
         return ret;
     }
@@ -51,20 +37,15 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
 
     public Matchings matchesSequent(Sequent sequent, Sequent pattern) {
         MatchPath.MPSequent mps = MatchPathFacade.create(sequent);
-        Matchings ms = new Matchings();
-        Matchings ma = new Matchings();
         MatchPath.MPSemiSequent succPath = MatchPathFacade.createSuccedent(mps);
-        ms = matchesSemisequent(succPath, pattern.succedent());
-
-        ma = matchesSemisequent(MatchPathFacade.createAntecedent(mps), pattern.antecedent());
-
-        return reduceConform(ms, ma);
+        Matchings ms = matchesSemisequent(succPath, pattern.succedent());
+        Matchings ma = matchesSemisequent(MatchPathFacade.createAntecedent(mps), pattern.antecedent());
+        return ms.reduceConform(ma);
     }
 
     private Matchings matchesSemisequent(MatchPath.MPSemiSequent peek, Semisequent pattern) {
         List<Term> patterns = pattern.asList().stream().map(SequentFormula::formula).collect(Collectors.toList());
         return matchesSemisequent(peek, patterns);
-
     }
 
 
@@ -73,9 +54,10 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
         Semisequent semiSeq = peek.getUnit();
         if (semiSeq.isEmpty()) {
             if(patterns.isEmpty()){
-                return Matchings.singleton("EMPTY_MATCH", null);
+                return MutableMatchings.emptySingleton();
             } else {
-                return new Matchings();
+                return NoMatch.INSTANCE;
+                //return new MutableMatchings();
             }
         }
         HashMap<Term, Map<SequentFormula, Matchings>> map = new HashMap<>();
@@ -89,15 +71,15 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
             map.put(subPatternTerm, new HashMap<>());
             for (MatchPath.MPSequentFormula sf : sequentFormulas) {
                 Matchings temp = visit(subPatternTerm, MatchPathFacade.create(sf));
-                if (!temp.equals(NO_MATCH))
+                if (!temp.isNoMatch())
                     map.get(subPatternTerm).put(sf.getUnit(), temp);
             }
         }
 
         List<Matchings> matchings = new ArrayList<>();
         reduceDisjoint(map, patterns, matchings);
-        Matchings ret = new Matchings();
-        //.filter(x -> !x.equals(EMPTY_MATCH))
+        Matchings ret = new MutableMatchings();
+        //.filter(x -> !x.equals(EmptyMatch.INSTANCE))
         matchings.forEach(ret::addAll);
         return ret;
     }
@@ -111,7 +93,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
      */
     @DispatchOn(EllipsisOp.class)
     public Matchings visitEllipsisOp(Term pattern, MatchPath subject) {
-        Matchings matchings = new Matchings();
+        Matchings matchings = new MutableMatchings();
         subTerms((MatchPath.MPTerm) subject).forEach(sub -> {
             Matchings s = visit(pattern.sub(0), sub);
             matchings.addAll(s);
@@ -133,10 +115,10 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
             if (name.equalsIgnoreCase("?")) {
                 name = getRandomName();
             }
-            Matchings mSingleton = Matchings.singleton(name, subject);
+            Matchings mSingleton = MutableMatchings.singleton(name, subject);
             return mSingleton;
         } else {
-            return NO_MATCH;
+            return NoMatch.INSTANCE;
         }
 
     }
@@ -146,13 +128,13 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
     public Matchings visitQuantifier(Term pattern, MatchPath subject) {
         Term toMatch = (Term) subject.getUnit();
         if (!toMatch.op().equals(pattern.op())) {
-            return NO_MATCH;
+            return NoMatch.INSTANCE;
         }
         if (toMatch.boundVars().size() != pattern.boundVars().size()) {
-            return NO_MATCH;
+            return NoMatch.INSTANCE;
         }
 
-        Matchings match = EMPTY_MATCH;
+        Matchings match = MutableMatchings.emptySingleton();
 
      /*   for (int i = 0; i < pattern.boundVars().size(); i++) {
 
@@ -161,7 +143,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
 
            if (qfPattern.getType() == MatchPatternLexer.DONTCARE) {
                 //match = reduceConform(match, Matchings.singleton(qfPattern.getText(), new MatchPath.MPQuantifiableVarible(peek, qv, i)));
-                match = reduceConform(match, EMPTY_MATCH);
+                match = reduceConform(match, EmptyMatch.INSTANCE);
                 continue;
             }
             if (qfPattern.getType() == MatchPatternLexer.SID) {
@@ -173,9 +155,9 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
                         new MatchPath.MPTerm(peek, termQVariable, -i)));
             } else {
                 if (!qv.name().toString().equals(qfPattern.getText())) {
-                    return NO_MATCH;
+                    return NoMatch.INSTANCE;
                 }
-                match = reduceConform(match, EMPTY_MATCH);
+                match = reduceConform(match, EmptyMatch.INSTANCE);
             }
         }
 
@@ -195,9 +177,9 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
         return handleBindClause(ctx.bindClause(), peek, retM);
 
       /*  // Decision: Order of bounded vars
-        Matchings mm = new Matchings();
+        Matchings mm = new MutableMatching();
         if (term.getUnit().boundVars().size() != pattern.boundVars().size()) {
-            return NO_MATCH;
+            return NoMatch.INSTANCE;
         }
 
         Map<String, MatchPath> mPaths = new HashMap<>();
@@ -218,7 +200,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
 
                 mPaths.put(name, term);
             } else if (!pv.equals(bv)) {
-                return NO_MATCH;
+                return NoMatch.INSTANCE;
             }
         }
         return mm;*/
@@ -229,9 +211,9 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
     @DispatchOn(MatchBinderOp.class)
     public Matchings visitMatchBinderOp(Term pattern, MatchPath subject) {
         Matchings matchings = visit(pattern.sub(1), subject);
-        if (matchings != NO_MATCH) {
+        if (matchings != NoMatch.INSTANCE) {
             String name = pattern.sub(0).op().name().toString();
-            for (Map<String, MatchPath> a : matchings) {
+            for (Match a : matchings.getMatchings()) {
                 a.put(name, subject);
             }
         }
@@ -242,24 +224,29 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
 
     @Override
     protected Matchings defaultVisit(Term pattern, MatchPath subject1) {
-        Matchings m = new Matchings();
+        Matchings m = MutableMatchings.emptySingleton();
+        //Matchings m = new MutableMatchings();
         MatchPath<Term, Object> subject = (MatchPath<Term, Object>) subject1;
         if (subject.getUnit().subs().size() != pattern.subs().size()) {
-            return NO_MATCH;
+            return NoMatch.INSTANCE;
         }
-        if(pattern.equals(subject1.getUnit()))
-            return EMPTY_MATCH;
+      //  if(pattern.equals(subject1.getUnit()))
+      //      return EmptyMatch.INSTANCE;
             // return Matchings.singleton(pattern.toString(), subject1);
-        for (int i = 0; i < subject.getUnit().subs().size(); i++) {
-            Term tt = subject.getUnit().sub(i);
-            Term pt = pattern.sub(i);
-            Matchings msub = visit(pt, MatchPathFacade.create(subject, i));
+       if(pattern.op().equals(((Term) subject1.getUnit()).op())) {
+           for (int i = 0; i < subject.getUnit().subs().size(); i++) {
+               Term tt = subject.getUnit().sub(i);
+               Term pt = pattern.sub(i);
+               Matchings msub = visit(pt, MatchPathFacade.create(subject, i));
 
-            if (msub.equals(NO_MATCH)) {
-                return NO_MATCH;
-            }
-            m = reduceConform(m, msub);
-        }
+               if (msub.equals(NoMatch.INSTANCE)) {
+                   return NoMatch.INSTANCE;
+               }
+               m = m.reduceConform(msub);
+           }
+       } else {
+            return NoMatch.INSTANCE;
+       }
 
         return m;
     }
@@ -291,62 +278,6 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
     //region Reductions
 
 
-    /**
-     * Reduce the matchings by eliminating non-compatible matchings.
-     * For example:
-     * m1: <X, f(y)>, <Y,g> and m2: <X, g> <Y, f(x)>
-     *
-     * @param m1
-     * @param m2
-     * @return
-     */
-    protected static Matchings reduceConform(Matchings m1, Matchings m2) {
-        //shortcuts
-        if (m1 == NO_MATCH || m2 == NO_MATCH) return NO_MATCH;
-        if (m1 == EMPTY_MATCH || m1.size()==0) return m2;
-        if (m2 == EMPTY_MATCH || m2.size()==0) return m1;
-
-        Matchings m3 = new Matchings();
-        boolean oneMatch = false;
-        for (Map<String, MatchPath> h1 : m1) {
-            for (Map<String, MatchPath> h2 : m2) {
-                Map<String, MatchPath> h3 = reduceConform(h1, h2);
-                if (h3 != null) {
-                    //m3.add(h3);
-                    if (!m3.contains(h3)) m3.add(h3);
-                    oneMatch = true;
-                }
-            }
-        }
-        return oneMatch ? m3 : NO_MATCH;
-    }
-
-
-    private static HashMap<String, MatchPath> reduceConform(Map<String, MatchPath> h1, Map<String, MatchPath> h2) {
-        HashMap<String, MatchPath> listOfElementsofH1 = new HashMap<>(h1);
-
-        for (String s1 : listOfElementsofH1.keySet()) {
-
-            if (!s1.equals("EMPTY_MATCH") && h2.containsKey(s1)) {
-                if (h2.get(s1) instanceof MatchPath.MPQuantifiableVariable &&
-                        !((QuantifiableVariable) h2.get(s1).getUnit()).name().toString().equals(h1.get(s1).toString())) {
-                    return null;
-                }
-                if (h1.get(s1) instanceof MatchPath.MPQuantifiableVariable &&
-                        !((QuantifiableVariable) h1.get(s1).getUnit()).name().toString().equals(h2.get(s1).toString())) {
-                    return null;
-                }
-
-                if (!h2.get(s1).equals(h1.get(s1))) {
-                    return null;
-                }
-
-            }
-        }
-        listOfElementsofH1.putAll(h2);
-        return listOfElementsofH1;
-    }
-
 
     /* @param map
      * @param patterns
@@ -355,7 +286,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
     private void reduceDisjoint(HashMap<Term, Map<SequentFormula, Matchings>> map,
                                 List<Term> patterns,
                                 List<Matchings> matchings) {
-        reduceDisjoint(map, patterns, matchings, 0, EMPTY_MATCH, new HashSet<>());
+        reduceDisjoint(map, patterns, matchings, 0, MutableMatchings.emptySingleton(), new HashSet<>());
     }
 
     /**
@@ -389,7 +320,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
             // the matchings for current pattern against the toplevel
             Matchings m = map.get(currentPattern).get(formula);
             //join them with the current Matchings
-            Matchings mm = reduceConform(m, ret);
+            Matchings mm = m.reduceConform(ret);
             chosenSequentFormulas.add(formula); // adding the formula, so other matchings can not choose it
 
             // recursion: choose the next matchings for the next pattern

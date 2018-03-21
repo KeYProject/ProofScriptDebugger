@@ -178,7 +178,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
             LOGGER.debug("currentState has no match= " + currentState.getData().getNode().sequent());
             return Collections.emptyList();
         } else {
-            Map<String, MatchPath> firstMatch = m.first();
+            Match firstMatch = m.getMatchings().iterator().next() ;
             VariableAssignment va = new VariableAssignment(null);
             for (String s : firstMatch.keySet()) {
                 MatchPath matchPath = firstMatch.get(s);

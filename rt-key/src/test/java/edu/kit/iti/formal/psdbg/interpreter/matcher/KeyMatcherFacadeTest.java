@@ -47,12 +47,11 @@ public class KeyMatcherFacadeTest {
      */
     @Test
     public void matchTerms() throws Exception {
-        shouldMatchT("f(a)", "?");
-        shouldMatchT("f(a)", "f(a)");
+        System.out.println(shouldMatchT("f(a)", "?"));
+        System.out.println(shouldMatchT("f(a)", "f(a)"));
 
         shouldMatchT("f(a)", "?X", "[{?X=f(a)}]");
         shouldMatchT("h(a,a)", "h(?X,?X)", "[{?X=a}]");
-        shouldMatchT("h(a,b)", "h(?X,?X)", "[]");
 
     }
 
@@ -61,19 +60,22 @@ public class KeyMatcherFacadeTest {
     public void matchSeq() throws Exception {
        //atm missing is catching the toplevel formula
         //shouldMatch("==> pred(a)", "==> pred(?)", "[]");
+        shouldMatch("2 >= 1, h2(1,2) = h2(2,3), h2(2,3) = 0 ==> p, !p", "?X=0 ==>", "[{?X=h2(Z(2(#)),Z(3(#)))}]");
 
 
-        shouldMatch("h2(2,2) = 0 ==>p, !p", "?X=0 ==>", "[{EMPTY_MATCH=null, ?X=h2(Z(2(#)),Z(2(#)))}]");
-        shouldMatch("2 >= 1, h2(1,2) = h2(2,3), h2(2,3) = 0 ==> p, !p", "?X=0 ==>", "[{EMPTY_MATCH=null, ?X=Z(2(#))}, {EMPTY_MATCH=null, ?X=h2(Z(2(#)),Z(3(#)))}]");
+        shouldMatch("h2(2,2) = 0 ==>p, !p", "?X=0 ==>", "[{?X=h2(Z(2(#)),Z(2(#)))}]");
 
-        shouldMatch("p ==>", "p ==>", "[{EMPTY_MATCH=null}]");
+
+        shouldMatch("p ==>", "p ==>", "[{}]");
         shouldMatch("==> pred(a), q", "==> pred(?X:S), q", "[{?X=a}]");
         shouldMatch("==> p, q", "==> ?X:Formula", "[{?X=p}, {?X=q}]");
-        shouldMatch("==> p, q", "==> p, q","[{EMPTY_MATCH=null}]");
-        shouldMatch("==> p, q", "==> q, p", "[{EMPTY_MATCH=null}]");
+        shouldMatch("==> p, q", "==> p, q","[{}]");
+        shouldMatch("==> p, q", "==> q, p", "[{}]");
         shouldMatch("==> pred(a), q", "==> pred(?X)", "[{?X=a}]");
         shouldMatch("h2(2,2) = 0 ==>", "?X=0 ==>", "[{?X=h2(Z(2(#)),Z(2(#)))}]");
-        shouldMatch("==>f(g(a))= 0", "==> f(...a...) = 0", "[{EMPTY_MATCH=null}]");
+        shouldMatch("==>f(g(a))= 0", "==> f(...a...) = 0", "[{}]");
+
+
     }
 
     @Test
@@ -84,20 +86,20 @@ public class KeyMatcherFacadeTest {
 
     @Test
     public void testBindContext() throws Exception {
-        //shouldMatch("f(a)", "f(a) : ?Y", "[{?Y=f(a)}]");
+        //how to deal with trying to match top-level, w.o. adding the type of the variable
+        shouldMatch("f(a)=0 ==> ", "(f(a)=0) : ?Y:Formula ==>", "[{?Y=equals(f(a),Z(0(#)))}]");
         //shouldMatch("f(g(a))", "_ \\as ?Y", "[{?Y=f(g(a))}]");
         //shouldMatch("i+i+j", "(?X + ?Y) : ?Z", "[{?X=add(i,i), ?Y=j, ?Z=add(add(i,i),j)}]");
 
 
-        shouldMatch("==>f(g(a))= 0", "==> f((...a...):?G) = 0", "[{?G=g(a), EMPTY_MATCH=null}]");
-        shouldMatch("==>f(f(g(a)))= 0", "==> f((...a...):?G) = 0", "[{?G=f(g(a)), EMPTY_MATCH=null}]");
-        shouldMatch("==>f(f(g(a)))= 0", "==> f((...g(...a...)...):?G) = 0", "[{?G=f(g(a)), EMPTY_MATCH=null}]");
-        shouldMatch("==>f(f(g(a)))= 0", "==> f((...g((...a...):?Q)...):?G) = 0", "[{?G=f(g(a)), EMPTY_MATCH=null, ?Q=a}]");
-        shouldMatch("pred(f(a)) ==>", "pred((...a...):?Q) ==>","[{EMPTY_MATCH=null, ?Q=f(a)}]");
-        shouldMatch("p ==>", "(p):?X:Formula ==>", "[{EMPTY_MATCH=null, ?X=p}]");
+        shouldMatch("==>f(g(a))= 0", "==> f((...a...):?G) = 0", "[{?G=g(a)}]");
+        shouldMatch("==>f(f(g(a)))= 0", "==> f((...a...):?G) = 0", "[{?G=f(g(a))}]");
+        shouldMatch("==>f(f(g(a)))= 0", "==> f((...g(...a...)...):?G) = 0", "[{?G=f(g(a))}]");
+        shouldMatch("==>f(f(g(a)))= 0", "==> f((...g((...a...):?Q)...):?G) = 0", "[{?G=f(g(a)), ?Q=a}]");
+        shouldMatch("pred(f(a)) ==>", "pred((...a...):?Q) ==>","[{?Q=f(a)}]");
+        shouldMatch("p ==>", "(p):?X:Formula ==>", "[{?X=p}]");
         shouldMatch("pred(a) ==>", "(pred(?)):?X:Formula ==>");
-
-        shouldMatch("==>f(f(g(a)))= 0", "==> (f((...g((...a...):?Q)...):?G)):?Y = 0", "[{?G=f(g(a)), EMPTY_MATCH=null, ?Q=a, ?Y=f(f(g(a)))}]");
+        shouldMatch("==>f(f(g(a)))= 0", "==> (f((...g((...a...):?Q)...):?G)):?Y = 0", "[{?G=f(g(a)), ?Q=a, ?Y=f(f(g(a)))}]");
 
 
 //        shouldMatch("f(f(g(a)))= 0 ==>", "f( (... g( (...a...):?Q ) ...) : ?R) : ?Y = 0 ==>",
@@ -115,7 +117,7 @@ public class KeyMatcherFacadeTest {
     //region: helper
 
     private void shouldNotMatch(String s, String s1) throws Exception{
-        Assert.assertTrue(shouldMatch(s, s1).size()==0);
+        Assert.assertTrue(shouldMatch(s, s1).getMatchings().size()==0);
     }
 
     private void shouldMatch(String keysequent, String pattern, String exp) throws Exception {
