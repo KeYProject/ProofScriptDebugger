@@ -226,6 +226,13 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         cleaned = cleaned.replaceAll("\\[", "\\\\[");
         cleaned = cleaned.replaceAll("\\]", "\\\\]");
 
+        cleaned = cleaned.replaceAll("\\{", "\\\\{");
+        cleaned = cleaned.replaceAll("\\}", "\\\\}");
+
+
+
+
+
 
         return cleaned;
     }
