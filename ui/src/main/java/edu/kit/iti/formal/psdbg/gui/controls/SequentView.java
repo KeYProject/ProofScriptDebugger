@@ -10,6 +10,7 @@ import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.matcher.KeyMatcherFacade;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.Match;
 import edu.kit.iti.formal.psdbg.interpreter.matcher.MatchPath;
 import edu.kit.iti.formal.psdbg.interpreter.matcher.Matchings;
 import javafx.beans.Observable;
@@ -26,7 +27,6 @@ import org.key_project.util.collection.ImmutableSLList;
 
 import java.io.StringWriter;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * @author Alexander Weigl
@@ -136,7 +136,6 @@ public class SequentView extends CodeArea {
         filter.setSequent(sequent);
 
 
-
         ProgramPrinter prgPrinter = new ProgramPrinter(new StringWriter());
         this.backend = new LogicPrinter.PosTableStringBackend(80);
         //unicode makes prettier syntax but is bad for matching
@@ -213,9 +212,9 @@ public class SequentView extends CodeArea {
             Matchings m = kmf.matches(pattern, null);
 
 //            Matchings m =
-                    //MatcherFacade.matches(pattern, node.get().sequent(), true, services);
-            if (m.size() == 0) return false;
-            Map<String, MatchPath> va = m.first();
+            //MatcherFacade.matches(pattern, node.get().sequent(), true, services);
+            if (m.isEmpty() || m.isNoMatch()) return false;
+            Match va = m.getMatchings().iterator().next();
             //System.out.println(va);//TODO remove
             for (MatchPath mp : va.values()) {
                 System.out.println(mp.pio());

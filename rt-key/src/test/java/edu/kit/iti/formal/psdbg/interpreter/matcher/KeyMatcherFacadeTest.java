@@ -106,7 +106,7 @@ public class KeyMatcherFacadeTest {
     @Test
     public void testQuantMatch() throws Exception {
 
-       // shouldMatchT("fint2(1,i)", "fint2(1,i)");
+        shouldMatchT("fint2(1,i)", "fint2(1,i)");
 
         shouldMatch("\\exists int i, int j; fint2(j,i) ==> ", "(\\exists ?Y, ?X; ?Term) ==> ", "[{?Term=fint2(j,i), ?X=j:int, ?Y=i:int}]");
 

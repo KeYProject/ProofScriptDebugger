@@ -7,6 +7,7 @@ import de.uka.ilkd.key.pp.*;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.matcher.KeyMatcherFacade;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.Match;
 import edu.kit.iti.formal.psdbg.interpreter.matcher.MatchPath;
 import edu.kit.iti.formal.psdbg.interpreter.matcher.Matchings;
 import javafx.beans.Observable;
@@ -47,7 +48,7 @@ public class SequentMatcher extends BorderPane {
     @FXML
     private TextArea matchpattern;
     @FXML
-    private ListView<Map<String, MatchPath>> matchingsView;
+    private ListView<Match> matchingsView;
     @FXML
     private Label nomatchings; //only shown when no matchings found, else always hidden
     private Map<PosInOccurrence, Range> cursorPosition = new HashMap<>();
@@ -120,10 +121,10 @@ public class SequentMatcher extends BorderPane {
         sequentView.clearHighlight();
         KeyMatcherFacade kmf = KeyMatcherFacade.builder().environment(getSelectedGoalNodeToShow().getData().getEnv()).sequent(getSelectedGoalNodeToShow().getData().getNode().sequent()).build();
         Matchings matchings = kmf.matches(matchpattern.getText(), null);
-                //MatcherFacade.matches(matchpattern.getText(), getSelectedGoalNodeToShow().getData().getNode().sequent(), true,
-                //services);
+        //MatcherFacade.matches(matchpattern.getText(), getSelectedGoalNodeToShow().getData().getNode().sequent(), true,
+        //services);
 
-        ObservableList<Map<String, MatchPath>> resultlist = FXCollections.observableArrayList(matchings);
+        ObservableList<Match> resultlist = FXCollections.observableArrayList(matchings.getMatchings());
 
         //If no matchings found, addCell "No matchings found"
         if (resultlist.isEmpty()) {
@@ -132,17 +133,17 @@ public class SequentMatcher extends BorderPane {
         } else {
             nomatchings.setVisible(false);
             matchingsView.setItems(resultlist);
-            matchingsView.setCellFactory(param -> new ListCell<Map<String, MatchPath>>() {
+            matchingsView.setCellFactory(param -> new ListCell<Match>() {
 
                 //needed to hide position information of match paths
                 @Override
-                protected void updateItem(Map<String, MatchPath> item, boolean empty) {
+                protected void updateItem(Match item, boolean empty) {
                     super.updateItem(item, empty);
 
                     if (empty || item == null) {
                         setText(null);
                     } else {
-                        setText("Match " + (resultlist.indexOf(item) +1)
+                        setText("Match " + (resultlist.indexOf(item) + 1)
                                 + ": " + matchingsToString(item));
                     }
                 }
@@ -156,6 +157,7 @@ public class SequentMatcher extends BorderPane {
 
     /**
      * Removes position information of the MatchPath
+     *
      * @param match
      * @return string without position information
      */
@@ -209,11 +211,11 @@ public class SequentMatcher extends BorderPane {
         return selectedGoalNodeToShow;
     }
 
-    public ListView<Map<String, MatchPath>> getMatchingsView() {
+    public ListView<Match> getMatchingsView() {
         return matchingsView;
     }
 
-    public void setMatchingsView(ListView<Map<String, MatchPath>> matchingsView) {
+    public void setMatchingsView(ListView<Match> matchingsView) {
         this.matchingsView = matchingsView;
     }
 
