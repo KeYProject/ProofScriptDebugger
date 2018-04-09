@@ -73,7 +73,7 @@ public class MutableMatchings implements Matchings {
     @Override
     public Matchings reduceConform(Matchings other) {
         //shortcuts
-        if(other.isNoMatch()) return other.reduceConform(this);
+        if(other.isNoMatch()) return NoMatch.INSTANCE;
         if(other.isEmpty()) return other.reduceConform(this);
         if(this.inner.size() == 0) return other;
         MutableMatchings mother = (MutableMatchings) other;

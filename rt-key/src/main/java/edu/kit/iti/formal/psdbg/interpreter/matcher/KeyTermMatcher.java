@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -18,6 +19,8 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
     private List<Integer> currentposition = new ArrayList<>();
 
     @Setter @Getter private boolean catchAll = false;
+    @Setter
+    java.util.function.BiFunction<QuantifiableVariable, Term, Term> parseQuantVar;
 
 
     public Matchings matchesToplevel(Sequent sequent, List<Term> patternTerms) {
@@ -52,6 +55,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
     private Matchings matchesSemisequent(MatchPath.MPSemiSequent peek, List<Term> patterns) {
 
         Semisequent semiSeq = peek.getUnit();
+
         if (semiSeq.isEmpty()) {
             if(patterns.isEmpty()){
                 return MutableMatchings.emptySingleton();
@@ -78,6 +82,10 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
 
         List<Matchings> matchings = new ArrayList<>();
         reduceDisjoint(map, patterns, matchings);
+
+        if (map.values().stream().allMatch(Map::isEmpty))
+            return NoMatch.INSTANCE;
+
         Matchings ret = new MutableMatchings();
         //.filter(x -> !x.equals(EmptyMatch.INSTANCE))
         matchings.forEach(ret::addAll);
@@ -151,7 +159,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
                 } else {
                     name = pv.name().toString();
                 }
-               MatchPath mp = new MatchPath.MPQuantifiableVariable(subject, bv, -i);
+                MatchPath mp = new MatchPath.MPQuantifiableVariable(subject, bv, -i);
                 mPaths.put(name, mp);
 //                mPaths.put(name, subject);
             } else if (!pv.name().equals(bv.name())) {
