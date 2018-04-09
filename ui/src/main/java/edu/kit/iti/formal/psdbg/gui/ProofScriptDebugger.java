@@ -52,7 +52,7 @@ public class ProofScriptDebugger extends Application {
                     getClass().getResource("debugger-ui.css").toExternalForm(),
                     DockNode.class.getResource("default.css").toExternalForm()
             );
-            System.out.println(getClass().getResource("debugger-ui.css").toExternalForm());
+            logger.info("Loading CSS class " + getClass().getResource("debugger-ui.css").toExternalForm());
 
             primaryStage.setTitle(NAME + " (" + VERSION + ") with KeY:" + KEY_VERSION);
             primaryStage.setScene(scene);
