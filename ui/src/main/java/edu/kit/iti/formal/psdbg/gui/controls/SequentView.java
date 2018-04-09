@@ -217,7 +217,7 @@ public class SequentView extends CodeArea {
             Match va = m.getMatchings().iterator().next();
             //System.out.println(va);//TODO remove
             for (MatchPath mp : va.values()) {
-                System.out.println(mp.pio());
+                System.out.println("SequentView"+ mp.pio());
                 highlightTerm(mp.pio());
             }
         }

@@ -280,7 +280,7 @@ public class ScriptArea extends BorderPane {
             LOGGER.debug("ScriptArea.updateMainScriptMarker");
 
             if (ms != null && filePath.get().getAbsolutePath().equals(ms.getSourceName())) {
-                System.out.println(ms);
+                LOGGER.debug("ScriptArea.updateIdentifier"+ ms);
                 CharStream stream = CharStreams.fromString(codeArea.getText(), filePath.get().getAbsolutePath());
                 Optional<ProofScript> ps = ms.find(Facade.getAST(stream));
 

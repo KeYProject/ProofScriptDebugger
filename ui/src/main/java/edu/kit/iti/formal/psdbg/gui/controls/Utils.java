@@ -256,9 +256,9 @@ public class Utils {
         alert.setTitle("Proof Closed");
         alert.setHeaderText("The proof is closed");
         alert.setContentText("The proof using " + scriptName + " is closed");
-        alert.setWidth(400);
+        alert.setWidth(500);
         alert.setHeight(400);
-
+        alert.setResizable(true);
         /*StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         ex.printStackTrace(pw);
@@ -318,7 +318,7 @@ public class Utils {
     public static void intoClipboard(String s) {
         Map<DataFormat, Object> map = Collections.singletonMap(DataFormat.PLAIN_TEXT, s);
         Clipboard.getSystemClipboard().setContent(map);
-        System.err.println(s);
+        logger.info("Clipboard "+s);
     }
 
     /**
