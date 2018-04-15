@@ -1,3 +1,3 @@
 # PSDBG -- Proof Script Debugger 
 
-![logo](share/logo.svg)
+![logo](share/logo.png)
