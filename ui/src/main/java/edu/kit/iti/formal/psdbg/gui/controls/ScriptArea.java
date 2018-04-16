@@ -130,7 +130,8 @@ public class ScriptArea extends BorderPane {
     private ListProperty<LintProblem> problems = new SimpleListProperty<>(FXCollections.observableArrayList());
     private SimpleObjectProperty<CharacterHit> currentMouseOver = new SimpleObjectProperty<>();
     private ScriptAreaContextMenu contextMenu = new ScriptAreaContextMenu();
-    private Consumer<Token> onPostMortem = token -> {
+    private Consumer<Token> onPostMortem = token -> { 
+
     };
     @Getter
     @Setter

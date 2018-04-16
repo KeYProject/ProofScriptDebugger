@@ -36,6 +36,8 @@ import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -132,6 +134,7 @@ public class DebuggerMain implements Initializable {
     @FXML
     private Button interactive_undo;
 
+
     private JavaArea javaArea = new JavaArea();
     private DockNode javaAreaDock = new DockNode(javaArea, "Java Source",
             new MaterialDesignIconView(MaterialDesignIcon.CODEPEN)
@@ -191,7 +194,7 @@ public class DebuggerMain implements Initializable {
 
     private void init() {
         Events.register(this);
-        model.setDebugMode(false);
+       // model.setDebugMode(false);
         scriptController = new ScriptController(dockStation);
         interactiveModeController = new InteractiveModeController(scriptController);
         btnInteractiveMode.setSelected(false);
@@ -278,6 +281,36 @@ public class DebuggerMain implements Initializable {
                 proofTreeDock,
                 DockPos.LEFT);
 
+
+        //if threadstate finished, stepping should still be possible
+        BooleanBinding disableStepping = FACADE.loadingProperty().
+                or(FACADE.proofProperty().isNull()).
+                or(model.interpreterStateProperty().isNotEqualTo(InterpreterThreadState.WAIT));
+
+      /*  model.statePointerProperty().addListener((observable, oldValue, newValue) -> {
+
+            //set all steppings -> remove binding
+            if(newValue.getStepInvOver() != null)
+                model.setStepReturnPossible(true);
+            if(newValue.getStepOver() != null)
+                model.setStepOverPossible(true);
+
+            if(newValue.getStepInvInto() != null)
+                model.setStepBackPossible(true);
+
+            if(newValue.getStepInto() != null)
+                model.setStepIntoPossible(true);
+
+        });*/
+
+        model.stepBackPossibleProperty().bind(disableStepping);
+        model.stepIntoPossibleProperty().bind(disableStepping);
+        model.stepOverPossibleProperty().bind(disableStepping);
+        model.stepReturnPossibleProperty().bind(disableStepping);
+
+
+        model.executeNotPossibleProperty().bind(FACADE.loadingProperty().or(FACADE.proofProperty().isNull()));
+
         statusBar.interpreterStatusModelProperty().bind(model.interpreterStateProperty());
         renewThreadStateTimer();
     }
@@ -320,6 +353,9 @@ public class DebuggerMain implements Initializable {
 
     }
 
+    /**
+     * Connect the Javacode area with the model and the rest of the GUI
+     */
     private void marriageJavaCode() {
         //Listener on chosenContract from
         model.chosenContractProperty().addListener(o -> {
@@ -428,7 +464,7 @@ public class DebuggerMain implements Initializable {
         assert model.getDebuggerFramework() == null : "There should not be any interpreter running.";
 
         if (FACADE.getProofState() == KeYProofFacade.ProofState.EMPTY) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "No proof loaded!", ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "No proof loaded is loaded yet. If proof loading was onvoked, please wait. Loading may take a while.", ButtonType.OK);
             alert.showAndWait();
             return;
         }
@@ -711,10 +747,13 @@ public class DebuggerMain implements Initializable {
         if (keyFile != null) {
             model.setKeyFile(keyFile);
             model.setInitialDirectory(keyFile.getParentFile());
+
             Task<ProofApi> task = FACADE.loadKeyFileTask(keyFile);
             task.setOnSucceeded(event -> {
                 statusBar.publishMessage("Loaded key sourceName: %s", keyFile);
                 statusBar.stopProgress();
+
+
             });
 
             task.setOnFailed(event -> {
@@ -1182,7 +1221,7 @@ public class DebuggerMain implements Initializable {
 
     public void openInKey(@Nullable ActionEvent event) {
         if (FACADE.getProofState() == KeYProofFacade.ProofState.EMPTY) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "No proof is loaded", ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "No proof is loaded yet. If laoding a proof was invoked, proof state loading may take a while.", ButtonType.OK);
             alert.show();
             return;
         }
