@@ -102,6 +102,7 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
     @DispatchOn(EllipsisOp.class)
     public Matchings visitEllipsisOp(Term pattern, MatchPath subject) {
         Matchings matchings = new MutableMatchings();
+        
         subTerms((MatchPath.MPTerm) subject).forEach(sub -> {
             Matchings s = visit(pattern.sub(0), sub);
             matchings.addAll(s);

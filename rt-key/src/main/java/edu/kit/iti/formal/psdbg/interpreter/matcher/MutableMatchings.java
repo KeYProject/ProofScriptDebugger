@@ -3,6 +3,7 @@ package edu.kit.iti.formal.psdbg.interpreter.matcher;
 import com.google.common.collect.Sets;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
+import de.uka.ilkd.key.logic.op.LogicVariable;
 import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 
 import java.util.*;
@@ -96,7 +97,9 @@ public class MutableMatchings implements Matchings {
 
 
     /**
-     *
+     * TODO Ugly if Cascade needs to be refactored
+     * This method reduces two matches h1 and h2. It searches for same Keys and if they have different values the match
+     * is discarded.
      * @param h1
      * @param h2
      * @return
@@ -105,34 +108,39 @@ public class MutableMatchings implements Matchings {
         Match newMatch = new Match(h1);
 
         for (String s1 : newMatch.keySet()) {
+
             if (h2.containsKey(s1)) {
                 if(h2.get(s1) instanceof  MatchPath.MPQuantifiableVariable){
                     QuantifiableVariable qvH2 = (QuantifiableVariable) h2.get(s1).getUnit();
-                    QuantifiableVariable qvH1 = (QuantifiableVariable) ((Term) h1.get(s1).getUnit()).op();
-                    System.out.println("qvH1 = " + qvH1);
-                    System.out.println("qvH2 = " + qvH2);
-                    if(!qvH2.equals(qvH1)){
-                        return null;
-                    } else {
-                        h2.put(s1, h1.get(s1));
+                    if((((Term) h1.get(s1).getUnit()).op() instanceof LogicVariable)){
+                        QuantifiableVariable qvH1 = (QuantifiableVariable) ((Term) h1.get(s1).getUnit()).op();
+                        if (!qvH2.equals(qvH1)) {
+                            return null;
+                        } else {
+                            h2.put(s1, h1.get(s1));
 
+                        }
+                    } else {
+                        return null;
                     }
 
                 }
 
                 if(h1.get(s1) instanceof  MatchPath.MPQuantifiableVariable){
                     QuantifiableVariable qvH1 = (QuantifiableVariable) h1.get(s1).getUnit();
-                    QuantifiableVariable qvH2 = (QuantifiableVariable) ((Term) h2.get(s1).getUnit()).op();
-                    System.out.println("qvH1 = " + qvH1);
-                    System.out.println("qvH2 = " + qvH2);
+                    if((((Term) h2.get(s1).getUnit()).op() instanceof LogicVariable)) {
 
-                    if(!qvH1.equals(qvH2)){
-                        return null;
-                    } else {
-                        h1.put(s1, h2.get(s1));
+                        QuantifiableVariable qvH2 = (QuantifiableVariable) ((Term) h2.get(s1).getUnit()).op();
+                        if (!qvH1.equals(qvH2)) {
+                            return null;
+                        } else {
+                            h1.put(s1, h2.get(s1));
 
+                        }
                     }
-
+                    else {
+                        return null;
+                    }
                 }
               /*  if (h2.get(s1) instanceof MatchPath.MPQuantifiableVariable &&
                         !((QuantifiableVariable) h2.get(s1).getUnit()).name().toString().equals(h1.get(s1).toString())) {
