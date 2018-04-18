@@ -107,6 +107,8 @@ public class KeyMatcherFacadeTest {
 
     @Test
     public void testQuantMatch() throws Exception {
+       // shouldMatch("\\forall int x; fint2(1,x) ==>", "\\forall ?X; fint2(1,?X)", "[{?X=x}]");
+        shouldMatch("\\forall int x; fint2(1,x) ==>", "\\forall ?X; ?", "[{?X=x}]");
 
         shouldMatchT("fint2(1,i)", "fint2(1,i)", "[{}]");
 
@@ -117,7 +119,7 @@ public class KeyMatcherFacadeTest {
 
         shouldMatch("\\exists int j; fint2(j,i) ==>", "(\\exists int j; ?X)==>", "[{?X=fint2(j,i)}]");
 
-        shouldMatch("\\forall int i; \\exists int j; fint2(j,i) ==>", "(\\forall int i; (\\exists int j; fint2(i,j)))==>", "[{}]");
+        shouldMatch("\\forall int i; \\exists int j; fint2(j,i) ==>", "(\\forall int i; (\\exists int j; fint2(i,j)))==>", "{NOMATCH}");
 
     }
 

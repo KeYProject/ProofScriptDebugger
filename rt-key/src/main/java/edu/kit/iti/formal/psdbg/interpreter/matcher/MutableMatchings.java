@@ -106,7 +106,35 @@ public class MutableMatchings implements Matchings {
 
         for (String s1 : newMatch.keySet()) {
             if (h2.containsKey(s1)) {
-                if (h2.get(s1) instanceof MatchPath.MPQuantifiableVariable &&
+                if(h2.get(s1) instanceof  MatchPath.MPQuantifiableVariable){
+                    QuantifiableVariable qvH2 = (QuantifiableVariable) h2.get(s1).getUnit();
+                    QuantifiableVariable qvH1 = (QuantifiableVariable) ((Term) h1.get(s1).getUnit()).op();
+                    System.out.println("qvH1 = " + qvH1);
+                    System.out.println("qvH2 = " + qvH2);
+                    if(!qvH2.equals(qvH1)){
+                        return null;
+                    } else {
+                        h2.put(s1, h1.get(s1));
+
+                    }
+
+                }
+
+                if(h1.get(s1) instanceof  MatchPath.MPQuantifiableVariable){
+                    QuantifiableVariable qvH1 = (QuantifiableVariable) h1.get(s1).getUnit();
+                    QuantifiableVariable qvH2 = (QuantifiableVariable) ((Term) h2.get(s1).getUnit()).op();
+                    System.out.println("qvH1 = " + qvH1);
+                    System.out.println("qvH2 = " + qvH2);
+
+                    if(!qvH1.equals(qvH2)){
+                        return null;
+                    } else {
+                        h1.put(s1, h2.get(s1));
+
+                    }
+
+                }
+              /*  if (h2.get(s1) instanceof MatchPath.MPQuantifiableVariable &&
                         !((QuantifiableVariable) h2.get(s1).getUnit()).name().toString().equals(h1.get(s1).toString())) {
                     return null;
                 }
@@ -115,9 +143,10 @@ public class MutableMatchings implements Matchings {
                     return null;
                 }
 
-                if (!h2.get(s1).equals(h1.get(s1))) {
+               if (!h2.get(s1).equals(h1.get(s1))) {
+                    //h2.get(s1).unit.equals(((Term) h1.get(s1).unit).op())
                     return null;
-                }
+                }*/
             }
         }
         newMatch.putAll(h2);
