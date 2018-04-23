@@ -155,9 +155,15 @@ public class MutableMatchings implements Matchings {
                     //h2.get(s1).unit.equals(((Term) h1.get(s1).unit).op())
                     return null;
                 }*/
+                if (!h2.get(s1).equals(h1.get(s1))) {
+                    //h2.get(s1).unit.equals(((Term) h1.get(s1).unit).op())
+                    return null;
+                }
             }
         }
         newMatch.putAll(h2);
+
+        System.out.format("reduce: %20s :: %20s = %s%n", h1, h2, newMatch);
         return newMatch;
     }
 
@@ -194,7 +200,7 @@ class VariableAssignmentComparator implements Comparator<Match> {
 
         ArrayList<String> keys = new ArrayList<>(Sets.intersection(o1.keySet(), o2.keySet()));
         keys.sort(String::compareTo); // order of the traversal
-        keys.remove("EMPTY_MATCH");
+     //   keys.remove("EMPTY_MATCH");
 
         for (String k : keys) {
             int depthA = o1.get(k).depth();

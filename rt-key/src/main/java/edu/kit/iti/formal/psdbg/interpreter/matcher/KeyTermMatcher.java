@@ -64,6 +64,9 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
                 //return new MutableMatchings();
             }
         }
+        if(!semiSeq.isEmpty() && patterns.isEmpty()){
+            return MutableMatchings.emptySingleton();
+        }
         HashMap<Term, Map<SequentFormula, Matchings>> map = new HashMap<>();
         List<MatchPath.MPSequentFormula> sequentFormulas =
                 IntStream.range(0, semiSeq.size())

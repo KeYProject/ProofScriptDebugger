@@ -130,9 +130,6 @@ public class ScriptArea extends BorderPane {
     private ListProperty<LintProblem> problems = new SimpleListProperty<>(FXCollections.observableArrayList());
     private SimpleObjectProperty<CharacterHit> currentMouseOver = new SimpleObjectProperty<>();
     private ScriptAreaContextMenu contextMenu = new ScriptAreaContextMenu();
-    private Consumer<Token> onPostMortem = token -> { 
-
-    };
     @Getter
     @Setter
     private List<InlineActionSupplier> inlineActionSuppliers = new ArrayList<>();
@@ -520,13 +517,6 @@ public class ScriptArea extends BorderPane {
         d.show((Node) event.getTarget(), event.getScreenX(), event.getScreenY());
     }
 
-    public Consumer<Token> getOnPostMortem() {
-        return onPostMortem;
-    }
-
-    public void setOnPostMortem(Consumer<Token> onPostMortem) {
-        this.onPostMortem = onPostMortem;
-    }
 
     public ObservableSet<RegionStyle> getMarkedRegions() {
         return markedRegions.get();
@@ -1735,8 +1725,8 @@ public class ScriptArea extends BorderPane {
 
             CharacterHit pos = currentMouseOver.get();
             Token node = Utils.findToken(getText(), pos.getInsertionIndex());
-            onPostMortem.accept(node);
 
+            Events.fire(new Events.ShowPostMortem(node.toString(), node.getStopIndex()));
             //TODO forward to ProofTreeManager, it jumps to the node and this should be done via the callbacks.
 
             /*ScriptArea area = ScriptArea.this;

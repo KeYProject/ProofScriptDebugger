@@ -79,7 +79,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
-import org.reactfx.util.Timer;
 
 /**
  * Controller for the Debugger MainWindow
@@ -151,6 +150,46 @@ public class DebuggerMain implements Initializable {
     @FXML
     private Menu examplesMenu;
     private Timer interpreterThreadTimer;
+
+    @Subscribe
+    public void handle(Events.ShowPostMortem spm){
+        FindNearestASTNode fna = new FindNearestASTNode(spm.getPosition());
+        List<PTreeNode<KeyData>> result =
+        model.getDebuggerFramework().getPtreeManager().getNodes()
+                .stream()
+                .filter(it -> Objects.equals(it.getStatement().accept(fna),it.getStatement()))
+                .collect(Collectors.toList());
+
+        System.out.println(result);
+
+
+        for (PTreeNode<KeyData> statePointerToPostMortem : result) {
+            if(statePointerToPostMortem != null && statePointerToPostMortem.getStateAfterStmt() != null) {
+
+                State<KeyData> stateBeforeStmt = statePointerToPostMortem.getStateBeforeStmt();
+               // stateBeforeStmt.getGoals().forEach(keyDataGoalNode -> System.out.println("BeforeSeq = " + keyDataGoalNode.getData().getNode().sequent()));
+                State<KeyData> stateAfterStmt = statePointerToPostMortem.getStateAfterStmt();
+               // stateAfterStmt.getGoals().forEach(keyDataGoalNode -> System.out.println("AfterSeq = " + keyDataGoalNode.getData().getNode().sequent()));
+
+                /*List<GoalNode<KeyData>> list = stateAfterStmt.getGoals().stream().filter(keyDataGoalNode ->
+                    keyDataGoalNode.getData().getNode().parent().equals(stateBeforeStmt.getSelectedGoalNode().getData().getNode())
+                ).collect(Collectors.toList());
+
+                list.forEach(keyDataGoalNode -> System.out.println("list = " + keyDataGoalNode.getData().getNode().sequent()));*/
+
+                InspectionModel im = new InspectionModel();
+                ObservableList<GoalNode<KeyData>> goals = FXCollections.observableArrayList(statePointerToPostMortem.getStateAfterStmt().getGoals());
+
+                im.setGoals(goals);
+                im.setSelectedGoalNodeToShow(goals.get(0));
+                inspectionViewsController.newPostMortemInspector(im)
+                        .dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
+
+            } else {
+                statusBar.publishErrorMessage("There is no post mortem state to show to this node, because this node was not executed.");
+            }
+        }
+    }
 
     @Subscribe
     public void handle(Events.ShowSequent ss) {

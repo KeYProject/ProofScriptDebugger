@@ -47,8 +47,10 @@ public class InspectionViewsController {
 
     public DockNode newPostMortemInspector(InspectionModel im) {
         InspectionView iv = new InspectionView();
+        iv.getGoalView().setItems(im.getGoals());
         iv.getModel().setSelectedGoalNodeToShow(im.getSelectedGoalNodeToShow());
         Node node = ((KeyData) iv.getModel().getSelectedGoalNodeToShow().getData()).getNode();
+
         String title = "Post-Mortem";
         if (node != null) {
             iv.getSequentView().setNode(node);

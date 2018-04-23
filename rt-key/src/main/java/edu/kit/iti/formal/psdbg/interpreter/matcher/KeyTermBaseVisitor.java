@@ -30,14 +30,18 @@ public abstract class KeyTermBaseVisitor<T,S> {
 
     public T visit(Term term, S arg) {
         Class<? extends Operator> opClazz = term.op().getClass();
+        T ret;
         if(!dispatchMap.containsKey(opClazz)) {
-            return defaultVisit(term, arg);
+            ret =  defaultVisit(term, arg);
+        }else {
+            try {
+                ret = dispatchMap.get(opClazz).visit(term, arg);
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
-        try {
-            return dispatchMap.get(opClazz).visit(term, arg);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+       // System.out.format(" match: %s :: %s :: %s%n", term, arg, ret);
+        return ret;
     }
 
     protected T defaultVisit(Term term, S arg) {

@@ -76,6 +76,7 @@ public class DebuggerFramework<T> {
     @Getter
     private final List<Consumer<PTreeNode<T>>> currentStatePointerListener = new LinkedList<>();
 
+    @Getter
     private final ProofTreeManager<T> ptreeManager;
 
     private final Thread interpreterThread;

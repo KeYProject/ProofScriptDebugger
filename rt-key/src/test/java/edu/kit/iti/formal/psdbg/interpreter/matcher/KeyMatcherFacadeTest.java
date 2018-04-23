@@ -59,15 +59,12 @@ public class KeyMatcherFacadeTest {
     @Test
     public void matchSeq() throws Exception {
        //atm missing is catching the toplevel formula
-        //shouldMatch("==> pred(a)", "==> pred(?)", "[]");
+        shouldMatch(" ==> !p, p,!q", "==> ?Z, !(?Z)", "[{?Z=p}]");
+
+        shouldMatch("==> pred(a)", "==> pred(?)");
         shouldMatch("p, q ==> !p, !q", "==> ?Z", "[{?Z=not(p)}, {?Z=not(q)}]");
-
         shouldMatch("2 >= 1, h2(1,2) = h2(2,3), h2(2,3) = 0 ==> p, !p", "?X=0 ==>", "[{?X=h2(Z(2(#)),Z(3(#)))}]");
-
-
         shouldMatch("h2(2,2) = 0 ==>p, !p", "?X=0 ==>", "[{?X=h2(Z(2(#)),Z(2(#)))}]");
-
-
         shouldMatch("p ==>", "p ==>", "[{}]");
         shouldMatch("==> pred(a), q", "==> pred(?X:S), q", "[{?X=a}]");
         shouldMatch("==> p, q", "==> ?X:Formula", "[{?X=p}, {?X=q}]");
