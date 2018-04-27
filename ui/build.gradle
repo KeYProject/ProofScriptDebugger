@@ -29,7 +29,6 @@ dependencies {
     antlr group: 'org.antlr', name: 'antlr4', version: '4.7'
 
     compile project(':rt-key')
-    compile project(':matcher')
     compile project(':DockFX')
     compile project(':lint')
 }

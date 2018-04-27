@@ -27,6 +27,7 @@ public class SequentOptionsMenu extends ContextMenu {
 
                 try {
                     // passt schon!
+
                     KeyData data = (KeyData) model.getSelectedGoalNodeToShow().getData();
                     SequentMatcher root1 = new SequentMatcher(data.getProof().getServices());
                     root1.setGoals(model.getGoals());
@@ -47,8 +48,11 @@ public class SequentOptionsMenu extends ContextMenu {
 
 
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println(e);
+                    Utils.showExceptionDialog("Please Select a Goal first." ,
+                            "Please Select a Goal node from the list first to open the SequentMatcher Window.",
+                            "Please Select a Goal node from the list first to open the SequentMatcher Window.", e);
+                  //  e.printStackTrace();
+                   // System.out.println(e);
                 }
             }
         });

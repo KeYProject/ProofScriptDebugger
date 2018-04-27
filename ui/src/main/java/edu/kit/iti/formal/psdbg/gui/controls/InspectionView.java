@@ -217,7 +217,7 @@ public class InspectionView extends BorderPane {
             if (goalOptionsMenu.getSelectedViewOption() != null) {
                 text = goalOptionsMenu.getSelectedViewOption().getText(item);
             }
-            //setStyle("-fx-font-size: 12pt;");
+            //TODO for ScreenshotsetStyle("-fx-font-size: 18pt;");
             setText(text);
         }
     }

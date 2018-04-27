@@ -454,13 +454,13 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         exitScope(casesStatement);
         return null;
     }*/
-    @Override
+   /* @Override
     public Object visit(TryCase TryCase) {
         enterScope(TryCase);
-
+        //is handled by KeYInterpreter
         exitScope(TryCase);
         return false;
-    }
+    }*/
 
     /**
      * Evaluate a match in a specific goal

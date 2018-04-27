@@ -14,6 +14,7 @@ import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.Token;
 
 import java.util.List;
 
@@ -143,5 +144,13 @@ public class Events {
     @RequiredArgsConstructor
     public static class InsertAtTheEndOfMainScript {
         private final String text;
+    }
+
+    @Data
+    @RequiredArgsConstructor
+    public static class ShowPostMortem {
+        private final String node;
+        private final int position;
+
     }
 }

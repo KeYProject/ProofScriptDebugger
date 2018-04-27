@@ -21,7 +21,7 @@ public class FindNearestASTNode implements ASTTraversal<ASTNode> {
         return childOrMe(proofScript, proofScript.getSignature(), proofScript.getBody());
     }
 
-    private ASTNode childOrMe(ASTNode me, Stream<? extends ASTNode> nodes) {
+    public ASTNode childOrMe(ASTNode me, Stream<? extends ASTNode> nodes) {
         // range check
         if (me == null) {
             return null;

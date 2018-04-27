@@ -8,7 +8,7 @@ public class QuickSort extends JavaExample {
 
 
         setName("Quicksort example");
-
+        setSettingsFile(getClass().getResource("proof-settings.props"));
         setHelpText(getClass().getResource("help.html"));
 
         setJavaFile(getClass().

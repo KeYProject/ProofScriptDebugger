@@ -434,6 +434,7 @@ public class ProofTree extends BorderPane {
                     tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
                 }
             }
+           //TODO for Screenshot tftc.setStyle("-fx-font-size: 18pt");
            /* if (colorOfNodes.containsKey(n)) {
                 tftc.setStyle("-fx-border-color: "+colorOfNodes.get(n)+";");
             }*/

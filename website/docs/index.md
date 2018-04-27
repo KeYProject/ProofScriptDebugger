@@ -56,10 +56,9 @@ The main features of the language are:
 1. integration of domain specific entities like goal, formula, term and rule as
 first-class citizens into the language;</li>
 1. an expressive proof goal selection mechanism
-  * to identify and select individual proof branches,
-  * to easily switch between proof branches,
-  * to select multiple branches for uniform treatment (multi-matching);
-  that is resilient to small changes in the proof
+    - to identify and select individual proof branches,
+    - to easily switch between proof branches,
+    - to select multiple branches for uniform treatment (multi-matching); that is resilient to small changes in the proof
 1. a repetition construct which allows repeated application of proof strategies;</li>
 1. support for proof exploration within the language.</li>
 
@@ -71,7 +70,9 @@ the analysis of failed proof attempts.
 ## Publications
 
 A full description of the language and debugging-concept 
-is published at [HVC 2017](http://rdcu.be/E4fF)
+is published at [HVC 2017](http://rdcu.be/E4fF). 
+A short tool description is also [available](
+http://arxiv.org/abs/1804.04402).
 
 ## Debugging Script for Quicksort's `split` method.
 
@@ -208,18 +209,17 @@ interactive rule applications.
 <h2>Downloads</h2>
 
 <ul>
- <li>PSDBG - <strong>Version 1.0.1c-FM</strong> 
-    <a href="../psdbg_releases/psdbg-1.0.1c-fm.jar">psdbg-1.0.1c-fm.jar</a>
+ <li>PSDBG - <strong>Version 1.0.2c-FM</strong> 
+    <a href="../psdbg_releases/psdbg-1.0.2c-fm.jar">psdbg-1.0.2c-fm.jar</a>
     <br>
-    Special Version for the tool paper at Formal Methods 2018.
-    Including examples and all dependencies.
+    First implementation of PSDBG, including examples.
     <br>
      Requires Java version 1.8.0_111 or higher; Not working with Java 9, because of depdendencies.
     <br>
     <a href="https://www.gnu.org/licenses/gpl-3.0.txt">License: GPLv3</a>
     <a href="thirdparty.txt">Third Party Licenses</a> 
     <br>
-    Executable with <code>java -jar psdbg-1.0.1c-fm.jar</code>
+    Executable with <code>java -jar psdbg-1.0.2c-fm.jar</code>
  </li>
 </ul>
 

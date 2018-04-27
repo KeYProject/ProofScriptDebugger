@@ -1,5 +1,14 @@
 // Please select one of the following scripts.
 //
+script testTry(){
+cases{
+    try: impLeft;
+    default:
+        __KEY_MAX_STEPS:= 100;
+        impRight;
+}
+}
+
 script testSMT(){
     smt solver='Z3';
 }
@@ -26,7 +35,7 @@ impRight;
 impRight;
 impLeft;
 cases{
-    case match `==> not(?Z), ?Z`:
+    case match `==> !(?Z), ?Z`:
       notRight;
 
     default:

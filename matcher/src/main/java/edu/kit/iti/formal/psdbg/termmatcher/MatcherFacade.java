@@ -4,6 +4,8 @@ import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Semisequent;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.Term;
+import de.uka.ilkd.key.parser.DefaultTermParser;
+import de.uka.ilkd.key.parser.ParserException;
 import edu.kit.iti.formal.psdbg.termmatcher.MatchPatternLexer;
 import edu.kit.iti.formal.psdbg.termmatcher.MatchPatternParser;
 import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPathFacade;
@@ -12,6 +14,8 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.StringReader;
 
 /**
  * A facade for capturing everything we want to do with matchers.
@@ -25,6 +29,8 @@ public class MatcherFacade {
     public static Matchings matches(String pattern, Term keyTerm, Services services) {
         MatcherImpl matcher = new MatcherImpl(services);
         matcher.setCatchAll(false);
+
+
         MatchPatternParser mpp = getParser(pattern);
         MatchPatternParser.TermPatternContext ctx = mpp.termPattern();
         return matcher.accept(ctx, MatchPathFacade.createRoot(keyTerm));

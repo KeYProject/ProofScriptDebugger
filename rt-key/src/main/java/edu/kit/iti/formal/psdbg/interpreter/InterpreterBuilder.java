@@ -2,7 +2,6 @@ package edu.kit.iti.formal.psdbg.interpreter;
 
 import de.uka.ilkd.key.api.KeYApi;
 import de.uka.ilkd.key.api.ProofApi;
-import de.uka.ilkd.key.api.ScriptApi;
 import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
@@ -14,6 +13,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.*;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.KeYMatcher;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;

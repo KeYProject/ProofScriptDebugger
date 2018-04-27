@@ -25,6 +25,9 @@ public class DebuggerMainModel {
      */
     private final ObjectProperty<Contract> chosenContract = new SimpleObjectProperty<>(this, "chosenContract");
 
+    /**
+     * Properties for stepping enabling and disabling
+     */
     private ObjectProperty<DebuggerFramework<KeyData>> debuggerFramework = new SimpleObjectProperty<>();
 
     private ObjectProperty<PTreeNode<KeyData>> statePointer = new SimpleObjectProperty<>();
@@ -41,9 +44,9 @@ public class DebuggerMainModel {
             InterpreterThreadState.NO_THREAD);
 
     /**
-     * True, iff the execution is not possible
+     * True, iff the execution of script is not possible
      */
-    private ObservableBooleanValue executeNotPossible = new SimpleBooleanProperty();//proofTreeController.executeNotPossibleProperty().or(FACADE.readyToExecuteProperty().not());
+    private BooleanProperty executeNotPossible = new SimpleBooleanProperty(true);//proofTreeController.executeNotPossibleProperty().or(FACADE.readyToExecuteProperty().not());
 
     /**
      *
@@ -56,7 +59,7 @@ public class DebuggerMainModel {
     private StringProperty javaCode = new SimpleStringProperty(this, "javaCode");
 
 
-    private BooleanProperty debugMode = new SimpleBooleanProperty(this, "debugMode", false);
+    //private BooleanProperty debugMode = new SimpleBooleanProperty(this, "debugMode", false);
 
     public DebuggerFramework<KeyData> getDebuggerFramework() {
         return debuggerFramework.get();
@@ -170,7 +173,7 @@ public class DebuggerMainModel {
         return executeNotPossible.get();
     }
 
-    public ObservableBooleanValue executeNotPossibleProperty() {
+    public BooleanProperty executeNotPossibleProperty() {
         return executeNotPossible;
     }
 
@@ -198,6 +201,7 @@ public class DebuggerMainModel {
         return javaCode;
     }
 
+/*
     public boolean isDebugMode() {
         return debugMode.get();
     }
@@ -210,6 +214,7 @@ public class DebuggerMainModel {
         return debugMode;
     }
 
+*/
     public InterpreterThreadState getInterpreterState() {
         return interpreterState.get();
     }

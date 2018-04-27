@@ -13,6 +13,7 @@ import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +34,19 @@ import java.util.stream.Collectors;
 public class KeYProofFacade {
     private static final Logger LOGGER = LogManager.getLogger(KeYProofFacade.class);
 
+    public boolean isLoading() {
+        return loading.get();
+    }
+
+    public SimpleBooleanProperty loadingProperty() {
+        return loading;
+    }
+
+    public void setLoading(boolean loading) {
+        this.loading.set(loading);
+    }
+
+    private SimpleBooleanProperty loading = new SimpleBooleanProperty(false);
     /**
      * Current Proof
      */
@@ -87,6 +101,7 @@ public class KeYProofFacade {
         Task<ProofApi> task = new Task<ProofApi>() {
             @Override
             protected ProofApi call() throws Exception {
+                setLoading(true);
                 ProofApi pa = loadKeyFile(keYFile);
                 return pa;
             }
@@ -97,6 +112,7 @@ public class KeYProofFacade {
                 environment.set(getValue().getEnv());
                 proof.set(getValue().getProof());
                 contract.set(null);
+                setLoading(false);
             }
         };
 
@@ -111,16 +127,20 @@ public class KeYProofFacade {
      * @throws ProblemLoaderException
      */
     ProofApi loadKeyFile(File keYFile) throws ProblemLoaderException {
+        setLoading(true);
         ProofManagementApi pma = KeYApi.loadFromKeyFile(keYFile);
         ProofApi pa = pma.getLoadedProof();
+        setLoading(false);
         return pa;
     }
 
     public ProofApi loadKeyFileSync(File keyFile) throws ProblemLoaderException {
+        setLoading(true);
         ProofApi pa = loadKeyFile(keyFile);
         environment.set(pa.getEnv());
         proof.set(pa.getProof());
         contract.set(null);
+        setLoading(false);
         return pa;
     }
 

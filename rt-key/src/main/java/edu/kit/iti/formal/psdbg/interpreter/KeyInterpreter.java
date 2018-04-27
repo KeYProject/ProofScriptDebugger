@@ -99,7 +99,6 @@ public class KeyInterpreter extends Interpreter<KeyData> {
         logger.debug(String.format("Beginning of suspicion execution of %s", statements));
         GoalNode<KeyData> goalNode = getSelectedNode();
         pushState(new State<>(goalNode.deepCopy())); // copy for later prove
-
         List<Visitor> backupExitListener = getExitListeners(),
                 backupEntryListener = getEntryListeners();
         try {
