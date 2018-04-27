@@ -25,6 +25,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import org.controlsfx.control.StatusBar;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +54,7 @@ public class SequentMatcher extends BorderPane {
     private Label nomatchings; //only shown when no matchings found, else always hidden
     private Map<PosInOccurrence, Range> cursorPosition = new HashMap<>();
 
+
     public SequentMatcher(Services services) {
         this.services = services;
 
@@ -67,8 +69,13 @@ public class SequentMatcher extends BorderPane {
         );
 
         goalView.getSelectionModel().selectedItemProperty().addListener((prop, old, nnew) ->
-                selectedGoalNodeToShow.setValue(nnew)
-        );
+        {
+            if (nnew != null) {
+                selectedGoalNodeToShow.setValue(nnew);
+            } else {
+                selectedGoalNodeToShow.setValue(old);
+            }
+        });
 
         goalView.setCellFactory(GoalNodeListCell::new);
 

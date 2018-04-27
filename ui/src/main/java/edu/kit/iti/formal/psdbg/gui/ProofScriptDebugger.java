@@ -29,7 +29,7 @@ import java.util.Locale;
 public class ProofScriptDebugger extends Application {
     public static final String NAME = "Proof Script Debugger";
 
-    public static final String VERSION = "1.0-FM";
+    public static final String VERSION = "Experimental-1.1";
 
     public static final String KEY_VERSION = KeYConstants.VERSION;
 

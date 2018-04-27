@@ -1,3 +1,23 @@
+// Please select one of the following scripts.
+//
+script testTry(){
+cases{
+    try: impLeft;
+    default:
+        __KEY_MAX_STEPS:= 100;
+        impRight;
+}
+}
+
+script testSMT(){
+    smt solver='Z3';
+}
+script toRemove(){
+  impRight;
+  useContract type='dependency' on=`p`;
+
+}
+
 script autoScript(){
     __STRICT_MODE := true;
     auto;
@@ -23,14 +43,4 @@ cases{
 
     }
 
-}
-
-script usageOfTryInCases(){
-cases{
-    try: impLeft; //if this mutator is successful, do this operation otherwise use next case
-
-    default:
-        __KEY_MAX_STEPS:= 100;
-        impRight;
-    }
 }

@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.controlsfx.control.StatusBar;
 
 public class SequentOptionsMenu extends ContextMenu {
 

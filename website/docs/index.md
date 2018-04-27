@@ -209,6 +209,22 @@ interactive rule applications.
 <h2>Downloads</h2>
 
 <ul>
+ <li>PSDBG - <strong>Experimental Version</strong>
+    <a href="../psdbg_releases/psdbg-Experimental-1.1.jar">psdbg-Experimental-1.1.jar</a>
+    <br>
+    This version is an experimental development version of PSDBG, including examples. 
+    Its enhancements are based on an evaluation of the first version.
+    Not all provided features in this version may be completely functional yet. 
+    <br>
+    One major change is the syntax for Matching Expressions. The wildcard symbol is now "?" instead of "_".
+    <br>
+     Requires Java version 1.8.0_111 or higher; Not working with Java 9, because of depdendencies.
+    <br>
+    <a href="https://www.gnu.org/licenses/gpl-3.0.txt">License: GPLv3</a>
+    <a href="thirdparty.txt">Third Party Licenses</a> 
+    <br>
+    Executable with <code>java -jar psdbg-Experimental-1.1.jar</code>
+    </li>
  <li>PSDBG - <strong>Version 1.0.2c-FM</strong> 
     <a href="../psdbg_releases/psdbg-1.0.2c-fm.jar">psdbg-1.0.2c-fm.jar</a>
     <br>

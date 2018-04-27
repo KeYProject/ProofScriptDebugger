@@ -131,4 +131,6 @@ public class SequentViewForMatcher extends CodeArea {
     public LogicPrinter.PosTableStringBackend getBackend() {
         return backend;
     }
+
+
 }
