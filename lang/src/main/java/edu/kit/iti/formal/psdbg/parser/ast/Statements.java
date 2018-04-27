@@ -26,6 +26,7 @@ package edu.kit.iti.formal.psdbg.parser.ast;
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageParser;
 import edu.kit.iti.formal.psdbg.parser.Visitable;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.*;
@@ -39,9 +40,15 @@ import java.util.stream.Stream;
  * @version 1 (27.04.17)
  */
 @ToString
+@NoArgsConstructor
 public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
         implements Visitable, Iterable<Statement> {
     private final List<Statement> statements = new ArrayList<>();
+
+
+    public Statements(Statements body) {
+        statements.addAll(body.statements);
+    }
 
     public Iterator<Statement> iterator() {
         return statements.iterator();

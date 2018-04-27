@@ -11,15 +11,20 @@ import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.gui.actions.acomplete.Suggestion;
+import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
+import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
+import edu.kit.iti.formal.psdbg.parser.ast.Statement;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,10 +69,37 @@ public class ScriptController {
     @Setter
     private DefaultAutoCompletionController autoCompleter = new DefaultAutoCompletionController();
 
+
+
     public ScriptController(DockPane parent) {
         this.parent = parent;
         Events.register(this);
         addDefaultInlineActions();
+
+        mainScript.addListener((p,o,n)-> {
+            if(o!=null)
+                o.getScriptArea().textProperty().removeListener( a-> updateSavePoints());
+            n.getScriptArea().textProperty().addListener(a->updateSavePoints());
+            updateSavePoints();
+        });
+
+
+    }
+
+    private ObservableList<SavePoint> mainScriptSavePoints
+            = new SimpleListProperty<>(FXCollections.observableArrayList());
+
+    private void updateSavePoints() {
+        Optional<ProofScript> ms = getMainScript().find(getCombinedAST());
+        if(ms.isPresent()) {
+            List<SavePoint> list = ms.get().getBody().stream()
+                    .filter(SavePoint::isSaveCommand)
+                    .map(a -> (CallStatement) a)
+                    .map(SavePoint::new)
+                    .collect(Collectors.toList());
+
+            mainScriptSavePoints.setAll(list);
+        }
     }
 
     private void addDefaultInlineActions() {
@@ -361,5 +393,11 @@ public class ScriptController {
         }
     }
 
+    public ObservableList<SavePoint> getMainScriptSavePoints() {
+        return mainScriptSavePoints;
+    }
 
+    public void setMainScriptSavePoints(ObservableList<SavePoint> mainScriptSavePoints) {
+        this.mainScriptSavePoints = mainScriptSavePoints;
+    }
 }

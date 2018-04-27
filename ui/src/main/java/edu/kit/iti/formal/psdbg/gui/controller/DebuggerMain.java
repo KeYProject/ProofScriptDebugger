@@ -30,14 +30,14 @@ import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
+import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -602,6 +602,7 @@ public class DebuggerMain implements Initializable {
      */
     private void executeScript(InterpreterBuilder ib, boolean addInitBreakpoint) {
         try {
+
             Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
             // get possible scripts and the main script!
             List<ProofScript> scripts = scriptController.getCombinedAST();
@@ -621,6 +622,59 @@ public class DebuggerMain implements Initializable {
             LOGGER.debug("MainScript: {}", ms.getName());
 
             ib.setScripts(scripts);
+            executeScript0(ib, breakpoints, ms, addInitBreakpoint);
+        } catch (RecognitionException e) {
+            LOGGER.error(e);
+            Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
+        }
+            
+        }
+        
+        
+        
+        private void executeScriptFromSavePoint(InterpreterBuilder ib, SavePoint point) {
+        try {
+            Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
+            // get possible scripts and the main script!
+            List<ProofScript> scripts = scriptController.getCombinedAST();
+            if (scriptController.getMainScript() == null) {
+                scriptController.setMainScript(scripts.get(0));
+            }
+            Optional<ProofScript> mainScript = scriptController.getMainScript().find(scripts);
+            ProofScript ms;
+            if (!mainScript.isPresent()) {
+                scriptController.setMainScript(scripts.get(0));
+                ms = scripts.get(0);
+            } else {
+                ms = mainScript.get();
+            }
+
+            Statements body = new Statements();
+            boolean flag =false;
+            for (int i = 0; i < ms.getBody().size(); i++) {
+                if(flag) {body.add(ms.getBody().get(i));
+                    continue;}
+                flag = point.isThisStatement(ms.getBody().get(i));
+            }
+
+            ms.setBody(body);
+
+            LOGGER.debug("Parsed Scripts, found {}", scripts.size());
+            LOGGER.debug("MainScript: {}", ms.getName());
+            //ib.setDirectory(model.getKeyFile() != null ? model.getKeyFile() : model.getJavaFile());
+            ib.setScripts(scripts);
+            executeScript0(ib, breakpoints, ms, false);
+        } catch (RecognitionException e) {
+            LOGGER.error(e);
+            Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
+        }
+            
+        }
+        
+        
+        private void executeScript0(InterpreterBuilder ib,
+                                    Collection<? extends Breakpoint> breakpoints,
+                                    ProofScript ms, boolean addInitBreakpoint) {
             KeyInterpreter interpreter = ib.build();
             DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, ms, null);
             df.setSucceedListener(this::onInterpreterSucceed);
@@ -631,12 +685,7 @@ public class DebuggerMain implements Initializable {
             df.getBreakpoints().addAll(breakpoints);
             df.getStatePointerListener().add(this::handleStatePointer);
             df.start();
-
             model.setDebuggerFramework(df);
-        } catch (RecognitionException e) {
-            LOGGER.error(e);
-            Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
-        }
     }
 
     private void onInterpreterSucceed(DebuggerFramework<KeyData> keyDataDebuggerFramework) {
@@ -1007,7 +1056,7 @@ public class DebuggerMain implements Initializable {
      */
     public void saveProof(ActionEvent actionEvent) {
         FileChooser fc = new FileChooser();
-        File file = fc.showOpenDialog(btnInteractiveMode.getScene().getWindow());
+        File file = fc.showSaveDialog(btnInteractiveMode.getScene().getWindow());
         if (file != null) {
             try {
                 saveProof(file);
