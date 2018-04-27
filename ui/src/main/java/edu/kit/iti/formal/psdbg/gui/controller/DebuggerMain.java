@@ -178,10 +178,14 @@ public class DebuggerMain implements Initializable {
                 list.forEach(keyDataGoalNode -> System.out.println("list = " + keyDataGoalNode.getData().getNode().sequent()));*/
 
                 InspectionModel im = new InspectionModel();
-                ObservableList<GoalNode<KeyData>> goals = FXCollections.observableArrayList(statePointerToPostMortem.getStateAfterStmt().getGoals());
+                ObservableList<GoalNode<KeyData>> goals = FXCollections.observableArrayList(stateAfterStmt.getGoals());
 
                 im.setGoals(goals);
-                im.setSelectedGoalNodeToShow(goals.get(0));
+                if(stateAfterStmt.getSelectedGoalNode() != null){
+                    im.setSelectedGoalNodeToShow(stateAfterStmt.getSelectedGoalNode());
+                } else {
+                    im.setSelectedGoalNodeToShow(goals.get(0));
+                }
                 inspectionViewsController.newPostMortemInspector(im)
                         .dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
 
