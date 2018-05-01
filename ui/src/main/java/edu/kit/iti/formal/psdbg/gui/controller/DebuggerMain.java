@@ -74,6 +74,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
@@ -132,6 +133,9 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     private Button interactive_undo;
+
+    @FXML
+    private ComboBox<Path> combo_savepoints;
 
 
     private JavaArea javaArea = new JavaArea();
@@ -356,6 +360,7 @@ public class DebuggerMain implements Initializable {
 
         statusBar.interpreterStatusModelProperty().bind(model.interpreterStateProperty());
         renewThreadStateTimer();
+
     }
 
     /**
@@ -934,7 +939,7 @@ public class DebuggerMain implements Initializable {
             assert model.getDebuggerFramework() != null : "You should have started the prove";
             model.getDebuggerFramework().execute(new ContinueCommand<>());
         } catch (DebuggerException e) {
-            Utils.showExceptionDialog("", "", "", e);
+            Utils.showWarningDialog("", "", "", e);
             LOGGER.error(e);
         }
     }
@@ -1230,6 +1235,12 @@ public class DebuggerMain implements Initializable {
     }
 
     @FXML
+    public void selectSavepoint(ActionEvent actionEvent) {
+
+    }
+
+
+    @FXML
     public void showWelcomeDock(ActionEvent actionEvent) {
         if (!welcomePaneDock.isDocked() && !welcomePaneDock.isFloating()) {
             welcomePaneDock.dock(dockStation, DockPos.CENTER);
@@ -1474,6 +1485,8 @@ public class DebuggerMain implements Initializable {
 
         }
     }
+
+
 
     //endregion
 }

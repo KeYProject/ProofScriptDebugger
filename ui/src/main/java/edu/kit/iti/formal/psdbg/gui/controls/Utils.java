@@ -203,6 +203,48 @@ public class Utils {
         alert.showAndWait();
     }
 
+    public static void showWarningDialog(String title, String headerText, String contentText, Throwable ex) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String exceptionText = sw.toString();
+
+
+        alert.setWidth(400);
+        alert.setHeight(400);
+
+
+        alert.setHeight(600);
+        alert.setWidth(400);
+
+        alert.showAndWait();
+    }
+
+    public static void showInfoDialog(String title, String headerText, String contentText, Throwable ex) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String exceptionText = sw.toString();
+
+
+        alert.setWidth(400);
+        alert.setHeight(400);
+
+
+        alert.setHeight(600);
+        alert.setWidth(400);
+
+        alert.showAndWait();
+    }
+
     public static void addDebugListener(Property<?> property) {
         property.addListener((ChangeListener<Object>) (observable, oldValue, newValue) -> {
             String simpleName = property.getBean() != null ? property.getBean().getClass().getSimpleName() : "<n/a>";

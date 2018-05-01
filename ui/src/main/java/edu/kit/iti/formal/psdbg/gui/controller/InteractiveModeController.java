@@ -213,7 +213,7 @@ public class InteractiveModeController {
             sb.append("\nSequent Formula: formula=").append(sfTerm);
             sb.append("\nOn Sub Term: on=").append(onTerm);
 
-            Utils.showExceptionDialog("Proof Command was not applicable",
+            Utils.showWarningDialog("Proof Command was not applicable",
                     "Proof Command was not applicable.",
                     sb.toString(), e);
         }

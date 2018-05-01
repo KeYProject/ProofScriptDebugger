@@ -27,7 +27,7 @@
                                 <Label labelFor="$frames" text="Contexts:"/>
                                 <ComboBox fx:id="frames" HBox.hgrow="ALWAYS"/>
                             </HBox>
-                            <ListView fx:id="goalView"/>
+                            <ListView fx:id="goalView" styleClass="goal-view"/>
                         </VBox>
                     </center>
                 </SectionPane>

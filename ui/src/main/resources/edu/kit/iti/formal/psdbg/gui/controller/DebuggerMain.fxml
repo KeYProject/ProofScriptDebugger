@@ -323,7 +323,9 @@
                                 <Tooltip text="Undo"/>
                             </tooltip>
                         </Button>
+                        <ComboBox fx:id="combo_savepoints"  disable="true" prefWidth="100" prefHeight="30">
 
+                        </ComboBox>
 
                         <Pane HBox.hgrow="ALWAYS"/>
                         <Label text="Windows:"/>
