@@ -1,7 +1,7 @@
 allprojects {
     apply plugin: 'maven'
     group = 'edu.kit.iti.formal.psdbg'
-    version = '1.0-FM'
+    version = 'Experimental-1.1'
 }
 
 subprojects {

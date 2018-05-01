@@ -29,7 +29,7 @@ public class GoalNode<T> {
     private boolean isClosed;
 
     /**
-     * This conctructur will be replaced with concrete one that uses projectedNode
+     *
      *
      * @param parent
      * @param data
@@ -37,6 +37,12 @@ public class GoalNode<T> {
     public GoalNode(GoalNode<T> parent, T data, boolean isClosed) {
         this.assignments = new VariableAssignment(parent == null ? null :
                 parent.getAssignments().deepCopy());
+        this.parent = parent;
+        this.data = data;
+        this.isClosed = isClosed;
+    }
+    private GoalNode(GoalNode<T> parent, VariableAssignment assignments, T data, boolean isClosed) {
+        this.assignments = assignments.deepCopy();
         this.parent = parent;
         this.data = data;
         this.isClosed = isClosed;
@@ -104,8 +110,13 @@ public class GoalNode<T> {
     }
 
     public GoalNode<T> deepCopy() {
-        //TODO method does nothing helpful atm
-        return new GoalNode<T>(parent, data, isClosed);
+        if (parent != null) {
+            return new GoalNode<T>(parent.deepCopy(), data, isClosed);
+        } else {
+            return new GoalNode<T>(parent, assignments.deepCopy(), data, isClosed);
+        }
+
+
     }
 
     public VariableAssignment enterScope(VariableAssignment va) {

@@ -1,7 +1,7 @@
 package edu.kit.iti.formal.psdbg.interpreter.functions;
 
 import edu.kit.iti.formal.psdbg.interpreter.Evaluator;
-import edu.kit.iti.formal.psdbg.interpreter.KeYMatcher;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.KeYMatcher;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.NotWelldefinedException;

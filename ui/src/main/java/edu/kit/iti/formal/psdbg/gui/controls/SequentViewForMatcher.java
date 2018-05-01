@@ -9,9 +9,6 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
-import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
-import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
-import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -131,14 +128,9 @@ public class SequentViewForMatcher extends CodeArea {
     }
 
 
-
-
-
-
-
-
-
     public LogicPrinter.PosTableStringBackend getBackend() {
         return backend;
     }
+
+
 }

@@ -9,9 +9,10 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
-import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
-import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
-import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.KeyMatcherFacade;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.Match;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.MatchPath;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.Matchings;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -26,7 +27,6 @@ import org.key_project.util.collection.ImmutableSLList;
 
 import java.io.StringWriter;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * @author Alexander Weigl
@@ -136,7 +136,6 @@ public class SequentView extends CodeArea {
         filter.setSequent(sequent);
 
 
-
         ProgramPrinter prgPrinter = new ProgramPrinter(new StringWriter());
         this.backend = new LogicPrinter.PosTableStringBackend(80);
         //unicode makes prettier syntax but is bad for matching
@@ -208,12 +207,17 @@ public class SequentView extends CodeArea {
         }
 
         if (node.get().sequent() != null) {
-            Matchings m = MatcherFacade.matches(pattern, node.get().sequent(), true, services);
-            if (m.size() == 0) return false;
-            Map<String, MatchPath> va = m.first();
+            KeyMatcherFacade kmf = KeyMatcherFacade.builder().environment(this.getKeYProofFacade().getEnvironment())
+                    .sequent(node.get().sequent()).build();
+            Matchings m = kmf.matches(pattern, null);
+
+//            Matchings m =
+            //MatcherFacade.matches(pattern, node.get().sequent(), true, services);
+            if (m.isEmpty() || m.isNoMatch()) return false;
+            Match va = m.getMatchings().iterator().next();
             //System.out.println(va);//TODO remove
             for (MatchPath mp : va.values()) {
-                System.out.println(mp.pio());
+                System.out.println("SequentView"+ mp.pio());
                 highlightTerm(mp.pio());
             }
         }

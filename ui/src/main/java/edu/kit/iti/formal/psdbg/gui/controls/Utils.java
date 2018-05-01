@@ -253,34 +253,14 @@ public class Utils {
 
     public static void showClosedProofDialog(String scriptName) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
         alert.setTitle("Proof Closed");
         alert.setHeaderText("The proof is closed");
         alert.setContentText("The proof using " + scriptName + " is closed");
-        alert.setWidth(400);
+        alert.setWidth(500);
         alert.setHeight(400);
+        alert.setResizable(true);
 
-        /*StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        ex.printStackTrace(pw);
-        String exceptionText = sw.toString();
-
-        Label label = new Label("The exception stacktrace was:");
-        TextArea textArea = new TextArea(exceptionText);
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
-
-        textArea.setMaxWidth(Double.MAX_VALUE);
-        textArea.setMaxHeight(Double.MAX_VALUE);
-        GridPane.setVgrow(textArea, Priority.ALWAYS);
-        GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-        GridPane expContent = new GridPane();
-        expContent.setMaxWidth(Double.MAX_VALUE);
-        expContent.addCell(label, 0, 0);
-        expContent.addCell(textArea, 0, 1);
-
-        alert.getDialogPane().setExpandableContent(expContent);
-        */
         alert.showAndWait();
     }
 
@@ -318,7 +298,7 @@ public class Utils {
     public static void intoClipboard(String s) {
         Map<DataFormat, Object> map = Collections.singletonMap(DataFormat.PLAIN_TEXT, s);
         Clipboard.getSystemClipboard().setContent(map);
-        System.err.println(s);
+        logger.info("Clipboard "+s);
     }
 
     /**

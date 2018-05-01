@@ -53,6 +53,7 @@ build:jdk8:
 test:
   stage: test
   script: gradle check
+  allow_failure: true
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull

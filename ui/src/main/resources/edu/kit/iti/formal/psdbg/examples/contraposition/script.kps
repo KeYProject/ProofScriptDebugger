@@ -1,14 +1,3 @@
-// Please select one of the following scripts.
-//
-script testSMT(){
-    smt solver='Z3';
-}
-script toRemove(){
-  impRight;
-  useContract type='dependency' on=`p`;
-
-}
-
 script autoScript(){
     __STRICT_MODE := true;
     auto;
@@ -26,7 +15,7 @@ impRight;
 impRight;
 impLeft;
 cases{
-    case match `==> not(?Z), ?Z`:
+    case match `==> !(?Z), ?Z`:
       notRight;
 
     default:
@@ -34,4 +23,14 @@ cases{
 
     }
 
+}
+
+script usageOfTryInCases(){
+cases{
+    try: impLeft; //if this mutator is successful, do this operation otherwise use next case
+
+    default:
+        __KEY_MAX_STEPS:= 100;
+        impRight;
+    }
 }

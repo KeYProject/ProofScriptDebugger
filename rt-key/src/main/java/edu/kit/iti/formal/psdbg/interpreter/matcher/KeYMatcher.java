@@ -1,8 +1,10 @@
-package edu.kit.iti.formal.psdbg.interpreter;
+package edu.kit.iti.formal.psdbg.interpreter.matcher;
 
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Name;
 import de.uka.ilkd.key.logic.Term;
+import de.uka.ilkd.key.logic.op.LogicVariable;
+import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 import de.uka.ilkd.key.logic.op.SchemaVariable;
 import de.uka.ilkd.key.pp.LogicPrinter;
 import de.uka.ilkd.key.proof.ApplyStrategy;
@@ -12,6 +14,7 @@ import de.uka.ilkd.key.proof.init.Profile;
 import de.uka.ilkd.key.rule.NoPosTacletApp;
 import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.rule.TacletApp;
+import edu.kit.iti.formal.psdbg.interpreter.MatcherApi;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SortType;
@@ -20,9 +23,6 @@ import edu.kit.iti.formal.psdbg.parser.ast.Signature;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import edu.kit.iti.formal.psdbg.parser.types.TermType;
-import edu.kit.iti.formal.psdbg.termmatcher.MatcherFacade;
-import edu.kit.iti.formal.psdbg.termmatcher.Matchings;
-import edu.kit.iti.formal.psdbg.termmatcher.mp.MatchPath;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -170,25 +170,24 @@ public class KeYMatcher implements MatcherApi<KeyData> {
     }
 
     @Override
-    public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState,
-                                             String data,
-                                             Signature sig) {
-        //System.out.println("State that will be matched " + currentState.getData().getNode().sequent() + " with pattern " + data);
+    public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState, String pattern, Signature sig) {
+        KeyMatcherFacade kmf = new KeyMatcherFacade(currentState.getData().getEnv(), currentState.getData().getNode().sequent());
+        //System.out.println("State that will be matched " + currentState.getData().getNode().sequent() + " with pattern " + pattern);
         //System.out.println("Signature " + sig.toString());
+         Matchings m = kmf.matches(pattern, sig);
 
-        Matchings m = MatcherFacade.matches(data,
-                currentState.getData().getNode().sequent(), false, currentState.getData().getProof().getServices());
-
-        if (m.isEmpty()) {
+        if (m.isNoMatch()) {
             LOGGER.debug("currentState has no match= " + currentState.getData().getNode().sequent());
             return Collections.emptyList();
         } else {
-            Map<String, MatchPath> firstMatch = m.first();
+            Match firstMatch = m.getMatchings().iterator().next() ;
             VariableAssignment va = new VariableAssignment(null);
             for (String s : firstMatch.keySet()) {
                 MatchPath matchPath = firstMatch.get(s);
-                if (!s.equals("EMPTY_MATCH")) {
-                    Term matched = (Term) matchPath.getUnit();
+                //if (!s.equals("EMPTY_MATCH")) {
+                Term matched;
+                try {
+                    matched = (Term) matchPath.getUnit();
                     if (s.startsWith("?")) {
 
                         s = s.replaceFirst("\\?", "");
@@ -197,8 +196,23 @@ public class KeYMatcher implements MatcherApi<KeyData> {
                     Value<String> value = toValueTerm(currentState.getData(), matched);
                     va.declare(s, value.getType());
                     va.assign(s, value);
-                    //LOGGER.info("Variables to match " + s + " : " + value);
+
+                } catch (ClassCastException e){
+                    LogicVariable var = (LogicVariable) matchPath.getUnit();
+                    String reprTerm = var.name().toString();
+                    Value<String> value = new Value<>(
+                            new TermType(new SortType(var.sort())),
+                            reprTerm);
+                    if (s.startsWith("?")) {
+                        s = s.replaceFirst("\\?", "");
+                    }
+                    va.declare(s, value.getType());
+                    va.assign(s, value);
+
+
                 }
+                    //LOGGER.info("Variables to match " + s + " : " + value);
+                //}
             }
             List<VariableAssignment> retList = new LinkedList();
             LOGGER.info("Matched Variables " + va.toString());

@@ -1,6 +1,8 @@
 @base03: rgb(0, 43, 54);
 @base02: rgb(7, 54, 66);
-@base01: rgb(88, 110, 117);
+@base01: #000000;
+
+//@base01: rgb(88, 110, 117);
 @base00: rgb(101, 123, 131);
 @base0: rgb(131, 148, 150);
 @base1: rgb(147, 161, 161);
@@ -15,9 +17,11 @@
 @cyan: rgb(42, 161, 152);
 @green: rgb(38, 187, 108);
 @basenavy: #f6f8ff;
+//screenshot @basenavy: #ffffff;
 @keywordColor: #200080;
 @stringliteralColor: #6679aa;
 @integerLiteralColor: #008c00;
+@screenShotMarkerBase: #97ffc6;
 
 .solarized-dark() {
   background-color: @base03;
@@ -35,7 +39,7 @@
   -fx-font-family: "Inconsolata", monospace;
   //-fx-font-family: "Fira Code Medium", monospace;
   -fx-font-size: 12pt;
-  //-fx-font-size: 18pt;
+ // -fx-font-size: 20pt;
   -fx-fill: @base00;
 
   .lineno {
@@ -112,7 +116,9 @@
   }
 
   .line-highlight-postmortem {
-    -rtfx-background-color: @cyan;
+//    -rtfx-background-color: @cyan;
+    -rtfx-background-color: @screenShotMarkerBase;
+
   }
 
   .line-unhighlight {
@@ -120,7 +126,8 @@
   }
 
   .line-highlight-mainScript {
-    -rtfx-background-color: @green;
+//    -rtfx-background-color: @green;
+    -rtfx-background-color: @screenShotMarkerBase;
   }
 
 }
@@ -139,7 +146,7 @@
   //  -fx-background-color: @base3;
   -fx-font-family: "Inconsolata", monospace;
   -fx-font-size: 12pt;
-  //-fx-font-size: 18pt;
+  //-fx-font-size: 20pt;
   -fx-fill: @base01;
 
   .ABSTRACT, .ASSERT, .BOOLEAN, .BREAK, .BYTE, .CASE, .CATCH, .CHAR, .CLASS, .CONST,
@@ -192,7 +199,9 @@
     -fx-underline: true;
   }
   .line-highlight {
-    -rtfx-background-color: @cyan;
+//    -rtfx-background-color: @cyan;
+    -rtfx-background-color: @screenShotMarkerBase;
+
   }
   .line-un-highlight {
     -rtfx-background-color: @basenavy;
@@ -234,7 +243,7 @@
 
 .sequent-view {
   -fx-font-size: 14pt;
-  //-fx-font-size: 18pt;
+//  -fx-font-size: 20pt;
   -fx-background-color: @basenavy;
   -fx-fill: black;
 
