@@ -23,9 +23,9 @@ public class SavePoint   {
             savepointName = ((StringLiteral) p.get(new Variable("#2"))).getText();
             start = call.getRuleContext().getStart().getStartIndex();
             end = call.getRuleContext().getStart().getStopIndex();
-        }
+        } else {
         throw new IllegalArgumentException(call.getCommand()+" is not a save statement");
-    }
+    }}
 
     public static boolean isSaveCommand(CallStatement call){
         return (call.getCommand().equals("save"));

@@ -326,7 +326,14 @@
                         <ComboBox fx:id="combo_savepoints"  disable="true" prefWidth="100" prefHeight="30">
 
                         </ComboBox>
-
+                        <Button fx:id="spselect" onAction="#selectSavepoint" disable="true">
+                            <graphic>
+                                <MaterialDesignIconView glyphName="CHECK" size="22.0"/>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip text="Select Savepoint"/>
+                            </tooltip>
+                        </Button>
                         <Pane HBox.hgrow="ALWAYS"/>
                         <Label text="Windows:"/>
                         <ToggleButton fx:id="togBtnCodeDock" onAction="#showCodeDock">

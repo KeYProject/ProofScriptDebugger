@@ -44,6 +44,8 @@ public class InterpreterBuilder {
     @Getter
     private ProofScriptCommandBuilder pmc = new ProofScriptCommandBuilder();
     @Getter
+    private BuiltInCommandHandler bich = new BuiltInCommandHandler();
+    @Getter
     private ProofScript entryPoint;
     @Getter
     private Proof proof;
@@ -54,7 +56,7 @@ public class InterpreterBuilder {
     @Getter
     private ScopeLogger logger;
     @Getter
-    private DefaultLookup lookup = new DefaultLookup(psh, pmh, pmc, pmr);
+    private DefaultLookup lookup = new DefaultLookup(psh, pmh, pmc, pmr, bich);
 
     @Getter
     private KeyAssignmentHook keyHooks = new KeyAssignmentHook();

@@ -15,6 +15,7 @@ import de.uka.ilkd.key.proof.SingleProof;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
+import edu.kit.iti.formal.psdbg.SaveCommand;
 import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
 import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.fmt.DefaultFormatter;
@@ -53,6 +54,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
+import javafx.util.Callback;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.RecognitionException;
@@ -66,8 +68,10 @@ import org.key_project.util.collection.ImmutableList;
 import org.reactfx.util.FxTimer;
 import org.reactfx.util.Timer;
 
+
 import javax.annotation.Nullable;
 import javax.swing.*;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -104,6 +108,9 @@ public class DebuggerMain implements Initializable {
     private final DockNode graphViewNode = new DockNode(graphView, "Debug graph");
     private InspectionViewsController inspectionViewsController;
     private ScriptController scriptController;
+
+    private InterpreterBuilder interpreterBuilder;
+
     @FXML
     private DebuggerStatusBar statusBar;
     @FXML
@@ -135,8 +142,12 @@ public class DebuggerMain implements Initializable {
     private Button interactive_undo;
 
     @FXML
-    private ComboBox<Path> combo_savepoints;
+    private ComboBox<SavePoint> combo_savepoints;
+    @FXML
+    private Button spselect;
 
+    //TODO: dir
+    private File dir;
 
     private JavaArea javaArea = new JavaArea();
     private DockNode javaAreaDock = new DockNode(javaArea, "Java Source",
@@ -529,7 +540,8 @@ public class DebuggerMain implements Initializable {
         }
 
         // else getProofState() == VIRGIN!
-        executeScript(FACADE.buildInterpreter(), addInitBreakpoint);
+        interpreterBuilder = FACADE.buildInterpreter();
+        executeScript(interpreterBuilder, addInitBreakpoint);
     }
 
     /**
@@ -628,6 +640,9 @@ public class DebuggerMain implements Initializable {
 
             ib.setScripts(scripts);
             executeScript0(ib, breakpoints, ms, addInitBreakpoint);
+
+
+
         } catch (RecognitionException e) {
             LOGGER.error(e);
             Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
@@ -713,6 +728,40 @@ public class DebuggerMain implements Initializable {
             }
 
         });
+
+        //SavePoints
+        //get savepoints
+        ObservableList<SavePoint> splist = FXCollections.observableArrayList(interpreterBuilder.getBich().getSc().getSplist());
+        if(splist.size() > 0) {
+            combo_savepoints.setDisable(false);
+            combo_savepoints.setItems(splist);
+            combo_savepoints.setCellFactory(new Callback<ListView<SavePoint>, ListCell<SavePoint>>() {
+
+                @Override
+                public ListCell<SavePoint> call(ListView<SavePoint> param) {
+                    return new ListCell<SavePoint>(){
+                        @Override
+                        protected void updateItem(SavePoint item, boolean empty) {
+                            super.updateItem(item, empty);
+
+                            if (item == null || empty) {
+                                setGraphic(null);
+                            } else {
+                                setText(item.getSavepointName());
+                            }
+                        }
+                    };
+                }
+
+
+            });
+
+            spselect.setDisable(false);
+        } else {
+            combo_savepoints.setDisable(true);
+            spselect.setDisable(true);
+        }
+
     }
 
     @FXML
@@ -1071,7 +1120,7 @@ public class DebuggerMain implements Initializable {
         }
     }
 
-    public void saveProof(File file) throws IOException {
+    public static void saveProof(File file) throws IOException {
         if (FACADE.getProof() != null)
             FACADE.getProof().saveToFile(file);
     }
@@ -1236,6 +1285,12 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void selectSavepoint(ActionEvent actionEvent) {
+        if (combo_savepoints.getItems().size() > 0) {
+            SavePoint selected = combo_savepoints.getValue();
+            System.out.println("Clicked on Savepoint:" + selected);
+            openKeyFile(selected.getProofFile(dir));
+            executeScriptFromSavePoint(interpreterBuilder, selected);
+        }
 
     }
 
