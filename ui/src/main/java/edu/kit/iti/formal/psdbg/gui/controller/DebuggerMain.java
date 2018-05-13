@@ -15,7 +15,6 @@ import de.uka.ilkd.key.proof.SingleProof;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
-import edu.kit.iti.formal.psdbg.SaveCommand;
 import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
 import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.fmt.DefaultFormatter;
@@ -34,12 +33,14 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
+import edu.kit.iti.formal.psdbg.interpreter.exceptions.InterpreterRuntimeException;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -71,14 +72,12 @@ import org.reactfx.util.Timer;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
@@ -143,6 +142,7 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     private ComboBox<SavePoint> combo_savepoints;
+
     @FXML
     private Button spselect;
 
@@ -372,6 +372,51 @@ public class DebuggerMain implements Initializable {
         statusBar.interpreterStatusModelProperty().bind(model.interpreterStateProperty());
         renewThreadStateTimer();
 
+        //TODO: nach draußen verlagern
+        combo_savepoints.setCellFactory(new Callback<ListView<SavePoint>, ListCell<SavePoint>>() {
+
+            @Override
+            public ListCell<SavePoint> call(ListView<SavePoint> param) {
+                return new ListCell<SavePoint>(){
+                    @Override
+                    protected void updateItem(SavePoint item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (item == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setText(item.getSavepointName());
+                        }
+
+                    }
+                };
+            }
+
+        });
+
+        //update Combobox on changed Savepoints
+        scriptController.getMainScriptSavePoints().addListener(new ListChangeListener<SavePoint>() {
+            @Override
+            public void onChanged(Change<? extends SavePoint> c) {
+
+
+
+                if(scriptController.getMainScriptSavePoints().size() > 0){
+                    combo_savepoints.setItems(scriptController.getMainScriptSavePoints());
+
+                    spselect.setDisable(false);
+                    combo_savepoints.setDisable(false);
+
+                } else {
+                    spselect.setDisable(true);
+                    combo_savepoints.setDisable(true);
+
+                }
+
+
+            }
+        });
+
     }
 
     /**
@@ -539,8 +584,8 @@ public class DebuggerMain implements Initializable {
             }
         }
 
-        // else getProofState() == VIRGIN!
         interpreterBuilder = FACADE.buildInterpreter();
+        interpreterBuilder.setProblemPath(FACADE.getFilepath());
         executeScript(interpreterBuilder, addInitBreakpoint);
     }
 
@@ -639,6 +684,7 @@ public class DebuggerMain implements Initializable {
             LOGGER.debug("MainScript: {}", ms.getName());
 
             ib.setScripts(scripts);
+            System.out.println("ms = " + FACADE.getProof().getProofFile());
             executeScript0(ib, breakpoints, ms, addInitBreakpoint);
 
 
@@ -729,38 +775,7 @@ public class DebuggerMain implements Initializable {
 
         });
 
-        //SavePoints
-        //get savepoints
-        ObservableList<SavePoint> splist = FXCollections.observableArrayList(interpreterBuilder.getBich().getSc().getSplist());
-        if(splist.size() > 0) {
-            combo_savepoints.setDisable(false);
-            combo_savepoints.setItems(splist);
-            combo_savepoints.setCellFactory(new Callback<ListView<SavePoint>, ListCell<SavePoint>>() {
 
-                @Override
-                public ListCell<SavePoint> call(ListView<SavePoint> param) {
-                    return new ListCell<SavePoint>(){
-                        @Override
-                        protected void updateItem(SavePoint item, boolean empty) {
-                            super.updateItem(item, empty);
-
-                            if (item == null || empty) {
-                                setGraphic(null);
-                            } else {
-                                setText(item.getSavepointName());
-                            }
-                        }
-                    };
-                }
-
-
-            });
-
-            spselect.setDisable(false);
-        } else {
-            combo_savepoints.setDisable(true);
-            spselect.setDisable(true);
-        }
 
     }
 
@@ -1285,11 +1300,49 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void selectSavepoint(ActionEvent actionEvent) {
-        if (combo_savepoints.getItems().size() > 0) {
+        if (combo_savepoints.getValue() != null) {
+            stopDebugMode(actionEvent);
             SavePoint selected = combo_savepoints.getValue();
-            System.out.println("Clicked on Savepoint:" + selected);
-            openKeyFile(selected.getProofFile(dir));
-            executeScriptFromSavePoint(interpreterBuilder, selected);
+
+            try {
+                abortExecution();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            /**
+             * reload with selected savepoint
+             */
+            Platform.runLater(() -> model.setStatePointer(null));
+            handleStatePointerUI(null);
+            //reload getInspectionViewsController().getActiveInspectionViewTab().getModel()
+            InspectionModel iModel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
+            //iModel.setHighlightedJavaLines(FXCollections.emptyObservableSet());
+            iModel.clearHighlightLines();
+            iModel.getGoals().clear();
+            iModel.setSelectedGoalNodeToShow(null);
+            try {
+
+                String parentpath = FACADE.getFilepath().getAbsolutePath();
+                parentpath = parentpath.substring(0, parentpath.length() - FACADE.getFilepath().getName().length());
+                File loadfile = new File(parentpath + selected.getSavepointName() + ".key");
+                System.out.println("loadfile = " + loadfile);
+                FACADE.reload(loadfile);
+                if (iModel.getGoals().size() > 0) {
+                    iModel.setSelectedGoalNodeToShow(iModel.getGoals().get(0));
+                }
+                if (FACADE.getReadyToExecute()) {
+                    LOGGER.info("Reloaded Successfully");
+                    statusBar.publishMessage("Reloaded Sucessfully");
+                }
+            } catch (ProofInputException | ProblemLoaderException e) {
+                LOGGER.error(e);
+                Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment",
+                        e
+                );
+            }
+
+           // executeScriptFromSavePoint(interpreterBuilder, selected);
         }
 
     }

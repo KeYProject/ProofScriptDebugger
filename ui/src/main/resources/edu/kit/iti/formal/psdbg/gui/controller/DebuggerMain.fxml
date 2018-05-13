@@ -323,7 +323,7 @@
                                 <Tooltip text="Undo"/>
                             </tooltip>
                         </Button>
-                        <ComboBox fx:id="combo_savepoints"  disable="true" prefWidth="100" prefHeight="30">
+                        <ComboBox fx:id="combo_savepoints" disable="true" prefWidth="100" prefHeight="30">
 
                         </ComboBox>
                         <Button fx:id="spselect" onAction="#selectSavepoint" disable="true">

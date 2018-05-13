@@ -23,10 +23,7 @@ import org.key_project.util.collection.ImmutableList;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -62,6 +59,8 @@ public class InterpreterBuilder {
     private KeyAssignmentHook keyHooks = new KeyAssignmentHook();
 
     private KeyInterpreter interpreter = new KeyInterpreter(lookup);
+
+
 
     @Getter
     private InterpreterOptionsHook<KeyData> optionsHook = new InterpreterOptionsHook<>(interpreter);
@@ -204,18 +203,32 @@ public class InterpreterBuilder {
         if (proof == null || keyEnvironment == null)
             throw new IllegalStateException("Call proof(..) before startState");
 
+
         ImmutableList<Goal> openGoals = proof.getSubtreeGoals(proof.root());
         List<GoalNode<KeyData>> goals = openGoals.stream().map(g ->
                 new GoalNode<>(null, new KeyData(g, keyEnvironment, proof), false))
                 .collect(Collectors.toList());
+
+
         interpreter.newState(goals);
+
+
         return this;
 
     }
 
     private InterpreterBuilder startState(GoalNode<KeyData> startGoal) {
         interpreter.newState(startGoal);
+
         return this;
+    }
+
+    public InterpreterBuilder setProblemPath(File path){
+        Map<String, CommandHandler<KeyData>> builtinsnew = this.bich.getBuiltins();
+        builtinsnew.put("save", new SaveCommand(path));
+        this.bich.setBuiltins(builtinsnew);
+        return this;
+
     }
 
 }

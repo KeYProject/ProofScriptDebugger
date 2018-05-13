@@ -85,10 +85,15 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
     @Override
     public boolean handles(CallStatement call, KeyData data) throws IllegalArgumentException {
         if (rules.containsKey(call.getCommand())) return true;//static/rigid rules
+        try{
         if (data != null) {
             Goal goal = data.getGoal();
             Set<String> rules = findTaclets(data.getProof(), goal);
             return rules.contains(call.getCommand());
+        }
+        } catch (NullPointerException npe) {
+            System.out.println("npe = " + npe);
+            return false;    
         }
         return false;
     }

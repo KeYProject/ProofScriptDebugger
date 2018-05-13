@@ -16,6 +16,7 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
+import jdk.nashorn.internal.objects.annotations.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
@@ -69,6 +70,8 @@ public class KeYProofFacade {
 
     //Workaround until api is relaxed
     private ProofManagementApi pma;
+
+    private File filepath;
 
     /**
      *
@@ -131,6 +134,7 @@ public class KeYProofFacade {
         ProofManagementApi pma = KeYApi.loadFromKeyFile(keYFile);
         ProofApi pa = pma.getLoadedProof();
         setLoading(false);
+        filepath = keYFile;
         return pa;
     }
 
@@ -141,6 +145,7 @@ public class KeYProofFacade {
         proof.set(pa.getProof());
         contract.set(null);
         setLoading(false);
+        filepath = keyFile;
         return pa;
     }
 
@@ -247,6 +252,13 @@ public class KeYProofFacade {
 
     public BooleanBinding readyToExecuteProperty() {
         return readyToExecute;
+    }
+
+    /**
+        returns filepath of loaded KeY problem
+     **/
+    public File getFilepath() {
+        return filepath;
     }
 
     public Collection<GoalNode<KeyData>> getPseudoGoals() {

@@ -1,27 +1,25 @@
 package edu.kit.iti.formal.psdbg.interpreter.funchdl;
 
-import edu.kit.iti.formal.psdbg.SaveCommand;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
 public class BuiltInCommandHandler implements CommandHandler<KeyData> {
 
-    @Getter
-    private final Map<String, BuiltinCommands.BuiltinCommand> builtins;
+    @Getter @Setter
+    private Map<String, CommandHandler<KeyData>> builtins;
 
-    @Getter
-    private final SaveCommand sc = new SaveCommand();
+    @Getter @Setter
+    private SaveCommand sc;
 
     public BuiltInCommandHandler() {
         builtins = new HashMap<>();
@@ -37,14 +35,6 @@ public class BuiltInCommandHandler implements CommandHandler<KeyData> {
 
     @Override
     public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params, KeyData data) {
-
-        if(SavePoint.isSaveCommand(call)) {
-            //TODO: interpreter ist ast visitor, so not needed?
-            sc.evaluate(null,call,params,null);
-
-
-
-        }
-
+        builtins.get(call.getCommand()).evaluate(interpreter,call,params, data);
     }
 }
