@@ -4,7 +4,14 @@ script test123() {
   impRight;
 save 'test1';
   impLeft;
-//save 'test2';
+
+}
+
+script test2open() {
+  impRight;
+  impRight;
+  impLeft;
+  save 'test2';
 }
 
 script autoScript(){

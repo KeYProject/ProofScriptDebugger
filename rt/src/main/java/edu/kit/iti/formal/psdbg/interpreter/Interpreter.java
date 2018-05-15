@@ -694,8 +694,10 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             GoalNode<T> selectedGoalNode = stateStack.peek().getSelectedGoalNode();
             if (selectedGoalNode != null) {
                 assert stateStack.peek().getGoals().contains(selectedGoalNode);
+                return selectedGoalNode;
+            }else{
+                throw new IllegalStateException();
             }
-            return selectedGoalNode;
         } catch (IllegalStateException e) {
             if (strictMode)
                 throw e;

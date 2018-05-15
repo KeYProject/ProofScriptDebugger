@@ -254,6 +254,7 @@ public class DebuggerMain implements Initializable {
         Events.register(this);
        // model.setDebugMode(false);
         scriptController = new ScriptController(dockStation);
+        //TODO:
         interactiveModeController = new InteractiveModeController(scriptController);
         btnInteractiveMode.setSelected(false);
         inspectionViewsController = new InspectionViewsController(dockStation);
@@ -398,8 +399,6 @@ public class DebuggerMain implements Initializable {
         scriptController.getMainScriptSavePoints().addListener(new ListChangeListener<SavePoint>() {
             @Override
             public void onChanged(Change<? extends SavePoint> c) {
-
-
 
                 if(scriptController.getMainScriptSavePoints().size() > 0){
                     combo_savepoints.setItems(scriptController.getMainScriptSavePoints());
