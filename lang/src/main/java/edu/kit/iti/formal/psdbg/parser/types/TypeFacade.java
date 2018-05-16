@@ -15,7 +15,8 @@ public final class TypeFacade {
         }
         if (symbol.toLowerCase().startsWith("term<") && symbol.endsWith(">")) {
             TermType tt = new TermType();
-            String n = symbol.substring(6, symbol.length() - 2);
+            //get the termtype
+            String n = symbol.substring(5, symbol.length() - 1);
             for (String term : n.split(",")) {
                 tt.getArgTypes().add(findType(term));
             }
