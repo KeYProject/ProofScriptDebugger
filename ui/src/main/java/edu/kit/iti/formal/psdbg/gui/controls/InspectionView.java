@@ -70,6 +70,8 @@ public class InspectionView extends BorderPane {
         frames.setConverter(new StringConverter<PTreeNode<KeyData>>() {
             @Override
             public String toString(PTreeNode<KeyData> object) {
+                if(object==null)
+                    return "";
                 return object.getSingleRepresentation();
             }
 

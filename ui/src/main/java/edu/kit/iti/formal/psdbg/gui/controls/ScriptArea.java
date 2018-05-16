@@ -783,6 +783,7 @@ public class ScriptArea extends BorderPane {
 
         @Override
         public Node apply(int idx) {
+            if(idx==-1) return new Label("idx is -1!"); //TODO weigl debug
             Val<String> formatted = nParagraphs.map(n -> format(idx + 1, n));
             GutterAnnotation model = getLineAnnotation(idx);
             GutterView hbox = new GutterView(model);
