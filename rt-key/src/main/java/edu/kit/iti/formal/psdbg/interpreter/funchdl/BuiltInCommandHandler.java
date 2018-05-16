@@ -37,4 +37,13 @@ public class BuiltInCommandHandler implements CommandHandler<KeyData> {
     public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params, KeyData data) {
         builtins.get(call.getCommand()).evaluate(interpreter,call,params, data);
     }
+
+    @Override
+    public boolean isUninterpretedParams(CallStatement call) {
+        if(builtins.containsKey(call.getCommand())){
+            return builtins.get(call.getCommand()).isUninterpretedParams(call);
+        } else {
+            return false;
+        }
+    }
 }

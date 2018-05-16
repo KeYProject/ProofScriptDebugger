@@ -7,6 +7,8 @@ import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.BuiltinCommands;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.CommandHandler;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
+import edu.kit.iti.formal.psdbg.parser.ast.Parameters;
+import edu.kit.iti.formal.psdbg.parser.data.Value;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -36,8 +38,8 @@ public class SaveCommand implements CommandHandler<KeyData>{
 
     @Override
     public void evaluate(Interpreter<KeyData> interpreter, CallStatement call, VariableAssignment params, KeyData data) {
+        //be careful parameters are uninterpreted
         SavePoint sp = new SavePoint(call);
-
         //Not via Parentpath -> dependency on OS
         String parentpath = path.getAbsolutePath();
         parentpath = parentpath.substring(0, parentpath.length() - path.getName().length());
@@ -51,6 +53,12 @@ public class SaveCommand implements CommandHandler<KeyData>{
         }
 
 
+    }
+
+
+    @Override
+    public boolean isUninterpretedParams(CallStatement call) {
+        return true;
     }
 }
 

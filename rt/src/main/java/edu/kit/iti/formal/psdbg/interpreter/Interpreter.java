@@ -85,7 +85,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             throw new InterpreterRuntimeException("no state on stack. call newState before interpret");
         }
 
-        if(getSelectedNode() != null) {
+        if (getSelectedNode() != null) {
             //initialize environment variables
             for (VariableAssignmentHook<T> hook : variableHooks) {
                 VariableAssignment va = hook.getStartAssignment(getSelectedNode().getData());
@@ -186,7 +186,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return evaluator.eval(expr);
     }
 
-    protected  Evaluator<T> createEvaluator(VariableAssignment assignments, GoalNode<T> g) {
+    protected Evaluator<T> createEvaluator(VariableAssignment assignments, GoalNode<T> g) {
         Evaluator<T> evaluator = new Evaluator<>(assignments, g);
         evaluator.setMatcher(matcherApi);
         return evaluator;
@@ -562,28 +562,57 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         enterScope(call);
         if (!call.getCommand().isEmpty()) //real call, can handle pseudo calls!
         {
-            // System.out.println(stateStack.peek().hashCode());
             //neuer VarScope
             //enter new variable scope
-            VariableAssignment params = evaluateParameters(call.getParameters());
-            GoalNode<T> g = getSelectedNode();
-            g.enterScope();
+            VariableAssignment params;
+            GoalNode<T> g = null;
+            boolean unInterpretedParams = functionLookup.isUninterpretedParams(call);
+            if (!unInterpretedParams) {
+                params = evaluateParameters(call.getParameters());
+                g = getSelectedNode();
+                g.enterScope();
+            } else {
+                params = evaluateParametersStateLess(call.getParameters());
+
+            }
             try {
                 functionLookup.callCommand(this, call, params);
+
             } catch (RuntimeException e) {
-                System.err.println("Call command not applicable");
+                System.err.println("Call command " + call.getCommand() + "not applicable");
                 throw e;
                 //TODO handling of error state for each visit
                 //State<T> newErrorState = newState(null, null);
                 //newErrorState.setErrorState(true);
                 //pushState(newErrorState);
             } finally {
-                g.exitScope();
-                //  System.out.println(stateStack.peek().hashCode());
+                if (!unInterpretedParams) {
+                    //TODO this may not be needed
+                    g.exitScope();
+                }
             }
+
         }
         exitScope(call);
         return null;
+    }
+
+    private VariableAssignment evaluateParametersStateLess(Parameters parameters) {
+        VariableAssignment va = new VariableAssignment();
+        Evaluator<T> evaluator = createEvaluator(null, null);
+
+        parameters.entrySet().forEach(entry -> {
+            try {
+                Value val = evaluate(entry.getValue());
+                va.declare(entry.getKey(), val.getType());
+                va.assign(entry.getKey(), val);
+            } catch (NullPointerException npe) {
+
+                System.out.println("Caught Nullpointer in evaluation of Stateless parameters: " + entry.toString()
+                );
+            }
+        });
+        return va;
     }
 
     public VariableAssignment evaluateParameters(Parameters parameters) {
@@ -669,9 +698,9 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         // TODO: quickfix
 
         List<GoalNode<T>> currentGoals = getCurrentGoals();
-        if(getCurrentGoals().size() > 1) {
-            if(getSelectedNode() == null) {
-                for(GoalNode<T> goal: currentGoals) {
+        if (getCurrentGoals().size() > 1) {
+            if (getSelectedNode() == null) {
+                for (GoalNode<T> goal : currentGoals) {
 
                     goal.enterScope();
                     signature.forEach(goal::declareVariable);
@@ -695,7 +724,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
             if (selectedGoalNode != null) {
                 assert stateStack.peek().getGoals().contains(selectedGoalNode);
                 return selectedGoalNode;
-            }else{
+            } else {
                 throw new IllegalStateException();
             }
         } catch (IllegalStateException e) {

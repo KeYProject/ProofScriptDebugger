@@ -53,7 +53,7 @@ public class InterpreterBuilder {
     @Getter
     private ScopeLogger logger;
     @Getter
-    private DefaultLookup lookup = new DefaultLookup(psh, pmh, pmc, pmr, bich);
+    private DefaultLookup lookup = new DefaultLookup(psh, pmh, pmc, bich, pmr);
 
     @Getter
     private KeyAssignmentHook keyHooks = new KeyAssignmentHook();

@@ -1,6 +1,6 @@
 script test123() {
   impRight;
-  save 'test0';
+  save 'test0' force='yes';
   impRight;
 save 'test1';
   impLeft;

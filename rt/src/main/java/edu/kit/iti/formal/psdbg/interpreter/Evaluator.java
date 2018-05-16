@@ -148,7 +148,7 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
                 String name = m.group().substring(1); // remove trailing '?'
                 Expression t = expr.getSubstitution().get(m.group());
 
-                //either evalute the substitent or find ?X in the
+                //either evalute the substituent or find ?X in the
                 String newVal = "";
                 if (t != null)
                     newVal = ((Value) t.accept(this)).getData().toString();
