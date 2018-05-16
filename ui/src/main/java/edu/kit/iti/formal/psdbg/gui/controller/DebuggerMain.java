@@ -222,7 +222,7 @@ public class DebuggerMain implements Initializable {
         for (GoalNode<KeyData> gn : im.getGoals()) {
             if (gn.getData().getNode().equals(evt.getNode())) {
                 im.setSelectedGoalNodeToShow(gn);
-                dockNode.focus();
+                dockNode.requestFocus();
                 return;
             }
         }
@@ -473,9 +473,9 @@ public class DebuggerMain implements Initializable {
 
         EventHandler<ActionEvent> handler = event -> {
             if (!prop.get()) {
-                if (dn.getLastDockPos() != null)
-                    dn.dock(dockStation, dn.getLastDockPos());
-                else
+                //if (dn.getLastDockPos() != null)
+                //    dn.dock(dockStation, dn.getLastDockPos());
+                //else
                     dn.dock(dockStation, defaultPosition);
             } else {
                 dn.undock();

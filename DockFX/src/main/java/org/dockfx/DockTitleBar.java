@@ -21,14 +21,9 @@
 package org.dockfx;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Stack;
 
-import com.sun.javafx.stage.StageHelper;
-
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -57,15 +52,15 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
   /**
    * The DockNode this node is a title bar for.
    */
-  private final DockNode dockNode;
+  private DockNode dockNode;
   /**
    * The label node used for captioning and the graphic.
    */
-  private final Label label;
+  private Label label;
   /**
    * State manipulation buttons including close, maximize, detach, and restore.
    */
-  private final Button closeButton, stateButton, minimizeButton;
+  private Button closeButton, stateButton;
 
   /**
    * Creates a default DockTitleBar with captions and dragging behavior.
@@ -93,67 +88,28 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
 
     closeButton = new Button();
     closeButton.setOnAction(new EventHandler<ActionEvent>() {
-
       @Override
       public void handle(ActionEvent event) {
         dockNode.close();
       }
     });
-    
-    minimizeButton = new Button();
-    minimizeButton.setOnAction(new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent event) {
-            dockNode.setMinimized(true);
-        }
-    });
-    
-    this.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
-    this.addEventHandler(MouseEvent.DRAG_DETECTED, this);
-    this.addEventHandler(MouseEvent.MOUSE_DRAGGED, this);
-    this.addEventHandler(MouseEvent.MOUSE_RELEASED, this);
-    
-    label.getStyleClass().add("dock-title-label");
-    closeButton.getStyleClass().add("dock-close-button");
-    stateButton.getStyleClass().add("dock-state-button");
-    minimizeButton.getStyleClass().add("dock-minimize-button");
-    this.getStyleClass().add("dock-title-bar");
+    closeButton.visibleProperty().bind(dockNode.closableProperty());
 
     // create a pane that will stretch to make the buttons right aligned
     Pane fillPane = new Pane();
     HBox.setHgrow(fillPane, Priority.ALWAYS);
 
-    dockNode.closableProperty().addListener( new ChangeListener< Boolean >()
-    {
-      @Override public void changed( ObservableValue< ? extends Boolean > observable, Boolean oldValue, Boolean newValue )
-      {
-        if(newValue)
-        {
-          if(!getChildren().contains( closeButton ))
-            getChildren().add( closeButton );
-        }
-        else
-        {
-          getChildren().removeIf( c -> c.equals( closeButton ) );
-        }
-      }
-    } );
+    getChildren().addAll(label, fillPane, stateButton, closeButton);
 
-    dockNode.minimizableProperty().addListener( new ChangeListener< Boolean >()
-    {
-      @Override public void changed( ObservableValue< ? extends Boolean > observable, Boolean oldValue, Boolean newValue )
-      {
-        if(newValue)
-        {
-          getChildren().add(2, minimizeButton);
-        }
-        else
-        {
-          getChildren().remove( minimizeButton );
-        }
-      }
-    } );
-    getChildren().addAll( label, fillPane, stateButton, closeButton );
+    this.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
+    this.addEventHandler(MouseEvent.DRAG_DETECTED, this);
+    this.addEventHandler(MouseEvent.MOUSE_DRAGGED, this);
+    this.addEventHandler(MouseEvent.MOUSE_RELEASED, this);
+
+    label.getStyleClass().add("dock-title-label");
+    closeButton.getStyleClass().add("dock-close-button");
+    stateButton.getStyleClass().add("dock-state-button");
+    this.getStyleClass().add("dock-title-bar");
   }
 
   /**
@@ -192,15 +148,6 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
    */
   public final Button getStateButton() {
     return stateButton;
-  }
-  
-  /**
-   * The button used for minimizing this title bar and its associated dock node.
-   *
-   * @return The button used for minimizing this title bar and its associated dock node.
-   */
-  public final Button getMinimizeButton() {
-    return minimizeButton;
   }
 
   /**
@@ -278,10 +225,14 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
     // RFE for public scene graph traversal API filed but closed:
     // https://bugs.openjdk.java.net/browse/JDK-8133331
 
-    ObservableList<Stage> stages =
-        FXCollections.unmodifiableObservableList(StageHelper.getStages());
+    List<DockPane> dockPanes = DockPane.dockPanes;
+
     // fire the dock over event for the active stages
-    for (Stage targetStage : stages) {
+    for (DockPane dockPane : dockPanes) {
+      Window window = dockPane.getScene().getWindow();
+      if (!(window instanceof Stage)) continue;
+      Stage targetStage = (Stage) window;
+
       // obviously this title bar does not need to receive its own events
       // though users of this library may want to know when their
       // dock node is being dragged by subclassing it or attaching
@@ -352,7 +303,7 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
         // then we need to offset the stage position by
         // the height of this title bar
         if (!dockNode.isCustomTitleBar() && dockNode.isDecorated()) {
-          dockNode.setFloating(true, new Point2D(0, DockTitleBar.this.getHeight()), null);
+          dockNode.setFloating(true, new Point2D(0, DockTitleBar.this.getHeight()));
         } else {
           dockNode.setFloating(true);
         }
@@ -404,12 +355,6 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
       Stage stage = dockNode.getStage();
       Insets insetsDelta = this.getDockNode().getBorderPane().getInsets();
 
-      // it is possible that drag start has not been set if some other node had focus when
-      // we started the drag
-      if (null == dragStart) {
-        dragStart = new Point2D(event.getX(), event.getY());
-      }
-      
       // dragging this way makes the interface more responsive in the event
       // the system is lagging as is the case with most current JavaFX
       // implementations on Linux
@@ -419,13 +364,13 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
       // TODO: change the pick result by adding a copyForPick()
       DockEvent dockEnterEvent =
           new DockEvent(this, DockEvent.NULL_SOURCE_TARGET, DockEvent.DOCK_ENTER, event.getX(),
-              event.getY(), event.getScreenX(), event.getScreenY(), null, this.getDockNode());
+              event.getY(), event.getScreenX(), event.getScreenY(), null);
       DockEvent dockOverEvent =
           new DockEvent(this, DockEvent.NULL_SOURCE_TARGET, DockEvent.DOCK_OVER, event.getX(),
-              event.getY(), event.getScreenX(), event.getScreenY(), null, this.getDockNode());
+              event.getY(), event.getScreenX(), event.getScreenY(), null);
       DockEvent dockExitEvent =
           new DockEvent(this, DockEvent.NULL_SOURCE_TARGET, DockEvent.DOCK_EXIT, event.getX(),
-              event.getY(), event.getScreenX(), event.getScreenY(), null, this.getDockNode());
+              event.getY(), event.getScreenX(), event.getScreenY(), null);
 
       EventTask eventTask = new EventTask() {
         @Override
