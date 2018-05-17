@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class SaveCommand implements CommandHandler<KeyData> {
-    private static final String SAVE_COMMAND_NAME = "#save";
+    public static final String SAVE_COMMAND_NAME = "#save";
     private static Logger logger = LogManager.getLogger(SaveCommand.class);
     private static Logger consoleLogger = LogManager.getLogger("console");
 

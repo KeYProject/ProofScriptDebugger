@@ -18,12 +18,10 @@ public class BuiltInCommandHandler implements CommandHandler<KeyData> {
     @Getter @Setter
     private Map<String, CommandHandler<KeyData>> builtins;
 
-    @Getter @Setter
-    private SaveCommand sc;
 
     public BuiltInCommandHandler() {
         builtins = new HashMap<>();
-        builtins.put("save", sc);
+
     }
 
 

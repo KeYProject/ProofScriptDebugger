@@ -225,7 +225,8 @@ public class InterpreterBuilder {
 
     public InterpreterBuilder setProblemPath(File path){
         Map<String, CommandHandler<KeyData>> builtinsnew = this.bich.getBuiltins();
-        builtinsnew.put("save", new SaveCommand(path));
+        SaveCommand sc = new SaveCommand(path);
+        builtinsnew.put(SaveCommand.SAVE_COMMAND_NAME, sc);
         this.bich.setBuiltins(builtinsnew);
         return this;
 
