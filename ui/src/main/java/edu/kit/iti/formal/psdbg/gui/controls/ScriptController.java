@@ -3,21 +3,19 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
-import de.uka.ilkd.key.control.KeYEnvironment;
 import edu.kit.iti.formal.psdbg.gui.actions.acomplete.DefaultAutoCompletionController;
 import edu.kit.iti.formal.psdbg.gui.actions.inline.FindLabelInGoalList;
 import edu.kit.iti.formal.psdbg.gui.actions.inline.FindTermLiteralInSequence;
 import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
-import edu.kit.iti.formal.psdbg.gui.actions.acomplete.Suggestion;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
 import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
-import edu.kit.iti.formal.psdbg.parser.ast.Statement;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -50,55 +48,48 @@ public class ScriptController {
     public static final String LINE_HIGHLIGHT_POSTMORTEM = "line-highlight-postmortem";
 
     private static Logger logger = LogManager.getLogger(ScriptController.class);
+    private static Logger loggerConsole = LogManager.getLogger("console");
 
     private final DockPane parent;
 
     private final ObservableMap<ScriptArea, DockNode> openScripts = FXCollections.observableMap(new HashMap<>());
-
+    private final ListProperty<SavePoint> mainScriptSavePoints
+            = new SimpleListProperty<>(FXCollections.observableArrayList());
     private ObjectProperty<MainScriptIdentifier> mainScript = new SimpleObjectProperty<>();
-
     private ScriptArea lastScriptArea;
-
     private ASTNodeHighlighter postMortemHighlighter = new ASTNodeHighlighter(LINE_HIGHLIGHT_POSTMORTEM);
-
     @Getter
     @Setter
     private List<InlineActionSupplier> actionSuppliers = new ArrayList<>();
-
     @Getter
     @Setter
     private DefaultAutoCompletionController autoCompleter = new DefaultAutoCompletionController();
-
-
 
     public ScriptController(DockPane parent) {
         this.parent = parent;
         Events.register(this);
         addDefaultInlineActions();
 
-        mainScript.addListener((p,o,n)-> {
-            if(o!=null)
-                o.getScriptArea().textProperty().removeListener( a-> updateSavePoints());
-            n.getScriptArea().textProperty().addListener(a->updateSavePoints());
+        mainScript.addListener((p, o, n) -> {
+            if (o != null)
+                o.getScriptArea().textProperty().removeListener(a -> updateSavePoints());
+            n.getScriptArea().textProperty().addListener(a -> updateSavePoints());
             updateSavePoints();
         });
 
 
     }
 
-    private ObservableList<SavePoint> mainScriptSavePoints
-            = new SimpleListProperty<>(FXCollections.observableArrayList());
-
     private void updateSavePoints() {
         Optional<ProofScript> ms = getMainScript().find(getCombinedAST());
-        if(ms.isPresent()) {
+        if (ms.isPresent()) {
             List<SavePoint> list = ms.get().getBody().stream()
                     .filter(SavePoint::isSaveCommand)
                     .map(a -> (CallStatement) a)
                     .map(SavePoint::new)
                     .collect(Collectors.toList());
-
             mainScriptSavePoints.setAll(list);
+            loggerConsole.info("Found savepoints: " + list);
         }
     }
 
@@ -208,10 +199,10 @@ public class ScriptController {
     }
 
     /* Create new DockNode for ScriptArea Tab
-    *
-    * @param area ScriptAreaTab
-    * @return
-    */
+     *
+     * @param area ScriptAreaTab
+     * @return
+     */
     private DockNode createDockNode(ScriptArea area) {
         DockNode dockNode = new DockNode(area, area.getFilePath().getName(), new MaterialDesignIconView(MaterialDesignIcon.FILE_DOCUMENT));
         dockNode.closedProperty().addListener(o -> {
@@ -324,6 +315,10 @@ public class ScriptController {
         return mainScript.get();
     }
 
+    public void setMainScript(MainScriptIdentifier mainScript) {
+        this.mainScript.set(mainScript);
+    }
+
     public void setMainScript(ProofScript proofScript) {
         MainScriptIdentifier msi = new MainScriptIdentifier();
         msi.setLineNumber(proofScript.getStartPosition().getLineNumber());
@@ -333,14 +328,21 @@ public class ScriptController {
         setMainScript(msi);
     }
 
-    public void setMainScript(MainScriptIdentifier mainScript) {
-        this.mainScript.set(mainScript);
-    }
-
     public ObjectProperty<MainScriptIdentifier> mainScriptProperty() {
         return mainScript;
     }
 
+    public ObservableList<SavePoint> getMainScriptSavePoints() {
+        return mainScriptSavePoints.get();
+    }
+
+    public void setMainScriptSavePoints(ObservableList<SavePoint> mainScriptSavePoints) {
+        this.mainScriptSavePoints.set(mainScriptSavePoints);
+    }
+
+    public ListProperty<SavePoint> mainScriptSavePointsProperty() {
+        return mainScriptSavePoints;
+    }
 
     public class ASTNodeHighlighter {
         public final String clazzName;
@@ -391,13 +393,5 @@ public class ScriptController {
                         node.getRuleContext().getStop().getStopIndex(), clazzName);
             else return new ScriptArea.RegionStyle(0, 1, "");
         }
-    }
-
-    public ObservableList<SavePoint> getMainScriptSavePoints() {
-        return mainScriptSavePoints;
-    }
-
-    public void setMainScriptSavePoints(ObservableList<SavePoint> mainScriptSavePoints) {
-        this.mainScriptSavePoints = mainScriptSavePoints;
     }
 }

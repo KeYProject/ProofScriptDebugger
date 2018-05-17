@@ -1,55 +1,110 @@
 package edu.kit.iti.formal.psdbg.interpreter.data;
 
+import com.google.errorprone.annotations.Var;
+import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 
 @Data
 @RequiredArgsConstructor
-public class SavePoint   {
+@AllArgsConstructor
+public class SavePoint {
+    private final String name;
+    private int startOffset = -1;
+    private int endOffset = -1;
+    private int lineNumer = -1;
+    private ForceOption force = ForceOption.YES;
 
-    private final String savepointName;
-
-    private int start = -1;
-
-    private int end = -1;
-
-    public SavePoint(CallStatement call){
-        if(isSaveCommand(call)){
+    public SavePoint(CallStatement call) {
+        if (isSaveCommand(call)) {
             Parameters p = call.getParameters();
-            savepointName = ((StringLiteral) p.get(new Variable("#2"))).getText();
-            start = call.getRuleContext().getStart().getStartIndex();
-            end = call.getRuleContext().getStart().getStopIndex();
-        } else {
-        throw new IllegalArgumentException(call.getCommand()+" is not a save statement");
-    }}
+            name = evalAsText(p, "#2", "not-available");
+            force = ForceOption.valueOf(evalAsText(p, "force", "yes").toUpperCase());
 
-    public static boolean isSaveCommand(CallStatement call){
-        return (call.getCommand().equals("save"));
+            try {
+                startOffset = call.getRuleContext().getStart().getStartIndex();
+                endOffset = call.getRuleContext().getStart().getStopIndex();
+                lineNumer = call.getRuleContext().getStart().getLine();
+            } catch (NullPointerException npe) {
+            }
+        } else {
+            throw new IllegalArgumentException(call.getCommand() + " is not a save statement");
+        }
     }
 
-    public File getProofFile(File dir){
-        return new File(dir, savepointName+".proof");
+    public static boolean isSaveCommand(CallStatement call) {
+        return (call.getCommand().equals("#save"));
     }
 
     public static boolean isSaveCommand(Statement statement) {
-        try{
+        try {
             CallStatement c = (CallStatement) statement;
             return isSaveCommand(c);
-        }catch (ClassCastException e) {
+        } catch (ClassCastException e) {
             return false;
         }
     }
 
+    public boolean exists(File dir) {
+        return getProofFile(dir).exists() && getPersistedStateFile(dir).exists();
+    }
+
+    public static String evalAsText(Parameters p, String key, String defaultValue) {
+        Variable k = new Variable(key);
+        if (!p.containsKey(k)) {
+            return defaultValue;
+        }
+
+        return (String) p.get(k).accept(new DefaultASTVisitor<String>() {
+            @Override
+            public String defaultVisit(ASTNode node) {
+                throw new IllegalArgumentException();
+            }
+
+            @Override
+            public String visit(Variable variable) {
+                return variable.getIdentifier();
+            }
+
+            @Override
+            public String visit(StringLiteral stringLiteral) {
+                return stringLiteral.getText();
+            }
+
+            @Override
+            public String visit(BooleanLiteral booleanLiteral) {
+                return Boolean.toString(booleanLiteral.isValue());
+            }
+
+            @Override
+            public String visit(IntegerLiteral integer) {
+                return (integer.getValue().toString());
+            }
+        });
+    }
+
+    public File getProofFile(File dir) {
+        return new File(dir, name + ".proof");
+    }
+
+    public File getPersistedStateFile(File dir) {
+        return new File(dir, name + ".psdbgstate.xml");
+    }
+
     public boolean isThisStatement(Statement statement) {
-        if(isSaveCommand(statement)){
+        if (isSaveCommand(statement)) {
             CallStatement c = (CallStatement) statement;
-            return c.getCommand().equals(savepointName);
+            return c.getCommand().equals(name);
 
         }
         return false;
+    }
+
+    public enum ForceOption {
+        YES, NO, INTERACTIVE;
     }
 }

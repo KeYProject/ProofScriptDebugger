@@ -33,14 +33,12 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
-import edu.kit.iti.formal.psdbg.interpreter.exceptions.InterpreterRuntimeException;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -55,7 +53,6 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
-import javafx.util.Callback;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.RecognitionException;
@@ -69,7 +66,6 @@ import org.key_project.util.collection.ImmutableList;
 import org.reactfx.util.FxTimer;
 import org.reactfx.util.Timer;
 
-
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.io.File;
@@ -82,6 +78,8 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+
+import org.reactfx.util.Timer;
 
 
 /**
@@ -105,11 +103,24 @@ public class DebuggerMain implements Initializable {
     private final Graph.PTreeGraph graph = graphView.getGraph();
 
     private final DockNode graphViewNode = new DockNode(graphView, "Debug graph");
+
+    @FXML
+    public Menu menuExecuteFromSavepoint;
+
+    @FXML
+    public Menu menuRestartFromSavepoint;
+
+    @FXML
+    SplitMenuButton buttonStartInterpreter;
+
+    ScriptController scriptController;
+    @FXML
+    ComboBox<SavePoint> cboSavePoints;
+    @FXML
+    Button btnSavePointRollback;
     private InspectionViewsController inspectionViewsController;
-    private ScriptController scriptController;
-
+    private SavePointController savePointController;
     private InterpreterBuilder interpreterBuilder;
-
     @FXML
     private DebuggerStatusBar statusBar;
     @FXML
@@ -136,16 +147,8 @@ public class DebuggerMain implements Initializable {
     private CheckMenuItem miProofTree;
     @FXML
     private ToggleButton btnInteractiveMode;
-
     @FXML
     private Button interactive_undo;
-
-    @FXML
-    private ComboBox<SavePoint> combo_savepoints;
-
-    @FXML
-    private Button spselect;
-
     //TODO: dir
     private File dir;
 
@@ -166,25 +169,30 @@ public class DebuggerMain implements Initializable {
     private Menu examplesMenu;
     private Timer interpreterThreadTimer;
 
+    public static void saveProof(File file) throws IOException {
+        if (FACADE.getProof() != null)
+            FACADE.getProof().saveToFile(file);
+    }
+
     @Subscribe
-    public void handle(Events.ShowPostMortem spm){
+    public void handle(Events.ShowPostMortem spm) {
         FindNearestASTNode fna = new FindNearestASTNode(spm.getPosition());
         List<PTreeNode<KeyData>> result =
-        model.getDebuggerFramework().getPtreeManager().getNodes()
-                .stream()
-                .filter(it -> Objects.equals(it.getStatement().accept(fna),it.getStatement()))
-                .collect(Collectors.toList());
+                model.getDebuggerFramework().getPtreeManager().getNodes()
+                        .stream()
+                        .filter(it -> Objects.equals(it.getStatement().accept(fna), it.getStatement()))
+                        .collect(Collectors.toList());
 
         System.out.println(result);
 
 
         for (PTreeNode<KeyData> statePointerToPostMortem : result) {
-            if(statePointerToPostMortem != null && statePointerToPostMortem.getStateAfterStmt() != null) {
+            if (statePointerToPostMortem != null && statePointerToPostMortem.getStateAfterStmt() != null) {
 
                 State<KeyData> stateBeforeStmt = statePointerToPostMortem.getStateBeforeStmt();
-               // stateBeforeStmt.getGoals().forEach(keyDataGoalNode -> System.out.println("BeforeSeq = " + keyDataGoalNode.getData().getNode().sequent()));
+                // stateBeforeStmt.getGoals().forEach(keyDataGoalNode -> System.out.println("BeforeSeq = " + keyDataGoalNode.getData().getNode().sequent()));
                 State<KeyData> stateAfterStmt = statePointerToPostMortem.getStateAfterStmt();
-               // stateAfterStmt.getGoals().forEach(keyDataGoalNode -> System.out.println("AfterSeq = " + keyDataGoalNode.getData().getNode().sequent()));
+                // stateAfterStmt.getGoals().forEach(keyDataGoalNode -> System.out.println("AfterSeq = " + keyDataGoalNode.getData().getNode().sequent()));
 
                 /*List<GoalNode<KeyData>> list = stateAfterStmt.getGoals().stream().filter(keyDataGoalNode ->
                     keyDataGoalNode.getData().getNode().parent().equals(stateBeforeStmt.getSelectedGoalNode().getData().getNode())
@@ -196,7 +204,7 @@ public class DebuggerMain implements Initializable {
                 ObservableList<GoalNode<KeyData>> goals = FXCollections.observableArrayList(stateAfterStmt.getGoals());
 
                 im.setGoals(goals);
-                if(stateAfterStmt.getSelectedGoalNode() != null){
+                if (stateAfterStmt.getSelectedGoalNode() != null) {
                     im.setSelectedGoalNodeToShow(stateAfterStmt.getSelectedGoalNode());
                 } else {
                     im.setSelectedGoalNodeToShow(goals.get(0));
@@ -252,7 +260,7 @@ public class DebuggerMain implements Initializable {
 
     private void init() {
         Events.register(this);
-       // model.setDebugMode(false);
+        // model.setDebugMode(false);
         scriptController = new ScriptController(dockStation);
         //TODO:
         interactiveModeController = new InteractiveModeController(scriptController);
@@ -373,49 +381,7 @@ public class DebuggerMain implements Initializable {
         statusBar.interpreterStatusModelProperty().bind(model.interpreterStateProperty());
         renewThreadStateTimer();
 
-        //TODO: nach draußen verlagern
-        combo_savepoints.setCellFactory(new Callback<ListView<SavePoint>, ListCell<SavePoint>>() {
-
-            @Override
-            public ListCell<SavePoint> call(ListView<SavePoint> param) {
-                return new ListCell<SavePoint>(){
-                    @Override
-                    protected void updateItem(SavePoint item, boolean empty) {
-                        super.updateItem(item, empty);
-
-                        if (item == null || empty) {
-                            setGraphic(null);
-                        } else {
-                            setText(item.getSavepointName());
-                        }
-
-                    }
-                };
-            }
-
-        });
-
-        //update Combobox on changed Savepoints
-        scriptController.getMainScriptSavePoints().addListener(new ListChangeListener<SavePoint>() {
-            @Override
-            public void onChanged(Change<? extends SavePoint> c) {
-
-                if(scriptController.getMainScriptSavePoints().size() > 0){
-                    combo_savepoints.setItems(scriptController.getMainScriptSavePoints());
-
-                    spselect.setDisable(false);
-                    combo_savepoints.setDisable(false);
-
-                } else {
-                    spselect.setDisable(true);
-                    combo_savepoints.setDisable(true);
-
-                }
-
-
-            }
-        });
-
+        savePointController = new SavePointController(this);
     }
 
     /**
@@ -497,7 +463,6 @@ public class DebuggerMain implements Initializable {
     private void undo(ActionEvent e) {
         interactiveModeController.undo(e);
     }
-
 
     public KeYProofFacade getFacade() {
         return FACADE;
@@ -687,17 +652,14 @@ public class DebuggerMain implements Initializable {
             executeScript0(ib, breakpoints, ms, addInitBreakpoint);
 
 
-
         } catch (RecognitionException e) {
             LOGGER.error(e);
             Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
-            
-        }
-        
-        
-        
-        private void executeScriptFromSavePoint(InterpreterBuilder ib, SavePoint point) {
+
+    }
+
+    private void executeScriptFromSavePoint(InterpreterBuilder ib, SavePoint point) {
         try {
             Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
             // get possible scripts and the main script!
@@ -715,10 +677,12 @@ public class DebuggerMain implements Initializable {
             }
 
             Statements body = new Statements();
-            boolean flag =false;
+            boolean flag = false;
             for (int i = 0; i < ms.getBody().size(); i++) {
-                if(flag) {body.add(ms.getBody().get(i));
-                    continue;}
+                if (flag) {
+                    body.add(ms.getBody().get(i));
+                    continue;
+                }
                 flag = point.isThisStatement(ms.getBody().get(i));
             }
 
@@ -733,24 +697,23 @@ public class DebuggerMain implements Initializable {
             LOGGER.error(e);
             Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
-            
+
+    }
+
+    private void executeScript0(InterpreterBuilder ib,
+                                Collection<? extends Breakpoint> breakpoints,
+                                ProofScript ms, boolean addInitBreakpoint) {
+        KeyInterpreter interpreter = ib.build();
+        DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, ms, null);
+        df.setSucceedListener(this::onInterpreterSucceed);
+        df.setErrorListener(this::onInterpreterError);
+        if (addInitBreakpoint) {
+            df.releaseUntil(new Blocker.CounterBlocker(1)); // just execute
         }
-        
-        
-        private void executeScript0(InterpreterBuilder ib,
-                                    Collection<? extends Breakpoint> breakpoints,
-                                    ProofScript ms, boolean addInitBreakpoint) {
-            KeyInterpreter interpreter = ib.build();
-            DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, ms, null);
-            df.setSucceedListener(this::onInterpreterSucceed);
-            df.setErrorListener(this::onInterpreterError);
-            if (addInitBreakpoint) {
-                df.releaseUntil(new Blocker.CounterBlocker(1)); // just execute
-            }
-            df.getBreakpoints().addAll(breakpoints);
-            df.getStatePointerListener().add(this::handleStatePointer);
-            df.start();
-            model.setDebuggerFramework(df);
+        df.getBreakpoints().addAll(breakpoints);
+        df.getStatePointerListener().add(this::handleStatePointer);
+        df.start();
+        model.setDebuggerFramework(df);
     }
 
     private void onInterpreterSucceed(DebuggerFramework<KeyData> keyDataDebuggerFramework) {
@@ -773,7 +736,6 @@ public class DebuggerMain implements Initializable {
             }
 
         });
-
 
 
     }
@@ -1035,16 +997,16 @@ public class DebuggerMain implements Initializable {
         assert model.getDebuggerFramework() == null;
     }
 
-    @FXML
-    public void closeProgram() {
-        System.exit(0);
-    }
-
 /*    public void openJavaFile() {
         loadJavaFile();
         showCodeDock(null);
     }
 */
+
+    @FXML
+    public void closeProgram() {
+        System.exit(0);
+    }
 
     @FXML
     public void openScript() {
@@ -1089,6 +1051,7 @@ public class DebuggerMain implements Initializable {
             saveScript(f);
         }
     }
+    //endregion
 
     /**
      * Creates a filechooser dialog
@@ -1105,7 +1068,6 @@ public class DebuggerMain implements Initializable {
         if (file != null) model.setInitialDirectory(file.getParentFile());
         return file;
     }
-    //endregion
 
     private void saveScript(File scriptFile) {
         try {
@@ -1115,7 +1077,6 @@ public class DebuggerMain implements Initializable {
             Utils.showExceptionDialog("Could not save file", "Saving File Error", "Could not save to file " + scriptFile.getName(), e);
         }
     }
-
 
     /**
      * Save KeY proof as proof file
@@ -1132,11 +1093,6 @@ public class DebuggerMain implements Initializable {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static void saveProof(File file) throws IOException {
-        if (FACADE.getProof() != null)
-            FACADE.getProof().saveToFile(file);
     }
 
     /**
@@ -1299,9 +1255,9 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void selectSavepoint(ActionEvent actionEvent) {
-        if (combo_savepoints.getValue() != null) {
+        if (cboSavePoints.getValue() != null) {
             stopDebugMode(actionEvent);
-            SavePoint selected = combo_savepoints.getValue();
+            SavePoint selected = cboSavePoints.getValue();
 
             try {
                 abortExecution();
@@ -1321,12 +1277,9 @@ public class DebuggerMain implements Initializable {
             iModel.getGoals().clear();
             iModel.setSelectedGoalNodeToShow(null);
             try {
-
-                String parentpath = FACADE.getFilepath().getAbsolutePath();
-                parentpath = parentpath.substring(0, parentpath.length() - FACADE.getFilepath().getName().length());
-                File loadfile = new File(parentpath + selected.getSavepointName() + ".key");
-                System.out.println("loadfile = " + loadfile);
-                FACADE.reload(loadfile);
+                File dir = FACADE.getFilepath().getAbsoluteFile().getParentFile();
+                File proofFile = selected.getProofFile(dir);
+                FACADE.reload(proofFile);
                 if (iModel.getGoals().size() > 0) {
                     iModel.setSelectedGoalNodeToShow(iModel.getGoals().get(0));
                 }
@@ -1336,12 +1289,13 @@ public class DebuggerMain implements Initializable {
                 }
             } catch (ProofInputException | ProblemLoaderException e) {
                 LOGGER.error(e);
-                Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment",
+                Utils.showExceptionDialog("Loading Error", "Could not clear Environment",
+                        "There was an error when clearing old environment",
                         e
                 );
             }
 
-           // executeScriptFromSavePoint(interpreterBuilder, selected);
+            // executeScriptFromSavePoint(interpreterBuilder, selected);
         }
 
     }
@@ -1592,7 +1546,6 @@ public class DebuggerMain implements Initializable {
 
         }
     }
-
 
 
     //endregion
