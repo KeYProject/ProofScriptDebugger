@@ -1,14 +1,17 @@
 package edu.kit.iti.formal.psdbg.interpreter.matcher;
 
 import com.google.common.collect.Sets;
+import com.sun.media.jfxmedia.logging.Logger;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.LogicVariable;
 import de.uka.ilkd.key.logic.op.QuantifiableVariable;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.*;
 
 public class MutableMatchings implements Matchings {
+    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(MutableMatchings.class);
     public Set<Match> inner = new TreeSet<>(new VariableAssignmentComparator());
 
     public static Matchings singleton(String name, MatchPath term) {
@@ -163,7 +166,7 @@ public class MutableMatchings implements Matchings {
         }
         newMatch.putAll(h2);
 
-        System.out.format("reduce: %20s :: %20s = %s%n", h1, h2, newMatch);
+        Logger.logMsg(Logger.INFO, String.format("reduce: %20s :: %20s = %s%n", h1, h2, newMatch));
         return newMatch;
     }
 

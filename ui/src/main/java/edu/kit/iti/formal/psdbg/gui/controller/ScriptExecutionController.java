@@ -6,11 +6,8 @@ import edu.kit.iti.formal.psdbg.gui.controls.Utils;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
-import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
-import edu.kit.iti.formal.psdbg.interpreter.dbg.Blocker;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
-import edu.kit.iti.formal.psdbg.interpreter.dbg.DebuggerFramework;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import javafx.scene.control.Alert;
@@ -113,7 +110,7 @@ public class ScriptExecutionController {
 
 
 
-    private void executeScriptFromSavePoint(InterpreterBuilder ib, SavePoint point) {
+    public void executeScriptFromSavePoint(InterpreterBuilder ib, SavePoint point) {
         try {
             Set<Breakpoint> breakpoints = mainCtrl.getScriptController().getBreakpoints();
             // get possible scripts and the main script!
