@@ -25,16 +25,13 @@ import edu.kit.iti.formal.psdbg.gui.graph.GraphView;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.gui.model.InterpreterThreadState;
-import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
-import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
-import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
@@ -55,7 +52,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -147,6 +143,7 @@ public class DebuggerMain implements Initializable {
     private CommandHelp commandHelp = new CommandHelp();
     private DockNode commandHelpDock = new DockNode(commandHelp, "DebuggerCommand Help");
     private InteractiveModeController interactiveModeController;
+    private ScriptExecutionController scriptExecutionController;
     @FXML
     private Menu examplesMenu;
     private Timer interpreterThreadTimer;
@@ -355,6 +352,8 @@ public class DebuggerMain implements Initializable {
         model.executeNotPossibleProperty().bind(FACADE.loadingProperty().or(FACADE.proofProperty().isNull()));
 
         statusBar.interpreterStatusModelProperty().bind(model.interpreterStateProperty());
+
+        scriptExecutionController = new ScriptExecutionController(this);
         renewThreadStateTimer();
     }
 
@@ -487,45 +486,11 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void executeScript() {
-        executeScript(false);
+        //execute script without stepwise
+        scriptExecutionController.executeScript(false);
+        //executeScript(false);
     }
 
-    private void executeScript(boolean addInitBreakpoint) {
-        if (model.getDebuggerFramework() != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Interpreter is already running \nDo you want to abort it?",
-                    ButtonType.CANCEL, ButtonType.YES);
-            Optional<ButtonType> ans = alert.showAndWait();
-            ans.ifPresent(a -> {
-                if (a == ButtonType.OK) abortExecution();
-            });
-
-            if (ans.isPresent() && ans.get() == ButtonType.CANCEL) {
-                return;
-            }
-        }
-
-        assert model.getDebuggerFramework() == null : "There should not be any interpreter running.";
-
-        if (FACADE.getProofState() == KeYProofFacade.ProofState.EMPTY) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "No proof loaded is loaded yet. If proof loading was onvoked, please wait. Loading may take a while.", ButtonType.OK);
-            alert.showAndWait();
-            return;
-        }
-
-        if (FACADE.getProofState() == KeYProofFacade.ProofState.DIRTY) {
-            try {
-                FACADE.reload(model.getKeyFile());
-            } catch (ProofInputException | ProblemLoaderException e) {
-                LOGGER.error(e);
-                Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment",
-                        e
-                );
-            }
-        }
-
-        // else getProofState() == VIRGIN!
-        executeScript(FACADE.buildInterpreter(), addInitBreakpoint);
-    }
 
     /**
      * Reload a problem from the beginning
@@ -594,99 +559,7 @@ public class DebuggerMain implements Initializable {
         }
     }
 
-    /**
-     * Execute the script that with using the interpreter that is build using the interpreterbuilder
-     *
-     * @param ib
-     * @param
-     */
-    private void executeScript(InterpreterBuilder ib, boolean addInitBreakpoint) {
-        try {
 
-            Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
-            // get possible scripts and the main script!
-            List<ProofScript> scripts = scriptController.getCombinedAST();
-            if (scriptController.getMainScript() == null) {
-                scriptController.setMainScript(scripts.get(0));
-            }
-            Optional<ProofScript> mainScript = scriptController.getMainScript().find(scripts);
-            ProofScript ms;
-            if (!mainScript.isPresent()) {
-                scriptController.setMainScript(scripts.get(0));
-                ms = scripts.get(0);
-            } else {
-                ms = mainScript.get();
-            }
-
-            LOGGER.debug("Parsed Scripts, found {}", scripts.size());
-            LOGGER.debug("MainScript: {}", ms.getName());
-
-            ib.setScripts(scripts);
-            executeScript0(ib, breakpoints, ms, addInitBreakpoint);
-        } catch (RecognitionException e) {
-            LOGGER.error(e);
-            Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
-        }
-            
-        }
-        
-        
-        
-        private void executeScriptFromSavePoint(InterpreterBuilder ib, SavePoint point) {
-        try {
-            Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
-            // get possible scripts and the main script!
-            List<ProofScript> scripts = scriptController.getCombinedAST();
-            if (scriptController.getMainScript() == null) {
-                scriptController.setMainScript(scripts.get(0));
-            }
-            Optional<ProofScript> mainScript = scriptController.getMainScript().find(scripts);
-            ProofScript ms;
-            if (!mainScript.isPresent()) {
-                scriptController.setMainScript(scripts.get(0));
-                ms = scripts.get(0);
-            } else {
-                ms = mainScript.get();
-            }
-
-            Statements body = new Statements();
-            boolean flag =false;
-            for (int i = 0; i < ms.getBody().size(); i++) {
-                if(flag) {body.add(ms.getBody().get(i));
-                    continue;}
-                flag = point.isThisStatement(ms.getBody().get(i));
-            }
-
-            ms.setBody(body);
-
-            LOGGER.debug("Parsed Scripts, found {}", scripts.size());
-            LOGGER.debug("MainScript: {}", ms.getName());
-            //ib.setDirectory(model.getKeyFile() != null ? model.getKeyFile() : model.getJavaFile());
-            ib.setScripts(scripts);
-            executeScript0(ib, breakpoints, ms, false);
-        } catch (RecognitionException e) {
-            LOGGER.error(e);
-            Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
-        }
-            
-        }
-        
-        
-        private void executeScript0(InterpreterBuilder ib,
-                                    Collection<? extends Breakpoint> breakpoints,
-                                    ProofScript ms, boolean addInitBreakpoint) {
-            KeyInterpreter interpreter = ib.build();
-            DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, ms, null);
-            df.setSucceedListener(this::onInterpreterSucceed);
-            df.setErrorListener(this::onInterpreterError);
-            if (addInitBreakpoint) {
-                df.releaseUntil(new Blocker.CounterBlocker(1)); // just execute
-            }
-            df.getBreakpoints().addAll(breakpoints);
-            df.getStatePointerListener().add(this::handleStatePointer);
-            df.start();
-            model.setDebuggerFramework(df);
-    }
 
     private void onInterpreterSucceed(DebuggerFramework<KeyData> keyDataDebuggerFramework) {
         Platform.runLater(() -> {
@@ -821,10 +694,24 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void executeStepwise() {
-        executeScript(true);
-        //executeScript(FACADE.buildInterpreter(), true);
+        //execute stepwise from start
+        scriptExecutionController.executeScript(true);
+        //executeScript(true);
     }
 
+
+    public void createDebuggerFramework(Collection<? extends Breakpoint> breakpoints, ProofScript ms, boolean addInitBreakpoint, KeyInterpreter interpreter) {
+        DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, ms, null);
+        df.setSucceedListener(this::onInterpreterSucceed);
+        df.setErrorListener(this::onInterpreterError);
+        if (addInitBreakpoint) {
+            df.releaseUntil(new Blocker.CounterBlocker(1)); // just execute
+        }
+        df.getBreakpoints().addAll(breakpoints);
+        df.getStatePointerListener().add(this::handleStatePointer);
+        df.start();
+        model.setDebuggerFramework(df);
+    }
     @FXML
     public void executeToBreakpoint() {
         Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
@@ -832,7 +719,8 @@ public class DebuggerMain implements Initializable {
             statusBar.publishMessage("There was is no breakpoint set");
         }
 
-        executeScript(false);
+        scriptExecutionController.executeScript(false);
+        //executeScript(false);
     }
 
     public void openKeyFile(File keyFile) {
@@ -1493,3 +1381,133 @@ public class DebuggerMain implements Initializable {
         //ib.ignoreLinesUntil(scriptController.getSelectedScriptArea().getCaretPosition());
         //executeScript(ib, true);
     }*/
+
+   /*  private void executeScript(boolean addInitBreakpoint) {
+        if (model.getDebuggerFramework() != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Interpreter is already running \nDo you want to abort it?",
+                    ButtonType.CANCEL, ButtonType.YES);
+            Optional<ButtonType> ans = alert.showAndWait();
+            ans.ifPresent(a -> {
+                if (a == ButtonType.OK) abortExecution();
+            });
+
+            if (ans.isPresent() && ans.get() == ButtonType.CANCEL) {
+                return;
+            }
+        }
+
+        assert model.getDebuggerFramework() == null : "There should not be any interpreter running.";
+
+        if (FACADE.getProofState() == KeYProofFacade.ProofState.EMPTY) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "No proof loaded is loaded yet. If proof loading was onvoked, please wait. Loading may take a while.", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+
+        if (FACADE.getProofState() == KeYProofFacade.ProofState.DIRTY) {
+            try {
+                FACADE.reload(model.getKeyFile());
+            } catch (ProofInputException | ProblemLoaderException e) {
+                LOGGER.error(e);
+                Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment",
+                        e
+                );
+            }
+        }
+
+        // else getProofState() == VIRGIN!
+        executeScript(FACADE.buildInterpreter(), addInitBreakpoint);
+    }
+  /**
+     * Execute the script that with using the interpreter that is build using the interpreterbuilder
+     *
+     * @param ib
+     * @param
+     */
+/*   private void executeScript(InterpreterBuilder ib, boolean addInitBreakpoint) {
+       try {
+
+           Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
+           // get possible scripts and the main script!
+           List<ProofScript> scripts = scriptController.getCombinedAST();
+           if (scriptController.getMainScript() == null) {
+               scriptController.setMainScript(scripts.get(0));
+           }
+           Optional<ProofScript> mainScript = scriptController.getMainScript().find(scripts);
+           ProofScript ms;
+           if (!mainScript.isPresent()) {
+               scriptController.setMainScript(scripts.get(0));
+               ms = scripts.get(0);
+           } else {
+               ms = mainScript.get();
+           }
+
+           LOGGER.debug("Parsed Scripts, found {}", scripts.size());
+           LOGGER.debug("MainScript: {}", ms.getName());
+
+           ib.setScripts(scripts);
+           executeScript0(ib, breakpoints, ms, addInitBreakpoint);
+       } catch (RecognitionException e) {
+           LOGGER.error(e);
+           Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
+       }
+
+   }
+
+
+
+    private void executeScriptFromSavePoint(InterpreterBuilder ib, SavePoint point) {
+        try {
+            Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
+            // get possible scripts and the main script!
+            List<ProofScript> scripts = scriptController.getCombinedAST();
+            if (scriptController.getMainScript() == null) {
+                scriptController.setMainScript(scripts.get(0));
+            }
+            Optional<ProofScript> mainScript = scriptController.getMainScript().find(scripts);
+            ProofScript ms;
+            if (!mainScript.isPresent()) {
+                scriptController.setMainScript(scripts.get(0));
+                ms = scripts.get(0);
+            } else {
+                ms = mainScript.get();
+            }
+
+            Statements body = new Statements();
+            boolean flag =false;
+            for (int i = 0; i < ms.getBody().size(); i++) {
+                if(flag) {body.add(ms.getBody().get(i));
+                    continue;}
+                flag = point.isThisStatement(ms.getBody().get(i));
+            }
+
+            ms.setBody(body);
+
+            LOGGER.debug("Parsed Scripts, found {}", scripts.size());
+            LOGGER.debug("MainScript: {}", ms.getName());
+            //ib.setDirectory(model.getKeyFile() != null ? model.getKeyFile() : model.getJavaFile());
+            ib.setScripts(scripts);
+            executeScript0(ib, breakpoints, ms, false);
+        } catch (RecognitionException e) {
+            LOGGER.error(e);
+            Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
+        }
+
+    }
+
+
+    private void executeScript0(InterpreterBuilder ib,
+                                Collection<? extends Breakpoint> breakpoints,
+                                ProofScript ms, boolean addInitBreakpoint) {
+        KeyInterpreter interpreter = ib.build();
+        DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, ms, null);
+        df.setSucceedListener(this::onInterpreterSucceed);
+        df.setErrorListener(this::onInterpreterError);
+        if (addInitBreakpoint) {
+            df.releaseUntil(new Blocker.CounterBlocker(1)); // just execute
+        }
+        df.getBreakpoints().addAll(breakpoints);
+        df.getStatePointerListener().add(this::handleStatePointer);
+        df.start();
+        model.setDebuggerFramework(df);
+    } */
