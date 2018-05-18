@@ -6,7 +6,7 @@ script main() {
     feqfff: TERM :=  `f(c) = f(f(f(c)))`;
 
     impRight;
-    instantiate var=`x` with=`c`;
+    instantiate var='x' with=`c`;
     applyEq on=`f(f(c))` formula=feqfff;
     eqSymm on=feqff;
     close;
