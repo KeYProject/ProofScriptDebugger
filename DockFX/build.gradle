@@ -1,2 +1,18 @@
+
 group = 'org.dockfx'
 description = 'DockFX'
+
+javaModule.allowModuleNamingViolations = false
+javaModule.name = "psdbg.dockfx"
+javaModule.hacks {
+    exports("javafx.graphics","com.sun.javafx.scene.input",javaModule.name)
+    exports("javafx.graphics", "com.sun.javafx.css", javaModule.name)
+}
+
+
+/*
+ext.extraCompilerArgs = [
+        "--add-exports", "javafx.graphics/com.sun.javafx.scene.input=psdbg.dockfx",
+        "--add-exports", "javafx.graphics/com.sun.javafx.css=psdbg.dockfx"
+]
+*/

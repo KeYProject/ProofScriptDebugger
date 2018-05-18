@@ -1,24 +1,28 @@
 plugins {
 //    id 'io.franzbecker.gradle-lombok' version '1.14' apply false
     id "com.github.ben-manes.versions" version "0.17.0"
+    id 'com.zyxist.chainsaw' version '0.3.1' apply false
+
 }
 
 allprojects {
     apply plugin: 'maven'
     group = 'edu.kit.iti.formal.psdbg'
-    version = 'Experimental-1.1'
+    version = '1.1-experimental'
 }
 
 subprojects {
-  //  apply plugin: 'io.franzbecker.gradle-lombok'
+    //  apply plugin: 'io.franzbecker.gradle-lombok'
+    apply plugin: 'com.zyxist.chainsaw'
     apply plugin: 'java'
     apply plugin: 'idea'
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-    tasks.withType(JavaCompile) {
+    sourceCompatibility = '10'
+    targetCompatibility = '10'
+
+    /*tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
-    }
+    }*/
 
     repositories {
         mavenLocal()
@@ -26,7 +30,6 @@ subprojects {
         maven { url "http://dl.bintray.com/jerady/maven" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
-
 
     dependencies {
         compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
@@ -38,5 +41,34 @@ subprojects {
         testCompile group: 'junit', name: 'junit', version: '4.12'
         //compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
         compileOnly files("$rootDir/lombok-edge.jar")
+        annotationProcessor files("$rootDir/lombok-edge.jar")
     }
+
+
+    compileJava {
+        doFirst {
+            options.fork=true
+            def cli = new com.zyxist.chainsaw.jigsaw.JigsawCLI("")
+            javaModule.hacks.applyHacks(cli)
+            def args = cli.generateArgs()
+            args.remove(0)
+            args.remove(0)
+            options.compilerArgs.addAll(args)
+            /*options.compilerArgs.addAll([
+                    "'-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED'",
+                    "'-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED'",
+                    "'-J--add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED'",
+                    "'-J--add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED'",
+                    "'-J--add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED'",
+                    "'-J--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED'",
+                    "'-J--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED'",
+                    "'-J--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED'",
+                    "'-J--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'"
+            ])*/
+            println(options.compilerArgs)
+        }
+    }
+
+
+    javaModule.name = "psdbg." + project.name.toLowerCase().replace('-', '.')
 }
