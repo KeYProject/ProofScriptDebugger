@@ -11,7 +11,20 @@ import java.util.List;
  * @version 1 (16.05.17)
  */
 public interface MatcherApi<T> {
+    /**
+     *
+     * @param currentState
+     * @param label
+     * @return
+     */
     List<VariableAssignment> matchLabel(GoalNode<T> currentState, String label);
-    List<VariableAssignment> matchSeq(GoalNode<T> currentState, String data);
+
+    /**
+     *
+     * @param currentState
+     * @param pattern
+     * @return
+     */
+    List<VariableAssignment> matchSeq(GoalNode<T> currentState, String pattern);
 
 }

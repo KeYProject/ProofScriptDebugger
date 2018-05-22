@@ -262,4 +262,11 @@ public interface ASTTraversal<T> extends Visitor<T> {
         relaxBlock.getBody().accept(this);
         return null;
     }
+
+    @Override
+    default T visit(LetStatement let) {
+        let.getExpression().accept(this);
+        let.getBody().accept(this);
+        return null;
+    }
 }

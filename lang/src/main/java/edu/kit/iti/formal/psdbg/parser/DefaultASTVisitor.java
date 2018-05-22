@@ -177,5 +177,9 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
         return defaultVisit(relaxBlock);
     }
 
+    @Override
+    public T visit(LetStatement let) {
+        return defaultVisit(let);
+    }
 }
 
