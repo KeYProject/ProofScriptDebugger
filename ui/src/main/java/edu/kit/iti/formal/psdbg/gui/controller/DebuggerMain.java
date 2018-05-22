@@ -63,15 +63,13 @@ import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
 import org.key_project.util.collection.ImmutableList;
+import org.omg.CORBA.Environment;
 import org.reactfx.util.FxTimer;
 import org.reactfx.util.Timer;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.time.Duration;
@@ -149,8 +147,6 @@ public class DebuggerMain implements Initializable {
     private ToggleButton btnInteractiveMode;
     @FXML
     private Button interactive_undo;
-    //TODO: dir
-    private File dir;
 
     private JavaArea javaArea = new JavaArea();
     private DockNode javaAreaDock = new DockNode(javaArea, "Java Source",
@@ -262,7 +258,6 @@ public class DebuggerMain implements Initializable {
         Events.register(this);
         // model.setDebugMode(false);
         scriptController = new ScriptController(dockStation);
-        //TODO:
         interactiveModeController = new InteractiveModeController(scriptController);
         btnInteractiveMode.setSelected(false);
         inspectionViewsController = new InspectionViewsController(dockStation);
@@ -648,7 +643,9 @@ public class DebuggerMain implements Initializable {
             LOGGER.debug("MainScript: {}", ms.getName());
 
             ib.setScripts(scripts);
-            System.out.println("ms = " + FACADE.getProof().getProofFile());
+
+            interactiveModeController.setSavepoint(null);
+
             executeScript0(ib, breakpoints, ms, addInitBreakpoint);
 
 
@@ -687,6 +684,7 @@ public class DebuggerMain implements Initializable {
             }
 
             ms.setBody(body);
+
 
             LOGGER.debug("Parsed Scripts, found {}", scripts.size());
             LOGGER.debug("MainScript: {}", ms.getName());
@@ -1237,6 +1235,7 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void interactiveMode(ActionEvent actionEvent) {
+
         if (btnInteractiveMode.isSelected()) {
             assert model.getDebuggerFramework() != null;
             interactiveModeController.setDebuggerFramework(model.getDebuggerFramework());
@@ -1256,8 +1255,10 @@ public class DebuggerMain implements Initializable {
     @FXML
     public void selectSavepoint(ActionEvent actionEvent) {
         if (cboSavePoints.getValue() != null) {
+
             stopDebugMode(actionEvent);
             SavePoint selected = cboSavePoints.getValue();
+
 
             try {
                 abortExecution();
@@ -1279,6 +1280,10 @@ public class DebuggerMain implements Initializable {
             try {
                 File dir = FACADE.getFilepath().getAbsoluteFile().getParentFile();
                 File proofFile = selected.getProofFile(dir);
+
+                if(!proofFile.isFile()) {
+                    throw new FileNotFoundException();
+                }
                 FACADE.reload(proofFile);
                 if (iModel.getGoals().size() > 0) {
                     iModel.setSelectedGoalNodeToShow(iModel.getGoals().get(0));
@@ -1287,6 +1292,16 @@ public class DebuggerMain implements Initializable {
                     LOGGER.info("Reloaded Successfully");
                     statusBar.publishMessage("Reloaded Sucessfully");
                 }
+
+                interactiveModeController.setSavepoint(selected);
+
+                scriptController.getMainScript().getScriptArea().setSavepointMarker(selected.getLineNumber());
+                scriptController.getMainScript().getScriptArea().setStyleClass(selected.getStartOffset(), selected.getEndOffset() + 1, "problem"); //TODO: styleClass:underlinesave
+
+            } catch (FileNotFoundException e){
+                Utils.showWarningDialog("File doesn't exist", "File does not exist",
+                        "Proof file does not exist. Please execute the script first.",
+                        e);
             } catch (ProofInputException | ProblemLoaderException e) {
                 LOGGER.error(e);
                 Utils.showExceptionDialog("Loading Error", "Could not clear Environment",

@@ -10,11 +10,10 @@ import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
+import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
 import edu.kit.iti.formal.psdbg.parser.Facade;
-import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
-import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
-import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
+import edu.kit.iti.formal.psdbg.parser.ast.*;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -92,6 +91,35 @@ public class ScriptController {
             loggerConsole.info("Found savepoints: " + list);
         }
     }
+
+/*
+    public int getLineOfSavepoint(SavePoint sp) {
+        Optional<ProofScript> ms = getMainScript(). find(getCombinedAST());
+
+        if(ms.isPresent()) {
+            List<CallStatement> list = ms.get().getBody().stream()
+                    .filter(SavePoint::isSaveCommand)
+                    .map(a -> (CallStatement) a).
+                    collect(Collectors.toList());
+
+
+            if(!list.isEmpty()) {
+               for(int i = 0; i < list.size(); i++) {
+                   if(true) {
+                       Parameters param = list.get(i).getParameters();
+                       String splistname = ((StringLiteral) param.get(new Variable("#2"))).getText();
+                        if(splistname.equals(sp.getName())) {
+                            int index = ms.get().getBody().indexOf(list.get(i));
+                            return ms.get().getBody().get(index).getStartPosition().getLineNumber();
+                        }
+                   }
+               }
+            }
+        }
+        return -1;
+
+    }
+    */
 
     private void addDefaultInlineActions() {
         actionSuppliers.add(new FindLabelInGoalList());

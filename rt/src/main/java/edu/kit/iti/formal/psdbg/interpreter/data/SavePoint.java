@@ -1,6 +1,5 @@
 package edu.kit.iti.formal.psdbg.interpreter.data;
 
-import com.google.errorprone.annotations.Var;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import lombok.AllArgsConstructor;
@@ -16,7 +15,7 @@ public class SavePoint {
     private final String name;
     private int startOffset = -1;
     private int endOffset = -1;
-    private int lineNumer = -1;
+    private int lineNumber = -1;
     private ForceOption force = ForceOption.YES;
 
     public SavePoint(CallStatement call) {
@@ -28,7 +27,7 @@ public class SavePoint {
             try {
                 startOffset = call.getRuleContext().getStart().getStartIndex();
                 endOffset = call.getRuleContext().getStart().getStopIndex();
-                lineNumer = call.getRuleContext().getStart().getLine();
+                lineNumber = call.getRuleContext().getStart().getLine();
             } catch (NullPointerException npe) {
             }
         } else {

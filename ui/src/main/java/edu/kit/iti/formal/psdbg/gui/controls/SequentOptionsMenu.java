@@ -51,7 +51,7 @@ public class SequentOptionsMenu extends ContextMenu {
                 } catch (Exception e) {
                     Utils.showInfoDialog("Please Select a Goal first." ,
                             "Please Select a Goal node from the list first to open the SequentMatcher Window.",
-                            "Please Select a Goal node from the list first to open the SequentMatcher Window.", e);
+                            "Please Select a Goal node from the list first to open the SequentMatcher Window.");
                   //  e.printStackTrace();
                    // System.out.println(e);
                 }
