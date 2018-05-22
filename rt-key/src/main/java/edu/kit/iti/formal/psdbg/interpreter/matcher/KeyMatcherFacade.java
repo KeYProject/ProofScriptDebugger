@@ -43,7 +43,8 @@ public class KeyMatcherFacade {
         List<Term> positions = new ArrayList<>();
         for (String patternTerm : hasToplevelComma(pattern)) {
             try {
-               Term t = dtp.parse(createReader(patternTerm), null, environment.getServices(), environment.getServices().getNamespaces(), null, true);
+               Term t = dtp.parse(createReader(patternTerm), null, environment.getServices(),
+                       environment.getServices().getNamespaces(), null, true);
                positions.add(t);
             } catch (ParserException e) {
                 e.printStackTrace();

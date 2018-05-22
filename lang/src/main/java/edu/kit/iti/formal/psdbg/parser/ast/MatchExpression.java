@@ -41,7 +41,7 @@ import lombok.Setter;
  */
 @Data
 public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatternContext> {
-    private Signature signature = new Signature();
+    //private Signature signature = new Signature();
     private Expression pattern;
     @Getter
     @Setter
@@ -64,8 +64,8 @@ public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatter
     @Override
     public MatchExpression copy() {
         MatchExpression me = new MatchExpression();
-        if (signature != null)
-            me.signature = signature.copy();
+        //if (signature != null)
+        //    me.signature = signature.copy();
         me.pattern = pattern.copy();
         me.setRuleContext(this.ruleContext);
         return me;
