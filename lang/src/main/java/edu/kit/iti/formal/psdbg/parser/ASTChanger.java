@@ -59,10 +59,6 @@ public class ASTChanger extends DefaultASTVisitor<ASTNode> {
 
     @Override
     public MatchExpression visit(MatchExpression match) {
-        if (match.getSignature() != null)
-            match.setSignature((Signature)
-                    match.getSignature().accept(this));
-
         match.setPattern((Expression) match.getPattern().accept(this));
         return match;
     }

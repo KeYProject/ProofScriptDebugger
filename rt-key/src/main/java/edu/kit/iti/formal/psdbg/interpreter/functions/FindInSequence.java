@@ -1,14 +1,13 @@
 package edu.kit.iti.formal.psdbg.interpreter.functions;
 
 import edu.kit.iti.formal.psdbg.interpreter.Evaluator;
-import edu.kit.iti.formal.psdbg.interpreter.matcher.KeYMatcher;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.KeYMatcher;
 import edu.kit.iti.formal.psdbg.parser.NotWelldefinedException;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.FunctionCall;
 import edu.kit.iti.formal.psdbg.parser.ast.MatchExpression;
-import edu.kit.iti.formal.psdbg.parser.ast.Signature;
 import edu.kit.iti.formal.psdbg.parser.ast.Variable;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.function.ScriptFunction;
@@ -52,12 +51,11 @@ public class FindInSequence implements ScriptFunction {
         Evaluator<KeyData> e = (Evaluator<KeyData>) val;
         try {
             MatchExpression match = (MatchExpression) call.getArguments().get(0);
-            Signature sig = match.getSignature();
+            //Signature sig = match.getSignature();
             Value pattern = e.eval(match.getPattern());
             KeYMatcher matcher = (KeYMatcher) e.getMatcher();
             if (TypeFacade.isTerm(pattern.getType())) {
-                List<VariableAssignment> va = matcher.matchSeq(e.getGoal(),
-                        (String) pattern.getData(), sig);
+                List<VariableAssignment> va = matcher.matchSeq(e.getGoal(), (String) pattern.getData());
                 if (va.isEmpty()) {
                     throw new IllegalArgumentException("No match found for " + match.getPattern());
                 } else {

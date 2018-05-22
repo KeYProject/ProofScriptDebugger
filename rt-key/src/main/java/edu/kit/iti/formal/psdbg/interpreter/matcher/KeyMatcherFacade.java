@@ -30,16 +30,16 @@ public class KeyMatcherFacade {
     private final Sequent sequent;
 
 
-    public Matchings matches(String pattern, Signature sig) {
+    public Matchings matches(String pattern) {
         if(pattern.contains("==>")) {
-            return matchesSequent(pattern, sig);
+            return matchesSequent(pattern);
         } else {
-            return matchesTerm(pattern, sig);
+            return matchesTerm(pattern);
         }
 
     }
 
-    private Matchings matchesTerm(String pattern, Signature sig) {
+    private Matchings matchesTerm(String pattern) {
         List<Term> positions = new ArrayList<>();
         for (String patternTerm : hasToplevelComma(pattern)) {
             try {
@@ -76,7 +76,7 @@ public class KeyMatcherFacade {
         return rt;
     }
 
-    private Matchings matchesSequent(String pattern, Signature sig) {
+    private Matchings matchesSequent(String pattern) {
 
         Sequent seq = null;
         try {

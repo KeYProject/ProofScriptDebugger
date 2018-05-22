@@ -22,9 +22,9 @@ public class NegatedMatchWithUsing extends AbstractLintRule {
         public Void visit(UnaryExpression ue) {
             if (ue.getExpression() instanceof MatchExpression) {
                 MatchExpression me = (MatchExpression) ue.getExpression();
-                if (me.getSignature() != null && me.getSignature().size() > 0) {
+                /*if (me.getSignature() != null && me.getSignature().size() > 0) {
                     problem(ISSUE, ue, me);
-                }
+                }*/
             }
             return super.visit(ue);
         }
