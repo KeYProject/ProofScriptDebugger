@@ -114,7 +114,7 @@ public class ScriptController {
     @Subscribe
     public void handle(Events.FocusScriptArea fsa) {
         logger.debug("FocusScriptArea handled!");
-        openScripts.get(fsa.getScriptArea()).focus();
+        openScripts.get(fsa.getScriptArea()).requestFocus();
         fsa.getScriptArea().requestFocus();
     }
 
@@ -366,10 +366,10 @@ public class ScriptController {
             if (area != null) {
                 area.getMarkedRegions().add(r);
 
-                getDockNode(area).focus();
+                getDockNode(area).requestFocus();
                 area.requestFocus();
                 //area.scrollBy(new Point2D(0, scrollY));
-                area.selectRange(0, r.start, 0, r.start);
+                area.getCodeArea().selectRange(0, r.start, 0, r.start);
 
                 lastScriptArea = area;
                 lastRegion = r;

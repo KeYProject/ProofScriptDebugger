@@ -19,11 +19,11 @@ lessCompile {
 processResources.dependsOn lessCompile
 
 dependencies {
-    compile group: 'de.jensd', name: 'fontawesomefx-materialdesignfont', version: '1.7.22-4'
-    compile group: 'de.jensd', name: 'fontawesomefx-commons', version: '8.15'
-    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.8.2'
+    compile group: 'de.jensd', name: 'fontawesomefx-materialdesignfont', version: '2.0.26-9.1.2'
+    compile group: 'de.jensd', name: 'fontawesomefx-commons', version: '9.1.2'
+    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.9.0'
     //compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '1.0.0-SNAPSHOT'
-    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.12'
+    compile group: 'org.controlsfx', name: 'controlsfx', version: '9.0.0'
 
     compile group: 'org.antlr', name: 'antlr4', version: '4.7'
     antlr group: 'org.antlr', name: 'antlr4', version: '4.7'
@@ -36,6 +36,13 @@ dependencies {
 def mainClassName = 'edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger'
 
 task runApp(type: JavaExec) {
+
+    /*applicationDefaultJvmArgs = [
+            // For accessing VirtualFlow field from the base class in GridViewSkin
+            "--add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED",
+            // For accessing InputMap used in RangeSliderBehavior
+            "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED"
+    ]*/
     classpath = sourceSets.main.runtimeClasspath
     main = mainClassName
 }
