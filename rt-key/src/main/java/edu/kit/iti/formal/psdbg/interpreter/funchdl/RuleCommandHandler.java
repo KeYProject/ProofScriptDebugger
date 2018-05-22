@@ -24,6 +24,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
+import edu.kit.iti.formal.psdbg.parser.ast.Variable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -41,9 +42,11 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 public class RuleCommandHandler implements CommandHandler<KeyData> {
+    public static final String[] MAGIC_PARAMETER_NAMES = new String[]{
+            "on", "formula"
+    };
 
     private static final Logger LOGGER = LogManager.getLogger(RuleCommandHandler.class);
-
     @Getter
     private final Map<String, Rule> rules;
 
@@ -85,15 +88,15 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
     @Override
     public boolean handles(CallStatement call, KeyData data) throws IllegalArgumentException {
         if (rules.containsKey(call.getCommand())) return true;//static/rigid rules
-        try{
-        if (data != null) {
-            Goal goal = data.getGoal();
-            Set<String> rules = findTaclets(data.getProof(), goal);
-            return rules.contains(call.getCommand());
-        }
+        try {
+            if (data != null) {
+                Goal goal = data.getGoal();
+                Set<String> rules = findTaclets(data.getProof(), goal);
+                return rules.contains(call.getCommand());
+            }
         } catch (NullPointerException npe) {
             System.out.println("npe = " + npe);
-            return false;    
+            return false;
         }
         return false;
     }
@@ -111,7 +114,8 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         State<KeyData> state = interpreter.getCurrentState();
         GoalNode<KeyData> expandedNode = state.getSelectedGoalNode();
         KeyData kd = expandedNode.getData();
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = createParameters(expandedNode.getAssignments());
+
         params.asMap().forEach((k, v) -> map.put(k.getIdentifier(), v.getData()));
         LOGGER.info("Execute {} with {}", call, map);
         try {
@@ -145,6 +149,14 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Map<String, Object> createParameters(VariableAssignment assignments) {
+        Map<String, Object> params = new HashMap<>();
+        for (String s : MAGIC_PARAMETER_NAMES) {
+            params.put(s, assignments.getValue(new Variable(Variable.MAGIC_PREFIX + s)));
+        }
+        return params;
     }
 
 }
