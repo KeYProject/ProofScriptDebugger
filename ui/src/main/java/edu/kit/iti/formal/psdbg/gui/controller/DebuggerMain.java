@@ -25,13 +25,16 @@ import edu.kit.iti.formal.psdbg.gui.graph.GraphView;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.gui.model.InterpreterThreadState;
+import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
+import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
@@ -52,6 +55,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -97,8 +101,24 @@ public class DebuggerMain implements Initializable {
     private final Graph.PTreeGraph graph = graphView.getGraph();
 
     private final DockNode graphViewNode = new DockNode(graphView, "Debug graph");
+
+    @FXML
+    public Menu menuExecuteFromSavepoint;
+
+    @FXML
+    public Menu menuRestartFromSavepoint;
+
+    @FXML
+    SplitMenuButton buttonStartInterpreter;
+
+    ScriptController scriptController;
+    @FXML
+    ComboBox<SavePoint> cboSavePoints;
+    @FXML
+    Button btnSavePointRollback;
     private InspectionViewsController inspectionViewsController;
-    private ScriptController scriptController;
+    private SavePointController savePointController;
+    private InterpreterBuilder interpreterBuilder;
     @FXML
     private DebuggerStatusBar statusBar;
     @FXML
@@ -355,6 +375,8 @@ public class DebuggerMain implements Initializable {
 
         scriptExecutionController = new ScriptExecutionController(this);
         renewThreadStateTimer();
+
+        savePointController = new SavePointController(this);
     }
 
     /**
@@ -822,7 +844,7 @@ public class DebuggerMain implements Initializable {
             assert model.getDebuggerFramework() != null : "You should have started the prove";
             model.getDebuggerFramework().execute(new ContinueCommand<>());
         } catch (DebuggerException e) {
-            Utils.showExceptionDialog("", "", "", e);
+            Utils.showWarningDialog("", "", "", e);
             LOGGER.error(e);
         }
     }
@@ -1116,6 +1138,54 @@ public class DebuggerMain implements Initializable {
             interactive_undo.setDisable(true);
         }
     }
+
+    @FXML
+    public void selectSavepoint(ActionEvent actionEvent) {
+        if (cboSavePoints.getValue() != null) {
+            stopDebugMode(actionEvent);
+            SavePoint selected = cboSavePoints.getValue();
+
+            try {
+                abortExecution();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            /**
+             * reload with selected savepoint
+             */
+            Platform.runLater(() -> model.setStatePointer(null));
+            handleStatePointerUI(null);
+            //reload getInspectionViewsController().getActiveInspectionViewTab().getModel()
+            InspectionModel iModel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
+            //iModel.setHighlightedJavaLines(FXCollections.emptyObservableSet());
+            iModel.clearHighlightLines();
+            iModel.getGoals().clear();
+            iModel.setSelectedGoalNodeToShow(null);
+            try {
+                File dir = FACADE.getFilepath().getAbsoluteFile().getParentFile();
+                File proofFile = selected.getProofFile(dir);
+                FACADE.reload(proofFile);
+                if (iModel.getGoals().size() > 0) {
+                    iModel.setSelectedGoalNodeToShow(iModel.getGoals().get(0));
+                }
+                if (FACADE.getReadyToExecute()) {
+                    LOGGER.info("Reloaded Successfully");
+                    statusBar.publishMessage("Reloaded Sucessfully");
+                }
+            } catch (ProofInputException | ProblemLoaderException e) {
+                LOGGER.error(e);
+                Utils.showExceptionDialog("Loading Error", "Could not clear Environment",
+                        "There was an error when clearing old environment",
+                        e
+                );
+            }
+
+            // executeScriptFromSavePoint(interpreterBuilder, selected);
+        }
+
+    }
+
 
     @FXML
     public void showWelcomeDock(ActionEvent actionEvent) {

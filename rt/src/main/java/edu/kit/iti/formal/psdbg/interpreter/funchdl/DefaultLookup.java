@@ -77,4 +77,16 @@ public class DefaultLookup<T> implements CommandLookup<T> {
         return getBuilder(call, null).getHelp(call);
     }
 
+    @Override
+    public boolean isUninterpretedParams(CallStatement call) {
+        try {
+            CommandHandler cmdh = getBuilder(call, null);
+            if (cmdh != null)
+                return cmdh.isUninterpretedParams(call);
+            return true;
+        } catch (NoCallHandlerException nche) {
+            return false;
+        }
+    }
+
 }

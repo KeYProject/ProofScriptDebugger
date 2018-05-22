@@ -34,6 +34,8 @@ public class ProofScriptDebugger extends Application {
     public static final String KEY_VERSION = KeYConstants.VERSION;
 
     private Logger logger = LogManager.getLogger("psdbg");
+    private static Logger consoleLogger = LogManager.getLogger("console");
+
 
     public static void main(String[] args) {
         launch(args);
@@ -64,6 +66,8 @@ public class ProofScriptDebugger extends Application {
             logger.info("KeY: " + KeYConstants.COPYRIGHT);
             logger.info("KeY Version: " + KeYConstants.VERSION);
             logger.info("KeY Internal: " + KeYConstants.INTERNAL_VERSION);
+
+            consoleLogger.info("Welcome!");
 
         } catch (Exception e) {
             e.printStackTrace();
