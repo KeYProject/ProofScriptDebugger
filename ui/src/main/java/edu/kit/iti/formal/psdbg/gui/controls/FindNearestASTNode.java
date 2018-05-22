@@ -66,7 +66,7 @@ public class FindNearestASTNode implements ASTTraversal<ASTNode> {
 
     @Override
     public ASTNode visit(MatchExpression match) {
-        return childOrMe(match, match.getSignature(), match.getDerivableTerm(), match.getPattern());
+        return childOrMe(match, match.getDerivableTerm(), match.getPattern());
     }
 
     @Override

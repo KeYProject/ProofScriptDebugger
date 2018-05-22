@@ -25,19 +25,13 @@ public class PseudoMatcher implements MatcherApi<String> {
     }
 
     @Override
-    public List<VariableAssignment> matchSeq(GoalNode<String> currentState, String data, Signature sig) {
+    public List<VariableAssignment> matchSeq(GoalNode<String> currentState, String data) {
         Pattern p = Pattern.compile(data, Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(currentState.getData());
         if (!m.matches())
             return Collections.emptyList();
 
         VariableAssignment va = new VariableAssignment();
-
-        for (Map.Entry<Variable, Type> s : sig.entrySet()) {
-            va.declare(s.getKey(), s.getValue());
-            va.assign(s.getKey(),
-                    Value.from(m.group(s.getKey().getIdentifier())));
-        }
         return Collections.singletonList(va);
     }
 }

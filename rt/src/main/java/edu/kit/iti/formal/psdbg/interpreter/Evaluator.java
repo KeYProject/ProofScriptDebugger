@@ -71,9 +71,6 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
     @Override
     public Value visit(MatchExpression match) {
         enterScope(match);
-        if (match.getSignature() != null && !match.getSignature().isEmpty()) {
-            throw new IllegalStateException("not supported");
-        }
         List<VariableAssignment> va = null;
         Value pattern = (Value) match.getPattern().accept(this);
         if (match.isDerivable()) {
@@ -81,7 +78,7 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
             if (pattern.getType() == SimpleType.STRING) {
                 va = matcher.matchLabel(goal, (String) pattern.getData());
             } else if (TypeFacade.isTerm(pattern.getType())) {
-                va = matcher.matchSeq(goal, (String) pattern.getData(), match.getSignature());
+                va = matcher.matchSeq(goal, (String) pattern.getData());
             }
         }
 

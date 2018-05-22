@@ -182,11 +182,11 @@ public class KeYMatcher implements MatcherApi<KeyData> {
     }
 
     @Override
-    public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState, String pattern, Signature sig) {
+    public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState, String pattern) {
         KeyMatcherFacade kmf = new KeyMatcherFacade(currentState.getData().getEnv(), currentState.getData().getNode().sequent());
         //System.out.println("State that will be matched " + currentState.getData().getNode().sequent() + " with pattern " + pattern);
         //System.out.println("Signature " + sig.toString());
-        Matchings m = kmf.matches(pattern, sig);
+        Matchings m = kmf.matches(pattern);
 
         if (m.isNoMatch()) {
             LOGGER.debug("currentState has no match= " + currentState.getData().getNode().sequent());
