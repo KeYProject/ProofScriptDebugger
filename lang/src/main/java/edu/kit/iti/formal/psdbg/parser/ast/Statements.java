@@ -81,6 +81,7 @@ public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
     public boolean add(Statement statement) {
         if (statement == null)
             throw new NullPointerException();
+        statement.setParent(this);
         return statements.add(statement);
     }
 

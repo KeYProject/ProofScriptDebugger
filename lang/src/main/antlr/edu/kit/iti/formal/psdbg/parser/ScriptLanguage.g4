@@ -33,7 +33,16 @@ statement
     | scriptCommand
     | unconditionalBlock
     | conditionalBlock
+    | letStmt
   //  |   callStmt
+    ;
+
+letStmt
+    :
+        'bind' expression
+        ( SEMICOLON
+        | 'in' ( statement | INDENT stmtList DEDENT)
+        )
     ;
 
 /*scriptDecl

@@ -4,6 +4,8 @@ import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDefinedExcepti
 import edu.kit.iti.formal.psdbg.parser.ast.Variable;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.HashMap;
@@ -18,7 +20,9 @@ import java.util.stream.Collectors;
  */
 @ToString
 public class VariableAssignment {
-    private final VariableAssignment parent;
+    @Getter
+    @Setter
+    private VariableAssignment parent;
     private Map<Variable, Value> values = new HashMap<>();
     private Map<Variable, Type> types = new HashMap<>();
 
@@ -30,14 +34,6 @@ public class VariableAssignment {
         this(null);
     }
 
-    /**
-     * returns the parent assignment or null
-     *
-     * @return
-     */
-    public VariableAssignment getParent() {
-        return parent;
-    }
 
     /**
      * returns the map of values in this assignment
@@ -229,6 +225,7 @@ public class VariableAssignment {
     }
 
     /**
+     * push and override
      * @param va
      * @return
      */
@@ -236,7 +233,6 @@ public class VariableAssignment {
         VariableAssignment nva = push();
         nva.types.putAll(va.types);
         nva.values.putAll(va.values);
-
         return nva;
     }
 }

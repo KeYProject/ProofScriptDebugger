@@ -29,6 +29,7 @@ import edu.kit.iti.formal.psdbg.parser.function.ScriptFunction;
 import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -161,6 +162,26 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     @Override
     public Object visitStatement(ScriptLanguageParser.StatementContext ctx) {
         return ctx.getChild(0).accept(this);
+    }
+
+    @Override
+    public Object visitLetStmt(ScriptLanguageParser.LetStmtContext ctx) {
+        LetStatement lst = new LetStatement();
+        lst.setRuleContext(ctx);
+        lst.setExpression((Expression) ctx.expression().accept(this));
+        lst.getExpression().setParent(lst);
+        if (ctx.statement() != null) {
+            val stmt = (Statement) ctx.statement().accept(this);
+            Statements stmts = new Statements();
+            stmts.add(stmt);
+            lst.setBody(stmts);
+            stmts.setParent(lst);
+        }
+        if (ctx.stmtList() != null) {
+            lst.setBody((Statements) ctx.stmtList().accept(this));
+            lst.getBody().setParent(lst);
+        }
+        return lst;
     }
 
     @Override

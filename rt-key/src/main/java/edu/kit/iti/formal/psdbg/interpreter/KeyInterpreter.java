@@ -1,26 +1,20 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
 import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import de.uka.ilkd.key.api.VariableAssignments;
-import de.uka.ilkd.key.logic.sort.Sort;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.interpreter.data.*;
+import edu.kit.iti.formal.psdbg.interpreter.exceptions.InvalidTypeException;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.CommandLookup;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
-import edu.kit.iti.formal.psdbg.parser.ast.ClosesCase;
-import edu.kit.iti.formal.psdbg.parser.ast.Statements;
-import edu.kit.iti.formal.psdbg.parser.ast.TermLiteral;
-import edu.kit.iti.formal.psdbg.parser.ast.TryCase;
+import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import edu.kit.iti.formal.psdbg.parser.types.TermType;
-import edu.kit.iti.formal.psdbg.parser.types.Type;
 import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
 import lombok.Getter;
-import lombok.val;
 
 import java.util.List;
 import java.util.function.Function;
@@ -33,15 +27,14 @@ public class KeyInterpreter extends Interpreter<KeyData> {
     @Getter
     private static final BiMap<SimpleType, VariableAssignments.VarType> typeConversionBiMap =
             new ImmutableBiMap.Builder<SimpleType, VariableAssignments.VarType>()
-      //              .put(SimpleType.ANY, VariableAssignments.VarType.ANY)
+                    //              .put(SimpleType.ANY, VariableAssignments.VarType.ANY)
                     .put(SimpleType.BOOL, VariableAssignments.VarType.BOOL)
                     //.put(SimpleType.TERM, VariableAssignments.VarType.FORMULA) //TODO: parametrisierte Terms
                     .put(SimpleType.INT, VariableAssignments.VarType.INT)
                     .put(SimpleType.STRING, VariableAssignments.VarType.OBJECT)
-    //                  .put(SimpleType.INT_ARRAY, VariableAssignments.VarType.INT_ARRAY)
+                    //                  .put(SimpleType.INT_ARRAY, VariableAssignments.VarType.INT_ARRAY)
 //                    .put(SimpleType.SEQ, VariableAssignments.VarType.SEQ)
                     .build();
-
 
 
     public KeyInterpreter(CommandLookup lookup) {
@@ -141,9 +134,45 @@ public class KeyInterpreter extends Interpreter<KeyData> {
         eval.setTermValueFactory(new Function<TermLiteral, Value>() {
             @Override
             public Value apply(TermLiteral termLiteral) {
-                return  new Value(TypeFacade.ANY_TERM, new TermValue(termLiteral.getContent()));
+                return new Value(TypeFacade.ANY_TERM, new TermValue(termLiteral.getContent()));
             }
         });
         return eval;
     }
+
+
+    @Override
+    public Object visit(LetStatement let) {
+        enterScope(let);
+        Value value = evaluate(let.getExpression());
+        if (!(value.getType() instanceof TermType)) {
+            return new InvalidTypeException();
+        }
+
+        try {
+            TermValue tv = (TermValue) value.getData();
+            List<VariableAssignment> vas = getMatcherApi().matchSeq(getSelectedNode(), tv.getTermRepr());
+            if (!vas.isEmpty()) {
+                VariableAssignment va = vas.get(0);
+                if (let.isBindGlobal()) {
+                    getSelectedNode().getAssignments().push(va);
+                } else {
+                    //Path new assignments in chan.
+                    va.setParent(getSelectedNode().getAssignments());
+                    getSelectedNode().setAssignments(va);
+
+                    let.getBody().accept(this);
+
+                    //remove variables
+                    // TODO for all goal nodes, travers VariableAssignment hierarchy
+                    // and patch out `va`.
+                }
+            }
+        } catch (ClassCastException e) {
+            return new InvalidTypeException(e);
+        }
+        exitScope(let);
+        return null;
+    }
+
 }

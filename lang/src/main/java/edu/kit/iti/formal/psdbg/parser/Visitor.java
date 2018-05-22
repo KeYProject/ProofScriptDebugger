@@ -89,4 +89,6 @@ public interface Visitor<T> {
     T visit(StrictBlock strictBlock);
 
     T visit(RelaxBlock relaxBlock);
+
+    T visit(LetStatement let);
 }
