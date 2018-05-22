@@ -95,7 +95,6 @@ public interface ASTTraversal<T> extends Visitor<T> {
     @Override
     default T visit(MatchExpression match) {
         match.getPattern().accept(this);
-        //match.getSignature().accept(this);
         return null;
     }
 
