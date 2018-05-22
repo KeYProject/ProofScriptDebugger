@@ -46,7 +46,7 @@ public class SavePointController {
             public String toString(SavePoint object) {
                 if(object != null) {
                     return String.format("%s (in line %d)",
-                            object.getName(), object.getLineNumer());
+                            object.getName(), object.getLineNumber());
                 } else {
                     return "";
                 }
@@ -93,10 +93,10 @@ public class SavePointController {
         };
 
         for (SavePoint sp : savePoints) {
-            MenuItem mi = new MenuItem(String.format("%s (from line %d)", sp.getName(), sp.getLineNumer()));
+            MenuItem mi = new MenuItem(String.format("%s (from line %d)", sp.getName(), sp.getLineNumber()));
             menuItemsExecuteFrom.add(mi);
 
-            MenuItem mirollback = new MenuItem(String.format("%s (from line %d)", sp.getName(), sp.getLineNumer()));
+            MenuItem mirollback = new MenuItem(String.format("%s (from line %d)", sp.getName(), sp.getLineNumber()));
             menuItemsRollbackTo.add(mirollback);
 
             if (i < 10) {

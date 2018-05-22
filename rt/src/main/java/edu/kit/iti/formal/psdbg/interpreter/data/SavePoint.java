@@ -4,6 +4,7 @@ import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
@@ -12,9 +13,11 @@ import java.io.File;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class SavePoint {
+    @Getter
     private final String name;
     private int startOffset = -1;
     private int endOffset = -1;
+    @Getter
     private int lineNumber = -1;
     private ForceOption force = ForceOption.YES;
 
