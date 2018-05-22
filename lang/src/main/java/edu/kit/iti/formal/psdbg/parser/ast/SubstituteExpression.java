@@ -46,9 +46,14 @@ public class SubstituteExpression extends Expression<ScriptLanguageParser.ExprSu
     @Override
     public Type getType(Signature signature) throws NotWelldefinedException {
         Type t = sub.getType(signature);
-        if(!TypeFacade.isTerm(t)){
+        if (!TypeFacade.isTerm(t)) {
             throw new NotWelldefinedException("Term<?> expected, got " + t.symbol(), this);
         }
         return TypeFacade.ANY_TERM;
+    }
+
+    @Override
+    public ASTNode[] getChildren() {
+        return new ASTNode[]{getSub()};
     }
 }

@@ -48,4 +48,8 @@ public class GuardedCaseStatement extends CaseStatement {
         return getGuard().eq(that.getGuard());
     }
 
+    @Override
+    public ASTNode[] getChildren() {
+        return new ASTNode[]{getGuard(), getBody()};
+    }
 }
