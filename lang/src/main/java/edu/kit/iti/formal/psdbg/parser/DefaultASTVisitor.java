@@ -177,9 +177,5 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
         return defaultVisit(relaxBlock);
     }
 
-    @Override
-    public T visit(NamespaceSetExpression nss) {
-        return defaultVisit(nss);
-    }
 }
 

@@ -199,11 +199,6 @@ public class FindNearestASTNode implements ASTTraversal<ASTNode> {
         return null;
     }
 
-    @Override
-    public ASTNode visit(NamespaceSetExpression nss) {
-        return null;
-    }
-
     public Optional<ASTNode> find(List<ProofScript> ast) {
         return ast.stream().map(a -> a.accept(this))
                 .filter(Objects::nonNull)

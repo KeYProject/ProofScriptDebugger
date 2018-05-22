@@ -164,9 +164,4 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
     public Value visit(FunctionCall func) {
         return func.getFunction().eval(this, func);
     }
-
-    @Override
-    public Value visit(NamespaceSetExpression nss) {
-        return null;
-    }
 }
