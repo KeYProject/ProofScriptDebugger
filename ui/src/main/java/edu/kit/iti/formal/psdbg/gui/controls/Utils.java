@@ -211,7 +211,7 @@ public class Utils {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         ex.printStackTrace(pw);
-        String exceptionText = sw.toString();
+
 
 
         alert.setWidth(400);
@@ -224,15 +224,12 @@ public class Utils {
         alert.showAndWait();
     }
 
-    public static void showInfoDialog(String title, String headerText, String contentText, Throwable ex) {
+    public static void showInfoDialog(String title, String headerText, String contentText) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
         alert.setContentText(contentText);
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        ex.printStackTrace(pw);
-        String exceptionText = sw.toString();
+
 
 
         alert.setWidth(400);

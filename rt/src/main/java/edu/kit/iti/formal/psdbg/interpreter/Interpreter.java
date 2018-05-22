@@ -607,9 +607,11 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
                 va.declare(entry.getKey(), val.getType());
                 va.assign(entry.getKey(), val);
             } catch (NullPointerException npe) {
-
                 System.out.println("Caught Nullpointer in evaluation of Stateless parameters: " + entry.toString()
                 );
+                Value val = evaluator.eval(entry.getValue());
+                va.declare(entry.getKey(), val.getType());
+                va.assign(entry.getKey(), val);
             }
         });
         return va;

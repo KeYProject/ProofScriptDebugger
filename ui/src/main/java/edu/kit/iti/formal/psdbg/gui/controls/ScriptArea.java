@@ -65,6 +65,8 @@ import org.reactfx.collection.LiveList;
 import org.reactfx.value.Val;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.IntFunction;
@@ -409,7 +411,24 @@ public class ScriptArea extends BorderPane {
         gutter.lineAnnotations.forEach(a -> a.setMainScript(false));
         if (lineNumber > 0)
             gutter.getLineAnnotation(lineNumber - 1).setMainScript(true);
+
     }
+
+    /**
+     * Set marker in gutter at the line of the Savepoint, which is loaded
+     * @param lineNumber line in where the marker is to be set
+     */
+    public void setSavepointMarker(int lineNumber) {
+        gutter.lineAnnotations.forEach(a -> a.setSavepoint(false));
+        gutter.getLineAnnotation(lineNumber - 1).setSavepoint(true);
+
+    }
+
+    private void underline (int linenumber) {
+
+    }
+
+
 
     private boolean hasExecutionMarker() {
         return getText().contains(EXECUTION_MARKER);
@@ -592,6 +611,10 @@ public class ScriptArea extends BorderPane {
                 MaterialDesignIcon.CHECK, "12"
         );
 
+        private MaterialDesignIconView iconSavepoint = new MaterialDesignIconView(
+                MaterialDesignIcon.CONTENT_SAVE, "12"
+        );
+
         private Label lineNumber = new Label("not set");
 
         public GutterView(GutterAnnotation ga) {
@@ -600,6 +623,7 @@ public class ScriptArea extends BorderPane {
                     old.breakpoint.removeListener(this::update);
                     old.breakpoint.removeListener(this::update);
                     old.mainScript.removeListener(this::update);
+                    old.savepoint.removeListener(this::update);
                     lineNumber.textProperty().unbind();
                 }
 
@@ -607,6 +631,7 @@ public class ScriptArea extends BorderPane {
                 nv.mainScript.addListener(this::update);
                 nv.breakpoint.addListener(this::update);
                 nv.conditional.addListener(this::update);
+                nv.savepoint.addListener(this::update);
 
                 lineNumber.textProperty().bind(nv.textProperty());
 
@@ -618,6 +643,7 @@ public class ScriptArea extends BorderPane {
         public void update(Observable o) {
             getChildren().setAll(lineNumber);
             if (getAnnotation().isMainScript()) getChildren().add(iconMainScript);
+            else if (getAnnotation().isSavepoint()) getChildren().add(iconSavepoint);
             else addPlaceholder();
             if (getAnnotation().isBreakpoint())
                 getChildren().add(getAnnotation().getConditional()
@@ -657,6 +683,8 @@ public class ScriptArea extends BorderPane {
         private BooleanBinding conditional = breakpointCondition.isNotNull().and(breakpointCondition.isNotEmpty());
 
         private BooleanProperty mainScript = new SimpleBooleanProperty();
+
+        private SimpleBooleanProperty savepoint = new SimpleBooleanProperty();
 
         public String getText() {
             return text.get();
@@ -712,6 +740,19 @@ public class ScriptArea extends BorderPane {
 
         public BooleanProperty mainScriptProperty() {
             return mainScript;
+        }
+
+
+        public boolean isSavepoint() {
+            return savepoint.get();
+        }
+
+        public SimpleBooleanProperty savepointProperty() {
+            return savepoint;
+        }
+
+        public void setSavepoint(boolean savepoint) {
+            this.savepoint.set(savepoint);
         }
     }
 
@@ -831,6 +872,13 @@ public class ScriptArea extends BorderPane {
         @FXML
         public void setMainScript(ActionEvent event) {
             LOGGER.debug("ScriptAreaContextMenu.setMainScript");
+
+            // Check if script is saved
+            if(!filePath.getValue().isFile()) {
+                Utils.showInfoDialog("Saving Script", "Save Script", "Script has to be saved first before it can be executed.");
+                return;
+            }
+
             List<ProofScript> ast = Facade.getAST(getText());
             int pos = currentMouseOver.get().getInsertionIndex();
             ast.stream().filter(ps ->
@@ -841,6 +889,8 @@ public class ScriptArea extends BorderPane {
                             new MainScriptIdentifier(filePath.get().getAbsolutePath(),
                                     proofScript.getStartPosition().getLineNumber(),
                                     proofScript.getName(), ScriptArea.this)));
+
+
         }
 
         @FXML
