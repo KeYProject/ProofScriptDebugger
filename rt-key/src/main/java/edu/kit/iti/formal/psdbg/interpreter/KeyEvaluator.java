@@ -1,26 +1,17 @@
 package edu.kit.iti.formal.psdbg.interpreter;
 
-import de.uka.ilkd.key.logic.Name;
 import de.uka.ilkd.key.logic.NamespaceSet;
-import de.uka.ilkd.key.logic.Term;
-import de.uka.ilkd.key.logic.op.LogicVariable;
-import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 import de.uka.ilkd.key.logic.sort.Sort;
 import de.uka.ilkd.key.proof.Goal;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
-import edu.kit.iti.formal.psdbg.interpreter.data.TermValue;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.Expression;
-import edu.kit.iti.formal.psdbg.parser.ast.NamespaceSetExpression;
 import edu.kit.iti.formal.psdbg.parser.ast.SubstituteExpression;
-import edu.kit.iti.formal.psdbg.parser.ast.Variable;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
-import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import edu.kit.iti.formal.psdbg.parser.types.TermType;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
-import org.key_project.util.collection.ImmutableArray;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,21 +21,6 @@ public class KeyEvaluator extends Evaluator<KeyData> {
         super(assignments, g);
     }
 
-    @Override
-    public Value visit(NamespaceSetExpression nss) {
-        Value term = (Value) nss.getExpression().accept(this);
-        if (term.getType() instanceof TermType) {
-            TermValue data = ((TermValue) term.getData()).copy();
-            nss.getSignature().forEach((v,s) -> {
-                Sort sort = asKeySort(s, getGoal().getData().getGoal());
-                QuantifiableVariable gf;
-                data.getNs().variables().add(new LogicVariable(new Name(v.getIdentifier()), sort));
-            });
-            return new Value(term.getType(), data);
-        }else {
-            throw new IllegalStateException("Try to apply substitute on a non-term value.");
-        }
-    }
 
     private Sort asKeySort(Type symbol, Goal g) {
         NamespaceSet global = g.proof().getServices().getNamespaces();

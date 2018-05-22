@@ -34,7 +34,7 @@ public final class TypeFacade {
 
     public static SimpleType getSimpleType(String n) {
         for (SimpleType t : SimpleType.values()) {
-            if (t.symbol().equals(n))
+            if (t.symbol().equalsIgnoreCase(n))
                 return t;
         }
         throw new IllegalStateException("SimpleType " + n + " is not defined. Valid types are: " + Arrays.toString(SimpleType.values()));
