@@ -95,9 +95,9 @@ public class ValueInjector {
     public static ValueInjector createDefault(Node node) {
         ValueInjector valueInjector = createDefault();
         TermConverter termConverter = new TermConverter(node);
-        valueInjector.addConverter(Term.class, termConverter);
         valueInjector.addConverter(Sort.class, new SortConverter(node.proof()));
         valueInjector.addConverter(TermValue.class, Term.class, new TermValueConverter(node));
+        valueInjector.addConverter(Term.class, termConverter);
         return valueInjector;
     }
 

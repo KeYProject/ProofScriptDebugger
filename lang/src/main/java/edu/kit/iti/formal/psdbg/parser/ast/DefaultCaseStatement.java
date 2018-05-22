@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DefaultCaseStatement extends Statement<ScriptLanguageParser.StmtListContext> {
-
     protected Statements body;
 
     public DefaultCaseStatement() {
@@ -54,6 +53,12 @@ public class DefaultCaseStatement extends Statement<ScriptLanguageParser.StmtLis
         int result = super.hashCode();
         result = 31 * result + getBody().hashCode();
         return result;
+    }
+
+
+    @Override
+    public ASTNode[] getChildren() {
+        return new ASTNode[]{getBody()};
     }
 }
 

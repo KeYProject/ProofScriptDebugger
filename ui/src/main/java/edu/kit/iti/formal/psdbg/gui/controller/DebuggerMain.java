@@ -34,7 +34,6 @@ import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
-import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
@@ -55,7 +54,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.RecognitionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -78,6 +76,8 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+
+import org.reactfx.util.Timer;
 
 
 /**
@@ -169,24 +169,24 @@ public class DebuggerMain implements Initializable {
     private Timer interpreterThreadTimer;
 
     @Subscribe
-    public void handle(Events.ShowPostMortem spm){
+    public void handle(Events.ShowPostMortem spm) {
         FindNearestASTNode fna = new FindNearestASTNode(spm.getPosition());
         List<PTreeNode<KeyData>> result =
-        model.getDebuggerFramework().getPtreeManager().getNodes()
-                .stream()
-                .filter(it -> Objects.equals(it.getStatement().accept(fna),it.getStatement()))
-                .collect(Collectors.toList());
+                model.getDebuggerFramework().getPtreeManager().getNodes()
+                        .stream()
+                        .filter(it -> Objects.equals(fna.childOrMe(it.getStatement()), it.getStatement()))
+                        .collect(Collectors.toList());
 
         System.out.println(result);
 
 
         for (PTreeNode<KeyData> statePointerToPostMortem : result) {
-            if(statePointerToPostMortem != null && statePointerToPostMortem.getStateAfterStmt() != null) {
+            if (statePointerToPostMortem != null && statePointerToPostMortem.getStateAfterStmt() != null) {
 
                 State<KeyData> stateBeforeStmt = statePointerToPostMortem.getStateBeforeStmt();
-               // stateBeforeStmt.getGoals().forEach(keyDataGoalNode -> System.out.println("BeforeSeq = " + keyDataGoalNode.getData().getNode().sequent()));
+                // stateBeforeStmt.getGoals().forEach(keyDataGoalNode -> System.out.println("BeforeSeq = " + keyDataGoalNode.getData().getNode().sequent()));
                 State<KeyData> stateAfterStmt = statePointerToPostMortem.getStateAfterStmt();
-               // stateAfterStmt.getGoals().forEach(keyDataGoalNode -> System.out.println("AfterSeq = " + keyDataGoalNode.getData().getNode().sequent()));
+                // stateAfterStmt.getGoals().forEach(keyDataGoalNode -> System.out.println("AfterSeq = " + keyDataGoalNode.getData().getNode().sequent()));
 
                 /*List<GoalNode<KeyData>> list = stateAfterStmt.getGoals().stream().filter(keyDataGoalNode ->
                     keyDataGoalNode.getData().getNode().parent().equals(stateBeforeStmt.getSelectedGoalNode().getData().getNode())
@@ -198,7 +198,7 @@ public class DebuggerMain implements Initializable {
                 ObservableList<GoalNode<KeyData>> goals = FXCollections.observableArrayList(stateAfterStmt.getGoals());
 
                 im.setGoals(goals);
-                if(stateAfterStmt.getSelectedGoalNode() != null){
+                if (stateAfterStmt.getSelectedGoalNode() != null) {
                     im.setSelectedGoalNodeToShow(stateAfterStmt.getSelectedGoalNode());
                 } else {
                     im.setSelectedGoalNodeToShow(goals.get(0));
@@ -254,7 +254,7 @@ public class DebuggerMain implements Initializable {
 
     private void init() {
         Events.register(this);
-       // model.setDebugMode(false);
+        // model.setDebugMode(false);
         scriptController = new ScriptController(dockStation);
         interactiveModeController = new InteractiveModeController(scriptController);
         btnInteractiveMode.setSelected(false);
@@ -497,7 +497,7 @@ public class DebuggerMain implements Initializable {
                 //if (dn.getLastDockPos() != null)
                 //    dn.dock(dockStation, dn.getLastDockPos());
                 //else
-                    dn.dock(dockStation, defaultPosition);
+                dn.dock(dockStation, defaultPosition);
             } else {
                 dn.undock();
             }
@@ -580,7 +580,6 @@ public class DebuggerMain implements Initializable {
             e.printStackTrace();
         }
     }
-
 
 
     private void onInterpreterSucceed(DebuggerFramework<KeyData> keyDataDebuggerFramework) {
@@ -734,6 +733,7 @@ public class DebuggerMain implements Initializable {
         df.start();
         model.setDebuggerFramework(df);
     }
+
     @FXML
     public void executeToBreakpoint() {
         Set<Breakpoint> breakpoints = scriptController.getBreakpoints();

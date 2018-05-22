@@ -19,7 +19,7 @@ public class ClosesCase extends CaseStatement {
      * A close subscript() {bodyscript} expression
      *
      * @param closesGuard the script that is exectued in order to determine whether goal would clos. This proof is pruned afterwards
-     * @param body         the actual script that is then executed when closesscript was successful and pruned
+     * @param body        the actual script that is then executed when closesscript was successful and pruned
      */
     public ClosesCase(Statements closesGuard, Statements body) {
         this.body = body;
@@ -55,4 +55,9 @@ public class ClosesCase extends CaseStatement {
         return getClosesGuard() != null ? getClosesGuard().eq(that.getClosesGuard()) : that.getClosesGuard() == null;
     }
 
+
+    @Override
+    public ASTNode[] getChildren() {
+        return new ASTNode[]{getClosesGuard(), getBody()};
+    }
 }

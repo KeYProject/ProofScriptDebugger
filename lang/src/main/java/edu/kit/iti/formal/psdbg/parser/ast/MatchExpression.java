@@ -10,12 +10,12 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -30,8 +30,6 @@ import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import edu.kit.iti.formal.psdbg.parser.types.TermType;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * A match expression contains an argument and a uses clause.
@@ -43,12 +41,14 @@ import lombok.Setter;
 public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatternContext> {
     //private Signature signature = new Signature();
     private Expression pattern;
-    @Getter
-    @Setter
     private boolean isDerivable;
-    @Getter
-    @Setter
+    @Deprecated
     private Expression derivableTerm;
+
+    @Override
+    public ASTNode[] getChildren() {
+        return new ASTNode[]{pattern};
+    }
 
     /**
      * {@inheritDoc}
@@ -94,9 +94,5 @@ public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatter
     @Override
     public int getPrecedence() {
         return Operator.MATCH.precedence();
-    }
-
-    public void setPattern(Expression pattern) {
-        this.pattern = pattern;
     }
 }

@@ -147,7 +147,7 @@ public class KeyMatcherFacadeTest {
         Sequent seq = parseKeySeq(keysequent);
         KeyMatcherFacade.KeyMatcherFacadeBuilder builder = KeyMatcherFacade.builder().environment(keyenv);
         KeyMatcherFacade kfm = builder.sequent(seq).build();
-        return kfm.matches(pattern, null);
+        return kfm.matches(pattern);
 
     }
 
