@@ -44,8 +44,12 @@ public class SavePointController {
         main.cboSavePoints.setConverter(new StringConverter<SavePoint>() {
             @Override
             public String toString(SavePoint object) {
-                return String.format("%s (in line %d)",
-                        object.getName(), object.getLineNumer());
+                if(object != null) {
+                    return String.format("%s (in line %d)",
+                            object.getName(), object.getLineNumer());
+                } else {
+                    return "";
+                }
             }
 
             @Override
