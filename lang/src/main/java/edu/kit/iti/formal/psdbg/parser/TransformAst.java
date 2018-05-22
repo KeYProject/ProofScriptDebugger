@@ -363,11 +363,11 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
             e.setParent(match);
             match.setDerivableTerm(e);
         } else {
-            if (ctx.argList() != null) {
+            /*if (ctx.argList() != null) {
                 Signature signature = (Signature) ctx.argList().accept(this);
                 match.setSignature(signature);
                 signature.setParent(match);
-            }
+            }*/
             Expression<ParserRuleContext> e = (Expression<ParserRuleContext>) ctx.pattern.accept(this);
             match.setPattern(e);
             e.setParent(match);
