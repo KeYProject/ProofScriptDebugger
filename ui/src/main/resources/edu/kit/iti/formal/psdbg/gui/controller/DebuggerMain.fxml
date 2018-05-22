@@ -77,6 +77,9 @@
                                     <MaterialDesignIconView glyphName="PLAY" size="24.0"/>
                                 </graphic>
                             </MenuItem>
+                            <Menu text="Execute from Savepoint" fx:id="menuExecuteFromSavepoint" />
+                            <Menu text="Restart to Savepoint" fx:id="menuRestartFromSavepoint" />
+
                             <MenuItem text="Debug stepwise"
                                       accelerator="F3"
                                       onAction="#executeStepwise"
@@ -324,6 +327,19 @@
                             </tooltip>
                         </Button>
 
+                        <Separator/>
+
+                        <Label text="Rollback to: "/>
+                        <ComboBox fx:id="cboSavePoints" disable="true"/>
+                        <Button fx:id="btnSavePointRollback" onAction="#selectSavepoint" disable="true">
+                            <graphic>
+                                <MaterialDesignIconView glyphName="CHECK" size="22.0"/>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip text="Select Savepoint"/>
+                            </tooltip>
+                        </Button>
+                        <Separator/>
 
                         <Pane HBox.hgrow="ALWAYS"/>
                         <Label text="Windows:"/>

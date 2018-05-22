@@ -16,4 +16,8 @@ public interface CommandLookup<T> {
     public CommandHandler<T> getBuilder(CallStatement callStatement, T data);
 
     String getHelp(CallStatement call);
+
+    default boolean isUninterpretedParams(CallStatement call){
+        return false;
+    }
 }

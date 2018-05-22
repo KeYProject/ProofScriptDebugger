@@ -49,4 +49,8 @@ public interface CommandHandler<T> {
     default Stream<String> getArguments(String name) {
         return Stream.of();
     }
+
+    default boolean isUninterpretedParams(CallStatement call){
+        return false;
+    }
 }

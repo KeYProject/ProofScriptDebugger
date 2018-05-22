@@ -31,6 +31,13 @@
                             <ListView fx:id="goalView"/>
                         </VBox>
                     </center>
+                    <Label text="Matching Pattern for Goals"
+                    ></Label>
+                    <TextArea fx:id="matchpattern_goal" minHeight="0.0" minWidth="0.0" prefHeight="159.0"
+                              prefWidth="639.0"
+                    />
+                    <Button mnemonicParsing="false" text="Start Matching"
+                            onMouseClicked="#startMatchGoal"/>
                 </SectionPane>
                 <SplitPane dividerPositions="0.4189895470383275" prefHeight="500" prefWidth="800">
                     <SectionPane title="Sequent" minHeight="0.0" minWidth="0.0" prefHeight="633.0"

@@ -9,7 +9,6 @@ import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.RuleCommand;
 import de.uka.ilkd.key.macros.scripts.ScriptException;
-import de.uka.ilkd.key.pp.LogicPrinter;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
@@ -23,6 +22,7 @@ import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.Evaluator;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.DebuggerFramework;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
@@ -42,11 +42,9 @@ import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 import recoder.util.Debug;
 
+import javax.annotation.Nullable;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -76,6 +74,9 @@ public class InteractiveModeController {
     private boolean moreThanOneMatch = false;
 
     private CasesStatement casesStatement;
+
+    @Setter @Nullable
+    private SavePoint savepoint; //not null if interactive mode started from savepoint
 
     public void start(Proof currentProof, InspectionModel model) {
         Events.register(this);
@@ -148,7 +149,15 @@ public class InteractiveModeController {
         Events.unregister(this);
         String c = getCasesAsString();
         scriptController.getDockNode(scriptArea).undock();
-        Events.fire(new Events.InsertAtTheEndOfMainScript(c));
+
+        if(savepoint == null) {
+            Events.fire(new Events.InsertAtTheEndOfMainScript(c));
+        } else {
+            //TODO: insert Script after Savepoint
+            System.out.println("Interactive Script should be inserted in line " + savepoint.getLineNumber());
+            Events.fire(new Events.InsertAtTheEndOfMainScript(c));
+        }
+
     }
 
     @Subscribe
@@ -213,7 +222,7 @@ public class InteractiveModeController {
             sb.append("\nSequent Formula: formula=").append(sfTerm);
             sb.append("\nOn Sub Term: on=").append(onTerm);
 
-            Utils.showExceptionDialog("Proof Command was not applicable",
+            Utils.showWarningDialog("Proof Command was not applicable",
                     "Proof Command was not applicable.",
                     sb.toString(), e);
         }
