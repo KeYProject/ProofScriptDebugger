@@ -1,7 +1,7 @@
 # This is the Gradle build system for JVM applications
 # https://gradle.org/
 # https://github.com/gradle/gradle
-image: key-dev-jdk8
+image: key-dev-jdk10
 
 cache:
   paths:
@@ -13,13 +13,15 @@ cache:
 # runtime for each build is more reliable since the runtime is completely
 # isolated from any previous builds.
 variables:
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false \
+                --add-modules java.xml.bind \
+                '-Dorg.gradle.jvmargs=--add-modules java.xml.bind'"
+  GIT_SSL_NO_VERIFY: "true"
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
+#  - export GRADLE_OPTS="-Dorg.gradle.daemon=false --add-modules java.xml.bind '-Dorg.gradle.jvmargs=--add-modules java.xml.bind'"
 
-variables:
-  GIT_SSL_NO_VERIFY: "true"
 
 stages:
   - build
@@ -39,10 +41,26 @@ build:jdk9:
       - .gradle
 
 
+build:jdk10:
+  stage: build
+  image: key-dev-jdk10
+  script: gradle --build-cache assemble
+  allow_failure: true
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
+
+
 build:jdk8:
   stage: build
+  variables:
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   script: gradle --build-cache assemble
   image: key-dev-jdk8
+
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push

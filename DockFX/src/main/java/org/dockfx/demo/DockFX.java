@@ -21,35 +21,32 @@
 
 package org.dockfx.demo;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Random;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.layout.BorderPane;
 import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
 
@@ -102,62 +99,49 @@ public class DockFX extends Application {
     DockNode tabsDock = new DockNode(tabs, "Tabs Dock", new ImageView(dockImage));
     tabsDock.setPrefSize(300, 100);
     tabsDock.dock(dockPane, DockPos.TOP);
-
-    DockNode tableDock = new DockNode(tableView, "Table");
+    DockNode tableDock = new DockNode(tableView);
+    // let's disable our table from being undocked
+    tableDock.setDockTitleBar(null);
     tableDock.setPrefSize(300, 100);
     tableDock.dock(dockPane, DockPos.BOTTOM);
 
-    MenuItem saveMenuItem = new MenuItem("Save");
-    saveMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        if(dirExist(getUserDataDirectory()))
-          dockPane.storePreference(getUserDataDirectory() + "dock.pref");
-      }
-    });
+    final Menu menu1 = new Menu("File");
+    final Menu menu2 = new Menu("Options");
+    final Menu menu3 = new Menu("Help");
 
-    MenuItem restoreMenuItem = new MenuItem("Restore");
-    restoreMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        dockPane.loadPreference(getUserDataDirectory() + "dock.pref");
-      }
-    });
+    MenuBar menuBar = new MenuBar();
+    menuBar.getMenus().addAll(menu1, menu2, menu3);
 
-    Menu fileMenu = new Menu("File");
-    MenuBar menuBar = new MenuBar(fileMenu);
-    fileMenu.getItems().addAll(saveMenuItem, restoreMenuItem);
+    ToolBar toolBar = new ToolBar(
+        new Button("New"),
+        new Button("Open"),
+        new Button("Save"),
+        new Separator(),
+        new Button("Clean"),
+        new Button("Compile"),
+        new Button("Run"),
+        new Separator(),
+        new Button("Debug"),
+        new Button("Profile")
+    );
 
-    BorderPane mainBorderPane = new BorderPane();
-    mainBorderPane.setTop(menuBar);
-    mainBorderPane.setCenter(dockPane);
-    
-    // show that overlays are relative to the docking area
-    mainBorderPane.setLeft(new AnchorPane(generateRandomTree()));
-    
-    primaryStage.setScene(new Scene(mainBorderPane, 800, 500));
+    VBox vbox = new VBox();
+    vbox.getChildren().addAll(menuBar, toolBar, dockPane);
+    VBox.setVgrow(dockPane, Priority.ALWAYS);
+
+    primaryStage.setScene(new Scene(vbox, 800, 500));
     primaryStage.sizeToScene();
 
     primaryStage.show();
 
     // can be created and docked before or after the scene is created
     // and the stage is shown
-    DockNode treeDock = new DockNode(generateRandomTree(), "Tree Dock1", new ImageView(dockImage));
+    DockNode treeDock = new DockNode(generateRandomTree(), "Tree Dock", new ImageView(dockImage));
     treeDock.setPrefSize(100, 100);
     treeDock.dock(dockPane, DockPos.LEFT);
-    treeDock = new DockNode(generateRandomTree(), "Tree Dock2", new ImageView(dockImage));
+    treeDock = new DockNode(generateRandomTree(), "Tree Dock", new ImageView(dockImage));
     treeDock.setPrefSize(100, 100);
     treeDock.dock(dockPane, DockPos.RIGHT);
-
-	// If you want to get notified when the docknode is closed. You can add ChangeListener to DockNode's closedProperty()
-	treeDock.closedProperty().addListener( new ChangeListener< Boolean >()
-	{
-		@Override public void changed( ObservableValue< ? extends Boolean > observable, Boolean oldValue, Boolean newValue )
-		{
-			if(newValue)
-				System.out.println("TreeDock(DockPos.RIGHT) is closed.");
-		}
-	} );
 
     // test the look and feel with both Caspian and Modena
     Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
@@ -191,23 +175,4 @@ public class DockFX extends Application {
 
     return treeView;
   }
-
-  public static boolean dirExist(String dir)
-  {
-    String path = getUserDataDirectory();
-    if(!new File(path).exists())
-      return new File(path).mkdirs();
-    else
-      return true;
-  }
-
-  public static String getUserDataDirectory() {
-    return System.getProperty("user.home") + File.separator + ".dockfx" + File.separator
-           + getApplicationVersionString() + File.separator;
-  }
-
-  public static String getApplicationVersionString() {
-    return "1.0";
-  }
-
 }
