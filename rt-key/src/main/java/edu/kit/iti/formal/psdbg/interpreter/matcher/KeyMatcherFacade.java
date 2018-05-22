@@ -25,7 +25,6 @@ import java.util.function.Function;
 @Builder
 public class KeyMatcherFacade {
     private static Logger logger = LogManager.getLogger(KeyMatcherFacade.class);
-
     private final DefaultTermParser dtp = new DefaultTermParser();
     private final KeYEnvironment environment;
     private final Sequent sequent;

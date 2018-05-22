@@ -27,6 +27,13 @@ subprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 
+    task printClasspath {
+        doLast {//            sourceSets.test.runtimeClasspath.
+
+            sourceSets.test.runtimeClasspath.each {println it}
+
+        }
+    }
 
     dependencies {
         compile group: 'commons-cli', name: 'commons-cli', version: '1.4'

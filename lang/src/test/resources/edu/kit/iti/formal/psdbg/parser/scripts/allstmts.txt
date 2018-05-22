@@ -3,7 +3,7 @@ foreach { theonly {
     cases {
         case x = y :{
             print a 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 22  2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2;
-            print (1+2)*(3+2)/4 & match `f(x)` using [x:any];
+            print (1+2)*(3+2)/4 & match `f(x)` using [x:BOOL];
         }
 
         default :{

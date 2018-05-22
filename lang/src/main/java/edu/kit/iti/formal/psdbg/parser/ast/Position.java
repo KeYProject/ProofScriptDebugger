@@ -10,12 +10,12 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -58,11 +58,20 @@ public class Position implements Copyable<Position> {
                 token.getCharPositionInLine());
     }
 
+    /**
+     * Determines the starts position from the given {@link ParserRuleContext}.
+     *
+     * @param token
+     * @return null if the given token is null.
+     */
     public static Position start(ParserRuleContext token) {
+        if (token == null)
+            return null;
         return start(token.start);
     }
 
     public static Position end(ParserRuleContext token) {
+        if (token == null) return null;
         return end(token.stop);
     }
 
