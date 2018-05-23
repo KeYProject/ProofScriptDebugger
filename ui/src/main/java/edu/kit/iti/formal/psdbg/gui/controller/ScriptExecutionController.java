@@ -8,6 +8,7 @@ import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
+import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import javafx.scene.control.Alert;
@@ -153,6 +154,7 @@ public class ScriptExecutionController {
     private void executeScript0(InterpreterBuilder ib,
                                 Collection<? extends Breakpoint> breakpoints,
                                 ProofScript ms, boolean addInitBreakpoint) {
+        ib.setProblemPath(mainCtrl.getFacade().getFilepath());
         KeyInterpreter interpreter = ib.build();
         mainCtrl.createDebuggerFramework(breakpoints, ms, addInitBreakpoint, interpreter);
     }

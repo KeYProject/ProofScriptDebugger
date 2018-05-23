@@ -5,6 +5,9 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +16,11 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class SaveCommand implements CommandHandler<KeyData> {
     public static final String SAVE_COMMAND_NAME = "#save";
@@ -47,9 +55,27 @@ public class SaveCommand implements CommandHandler<KeyData> {
         consoleLogger.info("(Safepoint) Location to be saved to = " + newFile.getAbsolutePath());
 
         try {
-            interpreter.getSelectedNode().getData().getProof().saveToFile(newFile);
+            AtomicBoolean execute = new AtomicBoolean(sp.getForce() == SavePoint.ForceOption.YES);
+            if(sp.getForce() == SavePoint.ForceOption.INTERACTIVE){
+                Semaphore semaphore = new Semaphore(0);
+                Platform.runLater(() -> {
+                    Alert a = new Alert(Alert.AlertType.CONFIRMATION);
+                    a.setTitle("Foo");
+                    Optional<ButtonType> buttonType = a.showAndWait();
+                    if(buttonType.isPresent() && buttonType.get() == ButtonType.OK){
+                        execute.set(true);
+                    }
+                    semaphore.release();
+                });
+                semaphore.acquire();
+            }
+
+            if(execute.get())
+                interpreter.getSelectedNode().getData().getProof().saveToFile(newFile);
             //TODO Call to key persistend facade
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
