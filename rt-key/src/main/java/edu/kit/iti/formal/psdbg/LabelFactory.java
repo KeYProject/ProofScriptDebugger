@@ -3,7 +3,6 @@ package edu.kit.iti.formal.psdbg;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
-import javafx.util.Pair;
 import lombok.val;
 import org.apache.commons.lang.ArrayUtils;
 import org.key_project.util.collection.ImmutableList;

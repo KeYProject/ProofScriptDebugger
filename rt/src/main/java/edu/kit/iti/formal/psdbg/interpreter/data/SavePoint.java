@@ -25,7 +25,11 @@ public class SavePoint {
         if (isSaveCommand(call)) {
             Parameters p = call.getParameters();
             name = evalAsText(p, "#2", "not-available");
-            force = ForceOption.valueOf(evalAsText(p, "force", "yes").toUpperCase());
+            try{
+                force = ForceOption.valueOf(evalAsText(p, "force", "yes").toUpperCase());
+            } catch (IllegalArgumentException e){
+
+            }
 
             try {
                 startOffset = call.getRuleContext().getStart().getStartIndex();
