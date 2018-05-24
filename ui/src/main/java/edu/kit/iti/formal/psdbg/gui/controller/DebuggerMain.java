@@ -1173,6 +1173,11 @@ public class DebuggerMain implements Initializable {
                     LOGGER.info("Reloaded Successfully");
                     statusBar.publishMessage("Reloaded Sucessfully");
                 }
+
+                //TODO: check again
+                scriptController.getMainScript().getScriptArea().setSavepointMarker(selected.getLineNumber());
+                scriptController.getMainScript().getScriptArea().getCodeArea().setStyleClass(selected.getStartOffset(), selected.getEndOffset() + 1, "problem");
+
             } catch (ProofInputException | ProblemLoaderException e) {
                 LOGGER.error(e);
                 Utils.showExceptionDialog("Loading Error", "Could not clear Environment",

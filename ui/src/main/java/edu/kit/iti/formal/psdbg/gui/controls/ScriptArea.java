@@ -424,9 +424,10 @@ public class ScriptArea extends BorderPane {
 
     }
 
-    private void underline (int linenumber) {
-
+    public void setAlertMarker(int lineNumber) {
+        gutter.getLineAnnotation(lineNumber - 1).setAlert(true);
     }
+
 
 
 
@@ -615,6 +616,10 @@ public class ScriptArea extends BorderPane {
                 MaterialDesignIcon.CONTENT_SAVE, "12"
         );
 
+        private MaterialDesignIconView iconSkippedSave = new MaterialDesignIconView(
+                MaterialDesignIcon.ALERT, "12"
+        );
+
         private Label lineNumber = new Label("not set");
 
         public GutterView(GutterAnnotation ga) {
@@ -644,6 +649,8 @@ public class ScriptArea extends BorderPane {
             getChildren().setAll(lineNumber);
             if (getAnnotation().isMainScript()) getChildren().add(iconMainScript);
             else if (getAnnotation().isSavepoint()) getChildren().add(iconSavepoint);
+            else addPlaceholder();
+            if (getAnnotation().isAlert()) getChildren().add(iconSkippedSave);
             else addPlaceholder();
             if (getAnnotation().isBreakpoint())
                 getChildren().add(getAnnotation().getConditional()
@@ -685,6 +692,21 @@ public class ScriptArea extends BorderPane {
         private BooleanProperty mainScript = new SimpleBooleanProperty();
 
         private SimpleBooleanProperty savepoint = new SimpleBooleanProperty();
+
+        //for now specifically for skipped saved commands
+        private SimpleBooleanProperty alert = new SimpleBooleanProperty();
+
+        public boolean isAlert() {
+            return alert.get();
+        }
+
+        public SimpleBooleanProperty alertProperty() {
+            return alert;
+        }
+
+        public void setAlert(boolean alert) {
+            this.alert.set(alert);
+        }
 
         public String getText() {
             return text.get();

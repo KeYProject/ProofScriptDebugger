@@ -73,6 +73,8 @@ public class ScriptController {
             if (o != null)
                 o.getScriptArea().textProperty().removeListener(a -> updateSavePoints());
             n.getScriptArea().textProperty().addListener(a -> updateSavePoints());
+
+
             updateSavePoints();
         });
 
@@ -87,39 +89,19 @@ public class ScriptController {
                     .map(a -> (CallStatement) a)
                     .map(SavePoint::new)
                     .collect(Collectors.toList());
+
             mainScriptSavePoints.setAll(list);
+
+            //set alert gutter annotations
+            List<SavePoint> noForceSp = mainScriptSavePoints.stream()
+                    .filter(a -> a.getForce().equals(SavePoint.ForceOption.NO))
+                    .collect(Collectors.toList());
+            noForceSp.forEach( e -> getMainScript().getScriptArea().setAlertMarker(e.getLineNumber()));
+
             loggerConsole.info("Found savepoints: " + list);
         }
     }
 
-/*
-    public int getLineOfSavepoint(SavePoint sp) {
-        Optional<ProofScript> ms = getMainScript(). find(getCombinedAST());
-
-        if(ms.isPresent()) {
-            List<CallStatement> list = ms.get().getBody().stream()
-                    .filter(SavePoint::isSaveCommand)
-                    .map(a -> (CallStatement) a).
-                    collect(Collectors.toList());
-
-
-            if(!list.isEmpty()) {
-               for(int i = 0; i < list.size(); i++) {
-                   if(true) {
-                       Parameters param = list.get(i).getParameters();
-                       String splistname = ((StringLiteral) param.get(new Variable("#2"))).getText();
-                        if(splistname.equals(sp.getName())) {
-                            int index = ms.get().getBody().indexOf(list.get(i));
-                            return ms.get().getBody().get(index).getStartPosition().getLineNumber();
-                        }
-                   }
-               }
-            }
-        }
-        return -1;
-
-    }
-    */
 
     private void addDefaultInlineActions() {
         actionSuppliers.add(new FindLabelInGoalList());
@@ -348,6 +330,7 @@ public class ScriptController {
     }
 
     public void setMainScript(ProofScript proofScript) {
+
         MainScriptIdentifier msi = new MainScriptIdentifier();
         msi.setLineNumber(proofScript.getStartPosition().getLineNumber());
         msi.setScriptName(proofScript.getName());

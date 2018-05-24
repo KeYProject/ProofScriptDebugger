@@ -44,6 +44,7 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
         goal = node;
     }
 
+
     /**
      * Evaluation of an expression.
      *
@@ -78,10 +79,12 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
         Value pattern = (Value) match.getPattern().accept(this);
         if (match.isDerivable()) {
         } else {
-            if (pattern.getType() == SimpleType.STRING) {
-                va = matcher.matchLabel(goal, (String) pattern.getData());
-            } else if (TypeFacade.isTerm(pattern.getType())) {
-                va = matcher.matchSeq(goal, (String) pattern.getData(), match.getSignature());
+            if (goal != null) {
+                if (pattern.getType() == SimpleType.STRING) {
+                    va = matcher.matchLabel(goal, (String) pattern.getData());
+                } else if (TypeFacade.isTerm(pattern.getType())) {
+                    va = matcher.matchSeq(goal, (String) pattern.getData(), match.getSignature());
+                }
             }
         }
 
@@ -109,7 +112,7 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
     @Override
     public Value visit(Variable variable) {
         //get variable value
-        Value v = state.getValue(variable);
+        Value v = (state != null)? state.getValue(variable) : null;
         if (v != null) {
             return v;
         } else {
@@ -153,8 +156,8 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
                 if (t != null)
                     newVal = ((Value) t.accept(this)).getData().toString();
                 else
-                    newVal = state.getValue(new Variable(name)).getData().toString();
-                m.appendReplacement(newTerm, newVal);
+                    if (state != null) newVal = state.getValue(new Variable(name)).getData().toString();
+                    m.appendReplacement(newTerm, newVal);
             }
             m.appendTail(newTerm);
             return new Value<>(TypeFacade.ANY_TERM, newTerm.toString());

@@ -599,7 +599,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
 
     private VariableAssignment evaluateParametersStateLess(Parameters parameters) {
         VariableAssignment va = new VariableAssignment();
-        Evaluator<T> evaluator = createEvaluator(null, null);
+        Evaluator<T> evaluator = new Evaluator<>(null, null);
 
         parameters.entrySet().forEach(entry -> {
             try {
