@@ -121,13 +121,14 @@ public class PTreeNode<T> {
     }
 
     public Collection<GoalNode<T>> getMutatedNodes() {
-        if (statement instanceof CallStatement) {//TODO better predicate for mutators
+        if (!(statement instanceof CallStatement)) {//TODO better predicate for mutators
             return Collections.emptyList();
         }
         assert stateAfterStmt != null && stateBeforeStmt != null;
         ArrayList<PTreeNode<T>> list = new ArrayList<>();
         GoalNode<T> incoming = stateBeforeStmt.getSelectedGoalNode();
-        return stateAfterStmt.getGoals().stream().filter(gn -> gn.getParent() == incoming).collect(Collectors.toList());
+
+        return stateAfterStmt.getGoals().stream().filter(gn -> gn.getParent().equals(incoming)).collect(Collectors.toList());
     }
 
 }

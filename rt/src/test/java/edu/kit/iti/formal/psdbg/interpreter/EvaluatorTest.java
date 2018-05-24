@@ -35,14 +35,14 @@ public class EvaluatorTest {
 
     @Before
     public void setup() {
-        GoalNode<String> parent = new GoalNode<>(null, "pa", false);
+        GoalNode<String> parent = new GoalNode<>( "pa");
         parent.getAssignments()
                 .declare("a", SimpleType.INT)
                 .declare("b", SimpleType.INT)
                 .assign("a", Value.from(1))
                 .assign("b", Value.from(1));
         GoalNode<String> selected = new GoalNode<>(parent, "selg", false);
-        eval = new Evaluator(selected.getAssignments(), selected);
+        eval = new Evaluator<>(selected.getAssignments(), selected);
         eval.setMatcher(new PseudoMatcher());
     }
 

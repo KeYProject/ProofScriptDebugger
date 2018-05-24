@@ -57,7 +57,7 @@ public class EvalTest {
         Expression e_exp = TestHelper.toExpr(expResult);
 
         VariableAssignment s = createAssignments();
-        Evaluator evaluator = new Evaluator(s, new GoalNode(null, null, true));
+        Evaluator<String> evaluator = new Evaluator<>(s, new GoalNode<>(null));
 
         Value is = evaluator.eval(e_is);
         Value exp = evaluator.eval(e_exp);

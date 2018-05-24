@@ -265,7 +265,7 @@ public class KeYProofFacade {
         KeYEnvironment env = getEnvironment();
         ImmutableList<Goal> openGoals = p.getSubtreeGoals(p.root());
         List<GoalNode<KeyData>> goals = openGoals.stream().map(g ->
-                new GoalNode<>(null, new KeyData(g, env, p), false))
+                new GoalNode<>( new KeyData(g, env, p)))
                 .collect(Collectors.toList());
         return goals;
     }

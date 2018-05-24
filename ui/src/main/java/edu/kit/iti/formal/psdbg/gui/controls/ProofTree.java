@@ -433,11 +433,13 @@ public class ProofTree extends BorderPane {
             mutatedBy.clear();
             nodes.forEach(pn -> {
                         try {
-                            Node startNode = pn.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
-                            mutatedBy.put(startNode, pn.getStatement());
-                            pn.getMutatedNodes().forEach(mn -> {
-                                entryExitMap.put(startNode, mn.getData().getNode());
-                            });
+                            if (pn.isAtomic()) {
+                                Node startNode = pn.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
+                                mutatedBy.put(startNode, pn.getStatement());
+                                pn.getMutatedNodes().forEach(mn -> {
+                                    entryExitMap.put(startNode, mn.getData().getNode());
+                                });
+                            }
                         } catch (NullPointerException e) {
                         }
                     }
@@ -450,7 +452,7 @@ public class ProofTree extends BorderPane {
             val currentItem = itemFactory(n);
             for (Node child : entryExitMap.get(n)) {
                 if (isMutated(child)) {
-                    currentItem.getChildren().add(populate("", n));
+                    currentItem.getChildren().add(populate("", child));
                 } else {
                     currentItem.getChildren().add(super.itemFactory(child));
                 }

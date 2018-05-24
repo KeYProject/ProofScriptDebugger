@@ -3,9 +3,12 @@ package edu.kit.iti.formal.psdbg.interpreter.data;
 import edu.kit.iti.formal.psdbg.parser.ast.Variable;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.annotation.Nonnull;
 
 /**
  * Objects of this class represent a GoalNode in a script state
@@ -13,7 +16,8 @@ import lombok.ToString;
  *
  * @author S.Grebing
  */
-@ToString
+@ToString(of = "id")
+@EqualsAndHashCode(of = "id")
 public class GoalNode<T> {
     @Getter
     @Setter
@@ -28,24 +32,32 @@ public class GoalNode<T> {
     @Getter
     private boolean isClosed;
 
-    /**
-     *
-     *
-     * @param parent
-     * @param data
-     */
-    public GoalNode(GoalNode<T> parent, T data, boolean isClosed) {
-        this.assignments = new VariableAssignment(parent == null ? null :
-                parent.getAssignments().deepCopy());
+    private int id = super.hashCode();
+
+    public GoalNode(T data) {
+        this(null, new VariableAssignment(), data, false);
+    }
+
+    public GoalNode(@Nonnull GoalNode<T> parent, T data, boolean isClosed) {
+        this(parent, parent.getAssignments(), data, isClosed);
+    }
+
+    private GoalNode(GoalNode<T> parent, VariableAssignment assignments, T data, boolean isClosed) {
+        this.assignments = assignments.push();
         this.parent = parent;
         this.data = data;
         this.isClosed = isClosed;
     }
-    private GoalNode(GoalNode<T> parent, VariableAssignment assignments, T data, boolean isClosed) {
-        this.assignments = assignments.deepCopy();
-        this.parent = parent;
-        this.data = data;
+
+    private GoalNode(int id, GoalNode<T> tGoalNode, T data, boolean isClosed) {
+        this(tGoalNode, data, isClosed);
+        this.id = id;
+    }
+
+    private GoalNode(int id, T data, boolean isClosed) {
+        this(data);
         this.isClosed = isClosed;
+        this.id = id;
     }
 
     /**
@@ -111,12 +123,10 @@ public class GoalNode<T> {
 
     public GoalNode<T> deepCopy() {
         if (parent != null) {
-            return new GoalNode<T>(parent.deepCopy(), data, isClosed);
+            return new GoalNode<T>(id, parent.deepCopy(), data, isClosed);
         } else {
-            return new GoalNode<T>(parent, assignments.deepCopy(), data, isClosed);
+            return new GoalNode<T>(id, data, isClosed);
         }
-
-
     }
 
     public VariableAssignment enterScope(VariableAssignment va) {

@@ -10,6 +10,7 @@ import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.DebuggerCommand;
 import edu.kit.iti.formal.psdbg.lint.LintProblem;
 import edu.kit.iti.formal.psdbg.lint.LinterStrategy;
 import edu.kit.iti.formal.psdbg.parser.Facade;
@@ -98,6 +99,8 @@ public class ScriptArea extends BorderPane {
      */
     private final BooleanProperty dirty = new SimpleBooleanProperty(this, "dirty", false);
 
+
+
     /**
      * CSS classes for regions, used for "manually" highlightning. e.g. debugging marker
      */
@@ -130,6 +133,8 @@ public class ScriptArea extends BorderPane {
     @Getter
     @Setter
     private List<InlineActionSupplier> inlineActionSuppliers = new ArrayList<>();
+    private Logger consoleLogger = LogManager.getLogger("console");
+
 
     public ScriptArea() {
         init();
@@ -192,9 +197,9 @@ public class ScriptArea extends BorderPane {
         installPopup();
 
         setOnMouseClicked(evt -> {
-            System.out.println("ScriptArea.init" + evt.isControlDown());
             inlineToolbar.hide();
             if (evt.isControlDown() && evt.getButton() == MouseButton.PRIMARY) {
+                consoleLogger.info("Show inline toolbar");
                 inlineToolbar.show();
                 evt.consume();
             }

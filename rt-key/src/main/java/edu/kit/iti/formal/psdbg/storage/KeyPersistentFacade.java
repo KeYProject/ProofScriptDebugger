@@ -43,7 +43,7 @@ public class KeyPersistentFacade {
             Node node = WalkableLabelFacade.findNode(proof, pg.getGoalIdentifier());
             Goal goal = proof.getGoal(node);
             KeyData kd = new KeyData(goal, env, proof);
-            GoalNode<KeyData> gn = new GoalNode<>(null, kd, false);
+            GoalNode<KeyData> gn = new GoalNode<>(kd);
             state.getGoals().add(gn);
             if (pg.isSelected())
                 state.setSelectedGoalNode(gn);
