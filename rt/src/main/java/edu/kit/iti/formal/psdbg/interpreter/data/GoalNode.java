@@ -42,15 +42,15 @@ public class GoalNode<T> {
         this(parent, parent.getAssignments(), data, isClosed);
     }
 
-    private GoalNode(GoalNode<T> parent, VariableAssignment assignments, T data, boolean isClosed) {
+    private GoalNode(@Nonnull GoalNode<T> parent, VariableAssignment assignments, T data, boolean isClosed) {
         this.assignments = assignments.push();
         this.parent = parent;
         this.data = data;
         this.isClosed = isClosed;
     }
 
-    private GoalNode(int id, GoalNode<T> tGoalNode, T data, boolean isClosed) {
-        this(tGoalNode, data, isClosed);
+    private GoalNode(int id, GoalNode<T> parent, T data, boolean isClosed) {
+        this(parent, data, isClosed);
         this.id = id;
     }
 
@@ -121,6 +121,12 @@ public class GoalNode<T> {
         return assignments;
     }
 
+    /**
+     * @deprecated weigl: IMHO this method creates a lot of pain in analyses of goal nodes dependency.
+     * For example we can't guarant gn.getParent() == gn' for checking inheritance.
+     * Currently solved by id field.
+     * @return
+     */
     public GoalNode<T> deepCopy() {
         if (parent != null) {
             return new GoalNode<T>(id, parent.deepCopy(), data, isClosed);

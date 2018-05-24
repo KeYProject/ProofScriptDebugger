@@ -10,7 +10,6 @@ import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
-import edu.kit.iti.formal.psdbg.interpreter.dbg.DebuggerCommand;
 import edu.kit.iti.formal.psdbg.lint.LintProblem;
 import edu.kit.iti.formal.psdbg.lint.LinterStrategy;
 import edu.kit.iti.formal.psdbg.parser.Facade;
@@ -66,8 +65,6 @@ import org.reactfx.collection.LiveList;
 import org.reactfx.value.Val;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.IntFunction;
@@ -86,8 +83,11 @@ import static org.fxmisc.wellbehaved.event.InputMap.*;
  */
 public class ScriptArea extends BorderPane {
     public static final Logger LOGGER = LogManager.getLogger(ScriptArea.class);
+    public static final Logger CONSOLE_LOGGER = LogManager.getLogger(ScriptArea.class);
 
     public static final String EXECUTION_MARKER = "\u2316";
+
+    public static final FileReloadingService FILE_RELOADING_SERVICE = new FileReloadingService();
 
     /**
      * Underlying filepath, should not be null
@@ -98,7 +98,6 @@ public class ScriptArea extends BorderPane {
      * If true, the content was changed since last save.
      */
     private final BooleanProperty dirty = new SimpleBooleanProperty(this, "dirty", false);
-
 
 
     /**
@@ -243,6 +242,15 @@ public class ScriptArea extends BorderPane {
         });
 
         mainScript.addListener((observable) -> updateMainScriptMarker());
+        filePath.addListener((p, o, n) -> {
+            if (o != null)
+                FILE_RELOADING_SERVICE.removeListener(o);
+            if (n != null) {
+                FILE_RELOADING_SERVICE.addListener(n, s -> {
+                    if (!isDirty()) setText(s);
+                });
+            }
+        });
     }
 
 
@@ -421,6 +429,7 @@ public class ScriptArea extends BorderPane {
 
     /**
      * Set marker in gutter at the line of the Savepoint, which is loaded
+     *
      * @param lineNumber line in where the marker is to be set
      */
     public void setSavepointMarker(int lineNumber) {
@@ -429,10 +438,9 @@ public class ScriptArea extends BorderPane {
 
     }
 
-    private void underline (int linenumber) {
+    private void underline(int linenumber) {
 
     }
-
 
 
     private boolean hasExecutionMarker() {
@@ -595,10 +603,11 @@ public class ScriptArea extends BorderPane {
     public void setText(String text) {
         codeArea.clear();
         codeArea.insertText(0, text);
+        setDirty(false);
     }
 
     public void deleteText(int i, int length) {
-            codeArea.deleteText(i,length);
+        codeArea.deleteText(i, length);
     }
 
     private static class GutterView extends HBox {
@@ -752,12 +761,12 @@ public class ScriptArea extends BorderPane {
             return savepoint.get();
         }
 
-        public SimpleBooleanProperty savepointProperty() {
-            return savepoint;
-        }
-
         public void setSavepoint(boolean savepoint) {
             this.savepoint.set(savepoint);
+        }
+
+        public SimpleBooleanProperty savepointProperty() {
+            return savepoint;
         }
     }
 
@@ -829,7 +838,7 @@ public class ScriptArea extends BorderPane {
 
         @Override
         public Node apply(int idx) {
-            if(idx==-1) return new Label("idx is -1!"); //TODO weigl debug
+            if (idx == -1) return new Label("idx is -1!"); //TODO weigl debug
             Val<String> formatted = nParagraphs.map(n -> format(idx + 1, n));
             GutterAnnotation model = getLineAnnotation(idx);
             GutterView hbox = new GutterView(model);
@@ -879,7 +888,7 @@ public class ScriptArea extends BorderPane {
             LOGGER.debug("ScriptAreaContextMenu.setMainScript");
 
             // Check if script is saved
-            if(!filePath.getValue().isFile()) {
+            if (!filePath.getValue().isFile()) {
                 Utils.showInfoDialog("Saving Script", "Save Script", "Script has to be saved first before it can be executed.");
                 return;
             }
