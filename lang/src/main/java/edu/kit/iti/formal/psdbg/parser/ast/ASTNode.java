@@ -166,4 +166,12 @@ public abstract class ASTNode<T extends ParserRuleContext>
     public int hashCode() {
         return Objects.hash(getRuleContext());
     }
+
+    public int getSyntaxWidth() {
+        if (ruleContext != null) {
+            return ruleContext.stop.getStopIndex()
+                    - ruleContext.start.getStartIndex();
+        }
+        return -1;
+    }
 }

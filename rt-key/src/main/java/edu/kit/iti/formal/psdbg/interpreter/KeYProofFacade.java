@@ -16,7 +16,6 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
-import jdk.nashorn.internal.objects.annotations.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;

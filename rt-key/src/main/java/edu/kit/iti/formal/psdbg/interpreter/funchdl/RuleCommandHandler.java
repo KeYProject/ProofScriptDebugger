@@ -23,6 +23,8 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
+import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDeclaredException;
+import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDefinedException;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.Variable;
 import lombok.Getter;
@@ -154,7 +156,11 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
     private Map<String, Object> createParameters(VariableAssignment assignments) {
         Map<String, Object> params = new HashMap<>();
         for (String s : MAGIC_PARAMETER_NAMES) {
-            params.put(s, assignments.getValue(new Variable(Variable.MAGIC_PREFIX + s)));
+            try {
+                params.put(s, assignments.getValue(new Variable(Variable.MAGIC_PREFIX + s)));
+            } catch (VariableNotDefinedException | VariableNotDeclaredException e) {
+
+            }
         }
         return params;
     }

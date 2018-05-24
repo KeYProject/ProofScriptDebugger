@@ -1,15 +1,19 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.pp.LogicPrinter;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.ProofTreeEvent;
 import de.uka.ilkd.key.proof.ProofTreeListener;
-import edu.kit.iti.formal.psdbg.LabelFactory;
+import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
+import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
+import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.ProofTreeManager;
+import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -17,42 +21,38 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.BorderPane;
 import javafx.util.StringConverter;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.val;
+import lombok.*;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 
 /**
  * KeY Proof Tree
+ *
+ * @author weigl
  */
 public class ProofTree extends BorderPane {
+    @Getter
+    @Setter
+    private Services services;// = DebuggerMain.FACADE.getService();
     private ObjectProperty<Proof> proof = new SimpleObjectProperty<>();
-
     private ObjectProperty<Node> root = new SimpleObjectProperty<>();
-
     private SetProperty<Node> sentinels = new SimpleSetProperty<>(FXCollections.observableSet());
-
-
     private MapProperty<Node, String> colorOfNodes = new SimpleMapProperty<Node, String>(FXCollections.observableHashMap());
-
     @FXML
     private TreeView<TreeNode> treeProof;
-
     private ContextMenu contextMenu;
-
-    @Getter @Setter
-    private Services services;// = DebuggerMain.FACADE.getService();
-
     private BooleanProperty deactivateRefresh = new SimpleBooleanProperty();
 
     private ProofTreeListener proofTreeListener = new ProofTreeListener() {
@@ -106,9 +106,15 @@ public class ProofTree extends BorderPane {
 
         }
     };
+    private TreeTransformationKey treeCreation;
 
-    public ProofTree() {
+    public ProofTree(DebuggerMain main) {
         Utils.createWithFXML(this);
+        //TODO remove this hack for a better solution
+        main.getModel().debuggerFrameworkProperty().addListener((p, n, m) -> {
+            treeCreation = new TreeTransformationScript(m.getPtreeManager());
+        });
+
         treeProof.setCellFactory(this::cellFactory);
         root.addListener(o -> init());
         proof.addListener((prop, old, n) -> {
@@ -129,8 +135,7 @@ public class ProofTree extends BorderPane {
      *
      * @param candidate
      */
-
-    private static void expandRootToItem(TreeItem candidate) {
+    private static void expandRootToItem(TreeItem<TreeNode> candidate) {
         if (candidate != null) {
             expandRootToItem(candidate.getParent());
             if (!candidate.isLeaf()) {
@@ -139,7 +144,7 @@ public class ProofTree extends BorderPane {
         }
     }
 
-    private static void expandRootToLeaves(TreeItem candidate) {
+    static void expandRootToLeaves(TreeItem candidate) {
         if (candidate != null) {
             if (!candidate.isLeaf()) {
                 candidate.setExpanded(true);
@@ -150,15 +155,8 @@ public class ProofTree extends BorderPane {
         }
     }
 
-    public static String toString(Node object) {
-        if (object.getAppliedRuleApp() != null) {
-            return object.getAppliedRuleApp().rule().name().toString();
-        } else {
-            return object.isClosed() ? "CLOSED GOAL" : "OPEN GOAL";
-        }
-    }
 
-    public void addNodeColor(Node n, String color) {
+    public void setNodeColor(Node n, String color) {
         this.colorOfNodes.put(n, color);
     }
 
@@ -175,7 +173,6 @@ public class ProofTree extends BorderPane {
         }
         //expandRootToLeaves(getTreeProof().getRoot());
     }
-
 
     public TreeView<TreeNode> getTreeProof() {
         return treeProof;
@@ -194,205 +191,13 @@ public class ProofTree extends BorderPane {
 
     public ContextMenu getContextMenu() {
         if (contextMenu == null) {
-            MenuItem refresh = new MenuItem("Refresh");
-            refresh.setOnAction(event -> repopulate());
-            refresh.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.REFRESH));
-
-            MenuItem copyBranchLabel = new MenuItem("Branch Label");
-            copyBranchLabel.setOnAction(evt -> consumeNode(n -> Utils.intoClipboard(
-                    LabelFactory.getBranchingLabel(n)), "Copied!"));
-
-            MenuItem copyProgramLines = new MenuItem("Program Lines");
-            copyProgramLines.setOnAction(evt -> {
-                consumeNode(n -> {
-                    Utils.intoClipboard(
-                            LabelFactory.getProgramLines(n));
-                }, "Copied!");
-            });
-
-            MenuItem copySequent = new MenuItem("Sequent");
-            copySequent.setOnAction(evt -> {
-                consumeNode(n -> {
-                    assert services != null : "set KeY services!";
-                    String s = LogicPrinter.quickPrintSequent(n.sequent(), services);
-                    Utils.intoClipboard(s);
-                }, "Copied!");
-            });
-
-            MenuItem copyRulesLabel = new MenuItem("Rule labels");
-            copyRulesLabel.setOnAction(evt -> {
-                consumeNode(n -> {
-                    Utils.intoClipboard(
-                            LabelFactory.getRuleLabel(n));
-                }, "Copied!");
-            });
-
-            MenuItem copyProgramStatements = new MenuItem("Statements");
-            copyProgramStatements.setOnAction(event -> {
-                consumeNode(n -> {
-                    Utils.intoClipboard(
-                            LabelFactory.getProgramStatmentLabel(n));
-                }, "Copied!");
-            });
-
-            Menu copy = new Menu("Copy", new MaterialDesignIconView(MaterialDesignIcon.CONTENT_COPY),
-                    copyBranchLabel, copyProgramLines,
-                    copyProgramStatements, copyRulesLabel,
-                    copySequent);
-
-            MenuItem createCases = new MenuItem("Created Case for Open Goals");
-            createCases.setOnAction((evt) ->
-            {
-                if (proof.get() != null) {
-                    List<String[]> labels = LabelFactory.getLabelOfOpenGoals(proof.get(),
-                            LabelFactory::getBranchingLabel);
-                    String text;
-                    if (labels.isEmpty()) {
-                        text = "// no open goals";
-                    } else if (labels.size() == 1) {
-                        text = "// only one goal";
-                    } else {
-                        int upperLimit = 0;
-                        /* trying to find the common suffix*/
-                        try {
-                            String[] ref = labels.get(0);
-                            for (; true; upperLimit++) {
-                                for (String[] lbl : labels) {
-                                    if (!lbl[upperLimit].equals(ref[upperLimit])) {
-                                        break;
-                                    }
-                                }
-                                upperLimit++;
-                            }
-                        } catch (ArrayIndexOutOfBoundsException e) {
-                        }
-
-                        int finalUpperLimit = upperLimit;
-                        text = labels.stream()
-                                .map(a -> Arrays.stream(a, finalUpperLimit, a.length))
-                                .map(s -> s.reduce((a, b) -> b + LabelFactory.SEPARATOR + a).orElse("error"))
-                                .map(s -> String.format("\tcase match \"%s\" :\n\t\t//commands", s))
-                                .reduce((a, b) -> a + "\n" + b)
-                                .orElse("ERROR");
-                    }
-
-                    String s = "cases {\n" + text + "\n}";
-                    Events.fire(new Events.InsertAtTheEndOfMainScript(s));
-                    Events.fire(new Events.PublishMessage("Copied to Clipboard"));
-                } else {
-
-                }
-            });
-
-
-            MenuItem showSequent = new MenuItem("Show Sequent");
-            showSequent.setOnAction((evt) ->
-                    consumeNode(n -> Events.fire(new Events.ShowSequent(n)), ""));
-
-            MenuItem showGoal = new MenuItem("Show in Goal List");
-            showGoal.setOnAction((evt) -> {
-                consumeNode(n -> Events.fire(new Events.SelectNodeInGoalList(n)), "Found!");
-            });
-
-            MenuItem expandAllNodes = new MenuItem("Expand Tree");
-            expandAllNodes.setOnAction((event) -> {
-                expandRootToLeaves(treeProof.getRoot());
-            });
-
-            contextMenu = new ContextMenu(refresh, expandAllNodes, new SeparatorMenuItem(), copy, createCases, showSequent, showGoal);
-            contextMenu.setAutoFix(true);
-            contextMenu.setAutoHide(true);
-
+            contextMenu = new ProofTreeContextMenu(this);
         }
         return contextMenu;
     }
 
     private void init() {
 
-    }
-
-    private void repopulate() {
-        if (deactivateRefresh.get())
-            return;
-
-        if (root.get() != null) {
-
-            TreeItem<TreeNode> item = populate("Proof", root.get());
-            treeProof.setRoot(item);
-        }
-
-        treeProof.refresh();
-    }
-
-    private TreeItem<TreeNode> populate(String label, Node n) {
-        val treeNode = new TreeNode(label, n);
-        TreeItem<TreeNode> ti = new TreeItem<>(treeNode);
-
-        // abort the traversing iff we have reached a sentinel!
-        if (sentinels.contains(n)) {
-            return ti;
-        }
-        if (label.equals("Proof")) { //we are at the root
-            TreeItem<TreeNode> self1 = new TreeItem<>(new TreeNode(n.serialNr() + ": " + toString(n), n));
-            ti.getChildren().add(self1);
-        }
-
-        //if we are at a leaf we need to check goal state
-        if (n.childrenCount() == 0) {
-            //  TreeItem<TreeNode> e = new TreeItem<>(new TreeNode(
-            //           n.isClosed() ? "CLOSED GOAL" : "OPEN GOAL", null));
-
-           /* if(!label.equals("Proof")) {
-                TreeItem<TreeNode> self = new TreeItem<>(new TreeNode(n.serialNr() + ": " + toString(n), n));
-                ti.getChildren().addCell(self);
-            }*/
-            // ti.getChildren().addCell(e);
-
-
-            return ti;
-        }
-
-        Node node = n.child(0);
-        if (n.childrenCount() == 1) {
-            ti.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
-            while (node.childrenCount() == 1) {
-                node = node.child(0);
-                ti.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
-            }
-        }
-
-        if (node.childrenCount() == 0) {
-
-        } else { // children count > 1
-            Iterator<Node> nodeIterator = node.childrenIterator();
-            Node childNode;
-            int branchCounter = 1;
-            while (nodeIterator.hasNext()) {
-                childNode = nodeIterator.next();
-                if (childNode.getNodeInfo().getBranchLabel() != null) {
-
-                    TreeItem<TreeNode> populate = populate(childNode.getNodeInfo().getBranchLabel(), childNode);
-                    // TreeItem<TreeNode> self = new TreeItem<>(new TreeNode(childNode.serialNr() + ": " + toString(childNode), childNode));
-                    // populate.getChildren().addCell(0, self);
-                    ti.getChildren().add(populate);
-
-                } else {
-                    TreeItem<TreeNode> populate = populate("BRANCH " + branchCounter, childNode);
-                    TreeItem<TreeNode> self = new TreeItem<>(new TreeNode(childNode.serialNr() + ": " + toString(childNode), childNode));
-                    populate.getChildren().add(0, self);
-                    ti.getChildren().add(populate);
-                    branchCounter++;
-                }
-            }
-
-/*            node.childrenIterator().forEachRemaining(child -> ti.getChildren().addCell(
-                    populate(child.getNodeInfo().getBranchLabel(), child)));
-*/
-            //node.children().forEach(child ->
-            //        ti.getChildren().addCell(populate(child.getNodeInfo().getBranchLabel(), child)));
-        }
-
-        return ti;
     }
 
     private TreeCell<TreeNode> cellFactory(TreeView<TreeNode> nodeTreeView) {
@@ -434,7 +239,7 @@ public class ProofTree extends BorderPane {
                     tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
                 }
             }
-           //TODO for Screenshot tftc.setStyle("-fx-font-size: 18pt");
+            //TODO for Screenshot tftc.setStyle("-fx-font-size: 18pt");
            /* if (colorOfNodes.containsKey(n)) {
                 tftc.setStyle("-fx-border-color: "+colorOfNodes.get(n)+";");
             }*/
@@ -443,7 +248,6 @@ public class ProofTree extends BorderPane {
         expandRootToItem(tftc.getTreeItem());
 
     }
-
 
     public MapProperty<Node, String> colorOfNodesProperty() {
         return colorOfNodes;
@@ -460,7 +264,6 @@ public class ProofTree extends BorderPane {
     public Node getRoot() {
         return root.get();
     }
-
 
     public void setRoot(Node root) {
 
@@ -507,10 +310,164 @@ public class ProofTree extends BorderPane {
         return deactivateRefresh;
     }
 
+    private TreeItem<TreeNode> populate(String label, Node node) {
+        return null;
+    }
+
+    public void repopulate() {
+        if (deactivateRefresh.get())
+            return;
+
+        if (root.get() != null) {
+            TreeItem<TreeNode> item = treeCreation.create(proof.get());
+            treeProof.setRoot(item);
+        }
+        treeProof.refresh();
+    }
+
+
     @AllArgsConstructor
     private static class TreeNode {
         String label;
-
         Node node;
+    }
+
+    class TreeTransformationKey {
+
+        public TreeItem<TreeNode> create(Proof proof) {
+            TreeItem<TreeNode> self1 = new TreeItem<>(new TreeNode("Proof", null));
+            self1.getChildren().add(populate("Proof", proof.root()));
+            return self1;
+        }
+
+        protected TreeItem<TreeNode> itemFactory(Node n) {
+            return new TreeItem<>(new TreeNode(n.serialNr() + ": " + toString(n), n));
+        }
+
+        protected String toString(Node object) {
+            if (object.getAppliedRuleApp() != null) {
+                return object.getAppliedRuleApp().rule().name().toString();
+            } else {
+                return object.isClosed() ? "CLOSED GOAL" : "OPEN GOAL";
+            }
+        }
+
+        /**
+         * recursive population.
+         *
+         * @param label
+         * @param n
+         * @return
+         */
+        protected TreeItem<TreeNode> populate(String label, Node n) {
+            val treeNode = new TreeNode(label, n);
+            TreeItem<TreeNode> currentItem = itemFactory(n);
+            new TreeItem<>(treeNode);
+
+            // abort the traversing iff we have reached a sentinel!
+            if (sentinels.contains(n)) {
+                return currentItem;
+            }
+
+            //if we are at a leaf we need to check goal state
+            if (n.childrenCount() == 0) {
+                //  TreeItem<TreeNode> e = new TreeItem<>(new TreeNode(
+                //           n.isClosed() ? "CLOSED GOAL" : "OPEN GOAL", null));
+                // currentItem.getChildren().addCell(e);
+                return currentItem;
+            }
+
+            assert n.childrenCount() > 0; // there is at least one children
+
+            //consume child proof nodes until there are more than one child, then recursion!
+            Node node = n.child(0);
+            if (n.childrenCount() == 1) {
+                do {
+                    currentItem.getChildren().add(itemFactory(node));
+                    node = node.child(0);
+                } while (node.childrenCount() == 1);
+            }
+
+            // if the current node has more zero children. abort.
+            if (node.childrenCount() == 0) return currentItem;
+
+            assert node.childrenCount() > 0; // there is at least 2 children
+
+            Iterator<Node> nodeIterator = node.childrenIterator();
+            int branchCounter = 1;
+            while (nodeIterator.hasNext()) {
+                Node childNode = nodeIterator.next();
+                if (childNode.getNodeInfo().getBranchLabel() != null) {
+                    TreeItem<TreeNode> populate = populate(childNode.getNodeInfo().getBranchLabel(), childNode);
+                    currentItem.getChildren().add(populate);
+                } else {
+                    TreeItem<TreeNode> populate = populate("BRANCH " + branchCounter, childNode);
+                    TreeItem<TreeNode> self = itemFactory(childNode);
+                    populate.getChildren().add(0, self);
+                    currentItem.getChildren().add(populate);
+                    branchCounter++;
+                }
+            }
+            return currentItem;
+        }
+    }
+
+
+    @RequiredArgsConstructor
+    class TreeTransformationScript extends TreeTransformationKey {
+        final ProofTreeManager<KeyData> manager;
+        /**
+         * maps a node to its siblings, that were created by an mutator call.
+         */
+        Multimap<Node, Node> entryExitMap = HashMultimap.create();
+
+        /**
+         * maps a node to its mutator, that was applied on it.
+         */
+        Map<Node, ASTNode> mutatedBy = new HashMap<>();
+
+        @Override
+        public TreeItem<TreeNode> create(Proof proof) {
+            Set<PTreeNode<KeyData>> nodes = manager.getNodes();
+            entryExitMap.clear();
+            mutatedBy.clear();
+            nodes.forEach(pn -> {
+                        try {
+                            Node startNode = pn.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
+                            mutatedBy.put(startNode, pn.getStatement());
+                            pn.getMutatedNodes().forEach(mn -> {
+                                entryExitMap.put(startNode, mn.getData().getNode());
+                            });
+                        } catch (NullPointerException e) {
+                        }
+                    }
+            );
+            return super.create(proof);
+        }
+
+        @Override
+        protected TreeItem<TreeNode> populate(String label, Node n) {
+            val currentItem = itemFactory(n);
+            for (Node child : entryExitMap.get(n)) {
+                if (isMutated(child)) {
+                    currentItem.getChildren().add(populate("", n));
+                } else {
+                    currentItem.getChildren().add(super.itemFactory(child));
+                }
+            }
+            return currentItem;
+        }
+
+        private boolean isMutated(Node child) {
+            return mutatedBy.containsKey(child);
+        }
+
+        protected TreeItem<TreeNode> itemFactory(Node n) {
+            ASTNode ast = mutatedBy.get(n);
+            String lbl = (String) ast.accept(new ShortCommandPrinter());
+            lbl += "  " + n.serialNr() + " " + toString(n);
+            TreeItem<TreeNode> ti = new TreeItem<>(new TreeNode(lbl, n));
+            return ti;
+        }
     }
 }

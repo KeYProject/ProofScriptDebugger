@@ -8,8 +8,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,10 +30,8 @@ public class ProofScriptDebugger extends Application {
     public static final String VERSION = "Experimental-1.1";
 
     public static final String KEY_VERSION = KeYConstants.VERSION;
-
-    private Logger logger = LogManager.getLogger("psdbg");
     private static Logger consoleLogger = LogManager.getLogger("console");
-
+    private Logger logger = LogManager.getLogger("psdbg");
 
     public static void main(String[] args) {
         launch(args);
@@ -50,11 +46,15 @@ public class ProofScriptDebugger extends Application {
             DebuggerMain controller = fxmlLoader.getController();
             Scene scene = new Scene(root);
             primaryStage.setOnCloseRequest(event -> Platform.exit());
-            scene.getStylesheets().addAll(
-                    getClass().getResource("debugger-ui.css").toExternalForm(),
-                    DockNode.class.getResource("default.css").toExternalForm()
-            );
-            logger.info("Loading CSS class " + getClass().getResource("debugger-ui.css").toExternalForm());
+            try {
+                scene.getStylesheets().addAll(
+                        getClass().getResource("debugger-ui.css").toExternalForm(),
+                        DockNode.class.getResource("default.css").toExternalForm()
+                );
+                logger.info("Loading CSS class " + getClass().getResource("debugger-ui.css").toExternalForm());
+            } catch (NullPointerException e) {
+                consoleLogger.error(e);
+            }
 
             primaryStage.setTitle(NAME + " (" + VERSION + ") with KeY:" + KEY_VERSION);
             primaryStage.setScene(scene);

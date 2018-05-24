@@ -155,7 +155,7 @@ public class DebuggerMain implements Initializable {
             new MaterialDesignIconView(MaterialDesignIcon.CODEPEN)
     );
     //-----------------------------------------------------------------------------------------------------------------
-    private ProofTree proofTree = new ProofTree();
+    private ProofTree proofTree = new ProofTree(this);
     private DockNode proofTreeDock = new DockNode(proofTree, "Proof Tree");
     private WelcomePane welcomePane = new WelcomePane(this);
     private DockNode welcomePaneDock = new DockNode(welcomePane, "Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
@@ -1334,7 +1334,7 @@ public class DebuggerMain implements Initializable {
             GoalNode<KeyData> beforeNode = original.getStateBeforeStmt().getSelectedGoalNode();
             List<GoalNode<KeyData>> stateAfterStmt = original.getStateAfterStmt().getGoals();
 
-            ProofTree ptree = new ProofTree();
+            ProofTree ptree = new ProofTree(DebuggerMain.this);
             Proof proof = beforeNode.getData().getProof();
 
             Node pnode = beforeNode.getData().getNode();
@@ -1342,7 +1342,7 @@ public class DebuggerMain implements Initializable {
 
             ptree.setProof(proof);
             ptree.setRoot(pnode);
-            ptree.addNodeColor(pnode, "blueviolet");
+            ptree.setNodeColor(pnode, "blueviolet");
             ptree.setDeactivateRefresh(true);
 
             if (stateAfterStmt.size() > 0) {
@@ -1351,7 +1351,7 @@ public class DebuggerMain implements Initializable {
                         .map(Goal::node)
                         .collect(Collectors.toSet());
                 ptree.getSentinels().addAll(sentinels);
-                sentinels.forEach(node -> ptree.addNodeColor(node, "blueviolet"));
+                sentinels.forEach(node -> ptree.setNodeColor(node, "blueviolet"));
             } else {
                 Set<Node> sentinels = new HashSet<>();
                 Iterator<Node> nodeIterator = beforeNode.getData().getNode().leavesIterator();
@@ -1361,7 +1361,7 @@ public class DebuggerMain implements Initializable {
                     sentinels.add(next);
                 }
                 ptree.getSentinels().addAll(sentinels);
-                sentinels.forEach(node -> ptree.addNodeColor(node, "blueviolet"));
+                sentinels.forEach(node -> ptree.setNodeColor(node, "blueviolet"));
                 //traverseProofTreeAndAddSentinelsToLeaves();
             }
 
@@ -1391,7 +1391,7 @@ public class DebuggerMain implements Initializable {
             GoalNode<KeyData> beforeNode = stepInvOver.getStateBeforeStmt().getSelectedGoalNode();
             List<GoalNode<KeyData>> stateAfterStmt = stepInvOver.getStateAfterStmt().getGoals();
 
-            ProofTree ptree = new ProofTree();
+            ProofTree ptree = new ProofTree(DebuggerMain.this);
             Proof proof = beforeNode.getData().getProof();
 
             Node pnode = beforeNode.getData().getNode();
@@ -1399,7 +1399,7 @@ public class DebuggerMain implements Initializable {
 
             ptree.setProof(proof);
             ptree.setRoot(pnode);
-            ptree.addNodeColor(pnode, "blueviolet");
+            ptree.setNodeColor(pnode, "blueviolet");
             ptree.setDeactivateRefresh(true);
 
             if (stateAfterStmt.size() > 0) {
@@ -1408,7 +1408,7 @@ public class DebuggerMain implements Initializable {
                         .map(Goal::node)
                         .collect(Collectors.toSet());
                 ptree.getSentinels().addAll(sentinels);
-                sentinels.forEach(node -> ptree.addNodeColor(node, "blueviolet"));
+                sentinels.forEach(node -> ptree.setNodeColor(node, "blueviolet"));
             } else {
                 Set<Node> sentinels = new HashSet<>();
                 Iterator<Node> nodeIterator = beforeNode.getData().getNode().leavesIterator();
@@ -1418,7 +1418,7 @@ public class DebuggerMain implements Initializable {
                     sentinels.add(next);
                 }
                 ptree.getSentinels().addAll(sentinels);
-                sentinels.forEach(node -> ptree.addNodeColor(node, "blueviolet"));
+                sentinels.forEach(node -> ptree.setNodeColor(node, "blueviolet"));
                 //traverseProofTreeAndAddSentinelsToLeaves();
             }
 
