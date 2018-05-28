@@ -103,7 +103,11 @@ public class FileReloadingService extends TimerTask {
                 try {
                     String content = FileUtils.readFileToString(child.toFile(), Charset.defaultCharset());
                     CONSOLE_LOGGER.info("Auto-reload {}", child);
-                    Platform.runLater(() -> callbacks.get(child).fileChanged(content));
+                    Platform.runLater(() -> {
+                            if(callbacks.get(child)!= null) {
+                                callbacks.get(child).fileChanged(content);
+                            }
+                    });
                 } catch (IOException e) {
                     CONSOLE_LOGGER.catching(e);
                 } catch (NullPointerException npe){
