@@ -66,6 +66,7 @@ import org.reactfx.util.Timer;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import java.awt.im.InputContext;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -277,6 +278,7 @@ public class DebuggerMain implements Initializable {
             ImmutableList<Goal> openGoals = p.getSubtreeGoals(p.root());
             KeyData kd = new KeyData(openGoals.get(0), env, p);
             scriptController.getAutoCompleter().getArgumentCompleter().setDefaultKeyData(kd);
+
         };
         getFacade().environmentProperty().addListener(invalidationListener);
         getFacade().proofProperty().addListener(invalidationListener);
@@ -676,8 +678,8 @@ public class DebuggerMain implements Initializable {
 
     private void onInterpreterError(DebuggerFramework<KeyData> keyDataDebuggerFramework, Throwable throwable) {
         Platform.runLater(() -> {
-            Utils.showExceptionDialog("Error during Execution", "Error during Script Execution",
-                    "Here should be some really good text...\nNothing will be the same. Everything broken.",
+            Utils.showExceptionDialog("An error has occurred during execution.", "Error during Script Execution",
+                    "Please reload the problem to get a consistent proof state.",
                     throwable
             );
         });

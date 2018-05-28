@@ -34,6 +34,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
+import static javafx.scene.input.KeyCombination.CONTROL_ANY;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -141,6 +142,7 @@ public class ScriptArea extends BorderPane {
 
     private void init() {
         codeArea.setAutoScrollOnDragDesired(false);
+
         InputMap<KeyEvent> inputMap = sequence(
                 process(EventPattern.keyPressed(),
                         (e) -> {
@@ -148,6 +150,8 @@ public class ScriptArea extends BorderPane {
                             inlineToolbar.hide();
                             return PROCEED;
                         }),
+                consume(keyPressed(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN))
+                       , (e) -> addBackticks()),
                 consumeWhen(keyPressed(KeyCode.ENTER), autoCompletion::isVisible,
                         e -> autoCompletion.complete()),
                 consume(keyPressed(KeyCode.ENTER, SHORTCUT_DOWN),
@@ -241,6 +245,7 @@ public class ScriptArea extends BorderPane {
             //this.moveTo(characterPosition, NavigationActions.SelectionPolicy.CLEAR);
         });
 
+        
         mainScript.addListener((observable) -> updateMainScriptMarker());
         filePath.addListener((p, o, n) -> {
             if (o != null)
@@ -357,6 +362,14 @@ public class ScriptArea extends BorderPane {
     }
 
 
+    private void addBackticks(){
+        int pos = codeArea.getCaretPosition();
+        insertText(pos, "``");
+        codeArea.displaceCaret(pos+1);
+
+
+
+    }
     private void highlightProblems() {
         LinterStrategy ls = LinterStrategy.getDefaultLinter();
         try {
