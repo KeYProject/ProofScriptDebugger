@@ -90,5 +90,5 @@ public interface Visitor<T> {
 
     T visit(RelaxBlock relaxBlock);
 
-    T visit(NamespaceSetExpression nss);
+    T visit(LetStatement let);
 }

@@ -1,26 +1,26 @@
 package edu.kit.iti.formal.psdbg.parser;
 
-        /*-
-         * #%L
-         * ProofScriptParser
-         * %%
-         * Copyright (C) 2017 Application-oriented Formal Verification
-         * %%
-         * This program is free software: you can redistribute it and/or modify
-         * it under the terms of the GNU General Public License as
-         * published by the Free Software Foundation, either version 3 of the
-         * License, or (at your option) any later version.
-         *
-         * This program is distributed in the hope that it will be useful,
-         * but WITHOUT ANY WARRANTY; without even the implied warranty of
-         * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-         * GNU General Public License for more details.
-         *
-         * You should have received a copy of the GNU General Public
-         * License along with this program.  If not, see
-         * <http://www.gnu.org/licenses/gpl-3.0.html>.
-         * #L%
-         */
+/*-
+ * #%L
+ * ProofScriptParser
+ * %%
+ * Copyright (C) 2017 Application-oriented Formal Verification
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 
 
 import edu.kit.iti.formal.psdbg.parser.ast.*;
@@ -29,6 +29,7 @@ import edu.kit.iti.formal.psdbg.parser.function.ScriptFunction;
 import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -164,6 +165,26 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     }
 
     @Override
+    public Object visitLetStmt(ScriptLanguageParser.LetStmtContext ctx) {
+        LetStatement lst = new LetStatement();
+        lst.setRuleContext(ctx);
+        lst.setExpression((Expression) ctx.expression().accept(this));
+        lst.getExpression().setParent(lst);
+        if (ctx.statement() != null) {
+            val stmt = (Statement) ctx.statement().accept(this);
+            Statements stmts = new Statements();
+            stmts.add(stmt);
+            lst.setBody(stmts);
+            stmts.setParent(lst);
+        }
+        if (ctx.stmtList() != null) {
+            lst.setBody((Statements) ctx.stmtList().accept(this));
+            lst.getBody().setParent(lst);
+        }
+        return lst;
+    }
+
+    @Override
     public Object visitAssignment(ScriptLanguageParser.AssignmentContext ctx) {
         AssignmentStatement assign = new AssignmentStatement();
         assign.setRuleContext(ctx);
@@ -243,14 +264,6 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
     @Override
     public Object visitExprMatch(ScriptLanguageParser.ExprMatchContext ctx) {
         return ctx.matchPattern().accept(this);
-    }
-
-    @Override
-    public Object visitNamespaceset(ScriptLanguageParser.NamespacesetContext ctx) {
-        NamespaceSetExpression nse = new NamespaceSetExpression();
-        nse.setExpression((Expression) ctx.expression().accept(this));
-        nse.setSignature((Signature) ctx.argList().accept(this));
-        return nse;
     }
 
     @Override
@@ -363,11 +376,6 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
             e.setParent(match);
             match.setDerivableTerm(e);
         } else {
-            if (ctx.argList() != null) {
-                Signature signature = (Signature) ctx.argList().accept(this);
-                match.setSignature(signature);
-                signature.setParent(match);
-            }
             Expression<ParserRuleContext> e = (Expression<ParserRuleContext>) ctx.pattern.accept(this);
             match.setPattern(e);
             e.setParent(match);

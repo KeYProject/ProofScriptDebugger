@@ -95,7 +95,6 @@ public interface ASTTraversal<T> extends Visitor<T> {
     @Override
     default T visit(MatchExpression match) {
         match.getPattern().accept(this);
-        match.getSignature().accept(this);
         return null;
     }
 
@@ -265,9 +264,9 @@ public interface ASTTraversal<T> extends Visitor<T> {
     }
 
     @Override
-    default T visit(NamespaceSetExpression nss) {
-        nss.getExpression().accept(this);
-        nss.getSignature().accept(this);
+    default T visit(LetStatement let) {
+        let.getExpression().accept(this);
+        let.getBody().accept(this);
         return null;
     }
 }

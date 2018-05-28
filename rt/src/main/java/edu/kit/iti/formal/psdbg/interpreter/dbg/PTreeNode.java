@@ -4,6 +4,7 @@ import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
+import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.CaseStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.Setter;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * PTreeNode represents a node in the state graph.
@@ -111,11 +113,22 @@ public class PTreeNode<T> {
 
     /**
      * Calculate a span of bytes of the syntactical representation.
+     *
      * @return
      */
     int getSyntaxWidth() {
-        return getStatement().getRuleContext().stop.getStopIndex()
-                - getStatement().getRuleContext().start.getStartIndex();
+        return getStatement().getSyntaxWidth();
+    }
+
+    public Collection<GoalNode<T>> getMutatedNodes() {
+        if (!(statement instanceof CallStatement)) {//TODO better predicate for mutators
+            return Collections.emptyList();
+        }
+        assert stateAfterStmt != null && stateBeforeStmt != null;
+        ArrayList<PTreeNode<T>> list = new ArrayList<>();
+        GoalNode<T> incoming = stateBeforeStmt.getSelectedGoalNode();
+
+        return stateAfterStmt.getGoals().stream().filter(gn -> gn.getParent().equals(incoming)).collect(Collectors.toList());
     }
 
 }

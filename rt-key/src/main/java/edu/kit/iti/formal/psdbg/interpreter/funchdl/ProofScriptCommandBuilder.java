@@ -67,8 +67,8 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
         Map<String, Object> map = new HashMap<>();
         params.asMap().forEach((k, v) -> {
                     map.put(k.getIdentifier(), v.getData());
-                }
-        );
+                });
+
         try {
             EngineState estate = new EngineState(kd.getProof());
             estate.setGoal(kd.getNode());
@@ -89,7 +89,7 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
                 Iterator<Node> nodeIterator = start.leavesIterator();
                 while (nodeIterator.hasNext()) {
                     Node n = nodeIterator.next();
-                    LOGGER.error("Node "+ n.serialNr()+" was closed "+ n.isClosed());
+                    LOGGER.error("Node " + n.serialNr() + " was closed " + n.isClosed());
                 }
 
             } else {
@@ -98,8 +98,6 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
                     state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.isClosedNode()));
                 }
             }
-
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

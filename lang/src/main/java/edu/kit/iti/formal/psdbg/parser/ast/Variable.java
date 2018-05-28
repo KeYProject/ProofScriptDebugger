@@ -41,6 +41,8 @@ import org.antlr.v4.runtime.Token;
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Variable extends Literal implements Comparable<Variable> {
+    public static final String MAGIC_PREFIX = "#";
+
     @NonNull private String identifier;
 
     public Variable(Token variable) {

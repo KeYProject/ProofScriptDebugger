@@ -17,13 +17,13 @@ public class MatchEvaluatorTest {
 
     @Before
     public void setup() {
-        GoalNode<String> parent = new GoalNode<>(null, "pa", false);
+        GoalNode<String> parent = new GoalNode<>("pa");
         parent.declareVariable(new Variable("a"), SimpleType.INT);
         parent.declareVariable(new Variable("b"), SimpleType.INT);
         VariableAssignment va = parent.getAssignments();
         va.assign(new Variable("a"), Value.from(1));
         va.assign(new Variable("b"), Value.from(1));
-        GoalNode selected = new GoalNode(parent, "selg", false);
+        GoalNode<String> selected = new GoalNode<>(parent, "selg", false);
         mEval = new MatchEvaluator(va, selected, new PseudoMatcher());
     }
 

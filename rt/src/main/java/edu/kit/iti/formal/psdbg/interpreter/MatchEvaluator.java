@@ -157,8 +157,7 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
      */
     @Override
     public List<VariableAssignment> visit(MatchExpression match) {
-
-        Signature sig = match.getSignature();
+        //Signature sig = match.getSignature();
         Value pattern = eval.eval(match.getPattern());
         // Value pattern = (Value) match.getPattern().accept(this);
 
@@ -167,7 +166,7 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
             va = getMatcher().matchLabel(goal, (String) pattern.getData());
             //TODO extract the results form the matcher in order to retrieve the selection results
         } else if (TypeFacade.isTerm(pattern.getType())) {
-            va = getMatcher().matchSeq(goal, (String) pattern.getData(), sig);
+            va = getMatcher().matchSeq(goal, (String) pattern.getData());
            // System.out.println("va = " + va);
         }
         return va != null ? va : Collections.emptyList();

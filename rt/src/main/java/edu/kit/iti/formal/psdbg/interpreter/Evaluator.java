@@ -44,7 +44,6 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
         goal = node;
     }
 
-
     /**
      * Evaluation of an expression.
      *
@@ -72,19 +71,14 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
     @Override
     public Value visit(MatchExpression match) {
         enterScope(match);
-        if (match.getSignature() != null && !match.getSignature().isEmpty()) {
-            throw new IllegalStateException("not supported");
-        }
         List<VariableAssignment> va = null;
         Value pattern = (Value) match.getPattern().accept(this);
         if (match.isDerivable()) {
         } else {
-            if (goal != null) {
-                if (pattern.getType() == SimpleType.STRING) {
-                    va = matcher.matchLabel(goal, (String) pattern.getData());
-                } else if (TypeFacade.isTerm(pattern.getType())) {
-                    va = matcher.matchSeq(goal, (String) pattern.getData(), match.getSignature());
-                }
+            if (pattern.getType() == SimpleType.STRING) {
+                va = matcher.matchLabel(goal, (String) pattern.getData());
+            } else if (TypeFacade.isTerm(pattern.getType())) {
+                va = matcher.matchSeq(goal, (String) pattern.getData());
             }
         }
 
@@ -112,7 +106,7 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
     @Override
     public Value visit(Variable variable) {
         //get variable value
-        Value v = (state != null)? state.getValue(variable) : null;
+        Value v = state.getValue(variable);
         if (v != null) {
             return v;
         } else {
@@ -156,8 +150,8 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
                 if (t != null)
                     newVal = ((Value) t.accept(this)).getData().toString();
                 else
-                    if (state != null) newVal = state.getValue(new Variable(name)).getData().toString();
-                    m.appendReplacement(newTerm, newVal);
+                    newVal = state.getValue(new Variable(name)).getData().toString();
+                m.appendReplacement(newTerm, newVal);
             }
             m.appendTail(newTerm);
             return new Value<>(TypeFacade.ANY_TERM, newTerm.toString());
@@ -169,10 +163,5 @@ public class Evaluator<T> extends DefaultASTVisitor<Value> implements ScopeObser
     @Override
     public Value visit(FunctionCall func) {
         return func.getFunction().eval(this, func);
-    }
-
-    @Override
-    public Value visit(NamespaceSetExpression nss) {
-        return null;
     }
 }

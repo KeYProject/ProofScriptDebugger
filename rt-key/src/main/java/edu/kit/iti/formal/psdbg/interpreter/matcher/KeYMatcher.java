@@ -4,7 +4,6 @@ import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Name;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.LogicVariable;
-import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 import de.uka.ilkd.key.logic.op.SchemaVariable;
 import de.uka.ilkd.key.pp.LogicPrinter;
 import de.uka.ilkd.key.proof.ApplyStrategy;
@@ -28,7 +27,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,8 +42,8 @@ import java.util.regex.Pattern;
  */
 public class KeYMatcher implements MatcherApi<KeyData> {
     private static final Logger LOGGER = LogManager.getLogger(KeYMatcher.class);
-
     private static final Name CUT_TACLET_NAME = new Name("cut");
+
     private List<MatchResult> resultsFromLabelMatch;
 
     @Getter
@@ -89,6 +91,17 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         }
     }
 
+    private static String cleanLabel(String label) {
+
+        String cleaned = label.replaceAll(" ", "");
+        cleaned = cleaned.replaceAll("\\(", "\\\\(");
+        cleaned = cleaned.replaceAll("\\)", "\\\\)");
+        cleaned = cleaned.replaceAll("\\[", "\\\\[");
+        cleaned = cleaned.replaceAll("\\]", "\\\\]");
+
+        return cleaned;
+    }
+
     /**
      * If teh label matcher was successful the list contains all match results
      *
@@ -116,14 +129,13 @@ public class KeYMatcher implements MatcherApi<KeyData> {
 
         String branchLabel = currentState.getData().getBranchingLabel();
         String cleanBranchLabel = branchLabel.replaceAll(" ", "");
-                //cleanLabel(branchLabel);
+        //cleanLabel(branchLabel);
 
 
-        Pattern regexpForLabel = Pattern.compile("\\\\Q"+cleanLabel+"\\\\E");
+        Pattern regexpForLabel = Pattern.compile("\\\\Q" + cleanLabel + "\\\\E");
         Matcher branchLabelMatcher = regexpForLabel.matcher(Pattern.quote(cleanBranchLabel));
 
         //Matcher branchLabelMatcher = regexpForLabel.matcher(cleanBranchLabel);
-
 
 
         if (branchLabelMatcher.matches()) {
@@ -166,21 +178,21 @@ public class KeYMatcher implements MatcherApi<KeyData> {
 
 
         // assignments.forEach(variableAssignment -> System.out.println(variableAssignment));
-        return assignments.isEmpty()? null: assignments;
+        return assignments.isEmpty() ? null : assignments;
     }
 
     @Override
-    public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState, String pattern, Signature sig) {
+    public List<VariableAssignment> matchSeq(GoalNode<KeyData> currentState, String pattern) {
         KeyMatcherFacade kmf = new KeyMatcherFacade(currentState.getData().getEnv(), currentState.getData().getNode().sequent());
         //System.out.println("State that will be matched " + currentState.getData().getNode().sequent() + " with pattern " + pattern);
         //System.out.println("Signature " + sig.toString());
-         Matchings m = kmf.matches(pattern, sig);
+        Matchings m = kmf.matches(pattern);
 
         if (m.isNoMatch()) {
             LOGGER.debug("currentState has no match= " + currentState.getData().getNode().sequent());
             return Collections.emptyList();
         } else {
-            Match firstMatch = m.getMatchings().iterator().next() ;
+            Match firstMatch = m.getMatchings().iterator().next();
             VariableAssignment va = new VariableAssignment(null);
             for (String s : firstMatch.keySet()) {
                 MatchPath matchPath = firstMatch.get(s);
@@ -197,7 +209,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
                     va.declare(s, value.getType());
                     va.assign(s, value);
 
-                } catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     LogicVariable var = (LogicVariable) matchPath.getUnit();
                     String reprTerm = var.name().toString();
                     Value<String> value = new Value<>(
@@ -211,7 +223,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
 
 
                 }
-                    //LOGGER.info("Variables to match " + s + " : " + value);
+                //LOGGER.info("Variables to match " + s + " : " + value);
                 //}
             }
             List<VariableAssignment> retList = new LinkedList();
@@ -230,18 +242,6 @@ public class KeYMatcher implements MatcherApi<KeyData> {
                 new TermType(new SortType(matched.sort())),
                 reprTermReformatted
         );
-    }
-
-    private String cleanLabel(String label) {
-
-        String cleaned = label.replaceAll(" ", "");
-        cleaned = cleaned.replaceAll("\\(", "\\\\(");
-        cleaned = cleaned.replaceAll("\\)", "\\\\)");
-        cleaned = cleaned.replaceAll("\\[", "\\\\[");
-        cleaned = cleaned.replaceAll("\\]", "\\\\]");
-
-
-        return cleaned;
     }
 
     //private TermLiteral from(SequentFormula sf) {

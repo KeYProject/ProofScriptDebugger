@@ -13,6 +13,7 @@ import java.math.BigInteger;
 /**
  * Class representing the values our variables may have
  *
+ * @param T internal data
  * @author S.Grebing
  * @author A. Weigl
  *         //TODO alle restlichen typen ergaenzen

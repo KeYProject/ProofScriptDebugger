@@ -4,17 +4,20 @@ import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.sort.Sort;
 import de.uka.ilkd.key.parser.DefaultTermParser;
 import de.uka.ilkd.key.parser.ParserException;
-import static edu.kit.iti.formal.psdbg.TestHelper.getFile;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.ast.Variable;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import org.apache.commons.cli.ParseException;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+
+import static edu.kit.iti.formal.psdbg.TestHelper.getFile;
 
 /**
  * @author Alexander Weigl
@@ -89,10 +92,13 @@ public class ExecuteTest {
 
 
     }
+
     @Test
     public void testInstantiate() throws IOException, ParseException, ParserException {
-        Execute exec = create("/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/bigIntProof/compareMagnitude_openCases.key.proof",
-        "-s", "/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/bigIntProof/instAll.kps");
+        File proof = new File("/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/bigIntProof/compareMagnitude_openCases.key.proof");
+        File script = new File("/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/bigIntProof/instAll.kps");
+        Assume.assumeTrue(proof.exists()); //
+        Execute exec = create(proof.getAbsolutePath(), "-s", script.getAbsolutePath());
         Interpreter<KeyData> i = exec.run();
         State<KeyData> currentState = i.getCurrentState();
         System.out.println(currentState);

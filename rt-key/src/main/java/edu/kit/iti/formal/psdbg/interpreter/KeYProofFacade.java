@@ -16,7 +16,6 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
-import jdk.nashorn.internal.objects.annotations.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
@@ -266,7 +265,7 @@ public class KeYProofFacade {
         KeYEnvironment env = getEnvironment();
         ImmutableList<Goal> openGoals = p.getSubtreeGoals(p.root());
         List<GoalNode<KeyData>> goals = openGoals.stream().map(g ->
-                new GoalNode<>(null, new KeyData(g, env, p), false))
+                new GoalNode<>( new KeyData(g, env, p)))
                 .collect(Collectors.toList());
         return goals;
     }

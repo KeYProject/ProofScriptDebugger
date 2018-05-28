@@ -3,7 +3,7 @@ site_url: https://formal.iti.kit.edu/psdbg
 #weigl/verifaps/
 #repo_url: https://github.com/example/repository/
 site_description:
-site_author: Alexander Weigl <weigl@kit.edu>
+site_author: Sarah Grebing <sarah.grebing@kit.edu>, Alexander Weigl <weigl@kit.edu>
 
 
 theme_dir: kit_theme

@@ -127,7 +127,7 @@ public class SequentMatcher extends BorderPane {
     public void startMatch() {
         sequentView.clearHighlight();
         KeyMatcherFacade kmf = KeyMatcherFacade.builder().environment(getSelectedGoalNodeToShow().getData().getEnv()).sequent(getSelectedGoalNodeToShow().getData().getNode().sequent()).build();
-        Matchings matchings = kmf.matches(matchpattern.getText(), null);
+        Matchings matchings = kmf.matches(matchpattern.getText());
         //MatcherFacade.matches(matchpattern.getText(), getSelectedGoalNodeToShow().getData().getNode().sequent(), true,
         //services);
 

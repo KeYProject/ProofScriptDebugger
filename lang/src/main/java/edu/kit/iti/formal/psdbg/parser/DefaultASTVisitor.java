@@ -178,8 +178,8 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
     }
 
     @Override
-    public T visit(NamespaceSetExpression nss) {
-        return defaultVisit(nss);
+    public T visit(LetStatement let) {
+        return defaultVisit(let);
     }
 }
 

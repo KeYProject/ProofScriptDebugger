@@ -206,7 +206,7 @@ public class InterpreterBuilder {
 
         ImmutableList<Goal> openGoals = proof.getSubtreeGoals(proof.root());
         List<GoalNode<KeyData>> goals = openGoals.stream().map(g ->
-                new GoalNode<>(null, new KeyData(g, keyEnvironment, proof), false))
+                new GoalNode<>(new KeyData(g, keyEnvironment, proof)))
                 .collect(Collectors.toList());
 
 

@@ -25,26 +25,26 @@ import java.util.function.Function;
 @Builder
 public class KeyMatcherFacade {
     private static Logger logger = LogManager.getLogger(KeyMatcherFacade.class);
-
     private final DefaultTermParser dtp = new DefaultTermParser();
     private final KeYEnvironment environment;
     private final Sequent sequent;
 
 
-    public Matchings matches(String pattern, Signature sig) {
+    public Matchings matches(String pattern) {
         if(pattern.contains("==>")) {
-            return matchesSequent(pattern, sig);
+            return matchesSequent(pattern);
         } else {
-            return matchesTerm(pattern, sig);
+            return matchesTerm(pattern);
         }
 
     }
 
-    private Matchings matchesTerm(String pattern, Signature sig) {
+    private Matchings matchesTerm(String pattern) {
         List<Term> positions = new ArrayList<>();
         for (String patternTerm : hasToplevelComma(pattern)) {
             try {
-               Term t = dtp.parse(createReader(patternTerm), null, environment.getServices(), environment.getServices().getNamespaces(), null, true);
+               Term t = dtp.parse(createReader(patternTerm), null, environment.getServices(),
+                       environment.getServices().getNamespaces(), null, true);
                positions.add(t);
             } catch (ParserException e) {
                 e.printStackTrace();
@@ -76,7 +76,7 @@ public class KeyMatcherFacade {
         return rt;
     }
 
-    private Matchings matchesSequent(String pattern, Signature sig) {
+    private Matchings matchesSequent(String pattern) {
 
         Sequent seq = null;
         try {

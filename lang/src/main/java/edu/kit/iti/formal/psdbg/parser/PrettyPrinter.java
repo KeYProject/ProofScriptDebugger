@@ -123,7 +123,7 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
         s.append("match ");
         String prefix = getWhitespacePrefix();
         match.getPattern().accept(this);
-        if (!match.getSignature().isEmpty()) {
+        /*if (!match.getSignature().isEmpty()) {
 
             if (getCurrentLineLength() > maxWidth) {
                 s.append("\n").append(prefix);
@@ -134,7 +134,7 @@ public class PrettyPrinter extends DefaultASTVisitor<Void> {
             s.append("using [");
             match.getSignature().accept(this);
             s.append("]");
-        }
+        }*/
 
         return null;
     }

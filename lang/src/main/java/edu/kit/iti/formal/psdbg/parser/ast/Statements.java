@@ -45,6 +45,10 @@ public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
         implements Visitable, Iterable<Statement> {
     private final List<Statement> statements = new ArrayList<>();
 
+    @Override
+    public ASTNode[] getChildren() {
+        return (ASTNode[]) toArray();
+    }
 
     public Statements(Statements body) {
         statements.addAll(body.statements);
@@ -77,6 +81,7 @@ public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
     public boolean add(Statement statement) {
         if (statement == null)
             throw new NullPointerException();
+        statement.setParent(this);
         return statements.add(statement);
     }
 

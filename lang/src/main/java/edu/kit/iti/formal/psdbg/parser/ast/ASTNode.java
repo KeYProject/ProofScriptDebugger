@@ -10,12 +10,12 @@ package edu.kit.iti.formal.psdbg.parser.ast;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -25,12 +25,13 @@ package edu.kit.iti.formal.psdbg.parser.ast;
 
 import edu.kit.iti.formal.psdbg.parser.Visitable;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -47,7 +48,9 @@ public abstract class ASTNode<T extends ParserRuleContext>
     /**
      *
      */
-    @Getter @Setter @Nullable
+    @Getter
+    @Setter
+    @Nullable
     protected ASTNode parent;
 
     /**
@@ -116,7 +119,7 @@ public abstract class ASTNode<T extends ParserRuleContext>
     @Override
     public abstract ASTNode<T> copy();
 
-    public boolean isAncestor(ASTNode node){
+    public boolean isAncestor(ASTNode node) {
         ASTNode n = this;
         do {
             if (n.equals(node))
@@ -140,6 +143,17 @@ public abstract class ASTNode<T extends ParserRuleContext>
         return depth;
     }
 
+    public ASTNode[] getChildren() {
+        return new ASTNode[0];
+    }
+
+    public final ASTNode[] asList() {
+        val ary = getChildren();
+        val nry = Arrays.copyOf(ary, ary.length + 1);
+        nry[nry.length - 1] = this;
+        return nry;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -151,5 +165,13 @@ public abstract class ASTNode<T extends ParserRuleContext>
     @Override
     public int hashCode() {
         return Objects.hash(getRuleContext());
+    }
+
+    public int getSyntaxWidth() {
+        if (ruleContext != null) {
+            return ruleContext.stop.getStopIndex()
+                    - ruleContext.start.getStartIndex();
+        }
+        return -1;
     }
 }

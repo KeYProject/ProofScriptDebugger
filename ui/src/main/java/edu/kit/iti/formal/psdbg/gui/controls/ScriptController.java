@@ -10,10 +10,11 @@ import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
-import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
 import edu.kit.iti.formal.psdbg.parser.Facade;
-import edu.kit.iti.formal.psdbg.parser.ast.*;
+import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
+import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
+import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -200,12 +201,22 @@ public class ScriptController {
                 }
                 area.setText(code);
             }
+
+            area.dirtyProperty().addListener(o -> updateTitle(dockNode, area));
+            area.filePathProperty().addListener(o -> updateTitle(dockNode, area));
             return area;
         } else {
             logger.info("File already exists. Will not load it again");
             ScriptArea area = findEditor(filePath);
             return area;
         }
+    }
+
+    private void updateTitle(DockNode dockNode, ScriptArea area) {
+        String title = area.getFilePath().getName();
+        if (area.isDirty())
+            title += "*";
+        dockNode.setTitle(title);
     }
 
     /* Create new DockNode for ScriptArea Tab
@@ -325,10 +336,6 @@ public class ScriptController {
         return mainScript.get();
     }
 
-    public void setMainScript(MainScriptIdentifier mainScript) {
-        this.mainScript.set(mainScript);
-    }
-
     public void setMainScript(ProofScript proofScript) {
 
         MainScriptIdentifier msi = new MainScriptIdentifier();
@@ -337,6 +344,10 @@ public class ScriptController {
         msi.setSourceName(proofScript.getRuleContext().getStart().getInputStream().getSourceName());
         msi.setScriptArea(findEditor(new File(proofScript.getOrigin())));
         setMainScript(msi);
+    }
+
+    public void setMainScript(MainScriptIdentifier mainScript) {
+        this.mainScript.set(mainScript);
     }
 
     public ObjectProperty<MainScriptIdentifier> mainScriptProperty() {

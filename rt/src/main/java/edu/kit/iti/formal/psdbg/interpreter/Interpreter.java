@@ -175,7 +175,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return variableHooks.size() == 0;
     }
 
-    private Value evaluate(Expression expr) {
+    protected Value evaluate(Expression expr) {
         return evaluate(getSelectedNode(), expr);
     }
 

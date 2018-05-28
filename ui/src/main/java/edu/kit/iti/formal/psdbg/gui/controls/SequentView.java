@@ -209,7 +209,7 @@ public class SequentView extends CodeArea {
         if (node.get().sequent() != null) {
             KeyMatcherFacade kmf = KeyMatcherFacade.builder().environment(this.getKeYProofFacade().getEnvironment())
                     .sequent(node.get().sequent()).build();
-            Matchings m = kmf.matches(pattern, null);
+            Matchings m = kmf.matches(pattern);
 
 //            Matchings m =
             //MatcherFacade.matches(pattern, node.get().sequent(), true, services);
