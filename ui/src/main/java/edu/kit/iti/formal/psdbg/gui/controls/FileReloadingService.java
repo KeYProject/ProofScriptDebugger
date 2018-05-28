@@ -106,6 +106,8 @@ public class FileReloadingService extends TimerTask {
                     Platform.runLater(() -> callbacks.get(child).fileChanged(content));
                 } catch (IOException e) {
                     CONSOLE_LOGGER.catching(e);
+                } catch (NullPointerException npe){
+                    CONSOLE_LOGGER.catching(npe);
                 }
             }
             boolean valid = key.reset();
