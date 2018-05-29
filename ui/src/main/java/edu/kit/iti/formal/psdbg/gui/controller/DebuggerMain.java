@@ -257,6 +257,7 @@ public class DebuggerMain implements Initializable {
         Events.register(this);
         // model.setDebugMode(false);
         scriptController = new ScriptController(dockStation);
+
         interactiveModeController = new InteractiveModeController(scriptController);
         btnInteractiveMode.setSelected(false);
         inspectionViewsController = new InspectionViewsController(dockStation);
@@ -348,7 +349,9 @@ public class DebuggerMain implements Initializable {
         BooleanBinding disableStepping = FACADE.loadingProperty().
                 or(FACADE.proofProperty().isNull()).
                 or(model.interpreterStateProperty().isNotEqualTo(InterpreterThreadState.WAIT));
-
+        FACADE.loadingProperty().addListener((observable, oldValue, newValue) -> {
+            scriptController.disablePropertyForAreasProperty().set(newValue);
+        });
       /*  model.statePointerProperty().addListener((observable, oldValue, newValue) -> {
 
             //set all steppings -> remove binding

@@ -15,10 +15,7 @@ import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -51,6 +48,23 @@ public class ScriptController {
     private static Logger loggerConsole = LogManager.getLogger("console");
 
     private final DockPane parent;
+
+    public boolean isDisablePropertyForAreas() {
+        return disablePropertyForAreas.get();
+    }
+
+    public SimpleBooleanProperty disablePropertyForAreasProperty() {
+        return disablePropertyForAreas;
+    }
+
+    public void setDisablePropertyForAreas(boolean disablePropertyForAreas) {
+        this.disablePropertyForAreas.set(disablePropertyForAreas);
+    }
+
+    /**
+     * Property to globally disable or enable scriptareas
+     */
+    private SimpleBooleanProperty disablePropertyForAreas = new SimpleBooleanProperty(true);
 
     private final ObservableMap<ScriptArea, DockNode> openScripts = FXCollections.observableMap(new HashMap<>());
     private final ListProperty<SavePoint> mainScriptSavePoints
@@ -209,7 +223,9 @@ public class ScriptController {
             area.setAutoCompletionController(getAutoCompleter());
             area.mainScriptProperty().bindBidirectional(mainScript);
             area.setFilePath(filePath);
+            area.disableProperty().bindBidirectional(this.disablePropertyForAreas);
             DockNode dockNode = createDockNode(area);
+
             openScripts.put(area, dockNode);
 
             if (filePath.exists()) {

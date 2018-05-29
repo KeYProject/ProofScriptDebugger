@@ -90,6 +90,7 @@ public class ScriptArea extends BorderPane {
 
     public static final FileReloadingService FILE_RELOADING_SERVICE = new FileReloadingService();
 
+
     /**
      * Underlying filepath, should not be null
      */
@@ -425,8 +426,11 @@ public class ScriptArea extends BorderPane {
             if (p.includeTextPosition(chIdx)) {
                 Label lbl = new Label(p.getMessage());
                 lbl.getStyleClass().addAll("problem-popup-label",
-                        "problem-popup-label-" + p.getIssue().getRulename(),
-                        "problem-popup-label-" + p.getIssue().getSeverity());
+                        "problem-popup-label-" + p.getIssue(),
+                                //.getRulename(),
+                        "problem-popup-label-" + p.getIssue()
+                                //.getSeverity()
+                        );
                 box.getChildren().add(lbl);
             }
         }
