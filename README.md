@@ -27,5 +27,12 @@ debugging to the analysis of failed proof attempts.
 # About this Repository
 
 The latest build as jar file can be downloaded here. 
-Plese note that some funtionlities may not work in this jar as it is the build 
+Please note that some funtionlities may not work in this jar as it is the build 
 of the development version of PSDBG.
+
+# Usage Notes
+
+Terms in KPS are enquoted using backticks [`]. Entering these requires a 
+keyboard layout with the option "no dead keys".
+If this is not possible the terms can be entered by using the shortcut Ctrl+E 
+which adds a pair of backticks to the cursor position.
