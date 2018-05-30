@@ -5,6 +5,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
+import edu.kit.iti.formal.psdbg.storage.KeyPersistentFacade;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -73,6 +74,7 @@ public class SaveCommand implements CommandHandler<KeyData> {
 
             if(execute.get())
                 interpreter.getSelectedNode().getData().getProof().saveToFile(newFile);
+            //KeyPersistentFacade.write();
             //TODO Call to key persistend facade
         } catch (IOException e) {
             e.printStackTrace();
