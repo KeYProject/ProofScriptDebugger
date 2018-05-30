@@ -101,13 +101,16 @@ public class FileReloadingService extends TimerTask {
                 Path child = dir.resolve(filename).toAbsolutePath();
 
                 try {
-                    String content = FileUtils.readFileToString(child.toFile(), Charset.defaultCharset());
-                    CONSOLE_LOGGER.info("Auto-reload {}", child);
-                    Platform.runLater(() -> {
-                            if(callbacks.get(child)!= null) {
+                    File file = child.toFile();
+                    if(file != null) {
+                        String content = FileUtils.readFileToString(file, Charset.defaultCharset());
+                        CONSOLE_LOGGER.info("Auto-reload {}", child);
+                        Platform.runLater(() -> {
+                            if (callbacks.get(child) != null) {
                                 callbacks.get(child).fileChanged(content);
                             }
-                    });
+                        });
+                    }
                 } catch (IOException e) {
                     CONSOLE_LOGGER.catching(e);
                 } catch (NullPointerException npe){

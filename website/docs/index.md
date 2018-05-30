@@ -205,6 +205,12 @@ interactive rule applications.
 </div>
 
 <div style="clear: both;"/> 
+<h2>Usage Notes</h2>
+Terms in KPS are enquoted using backticks `. 
+Entering these in the editor of PDBG requires a 
+keyboard layout with the option "no dead keys" enabled.
+If this is not possible the terms can be entered by using the shortcut Ctrl+E 
+which adds a pair of backticks to the cursor position.
 
 <h2>Downloads</h2>
 

@@ -63,7 +63,7 @@ public class KeYProofFacade {
     private SimpleObjectProperty<Contract> contract = new SimpleObjectProperty<>();
 
     /**
-     * BooleanProperty inidcating whether KeY finished loading
+     * BooleanProperty indicating whether KeY finished loading
      */
     private BooleanBinding readyToExecute = proof.isNotNull();
 
