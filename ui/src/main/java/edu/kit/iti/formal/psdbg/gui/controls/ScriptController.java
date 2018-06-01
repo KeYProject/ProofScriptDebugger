@@ -95,6 +95,7 @@ public class ScriptController {
     }
 
     private void updateSavePoints() {
+        try{
         Optional<ProofScript> ms = getMainScript().find(getCombinedAST());
         if (ms.isPresent()) {
             List<SavePoint> list = ms.get().getBody().stream()
@@ -103,8 +104,9 @@ public class ScriptController {
                     .map(SavePoint::new)
                     .collect(Collectors.toList());
             mainScriptSavePoints.setAll(list);
-            loggerConsole.info("Found savepoints: " + list);
-        }
+           // loggerConsole.info("Found savepoints: " + list);
+        }}catch (Exception e){}
+
     }
 
 /*

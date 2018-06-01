@@ -36,7 +36,7 @@ public class FileReloadingService extends TimerTask {
         try {
             wService = FileSystems.getDefault().newWatchService();
             timer = new Timer("filereloading", true);
-            timer.schedule(this, 500, 500);
+          //  timer.schedule(this, 500, 500);
         } catch (IOException e) {
             LOGGER.error(e);
             CONSOLE_LOGGER.error("Auto-reloading is not available. See log file for more details");

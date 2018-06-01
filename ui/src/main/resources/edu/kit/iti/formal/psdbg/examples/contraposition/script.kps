@@ -1,3 +1,19 @@
+script full(){
+  impRight;
+  impRight;
+  impLeft;
+  cases {
+	case match `!q ==> p`:
+		notLeft;
+		notRight;
+		close;
+		auto;
+
+	case match `q==>!p`:
+		notLeft;
+		closeAntec;
+   }
+}
 
 script autoScript(){
     __STRICT_MODE := true;
@@ -11,7 +27,6 @@ script interactive(){
   impLeft;
 //after execution of this script, manual interaction can be performed
 }
-
 script interactive_with_match(){
 impRight;
 impRight;

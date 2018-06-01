@@ -31,6 +31,8 @@ dependencies {
     compile group: 'org.antlr', name: 'antlr4', version: '4.7'
     antlr group: 'org.antlr', name: 'antlr4', version: '4.7'
 
+    //compile files("$rootDir/DockFX/build/libs/DockFX.jar")
+
     compile project(':rt-key')
     compile project(':DockFX')
     compile project(':lint')
