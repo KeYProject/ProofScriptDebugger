@@ -1,39 +1,21 @@
-script testSorts(){
-    b:bool := true;
-    i:int :='1';
-    t:TERM<bool> := `1=1`;
-}
-
-script test123() {
-    impRight;
-    #save 'test0' force='yes';
-    impRight;
-    #save 'test1';
-    impLeft;
-}
-
-script test2open() {
-  impRight;
-  impRight;
-  impLeft;
-  #save 'test2';
-}
 
 script autoScript(){
     __STRICT_MODE := true;
     auto;
 }
 
+
 script interactive(){
   impRight;
   impRight;
   impLeft;
-
+//after execution of this script, manual interaction can be performed
 }
 
 script interactive_with_match(){
 impRight;
 impRight;
+#save 'test0' force='yes';
 impLeft;
 cases{
     case match `==> !(?Z), ?Z`:
@@ -54,4 +36,5 @@ cases{
         __KEY_MAX_STEPS:= 100;
         impRight;
     }
+    auto;
 }
