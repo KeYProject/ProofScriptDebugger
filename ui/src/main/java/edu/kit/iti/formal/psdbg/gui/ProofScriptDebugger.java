@@ -27,7 +27,7 @@ import java.util.Locale;
 public class ProofScriptDebugger extends Application {
     public static final String NAME = "Proof Script Debugger";
 
-    public static final String VERSION = "Experimental-1.1";
+    public static final String VERSION = "1.2-experimental";
 
     public static final String KEY_VERSION = KeYConstants.VERSION;
     private static Logger consoleLogger = LogManager.getLogger("console");

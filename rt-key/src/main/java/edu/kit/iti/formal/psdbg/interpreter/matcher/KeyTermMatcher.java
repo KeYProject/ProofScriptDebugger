@@ -204,8 +204,9 @@ public class KeyTermMatcher extends  KeyTermBaseVisitor<Matchings, MatchPath> {
       //  if(pattern.equals(subject1.getUnit()))
       //      return EmptyMatch.INSTANCE;
             // return Matchings.singleton(pattern.toString(), subject1);
-       if(pattern.op().equals(((Term) subject1.getUnit()).op())) {
-           for (int i = 0; i < subject.getUnit().subs().size(); i++) {
+//       if(pattern.op().equals(((Term) subject1.getUnit()).op())) {
+        if(pattern.op().name().equals(((Term) subject1.getUnit()).op().name())) {
+            for (int i = 0; i < subject.getUnit().subs().size(); i++) {
                Term tt = subject.getUnit().sub(i);
                Term pt = pattern.sub(i);
                Matchings msub = visit(pt, MatchPathFacade.create(subject, i));

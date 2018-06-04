@@ -31,6 +31,8 @@ dependencies {
     compile group: 'org.antlr', name: 'antlr4', version: '4.7'
     antlr group: 'org.antlr', name: 'antlr4', version: '4.7'
 
+    //compile files("$rootDir/DockFX/build/libs/DockFX.jar")
+
     compile project(':rt-key')
     compile project(':DockFX')
     compile project(':lint')
@@ -52,6 +54,7 @@ task runApp(type: JavaExec) {
 
 
 task distJar(type: Jar) {
+
     manifest {
         attributes 'Main-Class': mainClassName
     }
@@ -60,3 +63,13 @@ task distJar(type: Jar) {
     with jar
 }
 distJar.dependsOn jar
+
+task customFatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger'
+    }
+    baseName = 'all-in-one-jar'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+customFatJar.dependsOn jar

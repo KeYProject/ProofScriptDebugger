@@ -97,6 +97,7 @@ public class ScriptController {
     }
 
     private void updateSavePoints() {
+        try{
         Optional<ProofScript> ms = getMainScript().find(getCombinedAST());
         if (ms.isPresent()) {
             List<SavePoint> list = ms.get().getBody().stream()

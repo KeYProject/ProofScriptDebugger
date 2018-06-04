@@ -1,5 +1,28 @@
 // Please select one of the following scripts.
 //
+
+script testSorts(){
+    b:bool := true;
+    i:int :='1';
+    t:TERM<bool> := `1=1`;
+}
+
+script test123() {
+    impRight;
+    #save 'test0' force='yes';
+    impRight;
+    #save 'test1';
+    impLeft;
+}
+
+script test2open() {
+  impRight;
+  impRight;
+  impLeft;
+  #save 'test2';
+}
+
+
 script testTry(){
 cases{
     try: impLeft;

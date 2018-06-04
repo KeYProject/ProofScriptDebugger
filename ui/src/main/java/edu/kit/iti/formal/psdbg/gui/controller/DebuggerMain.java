@@ -357,9 +357,13 @@ public class DebuggerMain implements Initializable {
         BooleanBinding disableStepping = FACADE.loadingProperty().
                 or(FACADE.proofProperty().isNull()).
                 or(model.interpreterStateProperty().isNotEqualTo(InterpreterThreadState.WAIT));
-        FACADE.loadingProperty().addListener((observable, oldValue, newValue) -> {
-            scriptController.disablePropertyForAreasProperty().set(newValue);
+
+        //set scriptareas to disable if loading is in process, as otherwise the scriptarea jumps
+        FACADE.readyToExecuteProperty().addListener((observable, oldValue, newValue) -> {
+            scriptController.disablePropertyForAreasProperty().set(!newValue);
         });
+
+
       /*  model.statePointerProperty().addListener((observable, oldValue, newValue) -> {
 
             //set all steppings -> remove binding
@@ -774,7 +778,7 @@ public class DebuggerMain implements Initializable {
             task.setOnFailed(event -> {
                 statusBar.stopProgress();
                 event.getSource().exceptionProperty().get();
-
+                System.out.println("event.getSource().getMessage() = " + event.getSource().getMessage());
                 Utils.showExceptionDialog("Could not load sourceName", "Key sourceName loading error", "",
                         (Throwable) event.getSource().exceptionProperty().get()
                 );

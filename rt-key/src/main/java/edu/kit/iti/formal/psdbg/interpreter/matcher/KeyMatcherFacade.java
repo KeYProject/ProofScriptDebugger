@@ -1,26 +1,18 @@
 package edu.kit.iti.formal.psdbg.interpreter.matcher;
 
 import de.uka.ilkd.key.control.KeYEnvironment;
-import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.*;
-import de.uka.ilkd.key.logic.op.AbstractSortedOperator;
-import de.uka.ilkd.key.logic.op.QuantifiableVariable;
-import de.uka.ilkd.key.logic.sort.Sort;
-import de.uka.ilkd.key.macros.scripts.ScriptException;
+import de.uka.ilkd.key.logic.Sequent;
+import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.parser.DefaultTermParser;
 import de.uka.ilkd.key.parser.ParserException;
-import edu.kit.iti.formal.psdbg.parser.ast.Operator;
-import edu.kit.iti.formal.psdbg.parser.ast.Signature;
 import lombok.Builder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.key_project.util.collection.ImmutableArray;
 
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 @Builder
 public class KeyMatcherFacade {
@@ -29,14 +21,17 @@ public class KeyMatcherFacade {
     private final KeYEnvironment environment;
     private final Sequent sequent;
 
+    private static Logger loggerConsole = LogManager.getLogger("console");
 
     public Matchings matches(String pattern) {
+        Matchings ret;
         if(pattern.contains("==>")) {
-            return matchesSequent(pattern);
+            ret = matchesSequent(pattern);
         } else {
-            return matchesTerm(pattern);
+            ret = matchesTerm(pattern);
         }
-
+        //loggerConsole.info("Pattern: {} against Sequent: {} matches as {}", pattern, this.sequent, ret);
+        return ret;
     }
 
     private Matchings matchesTerm(String pattern) {

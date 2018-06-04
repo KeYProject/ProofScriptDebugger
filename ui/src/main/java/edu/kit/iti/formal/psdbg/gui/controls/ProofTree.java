@@ -111,9 +111,10 @@ public class ProofTree extends BorderPane {
     public ProofTree(DebuggerMain main) {
         Utils.createWithFXML(this);
         //TODO remove this hack for a better solution
-        main.getModel().debuggerFrameworkProperty().addListener((p, n, m) -> {
-            treeCreation = new TreeTransformationScript(m.getPtreeManager());
-        });
+        //main.getModel().debuggerFrameworkProperty().addListener((p, n, m) -> {
+        //    treeCreation = new TreeTransformationScript(m.getPtreeManager());
+        //});
+        treeCreation = new TreeTransformationKey();
 
         treeProof.setCellFactory(this::cellFactory);
         root.addListener(o -> init());
