@@ -30,7 +30,7 @@ public class KeyMatcherFacade {
         } else {
             ret = matchesTerm(pattern);
         }
-        loggerConsole.info("Pattern: {} against Sequent: {} matches as {}", pattern, this.sequent, ret);
+        //loggerConsole.info("Pattern: {} against Sequent: {} matches as {}", pattern, this.sequent, ret);
         return ret;
     }
 

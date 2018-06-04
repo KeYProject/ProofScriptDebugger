@@ -209,14 +209,14 @@ interactive rule applications.
 Terms in KPS are enquoted using backticks `. 
 Entering these in the editor of PDBG requires a 
 keyboard layout with the option "no dead keys" enabled.
-If this is not possible the terms can be entered by using the shortcut Ctrl+E 
-which adds a pair of backticks to the cursor position.
+<!--If this is not possible the terms can be entered by using the shortcut Ctrl+E 
+which adds a pair of backticks to the cursor position.-->
 
 <h2>Downloads</h2>
 
 <ul>
  <li>PSDBG - <strong>Experimental Version</strong>
-    <a href="../psdbg_releases/psdbg-Experimental-1.1.jar">psdbg-Experimental-1.1.jar</a>
+    <a href="../psdbg_releases/psdbg-1.2-experimental.jar">psdbg-1.2-experimental.jar</a>
     <br>
     This version is an experimental development version of PSDBG, including examples. 
     Its enhancements are based on an evaluation of the first version.
@@ -229,7 +229,7 @@ which adds a pair of backticks to the cursor position.
     <a href="https://www.gnu.org/licenses/gpl-3.0.txt">License: GPLv3</a>
     <a href="thirdparty.txt">Third Party Licenses</a> 
     <br>
-    Executable with <code>java -jar psdbg-Experimental-1.1.jar</code>
+    Executable with <code>java -jar psdbg-1.2-experimental.jar</code>
     </li>
  <li>PSDBG - <strong>Version 1.0.2c-FM</strong> 
     <a href="../psdbg_releases/psdbg-1.0.2c-fm.jar">psdbg-1.0.2c-fm.jar</a>

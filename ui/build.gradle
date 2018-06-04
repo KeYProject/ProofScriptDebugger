@@ -54,6 +54,7 @@ task runApp(type: JavaExec) {
 
 
 task distJar(type: Jar) {
+
     manifest {
         attributes 'Main-Class': mainClassName
     }
@@ -62,3 +63,13 @@ task distJar(type: Jar) {
     with jar
 }
 distJar.dependsOn jar
+
+task customFatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger'
+    }
+    baseName = 'all-in-one-jar'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+customFatJar.dependsOn jar

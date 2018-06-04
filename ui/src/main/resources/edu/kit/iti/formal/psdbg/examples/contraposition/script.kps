@@ -6,8 +6,8 @@ script full(){
 	case match `!q ==> p`:
 		notLeft;
 		notRight;
-		close;
-		auto;
+		closeAntec;
+
 
 	case match `q==>!p`:
 		notLeft;
