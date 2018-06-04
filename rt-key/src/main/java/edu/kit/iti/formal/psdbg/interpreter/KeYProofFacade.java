@@ -112,6 +112,8 @@ public class KeYProofFacade {
             protected void succeeded() {
                 System.out.println("KeYProofFacade.succeeded");
                 environment.set(getValue().getEnv());
+                //SaG: this needs to be set to filter inapplicable rules
+                getEnvironment().getProofControl().setMinimizeInteraction(true);
                 proof.set(getValue().getProof());
                 contract.set(null);
                 setLoading(false);
