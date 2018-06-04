@@ -15,8 +15,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Optional;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
@@ -74,8 +76,10 @@ public class SaveCommand implements CommandHandler<KeyData> {
 
             if(execute.get())
                 interpreter.getSelectedNode().getData().getProof().saveToFile(newFile);
-            //KeyPersistentFacade.write();
-            //TODO Call to key persistend facade
+                //TODO: KeyPersistentFacade.write(interpreter.getCurrentState(), new StringWriter());
+
+
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

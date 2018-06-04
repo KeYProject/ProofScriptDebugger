@@ -14,7 +14,7 @@ public class ASTDiff extends DefaultASTVisitor<ASTNode> {
         newScript.setSignature(proofScript.getSignature());
 
         other = ((ProofScript) other).getBody();
-        newScript.setBody(visit(newScript.getBody()));
+        newScript.setBody(visit(proofScript.getBody()));
         return newScript;
     }
 
@@ -61,12 +61,13 @@ public class ASTDiff extends DefaultASTVisitor<ASTNode> {
 
         int i = 0;
         for (; i < statements.size(); i++) {
-            if (statements.get(i).eq(other.get(i))) {
-                break;
+            if (!statements.get(i).isSame(other.get(i))) {
+                System.out.println("Alter Script wurde verändert");
+                return null;
             }
         }
 
-        for (int j = i; j < other.size(); j++) {
+        for (; i < other.size(); i++) {
             s.add(other.get(i));
         }
 

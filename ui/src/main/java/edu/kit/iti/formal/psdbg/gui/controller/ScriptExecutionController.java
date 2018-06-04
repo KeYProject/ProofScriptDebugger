@@ -8,7 +8,9 @@ import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
+import edu.kit.iti.formal.psdbg.parser.ASTDiff;
 import edu.kit.iti.formal.psdbg.parser.Facade;
+import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import edu.kit.iti.formal.psdbg.parser.ast.Statements;
 import javafx.scene.control.Alert;
@@ -160,7 +162,10 @@ public class ScriptExecutionController {
     }
 
 
-    //TODO: calc diff
+    private ASTNode calculateDiff (ASTDiff dff) {
+
+        return null;
+    }
 
 
 }

@@ -110,7 +110,7 @@ public class InteractiveModeController {
      */
     public void undo(javafx.event.ActionEvent actionEvent) {
         if (savepointslist.isEmpty()) {
-            Debug.log("Kein vorheriger Zustand."); //TODO: events fire
+            Debug.log("Kein vorheriger Zustand.");
             return;
         }
 

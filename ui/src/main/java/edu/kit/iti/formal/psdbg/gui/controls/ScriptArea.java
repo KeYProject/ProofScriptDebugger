@@ -458,9 +458,7 @@ public class ScriptArea extends BorderPane {
     public void setAlertMarker(int lineNumber) {
         gutter.getLineAnnotation(lineNumber - 1).setAlert(true);
     }
-    private void underline(int linenumber) {
 
-    }
 
 
     private boolean hasExecutionMarker() {
