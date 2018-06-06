@@ -1178,8 +1178,7 @@ public class DebuggerMain implements Initializable {
             interactiveModeController.setDebuggerFramework(model.getDebuggerFramework());
             interactiveModeController.setKeYServices(this.getFacade().getService());
             interactiveModeController.setActivated(true);
-            //SaG: this needs to be set to filter inapplicable rules
-            this.getFacade().getEnvironment().getProofControl().setMinimizeInteraction(true);
+
             interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
 
             interactive_undo.setDisable(false);

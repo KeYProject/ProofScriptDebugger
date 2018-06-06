@@ -76,13 +76,12 @@ public class SaveCommand implements CommandHandler<KeyData> {
 
             if(execute.get())
                 interpreter.getSelectedNode().getData().getProof().saveToFile(newFile);
-                //TODO: KeyPersistentFacade.write(interpreter.getCurrentState(), new StringWriter());
-
-
-
+                KeyPersistentFacade.write(interpreter.getCurrentState(), new StringWriter());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (JAXBException e) {
             e.printStackTrace();
         }
     }
