@@ -87,10 +87,7 @@ public class SaveCommand implements CommandHandler<KeyData> {
     }
 
 
-    @Override
-    public boolean isUninterpretedParams(CallStatement call) {
-        return true;
-    }
+
 }
 
 
