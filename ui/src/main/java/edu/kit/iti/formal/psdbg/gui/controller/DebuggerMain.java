@@ -77,10 +77,12 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.event.WindowStateListener;
 import java.awt.im.InputContext;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.security.Permission;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
@@ -1190,6 +1192,8 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void selectSavepoint(ActionEvent actionEvent) {
+        //TODO remove highlight of SPs
+
         SavePoint selected = cboSavePoints.getValue();
 
         if (selected == null) {
@@ -1197,11 +1201,9 @@ public class DebuggerMain implements Initializable {
             return;
         }
 
-        int currentpos = model.getDebuggerFramework().getCurrentStatePointer().getStatement().getStartPosition().getLineNumber();
-
-        //check intpreter finishes with which script
-        if (model.getInterpreterState().equals(InterpreterThreadState.FINISHED)
-                || selected.getLineNumber() <= currentpos && currentpos > 0) {
+        //prune to savepoint if possible
+        boolean pruneable = false;
+        try{
             Iterator<PTreeNode<KeyData>> iterator = model.getDebuggerFramework().getPtreeManager().getNodes().iterator();
             PTreeNode<KeyData> pTreeNodeOfSave;
             while (iterator.hasNext()) {
@@ -1217,41 +1219,8 @@ public class DebuggerMain implements Initializable {
             //TODO: refresh GUI (Context + Script)
             //State<KeyData> proofstate = KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(), new StringReader());
 
-        } else {
+        } catch (Exception ex){
 
-
-        /*
-
-
-        // check if selected savepoint has been executed already -> prune to that savepoint
-
-
-        val statePointer = model.getDebuggerFramework().getCurrentStatePointer();
-        int currentpos = statePointer.getStatement().getStartPosition().getLineNumber();
-        if (model.getInterpreterState().equals(InterpreterThreadState.FINISHED)
-                || selected.getLineNumber() <= currentpos && currentpos > 0) {
-
-            System.out.println("Pruning to Savepoint.");
-
-                int line_statePointer = statePointer.getStatement().getStartPosition().getLineNumber();
-                int nrOfStepbacks = line_statePointer - selected.getLineNumber();
-
-                PTreeNode<KeyData> pTreeNodeOfSave = statePointer.getStepInvOver();
-                for (int i = 1; i <= nrOfStepbacks; i++) {
-                    pTreeNodeOfSave = statePointer.getStepInvOver();
-                }
-
-
-
-
-            model.getDebuggerFramework().getPtreeManager();
-            //TODO: find Node to prune
-            // FACADE.getProof().pruneProof(save);
-
-
-    }
-
-    */
             //Hard Loading of Savepoint
             stopDebugMode(actionEvent);
 
@@ -1267,6 +1236,7 @@ public class DebuggerMain implements Initializable {
             handleStatePointerUI(null);
             //reload getInspectionViewsController().getActiveInspectionViewTab().getModel()
             InspectionModel iModel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
+
             //iModel.setHighlightedJavaLines(FXCollections.emptyObservableSet());
             iModel.clearHighlightLines();
             iModel.getGoals().clear();
@@ -1293,14 +1263,16 @@ public class DebuggerMain implements Initializable {
             }
         }
 
+        //Update Gui
         MainScriptIdentifier msi = scriptController.getMainScript();
         msi.getScriptArea().setSavepointMarker(selected.getLineNumber());
-        //TODO underline ast
+        msi.getScriptArea().getCodeArea().setStyleClass(selected.getStartOffset(), selected.getEndOffset() + 1, "underlinesave");        scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
 
-        msi.getScriptArea().getCodeArea().setStyleClass(selected.getStartOffset(), selected.getEndOffset() + 1, "problem");
-        scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
+        //TODO: KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(), new StringReader(selected.getPersistedStateFile(FACADE.getFilepath()).toString()));
+        //TODO (NullpointerEx: interpreterbuilder == null): scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
+
+
     }
-
 
 
     @FXML
@@ -1393,12 +1365,20 @@ public class DebuggerMain implements Initializable {
         }
 
         SwingUtilities.invokeLater(() -> {
+            SecurityManager secManager = new KeYSecurityManager();
+            System.setSecurityManager(secManager);
+
             // Swing Thread!
-            MainWindow keyWindow = MainWindow.getInstance();
-            keyWindow.addProblem(new SingleProof(FACADE.getProof(), "script"));
-            //keyWindow.getProofList().getModel().addProof();
-            keyWindow.makePrettyView();
-            keyWindow.setVisible(true);
+            try {
+                MainWindow keyWindow = MainWindow.getInstance();
+                keyWindow.addProblem(new SingleProof(FACADE.getProof(), "script"));
+                //keyWindow.getProofList().getModel().addProof();
+                keyWindow.makePrettyView();
+                keyWindow.setVisible(true);
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            }
+
 
 
         });
@@ -1550,6 +1530,17 @@ public class DebuggerMain implements Initializable {
 
             node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
 
+        }
+    }
+
+
+    private class KeYSecurityManager extends SecurityManager {
+        @Override public void checkExit(int status) {
+            throw new SecurityException();
+        }
+
+        @Override public void checkPermission(Permission perm) {
+            // Allow other activities by default
         }
     }
 

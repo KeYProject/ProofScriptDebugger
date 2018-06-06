@@ -97,24 +97,27 @@ public class ScriptController {
     }
 
     private void updateSavePoints() {
-        try{
-        Optional<ProofScript> ms = getMainScript().find(getCombinedAST());
-        if (ms.isPresent()) {
-            List<SavePoint> list = ms.get().getBody().stream()
-                    .filter(SavePoint::isSaveCommand)
-                    .map(a -> (CallStatement) a)
-                    .map(SavePoint::new)
-                    .collect(Collectors.toList());
+        try {
+            Optional<ProofScript> ms = getMainScript().find(getCombinedAST());
+            if (ms.isPresent()) {
+                List<SavePoint> list = ms.get().getBody().stream()
+                        .filter(SavePoint::isSaveCommand)
+                        .map(a -> (CallStatement) a)
+                        .map(SavePoint::new)
+                        .collect(Collectors.toList());
 
-            mainScriptSavePoints.setAll(list);
+                mainScriptSavePoints.setAll(list);
 
-            //set alert gutter annotations
-            List<SavePoint> noForceSp = mainScriptSavePoints.stream()
-                    .filter(a -> a.getForce().equals(SavePoint.ForceOption.NO))
-                    .collect(Collectors.toList());
-            noForceSp.forEach( e -> getMainScript().getScriptArea().setAlertMarker(e.getLineNumber()));
+                //set alert gutter annotations
+                List<SavePoint> noForceSp = mainScriptSavePoints.stream()
+                        .filter(a -> a.getForce().equals(SavePoint.ForceOption.NO))
+                        .collect(Collectors.toList());
+                noForceSp.forEach(e -> getMainScript().getScriptArea().setAlertMarker(e.getLineNumber()));
 
-            loggerConsole.info("Found savepoints: " + list);
+                loggerConsole.info("Found savepoints: " + list);
+            }
+        } catch (Exception e) {
+
         }
     }
 

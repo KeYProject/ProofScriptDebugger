@@ -388,6 +388,10 @@ public class ScriptArea extends BorderPane {
         }
     }
 
+    public void underlineSavepoint(){
+
+    }
+
     private void highlightNonExecutionArea() {
         if (hasExecutionMarker()) {
             LOGGER.debug("getExecutionMarkerPosition() = " + getExecutionMarkerPosition());
