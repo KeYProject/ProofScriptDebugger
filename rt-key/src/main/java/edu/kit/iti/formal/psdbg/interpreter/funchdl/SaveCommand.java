@@ -63,7 +63,8 @@ public class SaveCommand implements CommandHandler<KeyData> {
                 Semaphore semaphore = new Semaphore(0);
                 Platform.runLater(() -> {
                     Alert a = new Alert(Alert.AlertType.CONFIRMATION);
-                    a.setTitle("Foo");
+                    a.setTitle("Overwrite proof file");
+                    a.setContentText("Overwrite existing proof file \"" + sp.getName()+"\" (line "+ sp.getLineNumber() +") ?");
                     Optional<ButtonType> buttonType = a.showAndWait();
                     if(buttonType.isPresent() && buttonType.get() == ButtonType.OK){
                         execute.set(true);
@@ -86,10 +87,7 @@ public class SaveCommand implements CommandHandler<KeyData> {
     }
 
 
-    @Override
-    public boolean isUninterpretedParams(CallStatement call) {
-        return true;
-    }
+
 }
 
 

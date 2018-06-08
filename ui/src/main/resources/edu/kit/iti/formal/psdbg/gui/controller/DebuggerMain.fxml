@@ -251,6 +251,15 @@
                                   </tooltip>
                               </Button>-->
 
+                        <Button  disable="false">
+                            <graphic>
+                                <MaterialDesignIconView glyphName="KEYBOARD_BACKSPACE" size="24.0"/>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip text="Prune to savepoint"/>
+                            </tooltip>
+                        </Button>
+
                         <Button onAction="#continueAfterRun" disable="${controller.executeNotPossible}">
                             <graphic>
                                 <MaterialDesignIconView glyphName="PLAY_CIRCLE_OUTLINE" size="24.0"/>

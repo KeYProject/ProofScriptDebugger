@@ -167,6 +167,11 @@ public abstract class ASTNode<T extends ParserRuleContext>
         return Objects.hash(getRuleContext());
     }
 
+    //TODO: param + class
+    public boolean isSame(ASTNode other) {
+        return this.getNodeName().equals(other.getNodeName());
+    }
+
     public int getSyntaxWidth() {
         if (ruleContext != null) {
             return ruleContext.stop.getStopIndex()

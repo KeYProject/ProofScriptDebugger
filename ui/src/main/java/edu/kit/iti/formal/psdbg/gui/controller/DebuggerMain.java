@@ -2,6 +2,7 @@ package edu.kit.iti.formal.psdbg.gui.controller;
 
 import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;
+import antlr.collections.AST;
 import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
@@ -25,6 +26,7 @@ import edu.kit.iti.formal.psdbg.gui.graph.GraphView;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.gui.model.InterpreterThreadState;
+import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
@@ -33,7 +35,12 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
+import edu.kit.iti.formal.psdbg.parser.ASTDiff;
+import edu.kit.iti.formal.psdbg.parser.Facade;
+import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
+import edu.kit.iti.formal.psdbg.parser.ast.CaseStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
+import edu.kit.iti.formal.psdbg.storage.KeyPersistentFacade;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
@@ -54,6 +61,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,13 +74,16 @@ import org.reactfx.util.Timer;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.xml.bind.JAXBException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowStateListener;
 import java.awt.im.InputContext;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.security.Permission;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
@@ -833,12 +844,45 @@ public class DebuggerMain implements Initializable {
     @FXML
     public void executeDiff() {
         //save old PT
+
+
+
         // Calculate top difference between current and last executed script
         // Find last state of common ASTNode
         // Use this state to build new interpreter in proof tree controller.
         // execute residual script
 
 
+    }
+
+
+
+
+    @Deprecated
+    public  void incremental() {
+        ProofScript oldScript = null; //used to be global var, that was set in selectSavepoint()
+
+        if (oldScript == null) {
+            return;
+        }
+        ProofScript newScript = scriptController.getMainScript().byName(scriptController.getCombinedAST()).get();
+
+        ASTDiff astDiff = new ASTDiff();
+        ProofScript scriptdiff = astDiff.diff(oldScript, newScript);
+        ASTNode pruneAstNode = scriptdiff.getBody().get(0);
+
+        Set<PTreeNode<KeyData>> ptnodes = model.getDebuggerFramework().getPtreeManager().getNodes();
+        Iterator iterator = ptnodes.iterator();
+        while (iterator.hasNext()) {
+            PTreeNode<KeyData> ptn = (PTreeNode<KeyData>) iterator.next();
+            if(ptn.getStatement().eq(pruneAstNode)) {
+                getFacade().getProof().pruneProof(ptn.getStateBeforeStmt().getSelectedGoalNode().getData().getNode());
+                break;
+            }
+        }
+
+
+        scriptController.setMainScript(oldScript);
     }
 
     /**
@@ -932,12 +976,12 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void saveAsScript() throws IOException {
-        File f = openFileChooserSaveDialog("Save script", "Save Script files", "kps");
-        if (f != null) {
-           /* if(!f.exists()){
-                f.createNewFile();
-            }*/
-            saveScript(f);
+        FileChooser fc = new FileChooser();
+        File file = fc.showSaveDialog(btnInteractiveMode.getScene().getWindow());
+        if (file != null) {
+                saveScript(file);
+        } else {
+            Utils.showInfoDialog("","Select a destination", "No valid path has been selected.");
         }
     }
 
@@ -1149,16 +1193,43 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void selectSavepoint(ActionEvent actionEvent) {
-        if (cboSavePoints.getValue() != null) {
+        //TODO remove highlight of SPs
+
+        SavePoint selected = cboSavePoints.getValue();
+
+        if (selected == null) {
+            Utils.showInfoDialog("Select Savepoint", "Select Savepoint", "There is no selected Savepoint. Select a Savepoint first.");
+            return;
+        }
+
+        //prune to savepoint if possible
+        boolean pruneable = false;
+        try{
+            Iterator<PTreeNode<KeyData>> iterator = model.getDebuggerFramework().getPtreeManager().getNodes().iterator();
+            PTreeNode<KeyData> pTreeNodeOfSave;
+            while (iterator.hasNext()) {
+                pTreeNodeOfSave = iterator.next();
+
+                if (pTreeNodeOfSave.getStatement().getStartPosition().getLineNumber() == selected.getLineNumber()) {
+                    FACADE.getProof().pruneProof(pTreeNodeOfSave.getStateBeforeStmt().getSelectedGoalNode().getData().getNode());
+                    inspectionViewsController.getActiveInspectionViewTab().activate(pTreeNodeOfSave, pTreeNodeOfSave.getStateAfterStmt());
+                    break;
+                }
+            }
+
+            //TODO: refresh GUI (Context + Script)
+            //State<KeyData> proofstate = KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(), new StringReader());
+
+        } catch (Exception ex){
+
+            //Hard Loading of Savepoint
             stopDebugMode(actionEvent);
-            SavePoint selected = cboSavePoints.getValue();
 
             try {
                 abortExecution();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
             /**
              * reload with selected savepoint
              */
@@ -1166,6 +1237,7 @@ public class DebuggerMain implements Initializable {
             handleStatePointerUI(null);
             //reload getInspectionViewsController().getActiveInspectionViewTab().getModel()
             InspectionModel iModel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
+
             //iModel.setHighlightedJavaLines(FXCollections.emptyObservableSet());
             iModel.clearHighlightLines();
             iModel.getGoals().clear();
@@ -1181,6 +1253,8 @@ public class DebuggerMain implements Initializable {
                     LOGGER.info("Reloaded Successfully");
                     statusBar.publishMessage("Reloaded Sucessfully");
                 }
+
+
             } catch (ProofInputException | ProblemLoaderException e) {
                 LOGGER.error(e);
                 Utils.showExceptionDialog("Loading Error", "Could not clear Environment",
@@ -1188,9 +1262,22 @@ public class DebuggerMain implements Initializable {
                         e
                 );
             }
-
-            // executeScriptFromSavePoint(interpreterBuilder, selected);
         }
+
+        //Update Gui
+        MainScriptIdentifier msi = scriptController.getMainScript();
+        msi.getScriptArea().setSavepointMarker(selected.getLineNumber());
+        scriptController.getMainScript().getScriptArea().underlineSavepoint(selected);
+
+
+        try {
+            KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(), new StringReader(selected.getPersistedStateFile(FACADE.getFilepath()).toString()));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
+
+
 
     }
 
@@ -1279,20 +1366,32 @@ public class DebuggerMain implements Initializable {
 
     public void openInKey(@Nullable ActionEvent event) {
         if (FACADE.getProofState() == KeYProofFacade.ProofState.EMPTY) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "No proof is loaded yet. If laoding a proof was invoked, proof state loading may take a while.", ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "No proof is loaded yet. If loading a proof was invoked, proof state loading may take a while.", ButtonType.OK);
             alert.show();
             return;
         }
 
         SwingUtilities.invokeLater(() -> {
+            SecurityManager secManager = new KeYSecurityManager();
+            System.setSecurityManager(secManager);
+
             // Swing Thread!
-            MainWindow keyWindow = MainWindow.getInstance();
-            keyWindow.addProblem(new SingleProof(FACADE.getProof(), "script"));
-            //keyWindow.getProofList().getModel().addProof();
-            keyWindow.makePrettyView();
-            keyWindow.setVisible(true);
+            try {
+                MainWindow keyWindow = MainWindow.getInstance();
+                keyWindow.addProblem(new SingleProof(FACADE.getProof(), "script"));
+                //keyWindow.getProofList().getModel().addProof();
+                keyWindow.makePrettyView();
+                keyWindow.setVisible(true);
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            }
+
+
+
         });
+
     }
+
 
 
     public class ContractLoaderService extends Service<List<Contract>> {
@@ -1438,6 +1537,17 @@ public class DebuggerMain implements Initializable {
 
             node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
 
+        }
+    }
+
+
+    private class KeYSecurityManager extends SecurityManager {
+        @Override public void checkExit(int status) {
+            throw new SecurityException();
+        }
+
+        @Override public void checkPermission(Permission perm) {
+            // Allow other activities by default
         }
     }
 

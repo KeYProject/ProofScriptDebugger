@@ -88,6 +88,8 @@ public class ScriptController {
             if (o != null)
                 o.getScriptArea().textProperty().removeListener(a -> updateSavePoints());
             n.getScriptArea().textProperty().addListener(a -> updateSavePoints());
+
+
             updateSavePoints();
         });
 
@@ -95,48 +97,30 @@ public class ScriptController {
     }
 
     private void updateSavePoints() {
-        try{
-        Optional<ProofScript> ms = getMainScript().find(getCombinedAST());
-        if (ms.isPresent()) {
-            List<SavePoint> list = ms.get().getBody().stream()
-                    .filter(SavePoint::isSaveCommand)
-                    .map(a -> (CallStatement) a)
-                    .map(SavePoint::new)
-                    .collect(Collectors.toList());
-            mainScriptSavePoints.setAll(list);
-           // loggerConsole.info("Found savepoints: " + list);
-        }}catch (Exception e){}
+        try {
+            Optional<ProofScript> ms = getMainScript().find(getCombinedAST());
+            if (ms.isPresent()) {
+                List<SavePoint> list = ms.get().getBody().stream()
+                        .filter(SavePoint::isSaveCommand)
+                        .map(a -> (CallStatement) a)
+                        .map(SavePoint::new)
+                        .collect(Collectors.toList());
 
-    }
+                mainScriptSavePoints.setAll(list);
 
-/*
-    public int getLineOfSavepoint(SavePoint sp) {
-        Optional<ProofScript> ms = getMainScript(). find(getCombinedAST());
+                //set alert gutter annotations
+                List<SavePoint> noForceSp = mainScriptSavePoints.stream()
+                        .filter(a -> a.getForce().equals(SavePoint.ForceOption.NO))
+                        .collect(Collectors.toList());
+                noForceSp.forEach(e -> getMainScript().getScriptArea().setAlertMarker(e.getLineNumber()));
 
-        if(ms.isPresent()) {
-            List<CallStatement> list = ms.get().getBody().stream()
-                    .filter(SavePoint::isSaveCommand)
-                    .map(a -> (CallStatement) a).
-                    collect(Collectors.toList());
-
-
-            if(!list.isEmpty()) {
-               for(int i = 0; i < list.size(); i++) {
-                   if(true) {
-                       Parameters param = list.get(i).getParameters();
-                       String splistname = ((StringLiteral) param.get(new Variable("#2"))).getText();
-                        if(splistname.equals(sp.getName())) {
-                            int index = ms.get().getBody().indexOf(list.get(i));
-                            return ms.get().getBody().get(index).getStartPosition().getLineNumber();
-                        }
-                   }
-               }
+                loggerConsole.info("Found savepoints: " + list);
             }
-        }
-        return -1;
+        } catch (Exception e) {
 
+        }
     }
-    */
+
 
     private void addDefaultInlineActions() {
         actionSuppliers.add(new FindLabelInGoalList());
@@ -373,6 +357,7 @@ public class ScriptController {
     }
 
     public void setMainScript(ProofScript proofScript) {
+
         MainScriptIdentifier msi = new MainScriptIdentifier();
         msi.setLineNumber(proofScript.getStartPosition().getLineNumber());
         msi.setScriptName(proofScript.getName());
