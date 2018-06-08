@@ -9,7 +9,10 @@ import edu.kit.iti.formal.psdbg.gui.actions.acomplete.Suggestion;
 import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
+import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.lint.LintProblem;
 import edu.kit.iti.formal.psdbg.lint.LinterStrategy;
 import edu.kit.iti.formal.psdbg.parser.Facade;
@@ -388,8 +391,8 @@ public class ScriptArea extends BorderPane {
         }
     }
 
-    public void underlineSavepoint(){
-
+    public void underlineSavepoint(SavePoint sp){
+        codeArea.setStyle(sp.getLineNumber() -1, Collections.singleton("underlinesave"));
     }
 
     private void highlightNonExecutionArea() {

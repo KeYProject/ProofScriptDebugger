@@ -29,11 +29,9 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.BorderPane;
 import javafx.util.StringConverter;
 import lombok.*;
+import sun.reflect.generics.tree.Tree;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 
@@ -327,11 +325,13 @@ public class ProofTree extends BorderPane {
     }
 
 
+
     @AllArgsConstructor
     private static class TreeNode {
         String label;
         Node node;
     }
+
 
     class TreeTransformationKey {
 
@@ -414,6 +414,7 @@ public class ProofTree extends BorderPane {
     }
 
 
+
     @RequiredArgsConstructor
     class TreeTransformationScript extends TreeTransformationKey {
         final ProofTreeManager<KeyData> manager;
@@ -471,6 +472,45 @@ public class ProofTree extends BorderPane {
             lbl += "  " + n.serialNr() + " " + toString(n);
             TreeItem<TreeNode> ti = new TreeItem<>(new TreeNode(lbl, n));
             return ti;
+        }
+
+
+        //TODO: Reverse ArrayList in the end or nah?
+        @Deprecated
+        public ArrayList<String> getBranchLabels (TreeNode node) {
+            TreeItem<TreeNode> proofTree = create(proof.get());
+
+            ArrayList<String> branchlabels = new ArrayList<>();
+
+            int i = 0;
+            branchlabels.set(0, node.label);
+            while (node != null) {
+                if(!branchlabels.get(i).equals(node.label)) {
+                    i++;
+                    branchlabels.set(i, node.label);
+                }
+                //TODO: node = node.parent
+            }
+
+            return branchlabels;
+        }
+
+        public  ArrayList<String> getBranchLabels (Node node) {
+            ArrayList<String> branchlabels = new ArrayList<>();
+
+            int i = 0;
+            //TODO: branchlabel = all branchlabels or only next one
+            branchlabels.set(0, node.getNodeInfo().getBranchLabel());
+            Node n = node.parent();
+            while (n != null) {
+                if(!branchlabels.get(i).equals(n.getNodeInfo().getBranchLabel())) {
+                    i++;
+                    branchlabels.set(i, n.getNodeInfo().getBranchLabel());
+                }
+                n = n.parent();
+            }
+
+            return branchlabels;
         }
     }
 }

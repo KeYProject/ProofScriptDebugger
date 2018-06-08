@@ -74,6 +74,7 @@ import org.reactfx.util.Timer;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.xml.bind.JAXBException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -1266,10 +1267,16 @@ public class DebuggerMain implements Initializable {
         //Update Gui
         MainScriptIdentifier msi = scriptController.getMainScript();
         msi.getScriptArea().setSavepointMarker(selected.getLineNumber());
-        msi.getScriptArea().getCodeArea().setStyleClass(selected.getStartOffset(), selected.getEndOffset() + 1, "underlinesave");        scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
+        scriptController.getMainScript().getScriptArea().underlineSavepoint(selected);
 
-        //TODO: KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(), new StringReader(selected.getPersistedStateFile(FACADE.getFilepath()).toString()));
-        //TODO (NullpointerEx: interpreterbuilder == null): scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
+
+        try {
+            KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(), new StringReader(selected.getPersistedStateFile(FACADE.getFilepath()).toString()));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
+
 
 
     }
