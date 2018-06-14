@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Optional;
@@ -76,7 +77,9 @@ public class SaveCommand implements CommandHandler<KeyData> {
 
             if(execute.get())
                 interpreter.getSelectedNode().getData().getProof().saveToFile(newFile);
-                KeyPersistentFacade.write(interpreter.getCurrentState(), new StringWriter());
+                KeyPersistentFacade.write(interpreter.getCurrentState(), new FileWriter(sp.getPersistedStateFile(newFile)));
+            System.out.println();
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

@@ -24,6 +24,11 @@ public class ProofTreeContextMenu extends javafx.scene.control.ContextMenu {
     MenuItem showSequent = new MenuItem("Show Sequent");
     MenuItem showGoal = new MenuItem("Show in Goal List");
     MenuItem expandAllNodes = new MenuItem("Expand Tree");
+    MenuItem showScriptTree = new MenuItem("Show ScriptTree");
+
+    //TODO: zum Testen
+
+
     private ProofTree proofTree;
 
     public ProofTreeContextMenu(ProofTree proofTree) {
@@ -83,7 +88,8 @@ public class ProofTreeContextMenu extends javafx.scene.control.ContextMenu {
             proofTree.expandRootToLeaves(proofTree.getTreeProof().getRoot());
         });
 
-        getItems().setAll(refresh, expandAllNodes, new SeparatorMenuItem(), copy, createCases, showSequent, showGoal);
+        showScriptTree.setOnAction(event -> proofTree.getTreeScriptCreation().showScriptTree());
+        getItems().setAll(refresh, expandAllNodes, new SeparatorMenuItem(), copy, createCases, showSequent, showGoal, showScriptTree);
         setAutoFix(true);
         setAutoHide(true);
     }

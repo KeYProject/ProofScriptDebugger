@@ -1271,7 +1271,8 @@ public class DebuggerMain implements Initializable {
 
 
         try {
-            KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(), new StringReader(selected.getPersistedStateFile(FACADE.getFilepath()).toString()));
+            State state = KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(), new StringReader(selected.getPersistedStateFile(FACADE.getFilepath()).toString()));
+            //TODO setstate
         } catch (JAXBException e) {
             e.printStackTrace();
         }

@@ -21,6 +21,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -50,6 +51,12 @@ public class ProofTree extends BorderPane {
     private MapProperty<Node, String> colorOfNodes = new SimpleMapProperty<Node, String>(FXCollections.observableHashMap());
     @FXML
     private TreeView<TreeNode> treeProof;
+
+    //TODO: added for testing
+    @FXML
+    private TreeView<TreeNode> treeScript;
+
+
     private ContextMenu contextMenu;
     private BooleanProperty deactivateRefresh = new SimpleBooleanProperty();
 
@@ -105,6 +112,9 @@ public class ProofTree extends BorderPane {
         }
     };
     private TreeTransformationKey treeCreation;
+    @Getter
+    private TreeTransformationScript treeScriptCreation;
+    private DebuggerMain main;
 
     public ProofTree(DebuggerMain main) {
         Utils.createWithFXML(this);
@@ -112,9 +122,12 @@ public class ProofTree extends BorderPane {
         //main.getModel().debuggerFrameworkProperty().addListener((p, n, m) -> {
         //    treeCreation = new TreeTransformationScript(m.getPtreeManager());
         //});
+        this.main = main;
         treeCreation = new TreeTransformationKey();
 
         treeProof.setCellFactory(this::cellFactory);
+        treeScript.setCellFactory(this::cellFactory);
+
         root.addListener(o -> init());
         proof.addListener((prop, old, n) -> {
             if (old != null) {
@@ -167,6 +180,7 @@ public class ProofTree extends BorderPane {
                 //val treeNode = new TreeNode("Proof", root.get());
 
                 treeProof.setRoot(item);
+                treeScript.setRoot(item);
             }
 
         }
@@ -196,7 +210,6 @@ public class ProofTree extends BorderPane {
     }
 
     private void init() {
-
     }
 
     private TreeCell<TreeNode> cellFactory(TreeView<TreeNode> nodeTreeView) {
@@ -314,16 +327,22 @@ public class ProofTree extends BorderPane {
     }
 
     public void repopulate() {
+        treeScriptCreation = new TreeTransformationScript(main.getModel().getDebuggerFramework().getPtreeManager());
+
+
         if (deactivateRefresh.get())
             return;
 
         if (root.get() != null) {
             TreeItem<TreeNode> item = treeCreation.create(proof.get());
             treeProof.setRoot(item);
+
+            TreeItem<TreeNode> scriptTree = treeScriptCreation.buildScriptTree(root.get());
+            treeScript.setRoot(scriptTree);
         }
         treeProof.refresh();
+        treeScript.refresh();
     }
-
 
 
     @AllArgsConstructor
@@ -414,7 +433,6 @@ public class ProofTree extends BorderPane {
     }
 
 
-
     @RequiredArgsConstructor
     class TreeTransformationScript extends TreeTransformationKey {
         final ProofTreeManager<KeyData> manager;
@@ -477,7 +495,7 @@ public class ProofTree extends BorderPane {
 
         //TODO: Reverse ArrayList in the end or nah?
         @Deprecated
-        public ArrayList<String> getBranchLabels (TreeNode node) {
+        public ArrayList<String> getBranchLabels(TreeNode node) {
             TreeItem<TreeNode> proofTree = create(proof.get());
 
             ArrayList<String> branchlabels = new ArrayList<>();
@@ -485,7 +503,7 @@ public class ProofTree extends BorderPane {
             int i = 0;
             branchlabels.set(0, node.label);
             while (node != null) {
-                if(!branchlabels.get(i).equals(node.label)) {
+                if (!branchlabels.get(i).equals(node.label)) {
                     i++;
                     branchlabels.set(i, node.label);
                 }
@@ -495,7 +513,7 @@ public class ProofTree extends BorderPane {
             return branchlabels;
         }
 
-        public  ArrayList<String> getBranchLabels (Node node) {
+        public ArrayList<String> getBranchLabels(Node node) {
             ArrayList<String> branchlabels = new ArrayList<>();
 
             int i = 0;
@@ -503,7 +521,7 @@ public class ProofTree extends BorderPane {
             branchlabels.set(0, node.getNodeInfo().getBranchLabel());
             Node n = node.parent();
             while (n != null) {
-                if(!branchlabels.get(i).equals(n.getNodeInfo().getBranchLabel())) {
+                if (!branchlabels.get(i).equals(n.getNodeInfo().getBranchLabel())) {
                     i++;
                     branchlabels.set(i, n.getNodeInfo().getBranchLabel());
                 }
@@ -511,6 +529,92 @@ public class ProofTree extends BorderPane {
             }
 
             return branchlabels;
+        }
+
+
+
+        public void showScriptTree() {
+            if (main.getModel().getDebuggerFramework().getPtreeManager() == null) {
+               Utils.showInfoDialog("Execute Script","Execute Script","Please execute a script first.");
+                return;
+            }
+            treeScriptCreation = new TreeTransformationScript(main.getModel().getDebuggerFramework().getPtreeManager());
+
+            if (root != null) {
+                //TODO not sure prooftree for what
+                TreeItem<TreeNode> tree = treeScriptCreation.create(proof.get());
+                treeScript.setRoot(treeScriptCreation.buildScriptTree(root.get()));
+                treeScript.refresh();
+            }
+
+
+
+        }
+
+        private TreeItem<TreeNode> buildScriptTree(Node node) {
+            TreeItem<TreeNode> currentItem = new TreeItem<>(createTreeNode(node));
+
+            if (node == null || currentItem.getValue() == null) {
+                return null;
+            }
+            assert node.childrenCount() >= 0;
+
+
+            if (sentinels.contains(node)) {
+                return currentItem;
+            }
+            if (node.childrenCount() == 0) {
+                //  TreeItem<TreeNode> e = new TreeItem<>(new TreeNode(
+                //           n.isClosed() ? "CLOSED GOAL" : "OPEN GOAL", null));
+                // currentItem.getChildren().addCell(e);
+                return currentItem;
+            }
+
+            //no branchlabel needed
+            if (node.childrenCount() == 1) {
+
+                //check if same mutator as child
+                Node child = node.child(0);
+                if (!entryExitMap.get(node).contains(child)) {
+                    currentItem.getChildren().add(buildScriptTree(child));
+                    return currentItem;
+
+                } else {
+                    //skip node
+                    return  buildScriptTree(child);
+                }
+            }
+
+            //node.childrenCount() > 1
+            //branch labels
+
+                Iterator<Node> iterator = node.childrenIterator();
+                int counter = 0;
+                while (iterator.hasNext()) {
+                    Node child = iterator.next();
+                    String branchlabel = "BRANCH " + counter;//TODO:getBranchLabels(child).get(0);
+                    currentItem.getChildren().add(counter, new TreeItem<>(new TreeNode(branchlabel, child)));
+                    currentItem.getChildren().get(counter).getChildren().add(buildScriptTree(child.child(0)));
+                    counter++;
+                }
+
+                return currentItem;
+
+
+
+
+
+
+        }
+
+        public TreeNode createTreeNode(Node node) {
+            try { //TODO stupid hack for now
+                return new TreeNode(node.getAppliedRuleApp().rule().name() + " (line TODO)", node);
+            } catch (NullPointerException e) {
+                System.out.println(node);
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 }

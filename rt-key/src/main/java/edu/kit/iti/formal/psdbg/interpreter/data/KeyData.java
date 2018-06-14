@@ -19,7 +19,6 @@ import java.util.Set;
  */
 @Data
 @AllArgsConstructor
-@ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class KeyData {
