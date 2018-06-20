@@ -173,6 +173,21 @@ public class ProofTreeManager<T> {
             statePointerListener.forEach(l -> l.accept(statePointer));
     }
 
+    public PTreeNode getStartNode() {
+        Iterator<PTreeNode<T>> iterator = nodes.iterator();
+        if (iterator.hasNext()) {
+
+            PTreeNode currentnode = iterator.next();
+
+            while (! (currentnode.getStepInvOver() == null && currentnode.getStepInvInto() == null)) {
+                currentnode = (currentnode.getStepInvOver() != null) ? currentnode.getStepInvOver() : currentnode.getStepInvInto();
+
+            }
+            return currentnode;
+        }
+
+        return null;
+    }
 
     public List<PTreeNode<T>> getNarrowNodesToTextPosition(int textPosition) {
         synchronized (nodes) {
