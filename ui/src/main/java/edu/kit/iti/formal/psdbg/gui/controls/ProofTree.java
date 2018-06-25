@@ -354,8 +354,15 @@ public class ProofTree extends BorderPane {
 
         public TreeItem<TreeNode> create(Proof proof) {
             TreeItem<TreeNode> self1 = new TreeItem<>(new TreeNode("Proof", null));
-            self1.getChildren().add(populate("Proof", proof.root()));
+            self1.getChildren().add(populate("", proof.root()));
             return self1;
+        }
+        protected TreeItem<TreeNode> itemFactory(Node n, String label) {
+            if(label.equals("")){
+                return itemFactory(n);
+            } else {
+                return new TreeItem<>(new TreeNode(label, n));
+            }
         }
 
         protected TreeItem<TreeNode> itemFactory(Node n) {
@@ -378,14 +385,18 @@ public class ProofTree extends BorderPane {
          * @return
          */
         protected TreeItem<TreeNode> populate(String label, Node n) {
-            val treeNode = new TreeNode(label, n);
-            TreeItem<TreeNode> currentItem = itemFactory(n);
-            new TreeItem<>(treeNode);
+            //val treeNode = new TreeNode(label, n);
+            TreeItem<TreeNode> currentItem = itemFactory(n, label);
+            //new TreeItem<>(treeNode);
 
             // abort the traversing iff we have reached a sentinel!
             if (sentinels.contains(n)) {
                 return currentItem;
             }
+           /* if (label.equals("Proof")) { //we are at the root
+            TreeItem<TreeNode> self1 = new TreeItem<>(new TreeNode(n.serialNr() + ": " + toString(n), n));
+             currentItem.getChildren().add(self1);
+            }*/
 
             //if we are at a leaf we need to check goal state
             if (n.childrenCount() == 0) {
@@ -400,10 +411,15 @@ public class ProofTree extends BorderPane {
             //consume child proof nodes until there are more than one child, then recursion!
             Node node = n.child(0);
             if (n.childrenCount() == 1) {
-                do {
+                currentItem.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
+            while (node.childrenCount() == 1) {
+                node = node.child(0);
+                currentItem.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
+            }
+                /*do {
                     currentItem.getChildren().add(itemFactory(node));
                     node = node.child(0);
-                } while (node.childrenCount() == 1);
+                } while (node.childrenCount() == 1);*/
             }
 
             // if the current node has more zero children. abort.
@@ -413,6 +429,7 @@ public class ProofTree extends BorderPane {
 
             Iterator<Node> nodeIterator = node.childrenIterator();
             int branchCounter = 1;
+
             while (nodeIterator.hasNext()) {
                 Node childNode = nodeIterator.next();
                 if (childNode.getNodeInfo().getBranchLabel() != null) {
@@ -420,6 +437,7 @@ public class ProofTree extends BorderPane {
                     currentItem.getChildren().add(populate);
                 } else {
                     TreeItem<TreeNode> populate = populate("BRANCH " + branchCounter, childNode);
+                    //TreeItem<TreeNode> self = new TreeItem<>(new TreeNode(childNode.serialNr() + ": " + toString(childNode), childNode));
                     TreeItem<TreeNode> self = itemFactory(childNode);
                     populate.getChildren().add(0, self);
                     currentItem.getChildren().add(populate);
