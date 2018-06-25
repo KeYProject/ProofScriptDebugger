@@ -87,8 +87,8 @@ public class ProofTreeContextMenu extends javafx.scene.control.ContextMenu {
         expandAllNodes.setOnAction((event) -> {
             proofTree.expandRootToLeaves(proofTree.getTreeProof().getRoot());
         });
-
-        showScriptTree.setOnAction(event -> proofTree.getTreeScriptCreation().showScriptTree());
+        //TODO SCRIPTTREE ACTION
+        //showScriptTree.setOnAction(event -> proofTree.getTreeScriptCreation().showScriptTree());
         getItems().setAll(refresh, expandAllNodes, new SeparatorMenuItem(), copy, createCases, showSequent, showGoal, showScriptTree);
         setAutoFix(true);
         setAutoHide(true);
