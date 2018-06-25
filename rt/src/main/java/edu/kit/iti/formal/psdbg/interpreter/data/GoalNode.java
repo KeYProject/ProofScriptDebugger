@@ -35,7 +35,11 @@ public class GoalNode<T> {
     private int id = super.hashCode();
 
     public GoalNode(T data) {
-        this(null, new VariableAssignment(), data, false);
+        this.assignments = new VariableAssignment();
+        this.parent = null;
+        this.data = data;
+        this.isClosed = false;
+//        this(null, new VariableAssignment(), data, false);
     }
 
     public GoalNode(@Nonnull GoalNode<T> parent, T data, boolean isClosed) {

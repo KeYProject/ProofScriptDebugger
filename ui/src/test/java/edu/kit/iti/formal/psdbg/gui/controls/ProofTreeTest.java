@@ -32,17 +32,19 @@ public class ProofTreeTest {
     @Before
     public void setUp() throws Exception {
        facade = new KeYProofFacade();
-       scripts = Facade.getAST(CharStreams.fromStream(new FileInputStream("/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/rt-key/src/test/resources/edu/kit/iti/formal/psdbg/interpreter/contraposition/proofTreeScript.kps")));
+
 
     }
 
-
     @Test
     public void testScriptTree() throws IOException, ProblemLoaderException {
-        facade.loadKeyFileSync(new File("/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/rt-key/src/test/resources/edu/kit/iti/formal/psdbg/interpreter/contraposition/contraposition.key"));
+        File keyProblem = new File(getClass().getResource("contraposition.key").getFile());
+        facade.loadKeyFileSync(keyProblem);
+        scripts = Facade.getAST(CharStreams.fromStream(getClass().getResourceAsStream("proofTreeScript.kps")));
         InterpreterBuilder ib = facade.buildInterpreter();
         i = ib.build();
         DebuggerFramework<KeyData> df = new DebuggerFramework<>(i, scripts.get(0), null);
+        i.interpret(scripts.get(0));
         ScriptTreeTransformation treeScriptCreation = new ScriptTreeTransformation(df.getPtreeManager(), facade.getProof(), facade.getProof().root());
         treeScriptCreation.create(facade.getProof());
         PTreeNode startNode = df.getPtreeManager().getStartNode();
