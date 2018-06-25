@@ -1,0 +1,16 @@
+script full(){
+  impRight;
+  impRight;
+  impLeft;
+  cases {
+	case match `!q ==> p`:
+		notLeft;
+		notRight;
+		closeAntec;
+
+
+	case match `q==>!p`:
+		notLeft;
+		closeAntec;
+   }
+}
