@@ -1,5 +1,6 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
+import com.google.common.base.Strings;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
@@ -23,6 +24,13 @@ public class ProofTreeTest {
     private List<ProofScript> scripts;
     private Interpreter<KeyData> interpreter;
 
+    private static void printTree(TreeItem<ProofTree.TreeNode> rootItem, int level) {
+        System.out.format("%s* %s%n", Strings.repeat(" ", level * 4), rootItem.getValue().label);
+        rootItem.getChildren().forEach(item -> {
+            printTree(item, level+1);
+        });
+    }
+
     @Before
     public void setUp() throws Exception {
         facade = new KeYProofFacade();
@@ -43,9 +51,10 @@ public class ProofTreeTest {
         if (startNode != null) {
             TreeItem<ProofTree.TreeNode> treeItem = treeScriptCreation.buildScriptTree(startNode);
             System.out.println("treeItem = " + treeItem);
-
         }
 
+        TreeItem<ProofTree.TreeNode> rootItem = treeScriptCreation.create(ib.getProof());
+        printTree(rootItem, 0);
 
     }
 
