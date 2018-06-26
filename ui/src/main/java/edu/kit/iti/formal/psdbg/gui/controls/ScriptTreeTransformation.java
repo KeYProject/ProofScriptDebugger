@@ -24,10 +24,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ScriptTreeTransformation extends KeyProofTreeTransformation {
     final ProofTreeManager<KeyData> manager;
-    @Getter
-    private final Proof proof;
-    @Getter
-    private final Node root;
 
     private PTreeNode<KeyData> currentPointer;
 
@@ -119,7 +115,7 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
     }
 
 
-    //TODO: Reverse ArrayList in the end or nah?
+    /*//TODO: Reverse ArrayList in the end or nah?
     @Deprecated
     public ArrayList<String> getBranchLabels(TreeNode node) {
         TreeItem<TreeNode> proofTree = create(proof);
@@ -156,10 +152,10 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
 
         return branchlabels;
     }
+*/
 
 
-
-    public TreeItem<TreeNode> buildScriptTree(PTreeNode<KeyData> node) {
+    public TreeItem<TreeNode> buildScriptTree(PTreeNode<KeyData> node, Proof proof) {
 
         TreeItem<TreeNode> tree = create(proof);
         PTreeNode<KeyData> nextNode = node;
@@ -172,7 +168,8 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
         Node root = rootGoalNode.getData().getNode();
         TreeItem<TreeNode> currentItem = new TreeItem<>(new TreeNode("Proof", nextNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode()));
         //build the first node after the root
-        currentItem.getChildren().add(new TreeItem<>(createTreeNode(nextNode)));
+        TreeNode t = createTreeNode(nextNode);
+        if (t != null) currentItem.getChildren().add(new TreeItem<>());
         return buildScriptSubTree(currentItem, nextNode, nextNode.getStateAfterStmt().getSelectedGoalNode());
 
 
@@ -201,17 +198,24 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
             }*/
             //if we have reached a state where we do not need a selector
             if(currentNode == null && nextNode.getStateAfterStmt().getGoals().size() < 2){
-                currentItem.getChildren().add(new TreeItem<>(createTreeNode(nextNode)));
+                TreeNode t = createTreeNode(nextNode);
+                if (t!=null) {
+                    currentItem.getChildren().add(new TreeItem<>(t));
+                }
                 return currentItem;
             }
-            if (getNextPtreeNode(nextNode) == null) { //End of Script
+            if (getNextPtreeNode(nextNode) == null || getNextPtreeNode(nextNode).isLastNode()) { //End of Script
+                System.out.println("nextNode = " + nextNode.getStatement());
                 return currentItem;
             }
 
             //if we arrive at a cases statement we skip this statement
             if(nextNode.getStateAfterStmt() != null && nextNode.getStateAfterStmt().getGoals().size() > 1){
                 //we arrived at a branching statement, add it to the tree and add the branches as new children
-                currentItem.getChildren().add(new TreeItem<>(createTreeNode(nextNode)));
+                TreeNode t = createTreeNode(nextNode);
+                if(t != null) {
+                    currentItem.getChildren().add(new TreeItem<>(t));
+                }
                 List<GoalNode<KeyData>> goals = nextNode.getStateAfterStmt().getGoals();
                 int size = goals.size();
                 for (int i = 0; i < size; i++) {
@@ -221,14 +225,16 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
                     Pair<TreeItem<TreeNode>, PTreeNode<KeyData>> treeItemPTreeNodePair = buildScriptTreeHelper(nextNode, goals.get(i));
                     child.getChildren().add(treeItemPTreeNodePair.getKey());
                     currentItem.getChildren().add(child);
-
                     nextNode = computeNextPtreeNode(treeItemPTreeNodePair.getValue());
                     setPointer(nextNode);
 
                 }
                 return currentItem;
             } else {
-                      currentItem.getChildren().add(new TreeItem<>(createTreeNode(nextNode)));
+                TreeNode t = createTreeNode(nextNode);
+                if (t != null) {
+                    currentItem.getChildren().add(new TreeItem<>(t));
+                }
             }
 
 
@@ -243,9 +249,16 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
     private Pair<TreeItem<TreeNode>, PTreeNode<KeyData>> buildScriptTreeHelper(PTreeNode<KeyData> node, GoalNode<KeyData> keyDataGoalNode) {
         assert node.getStateBeforeStmt().getGoals().get(0).getData() !=  null;
 
+        PTreeNode<KeyData> nextNode;
         TreeItem<TreeNode> currentItem = null;
-        PTreeNode<KeyData> nextNode = getNextPtreeNode(node);
-        setPointer(nextNode);
+
+        if(getNextPtreeNode(node) != null){
+            nextNode = getNextPtreeNode(node);
+            setPointer(nextNode);
+        } else {
+            nextNode = node;
+            setPointer(nextNode);
+        }
 
         while(currentItem == null){
 
@@ -276,15 +289,22 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
 
             //handle if we reach other statements
             if(nextNode.getStateBeforeStmt() == null ||
-                    nextNode.getStateBeforeStmt().getGoals() == null){
+                    nextNode.getStateBeforeStmt().getGoals() == null
+                    //||
+                    //nextNode.getStatement().getStartPosition().getLineNumber() < 1
+             ){
                 continue;
 
 
             } else {
+                
                 assert nextNode.getStateBeforeStmt().getSelectedGoalNode().equals(keyDataGoalNode);
+                
+                Node node1 = keyDataGoalNode.getData().getNode();
+                ASTNode statement= nextNode.getStatement();
+                ASTNode astNode = mutatedBy.get(node1);
 
-                boolean bool = mutatedBy.get(keyDataGoalNode.getData().getNode()).equals(nextNode.getStatement());
-                if(bool) {
+                if(astNode == null || astNode.equals(statement)) {
                     currentItem = new TreeItem<>(new TreeNode(((CallStatement) nextNode.getStatement()).getCommand() +
                             " (line " + nextNode.getStatement().getStartPosition().getLineNumber() +
                             ")", keyDataGoalNode.getData().getNode()));
@@ -315,7 +335,7 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
     public TreeNode createTreeNode(PTreeNode<KeyData> node) {
         try {
             if(node == null){
-                System.out.println("Node is null");
+                return null;
             }
 
             if(node.getStatement() instanceof CallStatement) {
@@ -323,7 +343,7 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
 
                 int lineNumber = node.getStatement().getStartPosition().getLineNumber();
                 if(lineNumber == -1 || command.equals("")){
-                    System.out.println(node.getStatement().getNodeName());
+
                     return new TreeNode("TempEnd", node.getStateBeforeStmt().getGoals().get(0).getData().getNode());
                 }
                 Node node1 = node.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
@@ -331,8 +351,8 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
                         " (line " + lineNumber +
                         ")", node1);
             } else {
-                System.out.println(node.getStatement().getNodeName());
-                return new TreeNode(node.getStatement().getNodeName(), node.getStateBeforeStmt().getGoals().get(0).getData().getNode());
+                return null;
+//                return new TreeNode(node.getStatement().getNodeName(), node.getStateBeforeStmt().getGoals().get(0).getData().getNode());
             }
         } catch (Exception e) {
             e.printStackTrace();

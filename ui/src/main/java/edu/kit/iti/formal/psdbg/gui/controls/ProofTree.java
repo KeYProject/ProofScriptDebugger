@@ -112,7 +112,7 @@ public class ProofTree extends BorderPane {
         Utils.createWithFXML(this);
         //TODO remove this hack for a better solution
         main.getModel().debuggerFrameworkProperty().addListener((p, n, m) -> {
-            treeScriptCreation = new ScriptTreeTransformation(m.getPtreeManager(), proof.get(), root.get());
+            treeScriptCreation = new ScriptTreeTransformation(m.getPtreeManager());
         });
 
         treeCreation = new KeyProofTreeTransformation(sentinels);
@@ -330,7 +330,7 @@ public class ProofTree extends BorderPane {
             if(manager != null) {
                 PTreeNode startNode = manager.getStartNode();
                 if (startNode != null) {
-                    treeScript.setRoot(treeScriptCreation.buildScriptTree(startNode));
+                    treeScript.setRoot(treeScriptCreation.buildScriptTree(startNode, proof.get()));
                 }
             }
         }

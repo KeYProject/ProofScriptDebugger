@@ -24,7 +24,7 @@ public class ProofTreeTest {
     private List<ProofScript> scripts;
     private Interpreter<KeyData> interpreter;
 
-    private static void printTree(TreeItem<ProofTree.TreeNode> rootItem, int level) {
+    private static void printTree(TreeItem<TreeNode> rootItem, int level) {
         System.out.format("%s* %s%n", Strings.repeat(" ", level * 4), rootItem.getValue().label);
         rootItem.getChildren().forEach(item -> {
             printTree(item, level+1);
@@ -45,15 +45,15 @@ public class ProofTreeTest {
         interpreter = ib.build();
         DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, scripts.get(0));
         interpreter.interpret(scripts.get(0));
-        ScriptTreeTransformation treeScriptCreation = new ScriptTreeTransformation(df.getPtreeManager(), facade.getProof(), facade.getProof().root());
+        ScriptTreeTransformation treeScriptCreation = new ScriptTreeTransformation(df.getPtreeManager());
         treeScriptCreation.create(facade.getProof());
         PTreeNode startNode = df.getPtreeManager().getStartNode();
         if (startNode != null) {
-            TreeItem<TreeNode> treeItem = treeScriptCreation.buildScriptTree(startNode);
-            System.out.println("treeItem = " + treeItem);
+            TreeItem<TreeNode> treeItem = treeScriptCreation.buildScriptTree(startNode, facade.getProof());
+
         }
 
-        TreeItem<ProofTree.TreeNode> rootItem = treeScriptCreation.create(ib.getProof());
+        TreeItem<TreeNode> rootItem = treeScriptCreation.create(ib.getProof());
         printTree(rootItem, 0);
 
     }
