@@ -339,11 +339,4 @@ public class ProofTree extends BorderPane {
     }
 
 
-    @AllArgsConstructor
-    public static class TreeNode {
-        String label;
-        Node node;
-    }
-
-
 }

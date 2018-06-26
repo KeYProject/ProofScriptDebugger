@@ -1,3 +1,16 @@
+script full1(){
+  impRight;
+  impRight;
+  impLeft;
+  cases {
+	case match `?A`:
+		notLeft;
+		//closeAntec;
+   }
+}
+
+
+
 script full(){
   impRight;
   impRight;

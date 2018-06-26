@@ -3,8 +3,6 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import javafx.beans.property.SetProperty;
-import javafx.beans.property.SimpleSetProperty;
-import javafx.collections.FXCollections;
 import javafx.scene.control.TreeItem;
 import lombok.Data;
 import lombok.Getter;
@@ -25,21 +23,21 @@ public class KeyProofTreeTransformation {
         this.sentinels = sentinels;
     }
 
-    public TreeItem<ProofTree.TreeNode> create(Proof proof) {
-        TreeItem<ProofTree.TreeNode> self1 = new TreeItem<>(new ProofTree.TreeNode("Proof", null));
+    public TreeItem<TreeNode> create(Proof proof) {
+        TreeItem<TreeNode> self1 = new TreeItem<>(new TreeNode("Proof", null));
         self1.getChildren().add(populate("", proof.root()));
         return self1;
     }
-    protected TreeItem<ProofTree.TreeNode> itemFactory(Node n, String label) {
+    protected TreeItem<TreeNode> itemFactory(Node n, String label) {
         if(label.equals("")){
             return itemFactory(n);
         } else {
-            return new TreeItem<>(new ProofTree.TreeNode(label, n));
+            return new TreeItem<>(new TreeNode(label, n));
         }
     }
 
-    protected TreeItem<ProofTree.TreeNode> itemFactory(Node n) {
-        return new TreeItem<>(new ProofTree.TreeNode(n.serialNr() + ": " + toString(n), n));
+    protected TreeItem<TreeNode> itemFactory(Node n) {
+        return new TreeItem<>(new TreeNode(n.serialNr() + ": " + toString(n), n));
     }
 
     protected String toString(Node object) {
@@ -57,8 +55,8 @@ public class KeyProofTreeTransformation {
      * @param n
      * @return
      */
-    protected TreeItem<ProofTree.TreeNode> populate(String label, Node n) {
-        TreeItem<ProofTree.TreeNode> currentItem = itemFactory(n, label);
+    protected TreeItem<TreeNode> populate(String label, Node n) {
+        TreeItem<TreeNode> currentItem = itemFactory(n, label);
 
         // abort the traversing iff we have reached a sentinel!
         if (sentinels.contains(n)) {
@@ -78,10 +76,10 @@ public class KeyProofTreeTransformation {
         //consume child proof nodes until there are more than one child, then recursion!
         Node node = n.child(0);
         if (n.childrenCount() == 1) {
-            currentItem.getChildren().add(new TreeItem<>(new ProofTree.TreeNode(node.serialNr() + ": " + toString(node), node)));
+            currentItem.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
         while (node.childrenCount() == 1) {
             node = node.child(0);
-            currentItem.getChildren().add(new TreeItem<>(new ProofTree.TreeNode(node.serialNr() + ": " + toString(node), node)));
+            currentItem.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
         }
         }
 
@@ -96,11 +94,11 @@ public class KeyProofTreeTransformation {
         while (nodeIterator.hasNext()) {
             Node childNode = nodeIterator.next();
             if (childNode.getNodeInfo().getBranchLabel() != null) {
-                TreeItem<ProofTree.TreeNode> populate = populate(childNode.getNodeInfo().getBranchLabel(), childNode);
+                TreeItem<TreeNode> populate = populate(childNode.getNodeInfo().getBranchLabel(), childNode);
                 currentItem.getChildren().add(populate);
             } else {
-                TreeItem<ProofTree.TreeNode> populate = populate("BRANCH " + branchCounter, childNode);
-                TreeItem<ProofTree.TreeNode> self = itemFactory(childNode);
+                TreeItem<TreeNode> populate = populate("BRANCH " + branchCounter, childNode);
+                TreeItem<TreeNode> self = itemFactory(childNode);
                 populate.getChildren().add(0, self);
                 currentItem.getChildren().add(populate);
                 branchCounter++;

@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import java.util.List;
@@ -49,7 +48,7 @@ public class ProofTreeTest {
         treeScriptCreation.create(facade.getProof());
         PTreeNode startNode = df.getPtreeManager().getStartNode();
         if (startNode != null) {
-            TreeItem<ProofTree.TreeNode> treeItem = treeScriptCreation.buildScriptTree(startNode);
+            TreeItem<TreeNode> treeItem = treeScriptCreation.buildScriptTree(startNode);
             System.out.println("treeItem = " + treeItem);
 
         }
