@@ -1,9 +1,6 @@
 package edu.kit.iti.formal.psdbg.interpreter.dbg;
 
-import com.google.common.graph.MutableValueGraph;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
-import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowNode;
-import edu.kit.iti.formal.psdbg.interpreter.graphs.ControlFlowTypes;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import lombok.Getter;
@@ -103,15 +100,14 @@ public class DebuggerFramework<T> {
 
 
     public DebuggerFramework(@Nonnull Interpreter<T> interpreter,
-                             @Nonnull ProofScript main,
-                             MutableValueGraph<ControlFlowNode, ControlFlowTypes> cfg) {
+                             @Nonnull ProofScript main) {
         this.interpreter = interpreter;
         mainScript = main;
         blocker = new BlockListener<>(interpreter);
         breakpointBlocker = new Blocker.BreakpointLine<>(interpreter);
         blocker.getPredicates().add(breakpointBlocker);
         stateWrapper = new StateWrapper<>(interpreter);
-        ptreeManager = new ProofTreeManager<>(cfg);
+        ptreeManager = new ProofTreeManager<>();
         stateWrapper.setEmitNode(ptreeManager::receiveNode);
         interpreterThread = new Thread(this::run);
     }
