@@ -60,7 +60,7 @@ public class InteractiveCLIDebugger {
         //ControlFlowVisitor cfgVistor = new ControlFlowVisitor(ib.getLookup());
         //MutableValueGraph<ControlFlowNode, ControlFlowTypes> cfg = cfgVistor.getGraph();
 
-        df = new DebuggerFramework<>(interpreter, scripts.get(0), null);
+        df = new DebuggerFramework<>(interpreter, scripts.get(0));
         df.getStatePointerListener().add(this::printNode);
         //df.getBeforeExecutionListener().add(this::printNode);
         //df.getAfterExecutionListener().add(this::end);

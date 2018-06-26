@@ -2,7 +2,6 @@ package edu.kit.iti.formal.psdbg.gui.controller;
 
 import alice.tuprolog.InvalidLibraryException;
 import alice.tuprolog.InvalidTheoryException;
-import antlr.collections.AST;
 import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
@@ -36,9 +35,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ASTDiff;
-import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
-import edu.kit.iti.formal.psdbg.parser.ast.CaseStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import edu.kit.iti.formal.psdbg.storage.KeyPersistentFacade;
 import javafx.application.Platform;
@@ -61,7 +58,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -75,11 +71,6 @@ import org.reactfx.util.Timer;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.xml.bind.JAXBException;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowStateListener;
-import java.awt.im.InputContext;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -88,8 +79,6 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
-
-import org.reactfx.util.Timer;
 
 
 /**
@@ -742,7 +731,7 @@ public class DebuggerMain implements Initializable {
 
 
     public void createDebuggerFramework(Collection<? extends Breakpoint> breakpoints, ProofScript ms, boolean addInitBreakpoint, KeyInterpreter interpreter) {
-        DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, ms, null);
+        DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, ms);
         df.setSucceedListener(this::onInterpreterSucceed);
         df.setErrorListener(this::onInterpreterError);
         if (addInitBreakpoint) {

@@ -35,11 +35,6 @@ public class ProofTreeManager<T> {
     */
 
     @Getter
-    @Setter
-    @Nullable
-    private final MutableValueGraph<ControlFlowNode, ControlFlowTypes> controlFlowGraph;
-
-    @Getter
     private final Set<PTreeNode<T>> nodes = new HashSet<>();
 
     @Getter @Setter
@@ -59,8 +54,7 @@ public class ProofTreeManager<T> {
 
     private List<List<PTreeNode<T>>> context = new ArrayList<>(10);
 
-    public ProofTreeManager(MutableValueGraph<ControlFlowNode, ControlFlowTypes> controlFlowGraph) {
-        this.controlFlowGraph = controlFlowGraph;
+    public ProofTreeManager() {
         pushContext();
     }
 
