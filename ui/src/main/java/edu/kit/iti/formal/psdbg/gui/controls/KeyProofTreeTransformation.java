@@ -97,7 +97,7 @@ public class KeyProofTreeTransformation {
                 TreeItem<TreeNode> populate = populate(childNode.getNodeInfo().getBranchLabel(), childNode);
                 currentItem.getChildren().add(populate);
             } else {
-                TreeItem<TreeNode> populate = populate("BRANCH " + branchCounter, childNode);
+                TreeItem<TreeNode> populate = populate("Case " + branchCounter, childNode);
                 TreeItem<TreeNode> self = itemFactory(childNode);
                 populate.getChildren().add(0, self);
                 currentItem.getChildren().add(populate);

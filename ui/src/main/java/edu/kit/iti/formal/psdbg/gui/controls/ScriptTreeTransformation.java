@@ -2,6 +2,8 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.graph.Graph;
+import com.google.common.graph.GraphBuilder;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
@@ -15,6 +17,7 @@ import javafx.util.Pair;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import sun.reflect.generics.tree.Tree;
 
 import java.util.*;
 
@@ -65,8 +68,8 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
             }
             return getNextPtreeNode(current);
         }
-
     }
+
     @Override
     public TreeItem<TreeNode> create(Proof proof) {
         Set<PTreeNode<KeyData>> nodes = manager.getNodes();
@@ -115,44 +118,13 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
     }
 
 
-    /*//TODO: Reverse ArrayList in the end or nah?
-    @Deprecated
-    public ArrayList<String> getBranchLabels(TreeNode node) {
-        TreeItem<TreeNode> proofTree = create(proof);
+    public TreeItem<TreeNode> buildTree(PTreeNode<KeyData> rootNode, Proof proof){
 
-        ArrayList<String> branchlabels = new ArrayList<>();
+        setPointer(rootNode);
 
-        int i = 0;
-        branchlabels.set(0, node.label);
-        while (node != null) {
-            if (!branchlabels.get(i).equals(node.label)) {
-                i++;
-                branchlabels.set(i, node.label);
-            }
-            //TODO: node = node.parent
-        }
-
-        return branchlabels;
+        TreeItem<TreeNode> rootTree = new TreeItem<>(new TreeNode("Proof", proof.root()));
+        return rootTree;
     }
-
-    public ArrayList<String> getBranchLabels(Node node) {
-        ArrayList<String> branchlabels = new ArrayList<>();
-
-        int i = 0;
-        //TODO: branchlabel = all branchlabels or only next one
-        branchlabels.set(0, node.getNodeInfo().getBranchLabel());
-        Node n = node.parent();
-        while (n != null) {
-            if (!branchlabels.get(i).equals(n.getNodeInfo().getBranchLabel())) {
-                i++;
-                branchlabels.set(i, n.getNodeInfo().getBranchLabel());
-            }
-            n = n.parent();
-        }
-
-        return branchlabels;
-    }
-*/
 
 
     public TreeItem<TreeNode> buildScriptTree(PTreeNode<KeyData> node, Proof proof) {
@@ -169,7 +141,7 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
         TreeItem<TreeNode> currentItem = new TreeItem<>(new TreeNode("Proof", nextNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode()));
         //build the first node after the root
         TreeNode t = createTreeNode(nextNode);
-        if (t != null) currentItem.getChildren().add(new TreeItem<>());
+        if (t != null) currentItem.getChildren().add(new TreeItem<>(t));
         return buildScriptSubTree(currentItem, nextNode, nextNode.getStateAfterStmt().getSelectedGoalNode());
 
 
@@ -179,7 +151,6 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
      * Build the subtrees for the script tree structure
      * @param currentItem
      * @param nextNode
-     * @param root
      * @return
      */
     public TreeItem<TreeNode> buildScriptSubTree(TreeItem<TreeNode> currentItem, PTreeNode<KeyData> nextNode, GoalNode<KeyData> currentNode) {
@@ -220,7 +191,7 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
                 int size = goals.size();
                 for (int i = 0; i < size; i++) {
                     currentNode = goals.get(i);
-                    TreeItem<TreeNode> child = new TreeItem<>(new TreeNode("Branch " + i, goals.get(i).getData().getNode())); //todo right branches
+                    TreeItem<TreeNode> child = new TreeItem<>(new TreeNode("Case " + i+1, goals.get(i).getData().getNode())); //todo right branches
 
                     Pair<TreeItem<TreeNode>, PTreeNode<KeyData>> treeItemPTreeNodePair = buildScriptTreeHelper(nextNode, goals.get(i));
                     child.getChildren().add(treeItemPTreeNodePair.getKey());
