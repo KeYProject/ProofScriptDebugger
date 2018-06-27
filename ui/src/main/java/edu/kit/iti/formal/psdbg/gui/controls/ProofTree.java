@@ -162,15 +162,16 @@ public class ProofTree extends BorderPane {
     public void expandRootToSentinels() {
         if (getTreeProof().getRoot() == null) {
             if (root.get() != null) {
-                TreeItem<TreeNode> item = populate("Proof", root.get());
-                //populate(root.get().serialNr() + ": " + toString(root.get()), root.get());
+                TreeItem<TreeNode> item = treeCreation.populate("Proof", root.get());
+               // populate(root.get().serialNr() + ": " + root.get().serialNr(), root.get());
                 //val treeNode = new TreeNode("Proof", root.get());
 
                 treeProof.setRoot(item);
+
             }
 
         }
-        //expandRootToLeaves(getTreeProof().getRoot());
+        expandRootToLeaves(getTreeProof().getRoot());
     }
 
     public TreeView<TreeNode> getTreeProof() {
