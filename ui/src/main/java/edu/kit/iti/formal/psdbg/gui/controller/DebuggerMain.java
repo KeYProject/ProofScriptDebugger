@@ -545,10 +545,11 @@ public class DebuggerMain implements Initializable {
         //save old information and refresh models
         statusBar.publishMessage("Reloading...");
         File lastLoaded;
+        Contract chosen = null;
         if (model.getKeyFile() != null) {
             lastLoaded = model.getKeyFile();
         } else {
-            Contract chosen = model.getChosenContract();
+            chosen = model.getChosenContract();
             lastLoaded = model.getJavaFile();
         }
         //model.reload();
@@ -562,8 +563,11 @@ public class DebuggerMain implements Initializable {
         iModel.clearHighlightLines();
         iModel.getGoals().clear();
         iModel.setSelectedGoalNodeToShow(null);
-
+        if(chosen != null) {
+            FACADE.contractProperty().set(chosen);
+        }
         try {
+
             FACADE.reload(lastLoaded);
             if (iModel.getGoals().size() > 0) {
                 iModel.setSelectedGoalNodeToShow(iModel.getGoals().get(0));
