@@ -231,6 +231,62 @@ public class InteractiveModeController {
     }
 
 
+    @Subscribe
+    public void handle(Events.MacroApplicationEvent map) {
+
+   /*     LOGGER.debug("Handling {}", map);
+        moreThanOneMatch = false;
+        String tapName = map.getApp().taclet().name().toString();
+        Goal g = tap.getCurrentGoal();
+
+        SequentFormula seqForm = tap.getPio().sequentFormula();
+        //transform term to parsable string representation
+        Sequent seq = g.sequent();
+        String sfTerm = Utils.printParsableTerm(seqForm.formula(), keYServices);
+        String onTerm = Utils.printParsableTerm(tap.getPio().subTerm(), keYServices);
+
+
+        RuleCommand.Parameters params = new RuleCommand.Parameters();
+        params.formula = seqForm.formula();
+        params.rulename = tap.getApp().taclet().name().toString();
+        params.on = tap.getPio().subTerm();
+
+        RuleCommandHelper rch = new RuleCommandHelper(g, params);
+        int occ = rch.getOccurence(tap.getApp());
+
+        Parameters callp = new Parameters();
+        callp.put(new Variable("formula"), TermLiteral.from(sfTerm));
+        callp.put(new Variable("occ"), new IntegerLiteral(BigInteger.valueOf(occ)));
+        callp.put(new Variable("on"), TermLiteral.from(onTerm));
+
+        VariableAssignment va = new VariableAssignment(null);
+        CallStatement call = new CallStatement(tapName, callp);
+
+
+        try {
+
+            applyRule(call, g);
+
+            String c = getCasesAsString();
+            scriptArea.setText("" +
+                    "//Preview \n" + c);
+
+
+        } catch (ScriptCommandNotApplicableException e) {
+            StringBuilder sb = new StringBuilder("The script command ");
+            sb.append(call.getCommand()).append(" was not applicable.");
+            sb.append("\nSequent Formula: formula=").append(sfTerm);
+            sb.append("\nOn Sub Term: on=").append(onTerm);
+
+            Utils.showWarningDialog("Proof Command was not applicable",
+                    "Proof Command was not applicable.",
+                    sb.toString(), e);
+        }
+*/
+
+    }
+
+
     private Node findRoot(Node cur) {
         while (cur != null) {
             if (cases.keySet().contains(cur))

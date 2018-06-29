@@ -1454,7 +1454,7 @@ public class DebuggerMain implements Initializable {
             ptree.setProof(proof);
             ptree.setRoot(pnode);
             ptree.setNodeColor(pnode, "blueviolet");
-            ptree.setDeactivateRefresh(true);
+            ptree.setDeactivateRefresh(false);
 
             if (stateAfterStmt.size() > 0) {
                 Set<Node> sentinels = proof.getSubtreeGoals(pnode)
@@ -1478,6 +1478,7 @@ public class DebuggerMain implements Initializable {
 
 
             ptree.expandRootToSentinels();
+            System.out.println("ptree = " + ptree.getRoot());
             DockNode node = new DockNode(ptree, "Proof Tree for Step Into: " +
                     original.getStatement().accept(new ShortCommandPrinter())
             );
