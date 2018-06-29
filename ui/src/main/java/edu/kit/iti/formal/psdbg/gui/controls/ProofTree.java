@@ -491,7 +491,7 @@ public class ProofTree extends BorderPane {
         }
 
 
-        //TODO: Reverse ArrayList in the end or nah?
+
         @Deprecated
         public ArrayList<String> getBranchLabels(TreeNode node) {
             TreeItem<TreeNode> proofTree = create(proof.get());
@@ -545,14 +545,12 @@ public class ProofTree extends BorderPane {
         }
 
         private TreeItem<TreeNode> buildScriptTree(PTreeNode<KeyData> node) {
+            TreeItem<TreeNode> currentItem = new TreeItem<>(new TreeNode("Proof", node.getStateBeforeStmt().getSelectedGoalNode().getData().getNode()));
 
-            PTreeNode<KeyData> nextNode = node;
-            if(nextNode == null) {
-                return null;
-            }
-            TreeItem<TreeNode> currentItem = new TreeItem<>(new TreeNode("Proof", nextNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode()));
-
-
+            //PTreeNode<KeyData> nextNode = getNextPtreeNode(node); //TODO: nextnode or node?
+            currentItem.getChildren().add(buildScriptTreewithID(node, node.getStateBeforeStmt().getGoals().get(0)));
+            return currentItem;
+            /*
             do {
                 //TODO: get matches
                 if(nextNode.getStatement().getNodeName().equals("CasesStatement")) {
@@ -567,7 +565,9 @@ public class ProofTree extends BorderPane {
                     for (int i = 0; i < nextNode.getStateAfterStmt().getGoals().size(); i++) {
                         TreeItem<TreeNode> child = new TreeItem<>(new TreeNode("Branch " + i, nextNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode())); //todo right branches
                         //TODO:Branch labels
+
                         child.getChildren().add(buildScriptTreewithID(nextNode, nextNode.getStateAfterStmt().getGoals().get(i)));
+                        System.out.println("child = " + child);
                         currentItem.getChildren().add(child);
 
                     }
@@ -576,6 +576,7 @@ public class ProofTree extends BorderPane {
                 nextNode = getNextPtreeNode(nextNode);
             } while (nextNode != null);
             return currentItem;
+            */
         }
 
         private PTreeNode getNextPtreeNode(PTreeNode current) {
@@ -583,10 +584,43 @@ public class ProofTree extends BorderPane {
                     current.getStepOver();
         }
 
+        /*
+        determines if goalnode
+        introduces as hack/solution to solve
+         */
+        private boolean isParent(GoalNode<KeyData> parent, GoalNode<KeyData> child) {
+            boolean isParent = false;
+
+            GoalNode<KeyData> iteratorNode = child;
+            while (isParent == false && iteratorNode != null) {
+                if(iteratorNode.equals(parent)) {
+                    return true;
+                }
+                iteratorNode = iteratorNode.getParent();
+            }
+            return isParent;
+        }
+
         private TreeItem<TreeNode> buildScriptTreewithID(PTreeNode<KeyData> node, GoalNode<KeyData> goalNode) {
             PTreeNode<KeyData> nextNode = getNextPtreeNode(node);
-            TreeItem<TreeNode> currentItem = null;
 
+            TreeNode treenode = createTreeNode(node);
+
+            //skip all ptreenodes that are not neccessary
+            while (treenode == null) {
+                if(nextNode == null || nextNode.toString().equals("End of Script")) {
+                    String goalState = (goalNode.getData().getNode().isClosed())? "Closed Goal" : "Open Goal";
+                    return new TreeItem<>(new TreeNode(goalState, goalNode.getData().getNode()));
+                }
+                treenode = createTreeNode(nextNode);
+                nextNode = getNextPtreeNode(nextNode);
+            }
+
+
+
+            TreeItem<TreeNode> currentItem = new TreeItem<>(treenode);
+
+/*
             while(currentItem == null) {
                     currentItem = new TreeItem<>(createTreeNode(nextNode));
 
@@ -602,41 +636,53 @@ public class ProofTree extends BorderPane {
                                         }
                 nextNode = getNextPtreeNode(nextNode);
             }
-
+*/
 
 
             do {
-                if (getNextPtreeNode(nextNode) == null) { //End of Script
-                    String goalState;
-                    if(nextNode.getStateAfterStmt().getSelectedGoalNode() != null) {
-                        goalState = (nextNode.getStateAfterStmt().getSelectedGoalNode().isClosed())? "Closed Goal" : "Open Goal";
-                    } else {
-                        int indexGoal = nextNode.getStateAfterStmt().getGoals().indexOf(goalNode);
-                        goalState = (nextNode.getStateAfterStmt().getGoals().get(indexGoal).isClosed())? "Closed Goal" : "Open Goal";
-                    }
-                    currentItem.getChildren().add(new TreeItem<>(new TreeNode(goalState, nextNode.getStateAfterStmt().getGoals().get(0).getData().getNode())));
+
+                //End of Script
+                if (nextNode.toString().equals("End of Script")) {
+                    String goalState = (goalNode.getData().getNode().isClosed())? "Closed Goal" : "Open Goal";
+                    currentItem.getChildren().add(new TreeItem<>(new TreeNode(goalState, goalNode.getData().getNode())));
                     return currentItem;
                 }
-                //TODO: get matches
-                if(nextNode.getStatement().getNodeName().equals("CasesStatement")) {
+
+                //skip if goalId doesn't match
+                if (!isParent(goalNode, nextNode.getStateBeforeStmt().getGoals().get(0))) {
+                    nextNode= getNextPtreeNode(nextNode);
+                    continue;
+                }
+
+
+
+                //skip cases ||
+                if(nextNode.getStatement().getNodeName().equals("CasesStatement") || nextNode.getStatement().getNodeName().equals("GuardedCaseStatement")) {
                     nextNode = getNextPtreeNode(nextNode);
                     continue;
                 }
 
-                if (!nextNode.getStateBeforeStmt().getSelectedGoalNode().equals(goalNode)) {
-                    nextNode= getNextPtreeNode(nextNode);
-                    continue;
+
+                //successfull matches of goals
+                if (nextNode.getStatement().getNodeName().equals("MatchExpression")) {
+                    //TODO: weird hack to determine if match was sucessful
+                    if( nextNode.getStatement().getStartPosition().getLineNumber() + 1 == getNextPtreeNode(nextNode).getStatement().getStartPosition().getLineNumber()) {
+                        currentItem.getChildren().add(new TreeItem<>(createTreeNode(nextNode)));
                     }
+                    nextNode = getNextPtreeNode(nextNode);
+                    continue;
+                }
+
 
                     currentItem.getChildren().add(new TreeItem<>(createTreeNode(nextNode)));
 
                     //splitting command
-                    if (nextNode.getStateAfterStmt() != null) { //TODO catch guarded match here
+                    if (nextNode.getStateAfterStmt() != null) {
                         if (nextNode.getStateAfterStmt().getGoals().size() > 1) {
                             for (int i = 0; i < nextNode.getStateAfterStmt().getGoals().size(); i++) {
-                                TreeItem<TreeNode> child = new TreeItem<>(new TreeNode("Branch " + i, nextNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode())); //todo right branches
                                 //TODO:Branch labels
-                                child.getChildren().add(buildScriptTreewithID(nextNode, nextNode.getStateAfterStmt().getGoals().get(i)));
+                                TreeItem<TreeNode> child = new TreeItem<>(new TreeNode("Branch " + i , nextNode.getStateAfterStmt().getGoals().get(i).getData().getNode())); //todo right branches
+                                child.getChildren().add(buildScriptTreewithID(getNextPtreeNode(nextNode), nextNode.getStateAfterStmt().getGoals().get(i)));
                                 currentItem.getChildren().add(child);
                             }
                             return currentItem;
@@ -690,7 +736,7 @@ public class ProofTree extends BorderPane {
                 int counter = 0;
                 while (iterator.hasNext()) {
                     Node child = iterator.next();
-                    String branchlabel = "BRANCH " + counter;//TODO:getBranchLabels(child).get(0);
+                    String branchlabel = "BRANCH " + counter + getBranchLabels(child).get(0);//;
                     currentItem.getChildren().add(counter, new TreeItem<>(new TreeNode(branchlabel, child)));
                     currentItem.getChildren().get(counter).getChildren().add(buildScriptTree(child.child(0)));
                     counter++;
@@ -707,7 +753,7 @@ public class ProofTree extends BorderPane {
 
         @Deprecated
         public TreeNode createTreeNode(Node node) {
-            try { //TODO stupid hack for now
+            try {
                 return new TreeNode(node.getAppliedRuleApp().rule().name() + " (line TODO)", node);
             } catch (NullPointerException e) {
                 System.out.println(node);
@@ -717,8 +763,10 @@ public class ProofTree extends BorderPane {
         }
 
         public TreeNode createTreeNode(PTreeNode<KeyData> node) {
-            //TODO: do it diff
             try {
+                if (node.getStatement().getNodeName().equals("MatchExpression")) {
+                    return new TreeNode("match in line " + node.getStatement().getStartPosition().getLineNumber(), node.getStateAfterStmt().getGoals().get(0).getData().getNode());
+                }
                 return new TreeNode( ((CallStatement) node.getStatement()).getCommand() + " (line "+ node.getStatement().getStartPosition().getLineNumber()+")", node.getStateBeforeStmt().getSelectedGoalNode().getData().getNode());
             } catch (Exception e) {
                 e.printStackTrace();
