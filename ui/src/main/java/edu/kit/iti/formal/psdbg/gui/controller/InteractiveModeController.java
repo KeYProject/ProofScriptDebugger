@@ -293,9 +293,6 @@ public class InteractiveModeController {
             map.put("#2", call.getCommand());
             EngineState estate = new EngineState(g.proof());
             estate.setGoal(g);
-            //System.out.println("on = " + map.get("on"));
-            //System.out.println("formula = " + map.get("formula"));
-            //System.out.println("occ = " + map.get("occ"));
             ValueInjector valueInjector = ValueInjector.createDefault(kd.getNode());
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
 
