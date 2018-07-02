@@ -334,6 +334,7 @@ public class ProofTree extends BorderPane {
                 }
             }
         }
+
         treeProof.refresh();
         treeScript.refresh();
     }
