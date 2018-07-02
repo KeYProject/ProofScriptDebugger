@@ -45,7 +45,13 @@ public class ProofTreeTest {
         interpreter = ib.build();
         DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, scripts.get(0));
         interpreter.interpret(scripts.get(0));
-        ScriptTreeTransformation treeScriptCreation = new ScriptTreeTransformation(df.getPtreeManager());
+
+        ScriptTreeGraph stg = new ScriptTreeGraph();
+        stg.createGraph(df.getPtreeManager().getStartNode(), facade.getProof().root());
+        System.out.println("stg = " + stg);
+
+
+/*        ScriptTreeTransformation treeScriptCreation = new ScriptTreeTransformation(df.getPtreeManager());
         treeScriptCreation.create(facade.getProof());
         PTreeNode startNode = df.getPtreeManager().getStartNode();
         if (startNode != null) {
@@ -54,9 +60,10 @@ public class ProofTreeTest {
         }
 
         TreeItem<TreeNode> rootItem = treeScriptCreation.create(ib.getProof());
-        printTree(rootItem, 0);
+        printTree(rootItem, 0);*/
 
     }
+
 
 
 }

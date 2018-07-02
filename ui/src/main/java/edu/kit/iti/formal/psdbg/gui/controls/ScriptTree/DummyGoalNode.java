@@ -8,6 +8,6 @@ import lombok.RequiredArgsConstructor;
 public class DummyGoalNode extends AbstractTreeNode {
 
     @Getter
-    private boolean closedGoal;
+    private final boolean closedGoal;
 
 }

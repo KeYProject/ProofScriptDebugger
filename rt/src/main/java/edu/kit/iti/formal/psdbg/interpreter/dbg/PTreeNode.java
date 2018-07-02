@@ -131,4 +131,26 @@ public class PTreeNode<T> {
         return stateAfterStmt.getGoals().stream().filter(gn -> gn.getParent().equals(incoming)).collect(Collectors.toList());
     }
 
+    public <T> PTreeNode<T> getNextPtreeNode(PTreeNode<T> current) {
+        return (current.getStepInto() != null)? current.getStepInto() :
+                current.getStepOver();
+    }
+
+    public <T> PTreeNode<T> computeNextPtreeNode(PTreeNode<T> current) {
+        if(current == null){
+            return current;
+        }
+        if(getNextPtreeNode(current) != null){
+            return getNextPtreeNode(current);
+        }
+        if(current.getStepReturn() != null){
+            return current.getStepReturn();
+        } else {
+            while(current.getStepInvInto() != null){
+                current = current.getStepInvInto();
+            }
+            return getNextPtreeNode(current);
+        }
+    }
+
 }

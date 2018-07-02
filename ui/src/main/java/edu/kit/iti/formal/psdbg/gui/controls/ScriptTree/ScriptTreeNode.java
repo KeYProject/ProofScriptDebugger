@@ -16,7 +16,7 @@ import lombok.Setter;
 public class ScriptTreeNode extends AbstractTreeNode {
     @Getter
     private final PTreeNode<KeyData> scriptState;
-    @Getter @Setter
-    private Node keyNode;
+    @Getter
+    private final Node keyNode;
 
 }
