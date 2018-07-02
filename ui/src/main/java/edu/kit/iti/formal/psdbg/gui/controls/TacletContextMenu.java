@@ -134,14 +134,13 @@ public class TacletContextMenu extends ContextMenu {
         final ImmutableList<BuiltInRule> builtInRules = c.getBuiltInRule(goal, occ);
 
         try {
+            createMacroMenu(KeYApi.getScriptCommandApi().getScriptCommands(), KeYApi.getMacroApi().getMacros());
+
             ImmutableList<TacletApp> findTaclet = c.getFindTaclet(goal, occ);
             createTacletMenu(
                     removeRewrites(findTaclet)
                             .prepend(c.getRewriteTaclet(goal, occ)),
                     c.getNoFindTaclet(goal), builtInRules);
-
-            createMacroMenu(KeYApi.getScriptCommandApi().getScriptCommands(), KeYApi.getMacroApi().getMacros());
-
         } catch (NullPointerException e) {
             createDummyMenuItem();
         }
@@ -174,10 +173,7 @@ public class TacletContextMenu extends ContextMenu {
                 this.scriptCommands.getItems().add(item);
             }
         }
-        rootMenu.getItems().add(scriptCommands);
-
-
-
+//        rootMenu.getItems().add(scriptCommands);
     }
 
     /**
@@ -271,7 +267,6 @@ public class TacletContextMenu extends ContextMenu {
         } else {
             noRules.setVisible(true);
         }
-
         if (occ != null)
             createAbbrevSection(pos.getPosInOccurrence().subTerm());
     }
@@ -385,7 +380,6 @@ public class TacletContextMenu extends ContextMenu {
         /*if (!insertHiddenController.isEmpty())
             insertHiddenController.setVisible(true);
             */
-
     }
 
     /**
