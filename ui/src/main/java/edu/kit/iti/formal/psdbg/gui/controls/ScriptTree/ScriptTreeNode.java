@@ -19,4 +19,9 @@ public class ScriptTreeNode extends AbstractTreeNode {
     @Getter
     private final Node keyNode;
 
+    @Override
+    public String toString(){
+        return scriptState.getStatement().toString()+" with ID "+scriptState.getId();
+    }
+
 }

@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -26,6 +27,9 @@ import java.util.stream.Collectors;
 @Setter
 @RequiredArgsConstructor
 public class PTreeNode<T> {
+
+    private final int id;
+
     private final ASTNode statement;
 
     private Map<CaseStatement, List<GoalNode<T>>> mappingOfCaseToStates = new HashMap<>();

@@ -34,7 +34,7 @@ public class ScriptTreeTransformation extends KeyProofTreeTransformation {
         currentPointer = p;
     }
     /**
-     * maps a node to its siblings, that were created by an mutator call.
+     * maps a node to its siblings, that were created by a mutator call.
      */
     Multimap<Node, Node> entryExitMap = HashMultimap.create();
 

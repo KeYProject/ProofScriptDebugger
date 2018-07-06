@@ -18,6 +18,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -27,6 +28,7 @@ import java.util.function.Consumer;
 public class StateWrapper<T> implements InterpreterObserver<T> {
     private static final Logger LOGGER = LogManager.getLogger(StateWrapper.class);
 
+    private AtomicInteger id;
     @Getter @Setter
     private Interpreter<T> interpreter;
 
@@ -51,7 +53,7 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
 
 
     public StateWrapper(Interpreter<T> interpreter) {
-        install(interpreter);
+        id = new AtomicInteger(0); install(interpreter);
     }
 
     public ASTNode[] getContextCopy() {
@@ -64,7 +66,8 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
     public PTreeNode<T> createNode(ASTNode node) {
         LOGGER.info("Creating Root for State graph with statement {}@{}",
                 node.getNodeName(), node.getStartPosition());
-        lastNode = new PTreeNode<>(node);
+
+        lastNode = new PTreeNode<T>(id.incrementAndGet(), node);
         lastNode.setContext(getContextCopy());
         contextStack.add(node);
         State<T> currentInterpreterStateCopy = getInterpreterStateCopy();
