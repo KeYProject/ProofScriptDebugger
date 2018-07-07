@@ -1462,10 +1462,17 @@ public class DebuggerMain implements Initializable {
             ptree.setDeactivateRefresh(false);
 
             if (stateAfterStmt.size() > 0) {
-                Set<Node> sentinels = proof.getSubtreeGoals(pnode)
+                proof.getSubtreeGoals(pnode).forEach(goal -> System.out.println("goal.node().serialNr() = " + goal.node().serialNr()));
+                Set<Node> sentinels;
+                sentinels = proof.getSubtreeGoals(pnode)
                         .stream()
                         .map(Goal::node)
                         .collect(Collectors.toSet());
+                if(sentinels.size() == 0){
+                    sentinels = new LinkedHashSet();
+                    sentinels.add(pnode);
+                    //sentinels.add(stateAfterStmt.get(0).getData().getNode());
+                }
                 ptree.getSentinels().addAll(sentinels);
                 sentinels.forEach(node -> ptree.setNodeColor(node, "blueviolet"));
             } else {
@@ -1480,7 +1487,6 @@ public class DebuggerMain implements Initializable {
                 sentinels.forEach(node -> ptree.setNodeColor(node, "blueviolet"));
                 //traverseProofTreeAndAddSentinelsToLeaves();
             }
-
 
             ptree.expandRootToSentinels();
             System.out.println("ptree = " + ptree.getRoot());

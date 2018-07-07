@@ -159,13 +159,16 @@ public class ProofTree extends BorderPane {
         this.colorOfNodes.put(n, color);
     }
 
+
     public void expandRootToSentinels() {
         if (getTreeProof().getRoot() == null) {
             if (root.get() != null) {
-                TreeItem<TreeNode> item = treeCreation.populate("Proof", root.get());
-               // populate(root.get().serialNr() + ": " + root.get().serialNr(), root.get());
-                //val treeNode = new TreeNode("Proof", root.get());
-
+                TreeItem<TreeNode> item;
+                if(sentinels.contains(root.get())){
+                    item = treeCreation.itemFactory(root.get());
+                } else {
+                    item = treeCreation.populate("Proof", root.get());
+                }
                 treeProof.setRoot(item);
 
             }
@@ -438,6 +441,8 @@ public class ProofTree extends BorderPane {
                 node = node.child(0);
                 currentItem.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
             }
+
+
                 /*do {
                     currentItem.getChildren().add(itemFactory(node));
                     node = node.child(0);
