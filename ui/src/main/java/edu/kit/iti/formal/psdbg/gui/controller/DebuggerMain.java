@@ -189,7 +189,7 @@ public class DebuggerMain implements Initializable {
                         .filter(it -> Objects.equals(fna.childOrMe(it.getStatement()), it.getStatement()))
                         .collect(Collectors.toList());
 
-        System.out.println(result);
+        LOGGER.info(result);
 
 
         for (PTreeNode<KeyData> statePointerToPostMortem : result) {
@@ -213,13 +213,18 @@ public class DebuggerMain implements Initializable {
                 if (stateAfterStmt.getSelectedGoalNode() != null) {
                     im.setSelectedGoalNodeToShow(stateAfterStmt.getSelectedGoalNode());
                 } else {
-                    im.setSelectedGoalNodeToShow(goals.get(0));
+                    if(goals.size() > 0) {
+                        im.setSelectedGoalNodeToShow(goals.get(0));
+                    } else {
+                        im.setSelectedGoalNodeToShow(stateBeforeStmt.getSelectedGoalNode());
+                        statusBar.publishMessage("This goal node was closed by the selected mutator.");
+                    }
                 }
                 inspectionViewsController.newPostMortemInspector(im)
                         .dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
 
             } else {
-                statusBar.publishErrorMessage("There is no post mortem state to show to this node, because this node was not executed.");
+                statusBar.publishErrorMessage("There is no post mortem state to show to this node, because this node was not executed or is a selector statement.");
             }
         }
     }
