@@ -181,6 +181,11 @@
                                         <MaterialDesignIconView glyphName="TREE" size="24.0"/>
                                     </graphic>
                                 </CheckMenuItem>
+                                <CheckMenuItem fx:id="miScriptTree" onAction="#showScriptTree" text="Show Script Tree">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="TREE" size="24.0"/>
+                                    </graphic>
+                                </CheckMenuItem>
                                 <CheckMenuItem fx:id="miCommandHelp" onAction="#showCommandHelp"
                                                accelerator="F1"
                                                text="Show Command Help">

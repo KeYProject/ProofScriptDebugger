@@ -1,7 +1,6 @@
 package edu.kit.iti.formal.psdbg.gui.controls.ScriptTree;
 
 import de.uka.ilkd.key.proof.Node;
-import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.AbstractTreeNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

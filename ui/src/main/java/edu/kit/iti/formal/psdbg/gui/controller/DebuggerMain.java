@@ -145,6 +145,8 @@ public class DebuggerMain implements Initializable {
     @FXML
     private CheckMenuItem miProofTree;
     @FXML
+    private CheckMenuItem miScriptTree;
+    @FXML
     private ToggleButton btnInteractiveMode;
 
     @FXML
@@ -158,6 +160,12 @@ public class DebuggerMain implements Initializable {
     //-----------------------------------------------------------------------------------------------------------------
     private ProofTree proofTree = new ProofTree(this);
     private DockNode proofTreeDock = new DockNode(proofTree, "Proof Tree");
+
+    //TODO: anpassen
+    private ScriptTreeGraph scriptTreeGraph = new ScriptTreeGraph();
+    private ScriptTreeView scriptTreeView = new ScriptTreeView();
+    private DockNode scriptTreeDock = new DockNode(scriptTreeView,"Script Tree");
+
     private WelcomePane welcomePane = new WelcomePane(this);
     private DockNode welcomePaneDock = new DockNode(welcomePane, "Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
     private DockNode activeInspectorDock;
@@ -165,6 +173,7 @@ public class DebuggerMain implements Initializable {
     private DockNode commandHelpDock = new DockNode(commandHelp, "DebuggerCommand Help");
     private InteractiveModeController interactiveModeController;
     private ScriptExecutionController scriptExecutionController;
+
     @FXML
     private Menu examplesMenu;
     private Timer interpreterThreadTimer;
@@ -1301,6 +1310,22 @@ public class DebuggerMain implements Initializable {
             proofTreeDock.dock(dockStation, DockPos.CENTER);
         }
     }
+
+    @FXML
+    public void showScriptTree(ActionEvent actionEvent) {
+       // FXML
+        //TODO: anpassen
+        if (!scriptTreeDock.isDocked() && !scriptTreeDock.isFloating()) {
+            scriptTreeDock.dock(dockStation, DockPos.CENTER);
+        }
+        ScriptTreeGraph stg = new ScriptTreeGraph();
+        stg.createGraph(model.getDebuggerFramework().getPtreeManager().getStartNode(), FACADE.getProof().root());
+        scriptTreeView.setTree(stg.toView());
+
+
+
+    }
+
 
     public DockNode getJavaAreaDock() {
         return javaAreaDock;

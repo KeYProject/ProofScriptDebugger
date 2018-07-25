@@ -1,7 +1,7 @@
 package edu.kit.iti.formal.psdbg.gui.controls.ScriptTree;
 
 import de.uka.ilkd.key.proof.Node;
-import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.AbstractTreeNode;
+import edu.kit.iti.formal.psdbg.gui.controls.TreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import lombok.Getter;
@@ -18,10 +18,26 @@ public class ScriptTreeNode extends AbstractTreeNode {
     private final PTreeNode<KeyData> scriptState;
     @Getter
     private final Node keyNode;
+    @Getter @Setter
+    private final int linenr;
 
     @Override
     public String toString(){
         return scriptState.getStatement().toString()+" with ID "+scriptState.getId();
     }
 
+    @Override
+    public TreeNode toTreeNode() {
+        String label;
+        if (isMatchEx()) {
+            label = "match in line " + linenr;
+        } else {
+            label = scriptState.getStatement().getNodeName() + " (line " + linenr + ")";
+        }
+
+        if (!isSucc()) {
+            label += " (failed)";
+        }
+        return  new TreeNode(label, keyNode);
+    }
 }
