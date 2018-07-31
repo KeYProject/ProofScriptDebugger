@@ -14,15 +14,12 @@ public class ScriptTreeView extends BorderPane {
 
     public ScriptTreeView() {
         Utils.createWithFXML(this);
-
-        treeView = new TreeView<>();
         treeView.setCellFactory(this::cellFactory);
 
     }
 
     public void setTree(TreeItem<TreeNode> tree) {
         treeView.setRoot(tree);
-        treeView.refresh();
     }
 
     private TreeCell<TreeNode> cellFactory(TreeView<TreeNode> nodeTreeView) {

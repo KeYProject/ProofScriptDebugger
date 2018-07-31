@@ -1313,16 +1313,23 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void showScriptTree(ActionEvent actionEvent) {
-       // FXML
         //TODO: anpassen
         if (!scriptTreeDock.isDocked() && !scriptTreeDock.isFloating()) {
-            scriptTreeDock.dock(dockStation, DockPos.CENTER);
+            scriptTreeDock.dock(dockStation, DockPos.LEFT);
         }
         ScriptTreeGraph stg = new ScriptTreeGraph();
         stg.createGraph(model.getDebuggerFramework().getPtreeManager().getStartNode(), FACADE.getProof().root());
-        scriptTreeView.setTree(stg.toView());
 
 
+        TreeItem<TreeNode> item = (stg.toView());
+
+       /* TreeView<TreeNode> content = new TreeView<>(item);
+        DockNode dn = new DockNode(content, "TEst");
+
+        dn.dock(dockStation, DockPos.LEFT);
+        */
+
+        scriptTreeView.setTree(item);
 
     }
 

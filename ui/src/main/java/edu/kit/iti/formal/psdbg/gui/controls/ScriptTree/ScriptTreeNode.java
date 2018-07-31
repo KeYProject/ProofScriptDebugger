@@ -4,6 +4,7 @@ import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.gui.controls.TreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
+import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -32,7 +33,7 @@ public class ScriptTreeNode extends AbstractTreeNode {
         if (isMatchEx()) {
             label = "match in line " + linenr;
         } else {
-            label = scriptState.getStatement().getNodeName() + " (line " + linenr + ")";
+            label = ((CallStatement) scriptState.getStatement()).getCommand() + " (line " + linenr + ")";
         }
 
         if (!isSucc()) {
