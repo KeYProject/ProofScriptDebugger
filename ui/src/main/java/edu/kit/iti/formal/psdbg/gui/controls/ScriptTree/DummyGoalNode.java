@@ -5,17 +5,19 @@ import edu.kit.iti.formal.psdbg.gui.controls.TreeNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+
 public class DummyGoalNode extends AbstractTreeNode {
 
     @Getter
     private final boolean closedGoal;
 
-    @Getter
-    private final Node node;
+    public DummyGoalNode(Node node, boolean closedGoal) {
+        super(node);
+        this.closedGoal = closedGoal;
+    }
 
     @Override
     public TreeNode toTreeNode() {
-        return  new TreeNode((closedGoal? "CLOSED":"OPEN"), node); //TODO:
+        return  new TreeNode((closedGoal? "CLOSED":"OPEN"), getNode()); //TODO:
     }
 }

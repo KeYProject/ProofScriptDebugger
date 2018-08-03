@@ -13,14 +13,19 @@ import lombok.Setter;
  * This calss represents a node in the script tree, whcih can be of different kinds.
  * The scriptTreeNodes is the model calls for TreeNodes
  */
-@RequiredArgsConstructor
+
 public class ScriptTreeNode extends AbstractTreeNode {
     @Getter
     private final PTreeNode<KeyData> scriptState;
-    @Getter
-    private final Node keyNode;
+
     @Getter @Setter
     private final int linenr;
+
+    public ScriptTreeNode(Node node, PTreeNode<KeyData> scriptState, int linenr) {
+        super(node);
+        this.scriptState = scriptState;
+        this.linenr = linenr;
+    }
 
     @Override
     public String toString(){
@@ -39,6 +44,6 @@ public class ScriptTreeNode extends AbstractTreeNode {
         if (!isSucc()) {
             label += " (failed)";
         }
-        return  new TreeNode(label, keyNode);
+        return  new TreeNode(label, getNode());
     }
 }
