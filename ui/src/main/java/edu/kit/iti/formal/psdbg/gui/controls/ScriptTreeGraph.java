@@ -16,6 +16,7 @@ import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.GuardedCaseStatement;
 import javafx.scene.control.TreeItem;
+import sun.reflect.generics.tree.Tree;
 
 import java.util.*;
 
@@ -39,11 +40,11 @@ public class ScriptTreeGraph {
     public void createGraph(PTreeNode<KeyData> rootPTreeNode, Node root) {
 
         this.currentNode = rootPTreeNode;
+        if(currentNode == null) return;
         ScriptTreeNode rootNode = new ScriptTreeNode(root, rootPTreeNode, rootPTreeNode.getStatement().getStartPosition().getLineNumber());
-        mapping = new HashMap<Node, AbstractTreeNode>();
+        mapping = new HashMap<>();
         front = new ArrayList<>();
         sortedList = new ArrayList<>();
-        //putIntoMapping(root,rootNode);//mapping.put(root, rootNode); TODO: for testing
         State<KeyData> stateAfterStmt = rootPTreeNode.getStateAfterStmt();
         if (stateAfterStmt != null) {
             for (GoalNode<KeyData> g : stateAfterStmt.getGoals()) {
@@ -57,12 +58,16 @@ public class ScriptTreeGraph {
         addParentsAndChildren();
         mapping.size();
 
-        //TODO: remove
+        //TODO: remove following
+        System.out.print(front);
         System.out.println(getMappingString(mapping.get(root)));
 
 
     }
 
+    /**
+     * creates the connection between parent and children in mapping, which haven't been set yet
+     */
     private void addParentsAndChildren() {
         Node currentNode;
         AbstractTreeNode currentTreenode;
@@ -78,30 +83,14 @@ public class ScriptTreeGraph {
                 currentTreenode = entry.getValue();
                 currentNode = entry.getKey();
 
-
-
-                //no children -> last mutator
-
-                // if(next.getStateAfterStmt().getGoals().size() == 0 && currentTreenode instanceof ScriptTreeNode) {
-
+                    //set parent
                     Node parent = currentNode.parent();
                     if(parent != null && currentTreenode != null) {
                     addToSubChildren(parent, mapping.get(currentNode));
-/*
-                    List<AbstractTreeNode> children = currentTreenode.getChildren();
-                    if(children == null) {
-                        continue;
-                    }
-                    for(int i = 0; i < children.size(); i++) {
-                        AbstractTreeNode tn = children.get(i);
-                        mapping.get(tn.getNode()).setParent(currentTreenode);
-                        addToSubChildren(currentNode, tn);
-                    }
-                    continue;
-                    */
+
                 }
 
-                //has children
+                //set children
                 for (GoalNode<KeyData> gn: next.getStateAfterStmt().getGoals()) {
                         if(mapping.get(gn.getData().getNode()).getParent() != null)
                     mapping.get(gn.getData().getNode()).setParent(currentTreenode);
@@ -109,24 +98,6 @@ public class ScriptTreeGraph {
 
                 }
 
-
-
-
-                /*
-                for (AbstractTreeNode tn : currentTreenode.getChildren()) {
-
-                    mapping.get(tn.getNode()).setParent(currentTreenode);
-
-
-                    //add children
-                    if (mapping.get(currentNode).getChildren() == null) {
-                        List<AbstractTreeNode> childlist = new ArrayList<>();
-                        childlist.add(mapping.get(tn.getNode()));
-                        mapping.get(currentNode).setChildren(childlist);
-                    } else {
-                        mapping.get(currentNode).getChildren().add(mapping.get(tn.getNode()));
-                    }
-                    } */
                 }
 
 
@@ -134,7 +105,13 @@ public class ScriptTreeGraph {
 
 
         }
-        private void addToChildren(Node node, AbstractTreeNode atn) {
+
+    /**
+     * Adds an AbstractTreeNode atn to the children in the mapping list with given key node
+     * @param node
+     * @param atn
+     */
+    private void addToChildren(Node node, AbstractTreeNode atn) {
             if(mapping.get(node) == atn) return;
             if (mapping.get(node).getChildren() == null) {
                 List<AbstractTreeNode> childlist = new ArrayList<>();
@@ -146,7 +123,13 @@ public class ScriptTreeGraph {
             }
         }
 
-        private void addToSubChildren(Node node, AbstractTreeNode atn) {
+    /**
+     * Adds an AbstractTreeNode atn to the next available child slot in the mapping list, which hasn't been set yet, with given key node
+     * method for upholding the script execution order
+     * @param node
+     * @param atn
+     */
+    private void addToSubChildren(Node node, AbstractTreeNode atn) {
             if(mapping.get(node) == atn) return;
             if (mapping.get(node).getChildren() == null) {
                 List<AbstractTreeNode> childlist = new ArrayList<>();
@@ -207,8 +190,19 @@ public class ScriptTreeGraph {
             mapping.forEach((node, abstractTreeNode) -> System.out.println("node.serialNr() = " + node.serialNr() + " " + abstractTreeNode.toTreeNode().label));
         }
 
-        public TreeItem<TreeNode> toView () {
-            TreeItem<TreeNode> treeItem = new TreeItem<>(new TreeNode("Proof", rootNode.getNode()));
+    /**
+     * returns treeItem that represents current Script tree
+     * @return
+     */
+    public TreeItem<TreeNode> toView () {
+        TreeItem<TreeNode> treeItem;
+        if(rootNode == null) {
+            treeItem = new TreeItem<>(new TreeNode("Proof", null));
+            DummyGoalNode dummy = new DummyGoalNode(null, false);
+            treeItem.getChildren().add(new TreeItem<TreeNode>(dummy.toTreeNode()));
+            return treeItem;
+        }
+            treeItem = new TreeItem<>(new TreeNode("Proof", rootNode.getNode()));
 
 
             List<AbstractTreeNode> children = mapping.get(rootNode.getNode()).getChildren();
@@ -315,7 +309,13 @@ public class ScriptTreeGraph {
 
 
         }
-        private void putIntoMapping (Node node, AbstractTreeNode treeNode){ //TODO: more usage?
+
+    /**
+     * put abstracttreenode to right location in the mapping hashmap
+     * @param node
+     * @param treeNode
+     */
+    private void putIntoMapping (Node node, AbstractTreeNode treeNode){ //TODO: more usage?
 
             if (mapping.get(node) == null) {
                 mapping.put(node, treeNode);

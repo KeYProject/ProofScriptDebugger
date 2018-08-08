@@ -1318,7 +1318,9 @@ public class DebuggerMain implements Initializable {
             scriptTreeDock.dock(dockStation, DockPos.LEFT);
         }
         ScriptTreeGraph stg = new ScriptTreeGraph();
-        stg.createGraph(model.getDebuggerFramework().getPtreeManager().getStartNode(), FACADE.getProof().root());
+        PTreeNode startnode = (model.getDebuggerFramework() != null)?model.getDebuggerFramework().getPtreeManager().getStartNode():null;
+        stg.createGraph(startnode, FACADE.getProof().root());
+
 
 
         TreeItem<TreeNode> item = (stg.toView());
