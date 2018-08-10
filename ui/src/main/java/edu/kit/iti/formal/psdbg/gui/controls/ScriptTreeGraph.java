@@ -49,13 +49,16 @@ public class ScriptTreeGraph {
         if (stateAfterStmt != null) {
             for (GoalNode<KeyData> g : stateAfterStmt.getGoals()) {
                 putIntoMapping(g.getData().getNode(), null);
-                front.add(g.getData().getNode());
+                putIntoFront(g.getData().getNode());
             }
+        } else {
+
         }
         this.rootNode = rootNode;
         computeList();
         compute();
         addParentsAndChildren();
+        addGoals();
         mapping.size();
 
         //TODO: remove following
@@ -261,6 +264,7 @@ public class ScriptTreeGraph {
 
                 switch (children.size()) {
                     case 0:
+                        /*
                         DummyGoalNode goalnode = new DummyGoalNode(nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode(), nextPtreeNode.getStateAfterStmt().getGoals().size() == 0);
                         goalnode.setParent(sn);
 
@@ -270,11 +274,12 @@ public class ScriptTreeGraph {
                         sn.setChildren(childlist);
 
 
-                        putIntoMapping(sn.getNode(), goalnode);
+                        putIntoMapping(sn.getNode(), goalnode);*/
+                        putIntoFront(n);
                         break;
                     case 1:
                         putIntoMapping(children.get(0).getData().getNode(), null);
-                        front.add(children.get(0).getData().getNode());
+                        putIntoFront(children.get(0).getData().getNode());
                         break;
                     default: //multiple open goals/children -> branch labels
                         int branchcounter = 1;
@@ -283,7 +288,7 @@ public class ScriptTreeGraph {
                             BranchLabelNode branchNode = (node.getNodeInfo().getBranchLabel() != null) ? new BranchLabelNode(node, node.getNodeInfo().getBranchLabel()) :
                                     new BranchLabelNode(node, "Case " + branchcounter);
                             mapping.put(node, branchNode);
-                            front.add(node);
+                            putIntoFront(node);
                             branchcounter++;
                         }
                 }
@@ -304,6 +309,7 @@ public class ScriptTreeGraph {
                 }
                 Node n = nextintoptn.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
                 putIntoMapping(n, match);
+                //front.remove(n);
                 return null;
             }
 
@@ -315,15 +321,24 @@ public class ScriptTreeGraph {
      * @param node
      * @param treeNode
      */
-    private void putIntoMapping (Node node, AbstractTreeNode treeNode){ //TODO: more usage?
+    private void putIntoMapping (Node node, AbstractTreeNode treeNode){
 
             if (mapping.get(node) == null) {
                 mapping.put(node, treeNode);
             } else {
                 addToSubChildren(node, treeNode);
             }
-        }
+    }
 
+    private void putIntoFront (Node node) {
+        if(!front.contains(node)) {
+            front.add(node);
+        }
+    }
+
+    private void addGoals() {
+        front.forEach(k -> putIntoMapping(k, new DummyGoalNode(k, k.isClosed())));
+    }
         private String getMappingString (AbstractTreeNode node){
             String s = "";
             if (node != null) {
