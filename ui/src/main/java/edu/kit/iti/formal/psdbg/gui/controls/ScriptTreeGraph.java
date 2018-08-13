@@ -3,6 +3,7 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import de.uka.ilkd.key.proof.Node;
+import de.uka.ilkd.key.rule.BlockContractBuilders;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.AbstractTreeNode;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.BranchLabelNode;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.DummyGoalNode;
@@ -14,6 +15,7 @@ import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
+import edu.kit.iti.formal.psdbg.parser.ast.ForeachStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.GuardedCaseStatement;
 import javafx.scene.control.TreeItem;
 import sun.reflect.generics.tree.Tree;
@@ -133,7 +135,8 @@ public class ScriptTreeGraph {
      * @param atn
      */
     private void addToSubChildren(Node node, AbstractTreeNode atn) {
-            if(mapping.get(node) == atn) return;
+        if(atn == null) return;
+        if(mapping.get(node) == atn) return;
             if (mapping.get(node).getChildren() == null) {
                 List<AbstractTreeNode> childlist = new ArrayList<>();
                 childlist.add(atn);
@@ -143,7 +146,7 @@ public class ScriptTreeGraph {
                 List<AbstractTreeNode> childlist = mapping.get(node).getChildren();
                 if(childlist.contains(atn)) return;
 
-                while (childlist.get(0).getChildren() != null) {
+                while (childlist.get(0) != null && childlist.get(0).getChildren() != null) {
                     if(childlist.contains(atn)) return;
                     childlist = childlist.get(0).getChildren();
 
@@ -183,10 +186,9 @@ public class ScriptTreeGraph {
             while (iter.hasNext()) {
                 nextPtreeNode = iter.next();
                 statement = nextPtreeNode.getStatement();
-                //check for selected node and find the node in map
-                if (nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode() != null) {
+                //if (nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode() != null) {
                     statement.accept(visitor);
-                }
+                //}
             }
 
             mapping.size();
@@ -202,7 +204,7 @@ public class ScriptTreeGraph {
         if(rootNode == null) {
             treeItem = new TreeItem<>(new TreeNode("Proof", null));
             DummyGoalNode dummy = new DummyGoalNode(null, false);
-            treeItem.getChildren().add(new TreeItem<TreeNode>(dummy.toTreeNode()));
+            treeItem.getChildren().add(new TreeItem<>(dummy.toTreeNode()));
             return treeItem;
         }
             treeItem = new TreeItem<>(new TreeNode("Proof", rootNode.getNode()));
@@ -225,7 +227,7 @@ public class ScriptTreeGraph {
         }
 
         private TreeItem<TreeNode> rekursiveToView (AbstractTreeNode current){
-            TreeItem<TreeNode> treeItem = new TreeItem<>(current.toTreeNode()); //TODO: sollte eig immer ein Branchlabel sein
+            TreeItem<TreeNode> treeItem = new TreeItem<>(current.toTreeNode()); //
 
             List<AbstractTreeNode> children = current.getChildren();
 
@@ -249,6 +251,7 @@ public class ScriptTreeGraph {
 
             @Override
             public Void visit(CallStatement call) {
+                if (nextPtreeNode.toString().equals("End of Script")) return null;
                 Node n = nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
                 ScriptTreeNode sn = new ScriptTreeNode(n, nextPtreeNode, nextPtreeNode.getStatement().getStartPosition().getLineNumber());
                 // sn.setParent(mapping.get(current));
@@ -304,7 +307,6 @@ public class ScriptTreeGraph {
 
                 if (nextintoptn == null) {
                     match.setSucc(false);
-                    //TODO: add stuff
                     return null;
                 }
                 Node n = nextintoptn.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
@@ -313,7 +315,13 @@ public class ScriptTreeGraph {
                 return null;
             }
 
+            @Override
+            public  Void visit(ForeachStatement foreachStatement){
+                List<GoalNode<KeyData>> goals = nextPtreeNode.getStateBeforeStmt().getGoals();
+                if(goals.size() == 0) return null;
 
+                goals.forEach(k -> putIntoMapping(k.getData().getNode(), new ScriptTreeNode(k.getData().getNode(), nextPtreeNode, nextPtreeNode.getStatement().getStartPosition().getLineNumber())));return null;}
+                //TODO: add end foreach
         }
 
     /**

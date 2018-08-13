@@ -45,9 +45,6 @@ public class ProofTree extends BorderPane {
     @FXML
     private TreeView<TreeNode> treeProof;
 
-    //TODO: added for testing
-    @FXML
-    private TreeView<TreeNode> treeScript;
 
 
     private ContextMenu contextMenu;
@@ -118,7 +115,6 @@ public class ProofTree extends BorderPane {
         treeCreation = new KeyProofTreeTransformation(sentinels);
 
         treeProof.setCellFactory(this::cellFactory);
-        treeScript.setCellFactory(this::cellFactory);
 
         root.addListener(o -> init());
         proof.addListener((prop, old, n) -> {
@@ -327,16 +323,9 @@ public class ProofTree extends BorderPane {
             treeProof.setRoot(item);
 
             ProofTreeManager<KeyData> manager = treeScriptCreation.manager;
-            if(manager != null) {
-                PTreeNode startNode = manager.getStartNode();
-                if (startNode != null) {
-                    treeScript.setRoot(treeScriptCreation.buildScriptTree(startNode, proof.get()));
-                }
-            }
         }
 
         treeProof.refresh();
-        treeScript.refresh();
     }
 
 

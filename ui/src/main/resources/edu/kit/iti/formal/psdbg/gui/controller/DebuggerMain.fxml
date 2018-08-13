@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.dockfx.DockPane?>
+<?import javafx.scene.image.ImageView?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.112"
             fx:controller="edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain"
             prefWidth="1024" prefHeight="640">
@@ -182,50 +183,54 @@
                                     </graphic>
                                 </CheckMenuItem>
                                 <CheckMenuItem fx:id="miScriptTree" onAction="#showScriptTree" text="Show Script Tree">
-                                    <graphic>
-                                        <MaterialDesignIconView glyphName="TREE" size="24.0"/>
-                                    </graphic>
-                                </CheckMenuItem>
-                                <CheckMenuItem fx:id="miCommandHelp" onAction="#showCommandHelp"
-                                               accelerator="F1"
-                                               text="Show Command Help">
-                                    <graphic>
-                                        <MaterialDesignIconView glyphName="STACKEXCHANGE" size="24.0"/>
-                                    </graphic>
-                                </CheckMenuItem>
-                            </items>
-                        </Menu>
-                        <Menu fx:id="examplesMenu" text="_Examples">
-                            <items>
-                                <MenuItem text="Examples not loaded" disable="true"/>
-                            </items>
-                        </Menu>
-                        <Menu text="Help">
-                            <items>
-                                <MenuItem text="About" onAction="#showAbout"/>
-                            </items>
-                        </Menu>
-                    </menus>
-                </MenuBar>
-                <ToolBar fx:id="toolbar">
-                    <items>
-                        <SplitMenuButton fx:id="buttonStartInterpreter" onAction="#executeScript"
-                                         disable="${controller.executeNotPossible}">
-                            <graphic>
-                                <MaterialDesignIconView glyphName="PLAY" size="24.0"/>
-                            </graphic>
-                            <tooltip>
-                                <Tooltip text="Execute Script"/>
-                            </tooltip>
+                                <!--
+                               <graphic>
+                                   <ImageView
+                                            image="resources\edu\kit\iti\formal\psdbg\gui\icon\treescript.jpg">
+                                   </ImageView>
+                               </graphic>
+                               -->
+                           </CheckMenuItem>
+                           <CheckMenuItem fx:id="miCommandHelp" onAction="#showCommandHelp"
+                                          accelerator="F1"
+                                          text="Show Command Help">
+                               <graphic>
+                                   <MaterialDesignIconView glyphName="STACKEXCHANGE" size="24.0"/>
+                               </graphic>
+                           </CheckMenuItem>
+                       </items>
+                   </Menu>
+                   <Menu fx:id="examplesMenu" text="_Examples">
+                       <items>
+                           <MenuItem text="Examples not loaded" disable="true"/>
+                       </items>
+                   </Menu>
+                   <Menu text="Help">
+                       <items>
+                           <MenuItem text="About" onAction="#showAbout"/>
+                       </items>
+                   </Menu>
+               </menus>
+           </MenuBar>
+           <ToolBar fx:id="toolbar">
+               <items>
+                   <SplitMenuButton fx:id="buttonStartInterpreter" onAction="#executeScript"
+                                    disable="${controller.executeNotPossible}">
+                       <graphic>
+                           <MaterialDesignIconView glyphName="PLAY" size="24.0"/>
+                       </graphic>
+                       <tooltip>
+                           <Tooltip text="Execute Script"/>
+                       </tooltip>
 
-                            <items>
-                                <!-- <MenuItem text="Execute from Cursor"
-                                           onAction="#executeScriptFromCursor"
-                                           disable="${controller.executeNotPossible}">
-                                     <graphic>
-                                         <MaterialDesignIconView glyphName="CURSOR_TEXT" size="24.0"/>
-                                     </graphic>
-                                 </MenuItem> -->
+                       <items>
+                           <!-- <MenuItem text="Execute from Cursor"
+                                      onAction="#executeScriptFromCursor"
+                                      disable="${controller.executeNotPossible}">
+                                <graphic>
+                                    <MaterialDesignIconView glyphName="CURSOR_TEXT" size="24.0"/>
+                                </graphic>
+                            </MenuItem> -->
 
                                 <MenuItem
                                         text="Execute Script Stepwise From Start"
@@ -390,6 +395,17 @@
                                 <Tooltip text="Show Proof Tree"/>
                             </tooltip>
                         </ToggleButton>
+
+                        <ToggleButton fx:id="togBtnScriptTree" onAction="#showScriptTree">
+                            <graphic>
+                                <!-- FILE-TREE-->
+                                <MaterialDesignIconView glyphName="TREE" size="24.0"/>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip text="Show Script Tree"/>
+                            </tooltip>
+                        </ToggleButton>
+
                         <ToggleButton fx:id="togBtnCommandHelp" onAction="#showCommandHelp">
                             <graphic>
                                 <MaterialDesignIconView glyphName="STACKEXCHANGE" size="24.0"/>

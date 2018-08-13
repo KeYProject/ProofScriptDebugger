@@ -3,14 +3,10 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.BorderPane?>
 <fx:root type="javafx.scene.layout.BorderPane" xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.112">
-    <left>
+    <center>
         <TreeView fx:id="treeProof" editable="false">
 
         </TreeView>
-    </left>
-    <right>
-        <TreeView fx:id="treeScript" editable="false">
+    </center>
 
-        </TreeView>
-    </right>
 </fx:root>

@@ -5,6 +5,9 @@ import edu.kit.iti.formal.psdbg.gui.controls.TreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
+import edu.kit.iti.formal.psdbg.parser.ast.GuardedCaseStatement;
+import edu.kit.iti.formal.psdbg.parser.ast.MatchExpression;
+import edu.kit.iti.formal.psdbg.parser.ast.TermLiteral;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -36,9 +39,13 @@ public class ScriptTreeNode extends AbstractTreeNode {
     public TreeNode toTreeNode() {
         String label;
         if (isMatchEx()) {
-            label = "match in line " + linenr;
+            String matchexpression = ((TermLiteral) ((MatchExpression) ((GuardedCaseStatement) scriptState.getStatement()).getGuard()).getPattern()).getContent();
+            label = "match ("+ matchexpression +") in line " + linenr;
         } else {
-            label = ((CallStatement) scriptState.getStatement()).getCommand() + " (line " + linenr + ")";
+            label = (scriptState.getStatement() instanceof  CallStatement)?
+                    ((CallStatement)scriptState.getStatement()).getCommand() + " (line " + linenr + ")"
+                    : "foreach in line " + linenr + " START";
+
         }
 
         if (!isSucc()) {
