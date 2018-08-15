@@ -18,6 +18,7 @@ import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.ForeachStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.GuardedCaseStatement;
 import javafx.scene.control.TreeItem;
+import lombok.Getter;
 import sun.reflect.generics.tree.Tree;
 
 import java.util.*;
@@ -25,8 +26,10 @@ import java.util.*;
 
 public class ScriptTreeGraph {
 
+    @Getter
     private ScriptTreeNode rootNode;
 
+    @Getter
     private Map<Node, AbstractTreeNode> mapping;
 
     private List<Node> front;
@@ -288,11 +291,23 @@ public class ScriptTreeGraph {
                         int branchcounter = 1;
                         for (GoalNode<KeyData> gn : children) {
                             Node node = gn.getData().getNode();
-                            BranchLabelNode branchNode = (node.getNodeInfo().getBranchLabel() != null) ? new BranchLabelNode(node, node.getNodeInfo().getBranchLabel()) :
-                                    new BranchLabelNode(node, "Case " + branchcounter);
-                            mapping.put(node, branchNode);
+
+                            List<BranchLabelNode> branchlabel = getBranchLabels(nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode(), gn);
+
+                            BranchLabelNode branchNode;
+                            if(branchlabel != null) {
+                                //TODO: insertBranchLabels(branchlabel);
+
+                                branchNode = new BranchLabelNode(node, branchlabel.toString());
+                                mapping.put(node, branchNode);
+
+                            }else{
+                                branchNode = new BranchLabelNode(node, "Case " + branchcounter);
+                                mapping.put(node, branchNode);
+                                branchcounter++;
+                            }
+
                             putIntoFront(node);
-                            branchcounter++;
                         }
                 }
                 return null;
@@ -342,6 +357,30 @@ public class ScriptTreeGraph {
         if(!front.contains(node)) {
             front.add(node);
         }
+    }
+
+
+    private List<BranchLabelNode> getBranchLabels(GoalNode<KeyData> parent, GoalNode<KeyData> child) {
+        List<BranchLabelNode> branchlabels = new ArrayList<>();
+        Node parentnode = parent.getData().getNode();
+        Node childnode = child.getData().getNode();
+        if(childnode.getNodeInfo().getBranchLabel() != null && isBranchLabel(childnode.getNodeInfo().getBranchLabel())) branchlabels.add( new BranchLabelNode(childnode, childnode.getNodeInfo().getBranchLabel()));
+        while(childnode.parent() != parentnode)  {
+            if(childnode.getNodeInfo().getBranchLabel() != null && isBranchLabel(childnode.getNodeInfo().getBranchLabel())) branchlabels.add( new BranchLabelNode(childnode, childnode.getNodeInfo().getBranchLabel()));
+            childnode = childnode.parent();
+        }
+        return branchlabels;
+    }
+
+    private boolean isBranchLabel(String label) {
+        if (label.contains("rule") || label.contains("rules")) return false;
+        return true;
+    }
+
+    private void insertBranchLabels(List<BranchLabelNode> branchlabels) {
+        if(branchlabels == null) return;
+
+
     }
 
     private void addGoals() {

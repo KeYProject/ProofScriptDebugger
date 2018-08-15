@@ -59,6 +59,7 @@ public class ProofTree extends BorderPane {
         @Override
         public void proofIsBeingPruned(ProofTreeEvent proofTreeEvent) {
 
+
         }
 
         @Override

@@ -163,7 +163,7 @@ public class DebuggerMain implements Initializable {
 
     //TODO: anpassen
     private ScriptTreeGraph scriptTreeGraph = new ScriptTreeGraph();
-    private ScriptTreeView scriptTreeView = new ScriptTreeView();
+    private ScriptTreeView scriptTreeView = new ScriptTreeView(this);
     private DockNode scriptTreeDock = new DockNode(scriptTreeView,"Script Tree");
 
     private WelcomePane welcomePane = new WelcomePane(this);
@@ -1317,21 +1317,18 @@ public class DebuggerMain implements Initializable {
         if (!scriptTreeDock.isDocked() && !scriptTreeDock.isFloating()) {
             scriptTreeDock.dock(dockStation, DockPos.LEFT);
         }
+
+        // old version of scripttree
+
         ScriptTreeGraph stg = new ScriptTreeGraph();
         PTreeNode startnode = (model.getDebuggerFramework() != null)?model.getDebuggerFramework().getPtreeManager().getStartNode():null;
         stg.createGraph(startnode, FACADE.getProof().root());
 
-
-
         TreeItem<TreeNode> item = (stg.toView());
 
-       /* TreeView<TreeNode> content = new TreeView<>(item);
-        DockNode dn = new DockNode(content, "TEst");
-
-        dn.dock(dockStation, DockPos.LEFT);
-        */
-
         scriptTreeView.setTree(item);
+
+
 
     }
 
