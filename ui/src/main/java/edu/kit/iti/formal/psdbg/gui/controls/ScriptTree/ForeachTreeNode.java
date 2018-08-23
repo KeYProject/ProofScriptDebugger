@@ -17,19 +17,21 @@ import lombok.Setter;
  * The scriptTreeNodes is the model calls for TreeNodes
  */
 
-public class ScriptTreeNode extends AbstractTreeNode {
+public class ForeachTreeNode extends AbstractTreeNode {
     @Getter
     private final PTreeNode<KeyData> scriptState;
 
     @Getter @Setter
     private final int linenr;
 
+    private final boolean foreachstart;
 
-    public ScriptTreeNode(Node node, PTreeNode<KeyData> scriptState, int linenr) {
+
+    public ForeachTreeNode(Node node, PTreeNode<KeyData> scriptState, int linenr, boolean foreachstart) {
         super(node);
         this.scriptState = scriptState;
         this.linenr = linenr;
-
+        this.foreachstart = foreachstart;
     }
 
     @Override
@@ -39,18 +41,8 @@ public class ScriptTreeNode extends AbstractTreeNode {
 
     @Override
     public TreeNode toTreeNode() {
-        String label;
-        if (isMatchEx()) {
-            String matchexpression = ((TermLiteral) ((MatchExpression) ((GuardedCaseStatement) scriptState.getStatement()).getGuard()).getPattern()).getContent();
-            label = "match ("+ matchexpression +") in line " + linenr;
-        } else {
-            label = ((CallStatement)scriptState.getStatement()).getCommand() + " (line " + linenr + ")";
+        String label= (foreachstart)? "foreach in line " + linenr + " START": "foreach in line " + linenr + "END";
 
-        }
-
-        if (!isSucc()) {
-            label += " (failed)";
-        }
         return  new TreeNode(label, getNode());
     }
 }

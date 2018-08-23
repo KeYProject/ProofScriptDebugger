@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.dockfx.DockPane?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.112"
             fx:controller="edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain"
             prefWidth="1024" prefHeight="640">
@@ -184,13 +185,18 @@
                                     </graphic>
                                 </CheckMenuItem>
                                 <CheckMenuItem fx:id="miScriptTree" onAction="#showScriptTree" text="Show Script Tree">
-                                <!--
+
                                <graphic>
-                                   <ImageView
-                                            image="resources\edu\kit\iti\formal\psdbg\gui\icon\treescript.jpg">
+                                   <ImageView>
+                                   <image>
+                                       <Image requestedHeight="22.0" requestedWidth="24.0"
+                                               url="/edu/kit/iti/formal/psdbg/gui/icon/treescript.png"
+
+                                       />
+                                   </image>
                                    </ImageView>
                                </graphic>
-                               -->
+
                            </CheckMenuItem>
                            <CheckMenuItem fx:id="miCommandHelp" onAction="#showCommandHelp"
                                           accelerator="F1"
@@ -399,8 +405,14 @@
 
                         <ToggleButton fx:id="togBtnScriptTree" onAction="#showScriptTree">
                             <graphic>
-                                <!-- FILE-TREE-->
-                                <MaterialDesignIconView glyphName="TREE" size="24.0"/>
+                                <ImageView>
+                                    <image>
+                                        <Image requestedHeight="22.0" requestedWidth="24.0"
+                                               url="/edu/kit/iti/formal/psdbg/gui/icon/treescript.png"
+
+                                        />
+                                    </image>
+                                </ImageView>
                             </graphic>
                             <tooltip>
                                 <Tooltip text="Show Script Tree"/>
