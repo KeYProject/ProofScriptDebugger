@@ -5,10 +5,7 @@ import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
-import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
-import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
-import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
-import edu.kit.iti.formal.psdbg.parser.ast.Statements;
+import edu.kit.iti.formal.psdbg.parser.ast.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
@@ -101,6 +98,16 @@ public class StateWrapper<T> implements InterpreterObserver<T> {
 
     private void completeLastNode(@Nonnull ASTNode node) {
         assert lastNode != null;
+        //SaG:Fix for last node missing at foreach statement
+        if(!lastNode.getStatement().equals(node)){
+            List<PTreeNode<T>> contextNodes = lastNode.getContextNodes();
+            for (PTreeNode<T> cNode: contextNodes) {
+                if(cNode.getStatement().equals(node)){
+                    lastNode = cNode;
+                    break;
+                }
+            }
+        }
         lastNode.setStateAfterStmt(getInterpreterStateCopy());
         if (node.equals(peekContext())) {
             popContext();
