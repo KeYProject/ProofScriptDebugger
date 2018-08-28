@@ -41,7 +41,9 @@ public class ScriptTreeNode extends AbstractTreeNode {
     public TreeNode toTreeNode() {
         String label;
         if (isMatchEx()) {
-            String matchexpression = ((TermLiteral) ((MatchExpression) ((GuardedCaseStatement) scriptState.getStatement()).getGuard()).getPattern()).getContent();
+
+            String matchexpression = (scriptState.getStatement() instanceof GuardedCaseStatement)?((TermLiteral) ((MatchExpression) ((GuardedCaseStatement) scriptState.getStatement()).getGuard()).getPattern()).getContent()
+                    : "default";
             label = "match ("+ matchexpression +") in line " + linenr;
         } else {
             label = ((CallStatement)scriptState.getStatement()).getCommand() + " (line " + linenr + ")";

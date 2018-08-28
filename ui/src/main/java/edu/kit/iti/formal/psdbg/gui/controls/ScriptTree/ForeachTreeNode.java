@@ -41,7 +41,7 @@ public class ForeachTreeNode extends AbstractTreeNode {
 
     @Override
     public TreeNode toTreeNode() {
-        String label= (foreachstart)? "foreach in line " + linenr + " START": "foreach in line " + linenr + "END";
+        String label= (foreachstart)? "foreach in line " + linenr + " START": "foreach in line " + linenr + " END";
 
         return  new TreeNode(label, getNode());
     }
