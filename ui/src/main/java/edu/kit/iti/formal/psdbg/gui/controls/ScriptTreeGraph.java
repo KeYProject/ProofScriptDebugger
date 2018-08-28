@@ -254,6 +254,8 @@ public class ScriptTreeGraph {
 
             @Override
             public Void visit(CallStatement call) {
+
+                if(call.getCommand().equals("")) return null;
                 if (nextPtreeNode.toString().equals("End of Script")) return null;
                 Node n = nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
                 ScriptTreeNode sn = new ScriptTreeNode(n, nextPtreeNode, nextPtreeNode.getStatement().getStartPosition().getLineNumber());
@@ -348,16 +350,30 @@ public class ScriptTreeGraph {
             @Override
             public  Void visit(ForeachStatement foreachStatement) {
                 List<GoalNode<KeyData>> goals = nextPtreeNode.getStateBeforeStmt().getGoals();
+
                 if (goals.size() == 0) return null;
 
                 goals.forEach(k -> putIntoMapping(k.getData().getNode(), new ForeachTreeNode(k.getData().getNode(), nextPtreeNode, nextPtreeNode.getStatement().getStartPosition().getLineNumber(),true)));
 
-                // add to foreachNodes lsit
-                List<GoalNode<KeyData>> aftergoals = (nextPtreeNode.getStateAfterStmt() != null)? nextPtreeNode.getStateAfterStmt().getGoals()
-                        : (nextPtreeNode.getStepOver() != null && nextPtreeNode.getStepOver().getStateBeforeStmt() != null) ? nextPtreeNode.getStepOver().getStateBeforeStmt().getGoals()
-                        : new ArrayList<>();
-                aftergoals.forEach(k -> foreachNodes.put(k.getData().getNode(), nextPtreeNode));
-                //
+                // add to foreachNodes list
+                List<GoalNode<KeyData>> goalsAfterForeach = new ArrayList<>();
+                assert nextPtreeNode.getStateAfterStmt() != null;
+                goalsAfterForeach.addAll(nextPtreeNode.getStateAfterStmt().getGoals());
+/*                List<GoalNode<KeyData>> aftergoals =
+                        (nextPtreeNode.getStateAfterStmt() != null)
+                                ? nextPtreeNode.getStateAfterStmt().getGoals()
+                        :
+                                (nextPtreeNode.getStepOver() != null && nextPtreeNode.getStepOver().getStateBeforeStmt() != null) ? nextPtreeNode.getStepOver().getStateBeforeStmt().getGoals()
+                                    : new ArrayList<>();*/
+
+                //aftergoals.forEach(k -> foreachNodes.put(k.getData().getNode(), nextPtreeNode));
+                if(goalsAfterForeach.size() == 0){
+                   return null;
+                }
+
+                for (GoalNode<KeyData> goalNode : goalsAfterForeach) {
+                    foreachNodes.put(goalNode.getData().getNode(), nextPtreeNode);
+                }
                 return null;
 
             }

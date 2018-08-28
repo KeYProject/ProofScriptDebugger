@@ -1,3 +1,14 @@
+
+script testfull(){
+  impRight;
+  impRight;
+  impLeft;
+  foreach{
+    notLeft;
+  }
+  auto;
+}
+
 script full(){
   impRight;
   impRight;

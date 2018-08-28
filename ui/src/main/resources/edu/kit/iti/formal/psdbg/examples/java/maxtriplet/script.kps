@@ -1,3 +1,10 @@
 script s() {
 	symbex;
 }
+
+script s1() {
+	symbex;
+	foreach{
+	    auto;
+	}
+}
