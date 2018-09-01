@@ -1,3 +1,11 @@
+script s0() {
+	symbex;
+	foreach{
+	    auto;
+	}
+}
+
 script s() {
 	symbex;
 }
+
