@@ -62,7 +62,7 @@ public class ScriptTreeGraph {
         computeList();
         compute();
         addGoals();
-        addParentsAndChildren();
+        // TODO: replace addParentsAndChildren() with placeholders;
 
         mapping.size();
 
@@ -271,16 +271,16 @@ public class ScriptTreeGraph {
             @Override
             public Void visit(CallStatement call) {
                 if (nextPtreeNode.toString().equals("End of Script")) return null;
-                Node n = nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
-                ScriptTreeNode sn = new ScriptTreeNode(n, nextPtreeNode, nextPtreeNode.getStatement().getStartPosition().getLineNumber());
+                Node callnode = nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
+                ScriptTreeNode sn = new ScriptTreeNode(callnode, nextPtreeNode, nextPtreeNode.getStatement().getStartPosition().getLineNumber());
                 //check if statement was applicable
                 if (nextPtreeNode.getStateBeforeStmt() == nextPtreeNode.getStateAfterStmt()) {
                     sn.setSucc(false);
                 }
 
-                replacePlaceholder(n, sn);
-                putIntoMapping(n, sn);
-                front.remove(n);
+                replacePlaceholder(callnode, sn);
+                putIntoMapping(callnode, sn);
+                front.remove(callnode);
 
 
                 List<GoalNode<KeyData>> children = nextPtreeNode.getStateAfterStmt().getGoals();
@@ -288,18 +288,18 @@ public class ScriptTreeGraph {
 
                 switch (children.size()) {
                     case 0:
-                        putIntoFront(n);
-                        checkIfForeachEnd(n);
+                        putIntoFront(callnode);
+                        checkIfForeachEnd(callnode);
                         break;
                     case 1:
                        // putIntoMapping(children.get(0).getData().getNode(), null);
                         putIntoFront(children.get(0).getData().getNode());
-                        addPlaceholder(n, children.get(0).getData().getNode());
+                        addPlaceholder(sn, children.get(0).getData().getNode(), false);
                         break;
                     default: //multiple open goals/children -> branch labels
                         int branchcounter = 1;
                         for (GoalNode<KeyData> gn : children) {
-                            Node node = gn.getData().getNode();
+                            Node childnode = gn.getData().getNode();
 
                             List<BranchLabelNode> branchlabel = getBranchLabels(nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode(), gn);
 
@@ -309,17 +309,23 @@ public class ScriptTreeGraph {
                                 System.out.println("_______Branchlabels");
                                 Lists.reverse(branchlabel).forEach(k -> System.out.println(k.getNode().serialNr() + " " + k.getLabelName()));
 
-                                insertBranchLabels(n, branchlabel);
-                                addPlaceholder(branchlabel.get(0).getNode(), gn.getData().getNode());
+                                insertBranchLabels(callnode, branchlabel);
+                                addPlaceholder(branchlabel.get(0), gn.getData().getNode(), true);
 
                             } else {
-                                BranchLabelNode branchNode = new BranchLabelNode(node, "Case " + branchcounter);
-                                putIntoMapping(node, branchNode);
-                                addPlaceholder(n, gn.getData().getNode());
+                                BranchLabelNode branchNode = new BranchLabelNode(childnode, "Case " + branchcounter);
+
+                                // Link Case -Branchnodes to parent
+                                branchNode.setParent(sn);
+                                addToChildren(callnode, branchNode);
+
+                                if (mapping.get(childnode) != null) putIntoMapping(childnode, branchNode);
+
+                                addPlaceholder(branchNode, childnode, true);
                                 branchcounter++;
                             }
 
-                            putIntoFront(node);
+                            putIntoFront(childnode);
                         }
                 }
 
@@ -338,14 +344,15 @@ public class ScriptTreeGraph {
 
                 match.setMatchEx(true);
 
+                // check if match was sucessful
                 if (nextintoptn == null) {
                     match.setSucc(false);
-                    return null;
                 }
-                Node n = nextintoptn.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
+                Node n = nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
+
                 replacePlaceholder(n, match);
                 putIntoMapping(n, match);
-                addPlaceholder(n, n);
+                addPlaceholder(match, n, false);
                 //front.remove(n);
                 return null;
             }
@@ -359,7 +366,7 @@ public class ScriptTreeGraph {
                 Node n = nextintoptn.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
                 replacePlaceholder(n, match);
                 putIntoMapping(n, match);
-                addPlaceholder(n, n);
+                addPlaceholder(match, n, false);
                 //front.remove(n);
                 return null;
             }
@@ -383,28 +390,37 @@ public class ScriptTreeGraph {
             }
         }
 
-        private void addPlaceholder(Node parent, Node current) {
+        private void addPlaceholder(AbstractTreeNode parent, Node current, boolean isSplit) {
         PlaceholderNode phn = new PlaceholderNode(current);
-        phn.setParent(mapping.get(parent));
-        //TODO or addtosubchildren
-        addToChildren(parent, phn);
-        if(mapping.get(current) == null) putIntoMapping(current, phn);
-        addToSubChildren(parent, phn);
+        phn.setParent(parent);
+
+        if(mapping.get(current) == null) {
+            putIntoMapping(current, phn);
+        } else {
+                addToSubChildren(parent.getNode(), phn);
+
+        }
+
         placeholderNodes.add(phn);
 
         }
 
         private void replacePlaceholder(Node n, AbstractTreeNode atn) {
-        placeholderNodes.forEach(k -> {
-            if (k.getNode() == n) {
 
+        Iterator<PlaceholderNode> iterator = placeholderNodes.iterator();
+
+        while (iterator.hasNext()) {
+            PlaceholderNode next = iterator.next();
+
+                if (next.getNode() == n) {
                 //search for placeholder in mapping
                 AbstractTreeNode current = mapping.get(n);
 
                 if (current instanceof PlaceholderNode ) {
                     //TODO : atn.setParent(current.getParent()); -> leads to concurretn exception
                     current.getParent().setChildren(new ArrayList<>(Arrays.asList(atn)));
-                    //placeholderNodes.remove(k); TODO: ConcurrentModificationException
+                    mapping.put(n, atn);
+                    iterator.remove();
                     return;
                 }
 
@@ -417,13 +433,13 @@ public class ScriptTreeGraph {
                         //TODO: insert a variable instead of using atn?
                         atn.setParent(current.getChildren().get(0).getParent());
                         current.setChildren(new ArrayList<>(Arrays.asList(atn)));
-                        placeholderNodes.remove(k);
+                        iterator.remove();
                         return;
                     }
                     current = current.getChildren().get(0);
                 }
             }
-        });
+        };
         return;
         }
 
@@ -579,7 +595,7 @@ public class ScriptTreeGraph {
     }
 
     private void addGoals() {
-        front.forEach(k ->  addToSubChildren(searchParentInMapping(k), new DummyGoalNode(k, k.isClosed())));
+        front.forEach(k ->  replacePlaceholder(k, new DummyGoalNode(k, k.isClosed())));
 
     }
         private String getMappingString (AbstractTreeNode node){
