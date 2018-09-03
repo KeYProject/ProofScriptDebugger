@@ -9,6 +9,22 @@ script testfull(){
   auto;
 }
 
+script full0(){
+  impRight;
+  impRight;
+  impLeft;
+    cases {
+  	case match `!q ==> p`:
+  		notLeft;
+
+
+
+  	case match `q==>!p`:
+  		notLeft;
+
+     }
+  }
+
 script full(){
   impRight;
   impRight;

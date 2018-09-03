@@ -1,10 +1,10 @@
-script s() {
-	symbex;
-}
-
-script s1() {
+script s0() {
 	symbex;
 	foreach{
 	    auto;
 	}
+}
+
+script s() {
+	symbex;
 }
