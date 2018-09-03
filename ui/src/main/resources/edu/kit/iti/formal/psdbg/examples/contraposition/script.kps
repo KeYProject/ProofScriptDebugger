@@ -2,16 +2,12 @@ script full0(){
   impRight;
   impRight;
   impLeft;
-    cases {
-  	case match `!q ==> p`:
-  		notLeft;
-
-
-
-  	case match `q==>!p`:
-  		notLeft;
-
-     }
+   foreach{
+    notLeft;
+   }
+   foreach{
+   auto;
+   }
   }
 
 script full(){

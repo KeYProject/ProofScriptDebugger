@@ -290,11 +290,12 @@ public class ScriptTreeGraph {
                     case 0:
                         putIntoFront(callnode);
                         checkIfForeachEnd(callnode);
+                        addPlaceholder(sn, sn.getNode());
                         break;
                     case 1:
                        // putIntoMapping(children.get(0).getData().getNode(), null);
                         putIntoFront(children.get(0).getData().getNode());
-                        addPlaceholder(sn, children.get(0).getData().getNode(), false);
+                        addPlaceholder(sn, children.get(0).getData().getNode());
                         break;
                     default: //multiple open goals/children -> branch labels
                         int branchcounter = 1;
@@ -310,7 +311,7 @@ public class ScriptTreeGraph {
                                 Lists.reverse(branchlabel).forEach(k -> System.out.println(k.getNode().serialNr() + " " + k.getLabelName()));
 
                                 insertBranchLabels(callnode, branchlabel);
-                                addPlaceholder(branchlabel.get(0), gn.getData().getNode(), true);
+                                addPlaceholder(branchlabel.get(0), gn.getData().getNode());
 
                             } else {
                                 BranchLabelNode branchNode = new BranchLabelNode(childnode, "Case " + branchcounter);
@@ -321,7 +322,7 @@ public class ScriptTreeGraph {
 
                                 if (mapping.get(childnode) != null) putIntoMapping(childnode, branchNode);
 
-                                addPlaceholder(branchNode, childnode, true);
+                                addPlaceholder(branchNode, childnode);
                                 branchcounter++;
                             }
 
@@ -352,7 +353,7 @@ public class ScriptTreeGraph {
 
                 replacePlaceholder(n, match);
                 putIntoMapping(n, match);
-                addPlaceholder(match, n, false);
+                addPlaceholder(match, n);
                 //front.remove(n);
                 return null;
             }
@@ -366,7 +367,7 @@ public class ScriptTreeGraph {
                 Node n = nextintoptn.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
                 replacePlaceholder(n, match);
                 putIntoMapping(n, match);
-                addPlaceholder(match, n, false);
+                addPlaceholder(match, n);
                 //front.remove(n);
                 return null;
             }
@@ -376,10 +377,20 @@ public class ScriptTreeGraph {
                 List<GoalNode<KeyData>> goals = nextPtreeNode.getStateBeforeStmt().getGoals();
                 if (goals.size() == 0) return null;
 
-                //TODO: sometime goals on different branches
-                goals.forEach(k -> putIntoMapping(searchParentInMapping(k.getData().getNode()), new ForeachTreeNode(k.getData().getNode(), nextPtreeNode, nextPtreeNode.getStatement().getStartPosition().getLineNumber(),true)));
+                goals.forEach(k -> {
+                    ForeachTreeNode ftn = new ForeachTreeNode(
+                            k.getData().getNode(),
+                            nextPtreeNode,
+                            nextPtreeNode.getStatement().getStartPosition().getLineNumber(),
+                            true);
 
-                // add to foreachNodes lsit
+                    replacePlaceholder(
+                            searchParentInMapping(k.getData().getNode()), ftn);
+
+                    addPlaceholder(ftn, k.getData().getNode());
+                });
+
+                // add to foreachNodes list -> so the end of a foreach can be catched
                 List<GoalNode<KeyData>> aftergoals = (nextPtreeNode.getStateAfterStmt() != null)? nextPtreeNode.getStateAfterStmt().getGoals()
                         : (nextPtreeNode.getStepOver() != null && nextPtreeNode.getStepOver().getStateBeforeStmt() != null) ? nextPtreeNode.getStepOver().getStateBeforeStmt().getGoals()
                         : new ArrayList<>();
@@ -390,7 +401,7 @@ public class ScriptTreeGraph {
             }
         }
 
-        private void addPlaceholder(AbstractTreeNode parent, Node current, boolean isSplit) {
+        private void addPlaceholder(AbstractTreeNode parent, Node current) {
         PlaceholderNode phn = new PlaceholderNode(current);
         phn.setParent(parent);
 
@@ -476,12 +487,14 @@ public class ScriptTreeGraph {
     private void checkIfForeachEnd(Node n) {
         if(foreachNodes.containsKey(n)) {
             PTreeNode ptn = foreachNodes.get(n);
-            ForeachTreeNode ftn = new ForeachTreeNode(n, ptn, ptn.getStatement().getStartPosition().getLineNumber(), false);
-            addToSubChildren(nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode(), ftn);
+            ForeachTreeNode ftn = new ForeachTreeNode(
+                    n,
+                    ptn,
+                    ptn.getStatement().getStartPosition().getLineNumber(),
+                    false);
 
-            if(mapping.get(n) == null) {
-                putIntoMapping(n,ftn);
-            }
+            replacePlaceholder(nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode(), ftn);
+            addPlaceholder(ftn, n);
 
             foreachNodes.remove(n);
 
