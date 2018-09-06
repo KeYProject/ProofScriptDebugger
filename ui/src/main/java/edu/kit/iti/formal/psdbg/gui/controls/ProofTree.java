@@ -20,6 +20,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeCell;
@@ -30,10 +31,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.StringConverter;
 import lombok.*;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 
@@ -161,18 +159,22 @@ public class ProofTree extends BorderPane {
         this.colorOfNodes.put(n, color);
     }
 
+
     public void expandRootToSentinels() {
         if (getTreeProof().getRoot() == null) {
             if (root.get() != null) {
-                TreeItem<TreeNode> item = populate("Proof", root.get());
-                //populate(root.get().serialNr() + ": " + toString(root.get()), root.get());
-                //val treeNode = new TreeNode("Proof", root.get());
-
+                TreeItem<TreeNode> item;
+                if(sentinels.contains(root.get())){
+                    item = treeCreation.itemFactory(root.get());
+                } else {
+                    item = treeCreation.populate("Proof", root.get());
+                }
                 treeProof.setRoot(item);
+
             }
 
         }
-        //expandRootToLeaves(getTreeProof().getRoot());
+        expandRootToLeaves(getTreeProof().getRoot());
     }
 
     public TreeView<TreeNode> getTreeProof() {
@@ -215,38 +217,40 @@ public class ProofTree extends BorderPane {
             }
         };
         tftc.setConverter(stringConverter);
+
         tftc.itemProperty().addListener((p, o, n) -> {
-            if (n != null)
+            if (n != null )
                 repaint(tftc);
         });
-
-        //colorOfNodes.addListener((InvalidationListener) o -> repaint(tftc));
         return tftc;
     }
+
 
     private void repaint(TextFieldTreeCell<TreeNode> tftc) {
         TreeNode item = tftc.getItem();
         Node n = item.node;
         tftc.setStyle("");
         if (n != null) {
-            if (n.leaf() && !item.label.contains("BRANCH")) {
-                if (n.isClosed()) {
-                    colorOfNodes.putIfAbsent(n, "lightseagreen");
-                    //tftc.setStyle("-fx-background-color: greenyellow");
-                } else {
-                    colorOfNodes.putIfAbsent(n, "indianred");
-                }
-                if (colorOfNodes.containsKey(n)) {
-                    tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
+                if (n.leaf() && !item.label.contains("CASE") ) {
+                    if (n.isClosed()) {
+                        colorOfNodes.putIfAbsent(n, "lightseagreen");
+                    } else {
+                        colorOfNodes.putIfAbsent(n, "indianred");
+                    }
+
+                    if (colorOfNodes.containsKey(n)) {
+                        tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
+                    }
                 }
             }
             //TODO for Screenshot tftc.setStyle("-fx-font-size: 18pt");
            /* if (colorOfNodes.containsKey(n)) {
                 tftc.setStyle("-fx-border-color: "+colorOfNodes.get(n)+";");
             }*/
-        }
 
-        expandRootToItem(tftc.getTreeItem());
+        
+        //System.out.println("colorOfNodes = " + colorOfNodes);
+      
 
     }
 
@@ -321,9 +325,44 @@ public class ProofTree extends BorderPane {
 
         if (root.get() != null) {
             TreeItem<TreeNode> item = treeCreation.create(proof.get());
+            item.addEventHandler(TreeItem.branchExpandedEvent(), new EventHandler<TreeItem.TreeModificationEvent<TreeNode>>() {
+                @Override
+                public void handle(TreeItem.TreeModificationEvent<TreeNode> event) {
+                    expandTreeView(event.getTreeItem());
+                }
+            });
+            item.addEventHandler(TreeItem.branchCollapsedEvent(), new EventHandler<TreeItem.TreeModificationEvent<TreeNode>>() {
+                @Override
+                public void handle(TreeItem.TreeModificationEvent<TreeNode> event) {
+                    collapseTreeView(event.getTreeItem());
+                    treeProof.setCellFactory(ProofTree.this::cellFactory);
+                }
+            });
+
             treeProof.setRoot(item);
+            expandTreeView(item);
+
+
         }
         treeProof.refresh();
+    }
+
+    private void expandTreeView(TreeItem<TreeNode> item){
+        if(item != null && !item.isLeaf()){
+            item.setExpanded(true);
+            for(TreeItem<TreeNode> child:item.getChildren()){
+                expandTreeView(child);
+            }
+        }
+    }
+    private void collapseTreeView(TreeItem<TreeNode> item){
+        if(item != null && !item.isLeaf()){
+            item.setExpanded(false);
+            for(TreeItem<TreeNode> child:item.getChildren()){
+                collapseTreeView(child);
+            }
+        }
+
     }
 
 
@@ -333,12 +372,22 @@ public class ProofTree extends BorderPane {
         Node node;
     }
 
+
     class TreeTransformationKey {
 
         public TreeItem<TreeNode> create(Proof proof) {
             TreeItem<TreeNode> self1 = new TreeItem<>(new TreeNode("Proof", null));
-            self1.getChildren().add(populate("Proof", proof.root()));
+            self1.getChildren().add(populate("", proof.root()));
+
+
             return self1;
+        }
+        protected TreeItem<TreeNode> itemFactory(Node n, String label) {
+            if(label.equals("")){
+                return itemFactory(n);
+            } else {
+                return new TreeItem<>(new TreeNode(label, n));
+            }
         }
 
         protected TreeItem<TreeNode> itemFactory(Node n) {
@@ -361,14 +410,18 @@ public class ProofTree extends BorderPane {
          * @return
          */
         protected TreeItem<TreeNode> populate(String label, Node n) {
-            val treeNode = new TreeNode(label, n);
-            TreeItem<TreeNode> currentItem = itemFactory(n);
-            new TreeItem<>(treeNode);
+            //val treeNode = new TreeNode(label, n);
+            TreeItem<TreeNode> currentItem = itemFactory(n, label);
+            //new TreeItem<>(treeNode);
 
             // abort the traversing iff we have reached a sentinel!
             if (sentinels.contains(n)) {
                 return currentItem;
             }
+           /* if (label.equals("Proof")) { //we are at the root
+            TreeItem<TreeNode> self1 = new TreeItem<>(new TreeNode(n.serialNr() + ": " + toString(n), n));
+             currentItem.getChildren().add(self1);
+            }*/
 
             //if we are at a leaf we need to check goal state
             if (n.childrenCount() == 0) {
@@ -383,10 +436,17 @@ public class ProofTree extends BorderPane {
             //consume child proof nodes until there are more than one child, then recursion!
             Node node = n.child(0);
             if (n.childrenCount() == 1) {
-                do {
+                currentItem.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
+            while (node.childrenCount() == 1) {
+                node = node.child(0);
+                currentItem.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
+            }
+
+
+                /*do {
                     currentItem.getChildren().add(itemFactory(node));
                     node = node.child(0);
-                } while (node.childrenCount() == 1);
+                } while (node.childrenCount() == 1);*/
             }
 
             // if the current node has more zero children. abort.
@@ -396,13 +456,15 @@ public class ProofTree extends BorderPane {
 
             Iterator<Node> nodeIterator = node.childrenIterator();
             int branchCounter = 1;
+
             while (nodeIterator.hasNext()) {
                 Node childNode = nodeIterator.next();
                 if (childNode.getNodeInfo().getBranchLabel() != null) {
                     TreeItem<TreeNode> populate = populate(childNode.getNodeInfo().getBranchLabel(), childNode);
                     currentItem.getChildren().add(populate);
                 } else {
-                    TreeItem<TreeNode> populate = populate("BRANCH " + branchCounter, childNode);
+                    TreeItem<TreeNode> populate = populate("CASE " + branchCounter, childNode);
+                    //TreeItem<TreeNode> self = new TreeItem<>(new TreeNode(childNode.serialNr() + ": " + toString(childNode), childNode));
                     TreeItem<TreeNode> self = itemFactory(childNode);
                     populate.getChildren().add(0, self);
                     currentItem.getChildren().add(populate);
@@ -411,7 +473,10 @@ public class ProofTree extends BorderPane {
             }
             return currentItem;
         }
+
+
     }
+
 
 
     @RequiredArgsConstructor
@@ -471,6 +536,45 @@ public class ProofTree extends BorderPane {
             lbl += "  " + n.serialNr() + " " + toString(n);
             TreeItem<TreeNode> ti = new TreeItem<>(new TreeNode(lbl, n));
             return ti;
+        }
+
+
+        //TODO: Reverse ArrayList in the end or nah?
+        @Deprecated
+        public ArrayList<String> getBranchLabels (TreeNode node) {
+            TreeItem<TreeNode> proofTree = create(proof.get());
+
+            ArrayList<String> branchlabels = new ArrayList<>();
+
+            int i = 0;
+            branchlabels.set(0, node.label);
+            while (node != null) {
+                if(!branchlabels.get(i).equals(node.label)) {
+                    i++;
+                    branchlabels.set(i, node.label);
+                }
+                //TODO: node = node.parent
+            }
+
+            return branchlabels;
+        }
+
+        public  ArrayList<String> getBranchLabels (Node node) {
+            ArrayList<String> branchlabels = new ArrayList<>();
+
+            int i = 0;
+            //TODO: branchlabel = all branchlabels or only next one
+            branchlabels.set(0, node.getNodeInfo().getBranchLabel());
+            Node n = node.parent();
+            while (n != null) {
+                if(!branchlabels.get(i).equals(n.getNodeInfo().getBranchLabel())) {
+                    i++;
+                    branchlabels.set(i, n.getNodeInfo().getBranchLabel());
+                }
+                n = n.parent();
+            }
+
+            return branchlabels;
         }
     }
 }

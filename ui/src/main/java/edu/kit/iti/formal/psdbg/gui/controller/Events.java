@@ -2,6 +2,9 @@ package edu.kit.iti.formal.psdbg.gui.controller;
 
 import com.google.common.eventbus.EventBus;
 import de.uka.ilkd.key.logic.PosInOccurrence;
+import de.uka.ilkd.key.macros.ProofMacro;
+import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
+import de.uka.ilkd.key.macros.scripts.ScriptCommand;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.rule.TacletApp;
@@ -59,7 +62,7 @@ public class Events {
     @Data
     @RequiredArgsConstructor
     public static class CommandApplicationEvent {
-        private final String commandName;
+        private final ProofScriptCommand commandName;
         private final PosInOccurrence pio;
 
         private final Goal currentGoal;
@@ -152,5 +155,13 @@ public class Events {
         private final String node;
         private final int position;
 
+    }
+
+    @Data
+    @RequiredArgsConstructor
+    public static class MacroApplicationEvent {
+        private final ProofMacro macroName;
+        private final PosInOccurrence posInOccurrence;
+        private final Goal goal;
     }
 }

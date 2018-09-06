@@ -47,7 +47,9 @@ public class Statements extends ASTNode<ScriptLanguageParser.StmtListContext>
 
     @Override
     public ASTNode[] getChildren() {
-        return (ASTNode[]) toArray();
+        Object[] arr = toArray();
+        return toArray(new ASTNode[arr.length]);
+        //return (ASTNode[]) toArray();
     }
 
     public Statements(Statements body) {

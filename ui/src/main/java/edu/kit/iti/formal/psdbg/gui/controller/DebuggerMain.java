@@ -74,6 +74,7 @@ import org.reactfx.util.Timer;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.xml.bind.JAXBException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -188,7 +189,7 @@ public class DebuggerMain implements Initializable {
                         .filter(it -> Objects.equals(fna.childOrMe(it.getStatement()), it.getStatement()))
                         .collect(Collectors.toList());
 
-        System.out.println(result);
+        LOGGER.info(result);
 
 
         for (PTreeNode<KeyData> statePointerToPostMortem : result) {
@@ -212,13 +213,18 @@ public class DebuggerMain implements Initializable {
                 if (stateAfterStmt.getSelectedGoalNode() != null) {
                     im.setSelectedGoalNodeToShow(stateAfterStmt.getSelectedGoalNode());
                 } else {
-                    im.setSelectedGoalNodeToShow(goals.get(0));
+                    if(goals.size() > 0) {
+                        im.setSelectedGoalNodeToShow(goals.get(0));
+                    } else {
+                        im.setSelectedGoalNodeToShow(stateBeforeStmt.getSelectedGoalNode());
+                        statusBar.publishMessage("This goal node was closed by the selected mutator.");
+                    }
                 }
                 inspectionViewsController.newPostMortemInspector(im)
                         .dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
 
             } else {
-                statusBar.publishErrorMessage("There is no post mortem state to show to this node, because this node was not executed.");
+                statusBar.publishErrorMessage("There is no post mortem state to show to this node, because this node was not executed or is a selector statement.");
             }
         }
     }
@@ -544,10 +550,11 @@ public class DebuggerMain implements Initializable {
         //save old information and refresh models
         statusBar.publishMessage("Reloading...");
         File lastLoaded;
+        Contract chosen = null;
         if (model.getKeyFile() != null) {
             lastLoaded = model.getKeyFile();
         } else {
-            Contract chosen = model.getChosenContract();
+            chosen = model.getChosenContract();
             lastLoaded = model.getJavaFile();
         }
         //model.reload();
@@ -561,8 +568,11 @@ public class DebuggerMain implements Initializable {
         iModel.clearHighlightLines();
         iModel.getGoals().clear();
         iModel.setSelectedGoalNodeToShow(null);
-
+        if(chosen != null) {
+            FACADE.contractProperty().set(chosen);
+        }
         try {
+
             FACADE.reload(lastLoaded);
             if (iModel.getGoals().size() > 0) {
                 iModel.setSelectedGoalNodeToShow(iModel.getGoals().get(0));
@@ -1266,10 +1276,16 @@ public class DebuggerMain implements Initializable {
         //Update Gui
         MainScriptIdentifier msi = scriptController.getMainScript();
         msi.getScriptArea().setSavepointMarker(selected.getLineNumber());
-        msi.getScriptArea().getCodeArea().setStyleClass(selected.getStartOffset(), selected.getEndOffset() + 1, "underlinesave");        scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
+        scriptController.getMainScript().getScriptArea().underlineSavepoint(selected);
 
-        //TODO: KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(), new StringReader(selected.getPersistedStateFile(FACADE.getFilepath()).toString()));
-        //TODO (NullpointerEx: interpreterbuilder == null): scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
+
+        try {
+            KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(), new StringReader(selected.getPersistedStateFile(FACADE.getFilepath()).toString()));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
+
 
 
     }
@@ -1443,13 +1459,20 @@ public class DebuggerMain implements Initializable {
             ptree.setProof(proof);
             ptree.setRoot(pnode);
             ptree.setNodeColor(pnode, "blueviolet");
-            ptree.setDeactivateRefresh(true);
+            ptree.setDeactivateRefresh(false);
 
             if (stateAfterStmt.size() > 0) {
-                Set<Node> sentinels = proof.getSubtreeGoals(pnode)
+                proof.getSubtreeGoals(pnode).forEach(goal -> System.out.println("goal.node().serialNr() = " + goal.node().serialNr()));
+                Set<Node> sentinels;
+                sentinels = proof.getSubtreeGoals(pnode)
                         .stream()
                         .map(Goal::node)
                         .collect(Collectors.toSet());
+                if(sentinels.size() == 0){
+                    sentinels = new LinkedHashSet();
+                    sentinels.add(pnode);
+                    //sentinels.add(stateAfterStmt.get(0).getData().getNode());
+                }
                 ptree.getSentinels().addAll(sentinels);
                 sentinels.forEach(node -> ptree.setNodeColor(node, "blueviolet"));
             } else {
@@ -1465,8 +1488,8 @@ public class DebuggerMain implements Initializable {
                 //traverseProofTreeAndAddSentinelsToLeaves();
             }
 
-
             ptree.expandRootToSentinels();
+            System.out.println("ptree = " + ptree.getRoot());
             DockNode node = new DockNode(ptree, "Proof Tree for Step Into: " +
                     original.getStatement().accept(new ShortCommandPrinter())
             );
