@@ -66,9 +66,8 @@ public class ScriptExecutionController {
                 mainCtrl.FACADE.reload(mainCtrl.getModel().getKeyFile());
             } catch (ProofInputException | ProblemLoaderException e) {
                 LOGGER.error(e);
-                Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment",
-                        e
-                );
+
+                // Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment", e  );
             }
         }
 
