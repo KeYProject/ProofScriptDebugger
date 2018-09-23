@@ -260,6 +260,34 @@ public class InteractiveModeController {
         }
     }
 
+    @Subscribe
+    public void handle(Events.CommandApplicationEvent map) {
+
+        LOGGER.debug("Handling {}", map);
+        Goal g = map.getCurrentGoal();
+
+        Parameters callp = new Parameters();
+        CallStatement call = new CallStatement(map.getCommandName().getName(), callp);
+        try {
+            applyRuleHelper(call, g, Type.SCRIPT_COMMAND);
+            String c = getCasesAsString();
+            scriptArea.setText("" +
+                    "//Preview \n" + c);
+
+
+        } catch (ScriptCommandNotApplicableException e) {
+            StringBuilder sb = new StringBuilder("The script command ");
+            sb.append(call.getCommand()).append(" was not applicable.");
+            System.out.println("e = " + e);
+            //sb.append("\nSequent Formula: formula=").append(sfTerm);
+            //sb.append("\nOn Sub Term: on=").append(onTerm);
+
+            Utils.showWarningDialog("Proof Command was not applicable",
+                    "Proof Command was not applicable.",
+                    sb.toString(), e);
+        }
+    }
+
 
     private void applyRuleHelper(CallStatement call, Goal g, Type t) throws ScriptCommandNotApplicableException {
 

@@ -24,7 +24,11 @@ public abstract class Example {
     protected MainScriptIdentifier mainScriptIdentifier;
 
     public static File newTempFile(URL url, String filename) throws IOException {
-        File f = new File(FileUtils.getTempDirectoryPath(), filename);
+
+        //TODO: add unterordner
+        File psdbg = new File(FileUtils.getTempDirectoryPath(), "psdbg");
+
+        File f = new File(psdbg, filename);
         FileUtils.copyURLToFile(url, f);
         return f;
     }
