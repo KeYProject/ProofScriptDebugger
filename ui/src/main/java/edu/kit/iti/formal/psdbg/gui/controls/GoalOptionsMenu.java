@@ -3,13 +3,15 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 import java.util.function.Function;
 
@@ -19,6 +21,9 @@ public class GoalOptionsMenu extends ContextMenu {
 
     @FXML
     private RadioMenuItem rmiShowSequent, rmiCFL, rmiCFS, rmiBranchLabels, rmiNodeNames, rmiRuleNames;
+
+    @FXML
+    private MenuItem showVarAssignment;
 
     private ObjectProperty<ViewOption> selectedViewOption = new SimpleObjectProperty<>();
 
@@ -44,6 +49,24 @@ public class GoalOptionsMenu extends ContextMenu {
         });
 
         selectedViewOption.setValue(ViewOption.SEQUENT);
+
+        showVarAssignment.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println("Show Variable Assignment pressed");
+
+                //TODO: get var assign info
+                VariableAssignment varAssign = null;
+
+                Stage stage = new Stage();
+                stage.setTitle("Variable Assignment");
+                VariableAssignmentWindow vaw = new VariableAssignmentWindow(varAssign);
+                Scene scene = new Scene(vaw);
+                stage.setScene(scene);
+
+                stage.show();
+            }
+        });
     }
 
 
@@ -67,6 +90,7 @@ public class GoalOptionsMenu extends ContextMenu {
         NAME(KeyData::getNameLabel),
         SEQUENT(item -> item.getNode().sequent().toString());
 
+
         private final Function<KeyData, String> projection;
 
         ViewOption(Function<KeyData, String> toString) {
@@ -77,4 +101,6 @@ public class GoalOptionsMenu extends ContextMenu {
             return projection.apply(item);
         }
     }
+
+
 }
