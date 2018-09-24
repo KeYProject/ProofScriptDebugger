@@ -1,6 +1,7 @@
 package edu.kit.iti.formal.psdbg.gui.controller;
 
 import com.google.common.eventbus.Subscribe;
+import de.uka.ilkd.key.api.KeYApi;
 import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.java.Services;
@@ -27,6 +28,7 @@ import edu.kit.iti.formal.psdbg.interpreter.dbg.DebuggerFramework;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.MacroCommandHandler;
+import edu.kit.iti.formal.psdbg.interpreter.funchdl.ProofScriptCommandBuilder;
 import edu.kit.iti.formal.psdbg.parser.PrettyPrinter;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
@@ -43,6 +45,7 @@ import org.key_project.util.collection.ImmutableList;
 import recoder.util.Debug;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -340,10 +343,11 @@ public class InteractiveModeController {
                     postStateHandler(call, g, goals, expandedNode, kd);
                     break;
                 case SCRIPT_COMMAND:
-                    ScriptCommand.Parameters ccS = new ScriptCommand.Parameters();
-                    ScriptCommand cS = new ScriptCommand();
-                    ccS = valueInjector.inject(cS, ccS, map);
-                    cS.execute(uiControl, ccS, estate);
+                    ProofScriptCommandBuilder psb = new ProofScriptCommandBuilder(KeYApi.getScriptCommandApi().getScriptCommands());
+                    ProofScriptCommand ps = psb.getCommands().get(call.getCommand());
+
+                    Object temp = valueInjector.inject(ps, getParameterInstance(ps), map);
+                    ps.execute(uiControl, temp, estate);
                     postStateHandler(call, g, goals, expandedNode, kd);
                     break;
                 default:
@@ -363,6 +367,12 @@ public class InteractiveModeController {
 
     }
 
+    private <T> T getParameterInstance(ProofScriptCommand c) throws NoSuchMethodException, IllegalAccessException,
+            InstantiationException {
+        Method method = c.getClass().getMethod("evaluateArguments", EngineState.class, Map.class);
+        Class rtclazz = method.getReturnType();
+        return (T) rtclazz.newInstance();
+    }
     private void postStateHandler(CallStatement call, Goal g, ObservableList<GoalNode<KeyData>> goals, GoalNode<KeyData> expandedNode, KeyData kd) {
         ImmutableList<Goal> ngoals = g.proof().getSubtreeGoals(expandedNode.getData().getNode());
 
