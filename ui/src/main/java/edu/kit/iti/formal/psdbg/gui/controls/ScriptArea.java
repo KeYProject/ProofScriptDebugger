@@ -5,14 +5,13 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import edu.kit.iti.formal.psdbg.gui.actions.acomplete.AutoCompletionController;
 import edu.kit.iti.formal.psdbg.gui.actions.acomplete.CompletionPosition;
+import edu.kit.iti.formal.psdbg.gui.actions.acomplete.DefaultAutoCompletionController;
 import edu.kit.iti.formal.psdbg.gui.actions.acomplete.Suggestion;
 import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
-import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
-import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.lint.LintProblem;
 import edu.kit.iti.formal.psdbg.lint.LinterStrategy;
 import edu.kit.iti.formal.psdbg.parser.Facade;
@@ -37,13 +36,13 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
-import static javafx.scene.input.KeyCombination.CONTROL_ANY;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Data;
@@ -75,8 +74,10 @@ import java.util.function.IntFunction;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
+import static javafx.scene.input.KeyCombination.SHIFT_DOWN;
 import static javafx.scene.input.KeyCombination.SHORTCUT_DOWN;
 import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
+import static org.fxmisc.wellbehaved.event.InputHandler.Result.CONSUME;
 import static org.fxmisc.wellbehaved.event.InputHandler.Result.PROCEED;
 import static org.fxmisc.wellbehaved.event.InputMap.*;
 
@@ -113,15 +114,14 @@ public class ScriptArea extends BorderPane {
      * set by {@link ScriptController}
      */
     private final ObjectProperty<MainScriptIdentifier> mainScript = new SimpleObjectProperty<>();
+    private final AutoCompletion autoCompletion = new AutoCompletion();
     public InlineToolbar inlineToolbar = new InlineToolbar();
     /**
      *
      */
     @Getter
     @Setter
-    private AutoCompletionController autoCompletionController;
-
-    private AutoCompletion autoCompletion = new AutoCompletion();
+    private AutoCompletionController autoCompletionController = new DefaultAutoCompletionController();
 
     @Getter
     //@Delegate
@@ -155,9 +155,31 @@ public class ScriptArea extends BorderPane {
                             return PROCEED;
                         }),
                 consume(keyPressed(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN))
-                       , (e) -> addBackticks()),
-                consumeWhen(keyPressed(KeyCode.ENTER), autoCompletion::isVisible,
-                        e -> autoCompletion.complete()),
+                        , (e) -> addBackticks()),
+                //consumeWhen(keyPressed(KeyCode.ENTER), autoCompletion::isVisible,
+                //        e -> autoCompletion.complete()),
+                process(keyPressed(KeyCode.ESCAPE),
+                        (e) -> {
+                            if (autoCompletion.isVisible()) {
+                                autoCompletion.hide();
+                                return CONSUME;
+                            }
+                            return PROCEED;
+                        }
+                ),
+                process(keyPressed(KeyCode.ENTER),
+                        e -> {
+                            if (autoCompletion.isVisible()) {
+                                autoCompletion.complete();
+                                return CONSUME;
+                            }
+                            return PROCEED;
+                        }),
+                consume(keyPressed(KeyCode.ENTER, SHIFT_DOWN),
+                        (e) -> autoCompletion.complete()),
+                consume(keyPressed(KeyCode.ENTER, SHIFT_DOWN, SHORTCUT_DOWN),
+                        (e) -> autoCompletion.completeFast()),
+
                 consume(keyPressed(KeyCode.ENTER, SHORTCUT_DOWN),
                         (e) -> simpleReformat()),
                 consume(keyPressed(KeyCode.H, SHORTCUT_DOWN),
@@ -166,6 +188,7 @@ public class ScriptArea extends BorderPane {
                     if (autoCompletion.isVisible()) {
                         autoCompletion.hide();
                     } else {
+                        autoCompletion.reset();
                         autoCompletion.update();
                         autoCompletion.show();
                     }
@@ -249,7 +272,7 @@ public class ScriptArea extends BorderPane {
             //this.moveTo(characterPosition, NavigationActions.SelectionPolicy.CLEAR);
         });
 
-        
+
         mainScript.addListener((observable) -> updateMainScriptMarker());
         filePath.addListener((p, o, n) -> {
             if (o != null)
@@ -307,7 +330,6 @@ public class ScriptArea extends BorderPane {
         String newValue = codeArea.getText();
         if (newValue.length() != 0) {
             //weigl: resets the text position
-
             double x = scrollPane.getEstimatedScrollX();
             double y = scrollPane.getEstimatedScrollY();
             //codeArea.clearStyle(0, newValue.length());
@@ -366,14 +388,14 @@ public class ScriptArea extends BorderPane {
     }
 
 
-    private void addBackticks(){
+    private void addBackticks() {
         int pos = codeArea.getCaretPosition();
         insertText(pos, "``");
-        codeArea.displaceCaret(pos+1);
-
+        codeArea.displaceCaret(pos + 1);
 
 
     }
+
     private void highlightProblems() {
         LinterStrategy ls = LinterStrategy.getDefaultLinter();
         try {
@@ -391,8 +413,8 @@ public class ScriptArea extends BorderPane {
         }
     }
 
-    public void underlineSavepoint(SavePoint sp){
-        codeArea.setStyle(sp.getLineNumber() -1, Collections.singleton("underlinesave"));
+    public void underlineSavepoint(SavePoint sp) {
+        codeArea.setStyle(sp.getLineNumber() - 1, Collections.singleton("underlinesave"));
     }
 
     private void highlightNonExecutionArea() {
@@ -434,10 +456,10 @@ public class ScriptArea extends BorderPane {
                 Label lbl = new Label(p.getMessage());
                 lbl.getStyleClass().addAll("problem-popup-label",
                         "problem-popup-label-" + p.getIssue(),
-                                //.getRulename(),
+                        //.getRulename(),
                         "problem-popup-label-" + p.getIssue()
-                                //.getSeverity()
-                        );
+                        //.getSeverity()
+                );
                 box.getChildren().add(lbl);
             }
         }
@@ -465,7 +487,6 @@ public class ScriptArea extends BorderPane {
     public void setAlertMarker(int lineNumber) {
         gutter.getLineAnnotation(lineNumber - 1).setAlert(true);
     }
-
 
 
     private boolean hasExecutionMarker() {
@@ -738,12 +759,12 @@ public class ScriptArea extends BorderPane {
             return alert.get();
         }
 
-        public SimpleBooleanProperty alertProperty() {
-            return alert;
-        }
-
         public void setAlert(boolean alert) {
             this.alert.set(alert);
+        }
+
+        public SimpleBooleanProperty alertProperty() {
+            return alert;
         }
 
         public String getText() {
@@ -1049,7 +1070,7 @@ public class ScriptArea extends BorderPane {
         private ListView<Suggestion> suggestionView;
         private ObservableList<Suggestion> suggestions;*/
         private int lastSelected = -1;
-        private Stage popup;
+        private Popup popup;
         private ListView<Suggestion> suggestionView = new ListView<>();
         private ObservableList<Suggestion> suggestions;
 
@@ -1058,58 +1079,65 @@ public class ScriptArea extends BorderPane {
             popup.setAutoHide(true);
             popup.setSkin(new AutoCompletePopupSkin<>(popup));
             suggestionView = (ListView<Suggestion>) popup.getSkin().getNode();*/
+            InputMap<KeyEvent> inputMap = sequence(
+                    consume(keyPressed(KeyCode.ENTER),
+                            (e) -> complete()),
+                    consume(keyPressed(KeyCode.ESCAPE),
+                            (e) -> hide())
+            );
+            Nodes.addInputMap(suggestionView, inputMap);
             suggestions = suggestionView.getItems();
             suggestionView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
             suggestionView.getSelectionModel().getSelectedIndices().addListener((InvalidationListener) observable -> {
-                System.out.println(" = " + suggestionView.getSelectionModel().getSelectedIndex());
-                //lastSelected = suggestionView.getSelectionModel().getSelectedIndex();
+                //System.out.println(" = " + suggestionView.getSelectionModel().getSelectedIndex());
+                lastSelected = suggestionView.getSelectionModel().getSelectedIndex();
             });
-            //popup.setVisibleRowCount(5);
-
             suggestionView.setEditable(false);
             suggestionView.setCellFactory(param -> new SuggestionCell());
         }
 
-        public Stage getPopup() {
+        public Popup getPopup() {
             if (popup == null) {
-                popup = new Stage();
-                popup.initOwner(ScriptArea.this.getScene().getWindow());
-                popup.initStyle(StageStyle.TRANSPARENT);
-                popup.initModality(Modality.NONE);
-                Scene scene = new Scene(suggestionView);
-                scene.getStylesheets().setAll(getScene().getStylesheets());
-                popup.setScene(scene);
+                popup = new Popup();
+                //popup.initOwner(ScriptArea.this.getScene().getWindow());
+                //popup.initStyle(StageStyle.TRANSPARENT);
+                //popup.initModality(Modality.NONE);
+                //Scene scene = new Scene(suggestionView);
+                //getStylesheets().setAll(getScene().getStylesheets());
+                popup.getContent().addAll(suggestionView);
             }
             return popup;
         }
 
         private void handle(Event event) {
-            System.out.println("event = " + event);
             event.consume();
         }
 
         public void update() {
-            popup = getPopup();
             int end = codeArea.getCaretPosition() - 1;
             //int start = text.lastIndexOf(' ');
             //final String searchPrefix = text.substring(start).trim();
             //System.out.println("searchPrefix = " + searchPrefix);
 
             CompletionPosition cp = new CompletionPosition(getText(), end);
-            System.out.println("cp.getPrefix() = " + cp.getPrefix());
+            consoleLogger.debug("Completion prefix {}", cp.getPrefix());
+
             List<Suggestion> newS = autoCompletionController.getSuggestions(cp);
             suggestions.setAll(newS);
+            consoleLogger.debug("Found completions: {}", suggestions.size());
 
-            Bounds b = codeArea.getCaretBounds().get();
-            popup.setX(b.getMaxX());
-            popup.setY(b.getMaxY());
-            popup.setHeight(25 * Math.min(Math.max(newS.size(), 3), 10));
-
+            Optional<Bounds> caretBounds = codeArea.getCaretBounds();
+            if (caretBounds.isPresent()) {
+                Popup popup = getPopup();
+                Bounds b = caretBounds.get();
+                popup.setX(b.getMaxX());
+                popup.setY(b.getMaxY());
+                popup.setHeight(25 * Math.min(Math.max(newS.size(), 3), 10));
+            }
         }
 
         public void show() {
-            //popup.show(ScriptArea.this.getScene().getWindow());
-            popup.show();
+            getPopup().show(ScriptArea.this.getScene().getWindow());
             codeArea.requestFocus();
         }
 
@@ -1122,9 +1150,18 @@ public class ScriptArea extends BorderPane {
         }
 
         public void complete() {
-            String entry = suggestions.get(lastSelected).getText();
+            int sel = Math.max(lastSelected, 0);
+
+            if (sel >= suggestions.size())
+                return;
+
+            String entry = suggestions.get(sel).getText();
             codeArea.selectWord();
-            codeArea.replaceSelection(entry);
+            if (Character.isWhitespace(codeArea.getSelectedText().charAt(0))) {
+                codeArea.replaceSelection(" " + entry);
+            } else {
+                codeArea.replaceSelection(entry);
+            }
             hide();
             codeArea.requestFocus();
         }
@@ -1141,6 +1178,20 @@ public class ScriptArea extends BorderPane {
             }
             suggestionView.getSelectionModel().select(lastSelected);
             suggestionView.scrollTo(lastSelected);
+        }
+
+        public void reset() {
+            suggestionView.scrollTo(0);
+            suggestionView.getSelectionModel().selectFirst();
+        }
+
+        public void completeFast() {
+            update();
+            if (!suggestions.isEmpty()) {
+                reset();
+                complete();
+            }
+            hide();
         }
     }
 
