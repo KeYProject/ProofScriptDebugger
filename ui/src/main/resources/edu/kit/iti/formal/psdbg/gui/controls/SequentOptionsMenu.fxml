@@ -6,6 +6,5 @@
          prefHeight="400.0" prefWidth="600.0" type="javafx.scene.control.ContextMenu">
     <items>
         <MenuItem fx:id="openSequentMatcher" text="Open Sequent Matcher"/>
-        <MenuItem fx:id="showVarAssignment" text="Show Variable Assignment"/>
     </items>
 </fx:root>

@@ -25,6 +25,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import lombok.Getter;
 import org.controlsfx.control.StatusBar;
 
 import java.util.HashMap;
@@ -40,6 +41,8 @@ public class SequentMatcher extends BorderPane {
     private final ListProperty<Map<String, MatchPath>> results = new SimpleListProperty<>(this, "results", FXCollections.observableArrayList());
     //sicht user selected
     private final ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShow = new SimpleObjectProperty<>(this, "selectedGoalNodeToShow");
+
+    @Getter
     public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
     @FXML
     private SequentViewForMatcher sequentView;
@@ -97,6 +100,7 @@ public class SequentMatcher extends BorderPane {
 
             }
         });
+
     }
 
     private void calculateLookupTable() {

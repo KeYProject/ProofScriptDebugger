@@ -17,8 +17,7 @@ public class SequentOptionsMenu extends ContextMenu {
     private final InspectionModel model;
     @FXML
     private MenuItem openSequentMatcher;
-    @FXML
-    private MenuItem showVarAssignment;
+
 
 
 
@@ -35,6 +34,9 @@ public class SequentOptionsMenu extends ContextMenu {
 
                     KeyData data = (KeyData) model.getSelectedGoalNodeToShow().getData();
                     SequentMatcher root1 = new SequentMatcher(data.getProof().getServices());
+
+                    root1.getGoalOptionsMenu().setModel(model);
+
                     root1.setGoals(model.getGoals());
                     root1.setSelectedGoalNodeToShow(model.getSelectedGoalNodeToShow());
                     root1.getStyleClass().add("sequent-view");
@@ -63,26 +65,6 @@ public class SequentOptionsMenu extends ContextMenu {
         });
 
 
-        showVarAssignment.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-                if(model == null || model.getSelectedGoalNodeToShow() == null) {
-                    Utils.showInfoDialog("Select a goal", "Select a goal", "Please select a goal first.");
-                    return;
-                }
-                VariableAssignment var_assignm = model.getSelectedGoalNodeToShow().getAssignments();
-
-                Stage stage = new Stage();
-                stage.setTitle("Variable Assignment");
-                VariableAssignmentWindow vaw = new VariableAssignmentWindow(var_assignm);
-
-                Scene scene = new Scene(vaw);
-                stage.setScene(scene);
-
-                stage.show();
-            }
-        });
 
     }
 

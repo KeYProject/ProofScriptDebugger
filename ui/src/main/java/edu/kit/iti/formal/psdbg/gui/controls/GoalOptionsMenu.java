@@ -24,6 +24,11 @@ public class GoalOptionsMenu extends ContextMenu {
     @FXML
     private RadioMenuItem rmiShowSequent, rmiCFL, rmiCFS, rmiBranchLabels, rmiNodeNames, rmiRuleNames;
 
+    @FXML
+    private MenuItem showVarAssignment;
+
+    @Setter
+    private InspectionModel model;
 
     private ObjectProperty<ViewOption> selectedViewOption = new SimpleObjectProperty<>();
 
@@ -51,7 +56,26 @@ public class GoalOptionsMenu extends ContextMenu {
 
         selectedViewOption.setValue(ViewOption.SEQUENT);
 
+        showVarAssignment.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
 
+                if(model == null || model.getSelectedGoalNodeToShow() == null) {
+                    Utils.showInfoDialog("Select a goal", "Select a goal", "Please select a goal first.");
+                    return;
+                }
+                VariableAssignment var_assignm = model.getSelectedGoalNodeToShow().getAssignments();
+
+                Stage stage = new Stage();
+                stage.setTitle("Variable Assignment");
+                VariableAssignmentWindow vaw = new VariableAssignmentWindow(var_assignm);
+
+                Scene scene = new Scene(vaw);
+                stage.setScene(scene);
+
+                stage.show();
+            }
+        });
     }
 
 
