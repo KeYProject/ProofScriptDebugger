@@ -148,6 +148,7 @@ public class InteractiveModeController {
 
     public void stop() {
         Events.unregister(this);
+        //TODO: casesstatement visiten
         String c = getCasesAsString();
         scriptController.getDockNode(scriptArea).undock();
 

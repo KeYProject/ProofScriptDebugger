@@ -2,6 +2,7 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -16,6 +17,9 @@ public class SequentOptionsMenu extends ContextMenu {
     private final InspectionModel model;
     @FXML
     private MenuItem openSequentMatcher;
+    @FXML
+    private MenuItem showVarAssignment;
+
 
 
     public SequentOptionsMenu(InspectionModel model) {
@@ -55,6 +59,28 @@ public class SequentOptionsMenu extends ContextMenu {
                   //  e.printStackTrace();
                    // System.out.println(e);
                 }
+            }
+        });
+
+
+        showVarAssignment.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                if(model == null || model.getSelectedGoalNodeToShow() == null) {
+                    Utils.showInfoDialog("Select a goal", "Select a goal", "Please select a goal first.");
+                    return;
+                }
+                VariableAssignment var_assignm = model.getSelectedGoalNodeToShow().getAssignments();
+
+                Stage stage = new Stage();
+                stage.setTitle("Variable Assignment");
+                VariableAssignmentWindow vaw = new VariableAssignmentWindow(var_assignm);
+
+                Scene scene = new Scene(vaw);
+                stage.setScene(scene);
+
+                stage.show();
             }
         });
 

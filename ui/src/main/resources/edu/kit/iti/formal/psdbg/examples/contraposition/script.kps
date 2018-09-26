@@ -53,3 +53,9 @@ cases{
     }
     auto;
 }
+
+script varDecl(){
+    var1 : INT :=  1;
+    var2 : INT :=  2;
+    var3 : INT :=  3;
+}
