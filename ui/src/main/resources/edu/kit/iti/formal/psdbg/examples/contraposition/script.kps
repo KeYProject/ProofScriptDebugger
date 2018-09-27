@@ -1,3 +1,7 @@
+script empty(){
+
+}
+
 script full(){
   impRight;
   impRight;

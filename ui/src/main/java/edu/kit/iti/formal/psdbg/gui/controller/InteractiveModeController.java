@@ -7,7 +7,6 @@ import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
-import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.scripts.*;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
@@ -27,7 +26,6 @@ import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.DebuggerFramework;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
-import edu.kit.iti.formal.psdbg.interpreter.funchdl.MacroCommandHandler;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.ProofScriptCommandBuilder;
 import edu.kit.iti.formal.psdbg.parser.PrettyPrinter;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
@@ -69,8 +67,8 @@ public class InteractiveModeController {
     private PTreeNode<KeyData> nodeAtInteractionStart;
 
     //needed for Undo-Operation
-    private ArrayList<CallStatement> savepointsstatement;
-    private ArrayList<Node> savepointslist;
+    private ArrayList<CallStatement> laststatementlist;
+    private ArrayList<Node> lastnodeslist;
 
     private Proof currentProof;
     private Services keYServices;
@@ -102,8 +100,8 @@ public class InteractiveModeController {
             gcs.setBody(v);
             casesStatement.getCases().add(gcs);
         });
-        savepointslist = new ArrayList<>();
-        savepointsstatement = new ArrayList<>();
+        lastnodeslist = new ArrayList<>();
+        laststatementlist = new ArrayList<>();
         nodeAtInteractionStart = debuggerFramework.getStatePointer();
 
     }
@@ -113,13 +111,14 @@ public class InteractiveModeController {
      * Undo the application of the last rule
      */
     public void undo(javafx.event.ActionEvent actionEvent) {
-        if (savepointslist.isEmpty()) {
+        if (lastnodeslist.isEmpty()) {
             Debug.log("Kein vorheriger Zustand.");
             return;
         }
 
-        val pruneNode = savepointslist.get(savepointslist.size() - 1);
-        savepointslist.remove(pruneNode);
+        val pruneNode = lastnodeslist.get(lastnodeslist.size() - 1);
+        lastnodeslist.remove(pruneNode);
+
         ImmutableList<Goal> goalsbeforePrune = currentProof.getSubtreeGoals(pruneNode);
 
         currentProof.pruneProof(pruneNode);
@@ -130,19 +129,55 @@ public class InteractiveModeController {
                 .filter(keyDataGoalNode -> goalsbeforePrune.contains(keyDataGoalNode.getData().getGoal()))
                 .collect(Collectors.toList());
 
+        if(prunedChildren.size() == 0) {
+            //TODO: add Utils.showInfoD
+            return;
+        }
         KeyData kd = prunedChildren.get(0).getData();
         goals.removeAll(prunedChildren);
+
+
+        //Set selected goal after prune
+
         GoalNode<KeyData> lastGoalNode = null;
-        for (Goal newGoalNode : goalsafterPrune) {
-            KeyData kdn = new KeyData(kd, newGoalNode.node());
+        KeyData kdn;
+        if (lastnodeslist.size() == 0) {
+            kdn = new KeyData(kd, goalsafterPrune.get(0).node());
             goals.add(
-                    lastGoalNode = new GoalNode<>(prunedChildren.get(0).getParent().getParent(), kdn, kdn.getNode().isClosed()));
+                    lastGoalNode = new GoalNode<>(prunedChildren.get(0).getParent(), kdn, kdn.getNode().isClosed()));
+        } else {
+            for (Goal newGoalNode : goalsafterPrune) {
+                kdn = new KeyData(kd, newGoalNode.node());
+                goals.add(
+                        lastGoalNode = new GoalNode<>(prunedChildren.get(0).getParent().getParent(), kdn, kdn.getNode().isClosed()));
+            }
         }
 
         model.setSelectedGoalNodeToShow(lastGoalNode);
 
-        val pruneStatement = savepointsstatement.get(savepointsstatement.size() - 1);
-        cases.forEach((k, v) -> v.remove(pruneStatement));
+
+        val pruneStatement = laststatementlist.get(laststatementlist.size() - 1);
+        laststatementlist.remove(laststatementlist.size() - 1);
+
+        //TODO: buggy cuz allstatements of same node removed
+
+        //remove statement from cases / script
+        Statements statements = (cases.get(pruneNode.parent()) == null)? cases.get(pruneNode) : cases.get(pruneNode.parent());
+        int i = statements.size()-1;
+
+        while(statements.get(i) != pruneStatement && i >= 0) {
+            statements.remove(i);
+            i--;
+        }
+        statements.remove(i);
+
+
+        /*
+        cases.forEach((k, v) -> {
+                v.remove(pruneStatement);
+
+        });
+        */
 
         String c = getCasesAsString();
         scriptArea.setText("" +
@@ -294,8 +329,8 @@ public class InteractiveModeController {
 
     private void applyRuleHelper(CallStatement call, Goal g, Type t) throws ScriptCommandNotApplicableException {
 
-        savepointslist.add(g.node());
-        savepointsstatement.add(call);
+        lastnodeslist.add(g.node());
+        laststatementlist.add(call);
 
         ObservableList<GoalNode<KeyData>> goals = model.getGoals();
         GoalNode<KeyData> expandedNode;
@@ -429,8 +464,8 @@ public class InteractiveModeController {
     }
 /*
     private void applyRule(CallStatement call, Goal g) throws ScriptCommandNotApplicableException {
-        savepointslist.add(g.node());
-        savepointsstatement.add(call);
+        lastnodeslist.add(g.node());
+        laststatementlist.add(call);
 
         ObservableList<GoalNode<KeyData>> goals = model.getGoals();
         GoalNode<KeyData> expandedNode;
