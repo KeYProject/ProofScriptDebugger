@@ -28,6 +28,7 @@ import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.MacroCommandHandler;
 import edu.kit.iti.formal.psdbg.parser.PrettyPrinter;
+import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import javafx.beans.property.BooleanProperty;
@@ -75,6 +76,7 @@ public class InteractiveModeController {
     private boolean moreThanOneMatch = false;
 
     private CasesStatement casesStatement;
+    private CasesStatement prettyfiedCasesStatement;
 
     @Setter @Nullable
     private SavePoint savepoint; //not null if interactive mode started from savepoint
@@ -148,6 +150,12 @@ public class InteractiveModeController {
 
     public void stop() {
         Events.unregister(this);
+
+        //TODO: set prettyfiedCasesStatement
+        prettyfiedCasesStatement = casesStatement;
+
+
+
         String c = getCasesAsString();
         scriptController.getDockNode(scriptArea).undock();
 
@@ -512,4 +520,9 @@ public class InteractiveModeController {
         MACRO, RULE, SCRIPT_COMMAND;
     }
 
+    private CasesStatement cleanCasesStatement(CasesStatement casesStatement) {
+
+
+        return null;
+    }
 }
