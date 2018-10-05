@@ -47,6 +47,9 @@ public class KeyMatcherFacadeTest {
      */
     @Test
     public void matchTerms() throws Exception {
+        System.out.println(shouldMatchT("f(a)", "...f(a)..."));
+
+        System.out.println(shouldMatchT("h(a,a)", "...h(?X,?Y)..."));
         System.out.println(shouldMatchT("f(a)", "?"));
         System.out.println(shouldMatchT("f(a)", "f(a)"));
 
@@ -59,6 +62,9 @@ public class KeyMatcherFacadeTest {
     @Test
     public void matchSeq() throws Exception {
        //atm missing is catching the toplevel formula
+        shouldMatch("pred(a), pred(b), a=b, a=c ==> pred(c)", "pred(?X), ?X=?Y ==> ", "[?X=a, ?Y=b}, {?X=a, ?Y=c}]");
+
+        shouldMatch("pred(a), pred(b), a=b, a=c ==> pred(c)", "pred(?X), ?X=?Y ==> pred(?Y)", "[{?X=a, ?Y=c}]");
         shouldMatch("!q==>p,!p","!q ==> p", "[{}]");
         shouldMatch("!p ,p ==> q", "!p ==> q", "[{}]");
         shouldMatch("!q ,p ==> q", "!p ==> q", "{NOMATCH}");

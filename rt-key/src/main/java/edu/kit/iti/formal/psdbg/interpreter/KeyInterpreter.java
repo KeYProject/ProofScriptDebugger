@@ -3,11 +3,16 @@ package edu.kit.iti.formal.psdbg.interpreter;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import de.uka.ilkd.key.api.VariableAssignments;
+import de.uka.ilkd.key.java.Services;
+import de.uka.ilkd.key.logic.Term;
+import de.uka.ilkd.key.logic.TermBuilder;
+import de.uka.ilkd.key.parser.ParserException;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.interpreter.data.*;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.InvalidTypeException;
 import edu.kit.iti.formal.psdbg.interpreter.funchdl.CommandLookup;
+import edu.kit.iti.formal.psdbg.interpreter.matcher.KeYMatcher;
 import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
@@ -16,6 +21,7 @@ import edu.kit.iti.formal.psdbg.parser.types.TermType;
 import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -24,6 +30,8 @@ import java.util.function.Function;
  * @version 1 (28.08.17)
  */
 public class KeyInterpreter extends Interpreter<KeyData> {
+
+
     @Getter
     private static final BiMap<SimpleType, VariableAssignments.VarType> typeConversionBiMap =
             new ImmutableBiMap.Builder<SimpleType, VariableAssignments.VarType>()
@@ -138,6 +146,64 @@ public class KeyInterpreter extends Interpreter<KeyData> {
             }
         });
         return eval;
+    }
+
+    @Override
+    public Object visit(GuardedCaseStatement guardedCaseStatement) {
+
+        Expression matchExpression = guardedCaseStatement.getGuard();
+        State<KeyData> currentStateToMatch = peekState();
+        GoalNode<KeyData> selectedGoal = currentStateToMatch.getSelectedGoalNode();
+        assert currentStateToMatch.getGoals().contains(selectedGoal);
+
+
+        if(matchExpression.hasMatchExpression()){
+
+            MatchExpression me = (MatchExpression) matchExpression;
+            if(me.isDerivable()){
+                enterScope(matchExpression);
+                Evaluator eval = new Evaluator<>(selectedGoal.getAssignments(), selectedGoal);
+                eval.getEntryListeners().addAll(getEntryListeners());
+                eval.getExitListeners().addAll(getExitListeners());
+                Value eval1 = eval.eval(me.getPattern());
+                Term term = null;
+                Services services = selectedGoal.getData().getProof().getServices();
+                if(eval1.getType() == TypeFacade.ANY_TERM){
+                    if(eval1.getData() instanceof String){
+                        try {
+                            term = new TermBuilder(services.getTermFactory(), services).parseTerm(eval1.getData().toString());
+                        } catch (ParserException e) {
+                            throw new RuntimeException(e);
+                        }
+
+
+                    } else {
+                        TermValue tv = (TermValue) eval1.getData();
+                        term = tv.getTerm();
+                    }
+                } else {
+                    new RuntimeException("The parameter for a derivable expression has to be a term. Got "+ eval1.getType());
+                }
+                KeYMatcher.isDerivable(selectedGoal.getData().getProof(), selectedGoal, term);
+                exitScope(matchExpression);
+
+            } else {
+                return super.visit(guardedCaseStatement);
+            }
+        }
+       // VariableAssignment va = super.evaluateMatchInGoal(matchExpression, selectedGoal);
+        VariableAssignment va = null;
+        try {
+            enterScope(guardedCaseStatement);
+            if (va != null) {
+                executeBody(guardedCaseStatement.getBody(), selectedGoal, va);
+                return true;
+            } else {
+                return false;
+            }
+        } finally {
+            exitScope(guardedCaseStatement);
+        }
     }
 
 

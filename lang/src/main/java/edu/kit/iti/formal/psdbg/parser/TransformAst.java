@@ -373,6 +373,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         if (ctx.derivable != null) {
             match.setDerivable(true);
             Expression<ParserRuleContext> e = (Expression<ParserRuleContext>) ctx.derivableExpression.accept(this);
+            match.setPattern(e);
             e.setParent(match);
             match.setDerivableTerm(e);
         } else {
