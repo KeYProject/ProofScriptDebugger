@@ -146,6 +146,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         Variable var = assignmentStatement.getLhs();
         Expression expr = assignmentStatement.getRhs();
         if (t != null) {
+            System.out.println("t = " + t+ var);
             node.declareVariable(var, t);
         }
 
@@ -158,6 +159,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
                 if (fireVariableAssignmentHook(node, var.getIdentifier(), v)) {
                     node.setVariableValue(var, v);
                 }
+                System.out.println("v = " + v);
                 node.setVariableValue(var, v);
             }
         }
