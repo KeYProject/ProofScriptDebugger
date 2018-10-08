@@ -3,6 +3,16 @@ script full(){
   impRight;
   impLeft;
   cases {
+	case match derivable `p`:
+   }
+}
+
+
+script full(){
+  impRight;
+  impRight;
+  impLeft;
+  cases {
 	case match `!q ==> p`:
 		notLeft;
 		notRight;
