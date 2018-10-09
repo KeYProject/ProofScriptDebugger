@@ -42,6 +42,7 @@ public class TermValue {
         }
     }
 
+
     public TermValue copy() {
         TermValue tv = new TermValue();
 
