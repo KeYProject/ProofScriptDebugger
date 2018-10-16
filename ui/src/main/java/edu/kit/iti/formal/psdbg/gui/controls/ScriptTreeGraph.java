@@ -162,6 +162,8 @@ public class ScriptTreeGraph {
                 }
                 List<AbstractTreeNode> subchild = new ArrayList<>();
                 subchild.add(atn);
+                //TODO: Hack for double foreach-end recognition
+                if(atn.getParent() == childlist.get(0).getParent()) return;
                 childlist.get(0).setChildren(subchild);
                 }
         }
@@ -431,7 +433,7 @@ public class ScriptTreeGraph {
                 AbstractTreeNode current = mapping.get(n);
 
                 if (current instanceof PlaceholderNode ) {
-                    //TODO : atn.setParent(current.getParent()); -> leads to concurretn exception
+
                     current.getParent().setChildren(new ArrayList<>(Arrays.asList(atn)));
                     mapping.put(n, atn);
                     iterator.remove();
@@ -440,11 +442,11 @@ public class ScriptTreeGraph {
 
 
                 while (!(current instanceof PlaceholderNode)) {
-                   //TODO: if(current.getChildren().size() > 0) return;
+
                     if (current.getChildren() == null) return;
                     if (current.getChildren().get(0) instanceof PlaceholderNode) {
 
-                        //TODO: insert a variable instead of using atn?
+
                         atn.setParent(current.getChildren().get(0).getParent());
                         current.setChildren(new ArrayList<>(Arrays.asList(atn)));
                         iterator.remove();
@@ -487,6 +489,9 @@ public class ScriptTreeGraph {
         }
     }
 
+    /*
+        checks if given node is the end of a foreach-statement
+     */
     private void checkIfForeachEnd(Node n) {
         if(foreachNodes.containsKey(n)) {
             PTreeNode ptn = foreachNodes.get(n);
@@ -495,8 +500,8 @@ public class ScriptTreeGraph {
                     ptn,
                     ptn.getStatement().getStartPosition().getLineNumber(),
                     false);
-
-            replacePlaceholder(nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode(), ftn);
+            //TODO: replacePlaceholder(nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode(), ftn);
+            replacePlaceholder(n, ftn);
             addPlaceholder(ftn, n);
 
             foreachNodes.remove(n);
