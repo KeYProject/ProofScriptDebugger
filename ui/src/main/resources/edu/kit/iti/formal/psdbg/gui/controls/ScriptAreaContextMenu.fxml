@@ -10,7 +10,8 @@
     <MenuItem text="Show post mortem" onAction="#showPostMortem"/>
     <SeparatorMenuItem/>
     <MenuItem text="Set Main Script" onAction="#setMainScript"/>
-    <MenuItem text="Set Execution Marker" onAction="#setExecutionMarker" accelerator="Ctrl+m"/>
+    <!--<MenuItem text="Set Execution Marker" onAction="#setExecutionMarker" accelerator="Ctrl+m"/>
+    -->
 </items>
 
 </fx:root>
