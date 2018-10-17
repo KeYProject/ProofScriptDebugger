@@ -1,3 +1,10 @@
+script interactive(){
+  impRight;
+  impRight;
+  impLeft;
+//after execution of this script, manual interaction can be performed
+}
+
 script full(){
   impRight;
   impRight;
@@ -21,12 +28,6 @@ script autoScript(){
 }
 
 
-script interactive(){
-  impRight;
-  impRight;
-  impLeft;
-//after execution of this script, manual interaction can be performed
-}
 script interactive_with_match(){
 impRight;
 impRight;

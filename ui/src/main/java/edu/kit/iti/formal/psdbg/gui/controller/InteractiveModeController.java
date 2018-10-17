@@ -151,12 +151,12 @@ public class InteractiveModeController {
     public void stop() {
         Events.unregister(this);
 
-        //TODO: set prettyfiedCasesStatement
-        prettyfiedCasesStatement = casesStatement;
+        PrettyPrinter pp = new PrettyPrinter();
+        prettyfiedCasesStatement = prettifyCases(casesStatement);
+        prettyfiedCasesStatement.accept(pp);
+        String c = pp.toString();
 
 
-
-        String c = getCasesAsString();
         scriptController.getDockNode(scriptArea).undock();
 
         if(savepoint == null) {
@@ -168,6 +168,34 @@ public class InteractiveModeController {
         }
 
     }
+
+    /**
+     * Removes all empty CaseStatements in a CasesStatement
+     * @param casesStatement
+     * @return
+     */
+    private CasesStatement prettifyCases(CasesStatement casesStatement) {
+        CasesStatement prettified = casesStatement;
+
+        //remove empty default cases
+        if (prettified.getDefCaseStmt().getBody().size() == 0) {
+            prettified.setDefCaseStmt(null);
+        }
+
+        //remove empty cases
+        int i = 0;
+        while (i < prettified.getCases().size()) {
+            if(prettified.getCases().get(i).getBody().size() == 0) {
+                prettified.getCases().remove(i);
+            }
+            i++;
+        }
+
+
+
+        return  casesStatement;
+    }
+
 
     @Subscribe
     public void handle(Events.TacletApplicationEvent tap) {

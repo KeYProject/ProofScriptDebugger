@@ -41,7 +41,7 @@ public class CasesStatement extends Statement<ScriptLanguageParser.CasesStmtCont
     @NonNull
     private final List<CaseStatement> cases = new ArrayList<>();
     // @NonNull private Statements defaultCase = new Statements();
-    @NonNull
+
     private DefaultCaseStatement defCaseStmt = new DefaultCaseStatement();
 
     @Override
