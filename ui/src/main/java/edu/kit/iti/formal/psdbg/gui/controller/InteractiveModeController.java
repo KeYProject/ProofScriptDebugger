@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.java.Services;
+import de.uka.ilkd.key.java.Statement;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.macros.ProofMacro;
@@ -153,8 +154,15 @@ public class InteractiveModeController {
 
         PrettyPrinter pp = new PrettyPrinter();
         prettyfiedCasesStatement = prettifyCases(casesStatement);
-        prettyfiedCasesStatement.accept(pp);
-        String c = pp.toString();
+
+        String c;
+        // no extensive interactive script
+        if(prettyfiedCasesStatement == null) {
+            c = "";
+        } else {
+            prettyfiedCasesStatement.accept(pp);
+            c = pp.toString();
+        }
 
 
         scriptController.getDockNode(scriptArea).undock();
@@ -187,13 +195,37 @@ public class InteractiveModeController {
         while (i < prettified.getCases().size()) {
             if(prettified.getCases().get(i).getBody().size() == 0) {
                 prettified.getCases().remove(i);
+            } else {
+                Statements currentStatements = prettified.getCases().get(i).getBody();
+                int k = 0;
+                while (k < currentStatements.size()) {
+                    if (currentStatements.get(k) instanceof CasesStatement) {
+                       // prettified.getCases().get(i).getBody().set(k, prettifyCases((CasesStatement) currentStatements.get(k)));
+                        CasesStatement subprettified = prettifyCases((CasesStatement) currentStatements.get(k));
+                        if(casesStatementIsEmpty(subprettified)) {
+                            currentStatements.remove(k);
+                        } else {
+                            currentStatements.set(k, subprettified);
+                            k++;
+                        }
+                    } else {
+                        k++;
+                    }
+                }
+                i++;
             }
-            i++;
         }
 
+        return (casesStatementIsEmpty(casesStatement))?
+                null : casesStatement;
+    }
 
-
-        return  casesStatement;
+    private boolean casesStatementIsEmpty(CasesStatement casesStatement) {
+        try {
+            return casesStatement.getCases().size() == 0 && casesStatement.getDefCaseStmt().getBody().size() == 0;
+        } catch (NullPointerException e) {
+            return true;
+        }
     }
 
 
