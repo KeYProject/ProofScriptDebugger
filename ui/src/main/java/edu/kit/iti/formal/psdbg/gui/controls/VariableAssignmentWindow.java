@@ -55,6 +55,11 @@ public class VariableAssignmentWindow extends TabPane {
         TableColumn decl_typeCol = new TableColumn("Type");
         TableColumn decl_valCol = new TableColumn("Value");
 
+        //Set Colums width proportional to windows with
+        decl_varCol.prefWidthProperty().bind(declarative_tableView.widthProperty().divide(3));
+        decl_typeCol.prefWidthProperty().bind(declarative_tableView.widthProperty().divide(3));
+        decl_valCol.prefWidthProperty().bind(declarative_tableView.widthProperty().divide(3));
+
         decl_varCol.setCellValueFactory(
                 new PropertyValueFactory<VariableModel,String>("varname")
         );
@@ -73,6 +78,10 @@ public class VariableAssignmentWindow extends TabPane {
         TableColumn spec_typeCol = new TableColumn("Type");
         TableColumn spec_valCol = new TableColumn("Value");
 
+        //Set Colums width proportional to windows with
+        spec_varCol.prefWidthProperty().bind(special_tableView.widthProperty().divide(3));
+        spec_typeCol.prefWidthProperty().bind(special_tableView.widthProperty().divide(3));
+        spec_valCol.prefWidthProperty().bind(special_tableView.widthProperty().divide(3));
 
         spec_varCol.setCellValueFactory(
                 new PropertyValueFactory<VariableModel,String>("varname")
@@ -83,7 +92,6 @@ public class VariableAssignmentWindow extends TabPane {
         spec_valCol.setCellValueFactory(
                 new PropertyValueFactory<VariableModel,String>("varval")
         );
-
 
         special_tableView.setItems(specialModel);
         special_tableView.getColumns().addAll(spec_varCol, spec_typeCol, spec_valCol);
