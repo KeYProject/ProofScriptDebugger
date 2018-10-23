@@ -3,7 +3,10 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import alice.tuprolog.Var;
 import edu.kit.iti.formal.psdbg.gui.controls.Utils;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
+import edu.kit.iti.formal.psdbg.interpreter.assignhook.DefaultAssignmentHook;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
+import edu.kit.iti.formal.psdbg.parser.ast.Variable;
+import edu.kit.iti.formal.psdbg.parser.types.Type;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -16,6 +19,8 @@ import javafx.scene.layout.BorderPane;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 
 public class VariableAssignmentWindow extends BorderPane {
     @FXML
@@ -23,6 +28,12 @@ public class VariableAssignmentWindow extends BorderPane {
 
     @Setter
     private InspectionModel model;
+
+    /** Non special Variables that don't start with __ **/
+    private ObservableList<VariableModel> declarativeModel;
+
+    /** Variables that start with __ **/
+    private ObservableList<VariableModel> specialModel;
 
     public VariableAssignmentWindow(VariableAssignment assignment) {
 
@@ -34,16 +45,8 @@ public class VariableAssignmentWindow extends BorderPane {
         TableColumn valCol = new TableColumn("Value");
 
 
-        ObservableList<VariableModel> varmodell = FXCollections.observableArrayList();
-
             if (assignment != null) {
-                //iterate over types map
-                assignment.getTypes().forEach((k, v) -> {
-                    varmodell.add(new VariableModel(k.getIdentifier(), v.symbol(), assignment.getValue(k).getData().toString()));
-             /*       varCol.getColumns().add(k.toString());
-                    typeCol.getColumns().add(v.toString());
-                    valCol.getColumns().add(assignment.getValue(k).toString());*/
-                });
+                fillInVariableModelsLists(assignment);
             }
 
         varCol.setCellValueFactory(
@@ -55,11 +58,41 @@ public class VariableAssignmentWindow extends BorderPane {
         valCol.setCellValueFactory(
                 new PropertyValueFactory<VariableModel,String>("varval")
         );
-        tableView.setItems(varmodell);
+        tableView.setItems(declarativeModel);
         tableView.getColumns().addAll(varCol, typeCol, valCol);
 
 
 
+    }
+
+    /**
+     * Combine all previous Variableassignments and return it
+     * @param assignment
+     */
+    private void fillInVariableModelsLists(VariableAssignment assignment) {
+        ObservableList<VariableModel> varmodel = FXCollections.observableArrayList();
+        ObservableList<VariableModel> special_varmodel = FXCollections.observableArrayList();
+        VariableAssignment current = assignment;
+
+
+        while (current != null) {
+
+            final VariableAssignment currentcopy = current;
+            //iterate over types map
+            currentcopy.getTypes().forEach((k, v) -> {
+                VariableModel variableModel = new VariableModel(k.getIdentifier(), v.symbol(), currentcopy.getValue(k).getData().toString());
+                if(!varmodel.contains(variableModel)) {
+                    if(variableModel.getVarname().toString().startsWith("__")) {
+                        special_varmodel.add(variableModel);
+                    } else {
+                        varmodel.add(variableModel);
+                    }
+                }
+            });
+            current = current.getParent();
+        }
+        declarativeModel = varmodel;
+        specialModel = special_varmodel;
     }
 
     public static class VariableModel {
