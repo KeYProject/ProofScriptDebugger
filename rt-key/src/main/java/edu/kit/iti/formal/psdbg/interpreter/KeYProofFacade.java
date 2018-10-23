@@ -177,7 +177,7 @@ public class KeYProofFacade {
      * Build the KeYInterpreter that handles the execution of the loaded key problem sourceName
      */
     public InterpreterBuilder buildInterpreter() {
-        assert readyToExecute.getValue();
+        //weigl: duplicate with next line: assert readyToExecute.getValue();
         assert getEnvironment() != null && getProof() != null : "No proof loaded";
         InterpreterBuilder interpreterBuilder = new InterpreterBuilder();
         interpreterBuilder
