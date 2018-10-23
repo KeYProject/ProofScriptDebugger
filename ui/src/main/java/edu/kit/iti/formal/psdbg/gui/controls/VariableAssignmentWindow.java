@@ -12,6 +12,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -22,9 +23,12 @@ import lombok.Setter;
 import java.util.Map;
 
 
-public class VariableAssignmentWindow extends BorderPane {
+public class VariableAssignmentWindow extends TabPane {
     @FXML
-    TableView tableView;
+    TableView declarative_tableView;
+
+    @FXML
+    TableView special_tableView;
 
     @Setter
     private InspectionModel model;
@@ -39,29 +43,50 @@ public class VariableAssignmentWindow extends BorderPane {
 
         Utils.createWithFXML(this);
 
-        tableView.setEditable(false);
-        TableColumn varCol = new TableColumn("Variable");
-        TableColumn typeCol = new TableColumn("Type");
-        TableColumn valCol = new TableColumn("Value");
+        if (assignment != null) {
+            fillInVariableModelsLists(assignment);
+        }
 
+        declarative_tableView.setEditable(false);
+        special_tableView.setEditable(false);
 
-            if (assignment != null) {
-                fillInVariableModelsLists(assignment);
-            }
+        //Table Colums for declarative_tableView
+        TableColumn decl_varCol = new TableColumn("Variable");
+        TableColumn decl_typeCol = new TableColumn("Type");
+        TableColumn decl_valCol = new TableColumn("Value");
 
-        varCol.setCellValueFactory(
+        decl_varCol.setCellValueFactory(
                 new PropertyValueFactory<VariableModel,String>("varname")
         );
-        typeCol.setCellValueFactory(
+        decl_typeCol.setCellValueFactory(
                 new PropertyValueFactory<VariableModel,String>("vartype")
         );
-        valCol.setCellValueFactory(
+        decl_valCol.setCellValueFactory(
                 new PropertyValueFactory<VariableModel,String>("varval")
         );
-        tableView.setItems(declarativeModel);
-        tableView.getColumns().addAll(varCol, typeCol, valCol);
+
+        declarative_tableView.setItems(declarativeModel);
+        declarative_tableView.getColumns().addAll(decl_varCol, decl_typeCol, decl_valCol);
+
+        //Table Colums for special_tableView
+        TableColumn spec_varCol = new TableColumn("Variable");
+        TableColumn spec_typeCol = new TableColumn("Type");
+        TableColumn spec_valCol = new TableColumn("Value");
 
 
+        spec_varCol.setCellValueFactory(
+                new PropertyValueFactory<VariableModel,String>("varname")
+        );
+        spec_typeCol.setCellValueFactory(
+                new PropertyValueFactory<VariableModel,String>("vartype")
+        );
+        spec_valCol.setCellValueFactory(
+                new PropertyValueFactory<VariableModel,String>("varval")
+        );
+
+
+        special_tableView.setItems(specialModel);
+        special_tableView.getColumns().addAll(spec_varCol, spec_typeCol, spec_valCol);
 
     }
 
@@ -81,12 +106,13 @@ public class VariableAssignmentWindow extends BorderPane {
             //iterate over types map
             currentcopy.getTypes().forEach((k, v) -> {
                 VariableModel variableModel = new VariableModel(k.getIdentifier(), v.symbol(), currentcopy.getValue(k).getData().toString());
-                if(!varmodel.contains(variableModel)) {
-                    if(variableModel.getVarname().toString().startsWith("__")) {
+
+                if (variableModel.getVarname().startsWith("__")) {
+                    if (!special_varmodel.contains(variableModel)) {
                         special_varmodel.add(variableModel);
-                    } else {
-                        varmodel.add(variableModel);
                     }
+                } else if (!varmodel.contains(variableModel)) {
+                    varmodel.add(variableModel);
                 }
             });
             current = current.getParent();
