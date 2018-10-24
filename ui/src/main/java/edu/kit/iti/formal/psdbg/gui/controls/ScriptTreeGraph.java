@@ -310,9 +310,9 @@ public class ScriptTreeGraph {
 
                             if(branchlabel.size() != 0) {
 
-                                //TODO: remove
                                 System.out.println("_______Branchlabels");
-                                Lists.reverse(branchlabel).forEach(k -> System.out.println(k.getNode().serialNr() + " " + k.getLabelName()));
+                                Lists.reverse(branchlabel).forEach(k ->
+                                        System.out.println(k.getNode().serialNr() + " " + k.getLabelName()));
 
                                 insertBranchLabels(callnode, branchlabel);
                                 addPlaceholder(branchlabel.get(0), gn.getData().getNode());
@@ -500,7 +500,6 @@ public class ScriptTreeGraph {
                     ptn,
                     ptn.getStatement().getStartPosition().getLineNumber(),
                     false);
-            //TODO: replacePlaceholder(nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode(), ftn);
             replacePlaceholder(n, ftn);
             addPlaceholder(ftn, n);
 
@@ -509,6 +508,12 @@ public class ScriptTreeGraph {
         }
     }
 
+    /**
+     * Get all Branchlabels from child to parent GoalNode
+     * @param parent
+     * @param child
+     * @return
+     */
     private List<BranchLabelNode> getBranchLabels(GoalNode<KeyData> parent, GoalNode<KeyData> child) {
         List<BranchLabelNode> branchlabels = new ArrayList<>();
         Node parentnode = parent.getData().getNode();
@@ -517,7 +522,7 @@ public class ScriptTreeGraph {
         try {
             while (childnode.parent() != parentnode) {
                 if (childnode.getNodeInfo().getBranchLabel() != null
-                        && isBranchLabel(childnode.getNodeInfo().getBranchLabel())&& !sameBranchlabelBefore(branchlabels, childnode))
+                        && isBranchLabel(childnode.getNodeInfo().getBranchLabel()) && !sameBranchlabelBefore(branchlabels, childnode))
                     branchlabels.add(new BranchLabelNode(childnode, childnode.getNodeInfo().getBranchLabel()));
                 childnode = childnode.parent();
             }
@@ -527,18 +532,22 @@ public class ScriptTreeGraph {
         return branchlabels;
     }
 
-
     private boolean sameBranchlabelBefore(List<BranchLabelNode> branchlabels, Node node) {
         if(branchlabels.size() == 0) return false;
-        return branchlabels.get(branchlabels.size()-1).getLabelName().equals(node.getNodeInfo().getBranchLabel());
+        return branchlabels.get(branchlabels.size()-1).getNode().serialNr() == node.serialNr();
 
     }
 
     private boolean isBranchLabel(String label) {
-        if (label.contains("rule") || label.contains("rules")) return false;
+        if (label.contains("rule") || label.contains("rules") || label.equals("Normal Execution")) return false;
         return true;
     }
 
+    /**
+     * Inserts given node after Branchlabelnodes
+     * @param node
+     * @param branchlabels
+     */
     private void insertBranchLabels(Node node, List<BranchLabelNode> branchlabels) {
         if(branchlabels == null) return;
         Node topBranchNode = branchlabels.get(branchlabels.size()-1).getNode(); //start from last to first
@@ -548,10 +557,12 @@ public class ScriptTreeGraph {
 
         //check which Branchlabels are already in mapping -> afterwards forall x of [0,i]; branchlabels[x] not in mapping yet
         if(mapping.containsKey(topBranchNode) && ((BranchLabelNode)mapping.get(topBranchNode)).getLabelName() == branchlabels.get(i).getLabelName()) {
+
             currentChildren = mapping.get(topBranchNode).getChildren();
             i--;
-            while (0 <= i && currentChildren != null && currentChildren.contains(branchlabels.get(i))) {
-                currentChildren = currentChildren.get(currentChildren.indexOf(branchlabels.get(i))).getChildren();
+            //check
+            while (0 <= i && currentChildren != null && 0 <= getIndexOfAbsNode(currentChildren, branchlabels.get(i))) {
+                currentChildren = currentChildren.get(getIndexOfAbsNode(currentChildren, branchlabels.get(i))).getChildren();
                 i--;
             }
         }
@@ -571,48 +582,33 @@ public class ScriptTreeGraph {
                 putIntoMapping(branchlabels.get(i).getNode(), branchlabels.get(i));
             }
 
+            // add parent and child relation
             if (0 <= i - 1) {
                 BranchLabelNode child = branchlabels.get(i - 1);
                 BranchLabelNode parent = branchlabels.get(i);
                 child.setParent(parent);
 
                 addToChildren(parent.getNode(), child);
-                /*
-                if (i == branchlabels.size() - 2) {
-                    addToChildren(node, child);
-                } else {
-                    addToChildren(parent.getNode(), child);
-                }
-                   */
 
             }
-        /* old implementation
-        mapping.put(node, branchlabels.get(branchlabels.size()-1));
 
+        }
 
-        for (int i = branchlabels.size() -2; 0 <= i; i--) {
-            //to check if Branchlabel already exists
-            Node n = branchlabels.get(i).getNode();
-            if(!mapping.containsKey(n) || mapping.get(n) != branchlabels.get(i)) {
-                putIntoMapping(branchlabels.get(i).getNode(), branchlabels.get(i));
-                if(0 <= i-1) {
+    }
 
-                    BranchLabelNode child = branchlabels.get(i-1);
-                    BranchLabelNode parent = branchlabels.get(i);
-                    child.setParent(parent);
-
-                    if(i == branchlabels.size() -2) {
-                        addToChildren(node, child);
-                    } else {
-                        addToChildren(parent.getNode(), child);
-                    }
-
-                }
+    /**
+     * Returns index of AbstractTreeNode in given list if it exists, else -1
+     * @param nodeList
+     * @param node
+     * @return
+     */
+    private int getIndexOfAbsNode(List<AbstractTreeNode> nodeList, AbstractTreeNode node) {
+        for(int i = 0; i < nodeList.size(); i++) {
+            if(nodeList.get(i).getNode().serialNr() == node.getNode().serialNr()) {
+                return i;
             }
         }
-*/
-        }
-
+        return -1;
     }
 
     private void addGoals() {

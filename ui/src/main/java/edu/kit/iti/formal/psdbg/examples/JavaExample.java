@@ -4,6 +4,8 @@ import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -11,26 +13,18 @@ import java.net.URL;
 import java.nio.charset.Charset;
 
 /**
- * Under construction!!!!!!
  * @author Alexander Weigl
  */
 public class JavaExample extends Example {
-
-
-    private URL projectFile;
-
-    public void setJavaFile(URL javaFile) {
-        this.javaFile = javaFile;
-    }
-    //public void setProjectFile(URL projectFile){this.projectFile = projectFile;}
-
+    @Getter
+    @Setter
     protected URL javaFile;
-
+    @Getter
+    @Setter
     protected URL settingsFile;
-
-    public void setSettingsFile(URL settingsFile) {
-        this.settingsFile = settingsFile;
-    }
+    @Getter
+    @Setter
+    private URL projectFile;
 
     @Override
     public void open(DebuggerMain debuggerMain) {
