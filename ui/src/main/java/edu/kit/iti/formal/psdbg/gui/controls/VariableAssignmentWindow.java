@@ -20,6 +20,8 @@ import javafx.scene.layout.BorderPane;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 
@@ -30,8 +32,6 @@ public class VariableAssignmentWindow extends TabPane {
     @FXML
     TableView special_tableView;
 
-    @Setter
-    private InspectionModel model;
 
     /** Non special Variables that don't start with __ **/
     private ObservableList<VariableModel> declarativeModel;
@@ -96,7 +96,12 @@ public class VariableAssignmentWindow extends TabPane {
         special_tableView.setItems(specialModel);
         special_tableView.getColumns().addAll(spec_varCol, spec_typeCol, spec_valCol);
 
-    }
+        // TODO: set css for TableView
+
+        //declarative_tableView.getStyleClass().add("table_view");
+
+
+}
 
     /**
      * Combine all previous Variableassignments and return it

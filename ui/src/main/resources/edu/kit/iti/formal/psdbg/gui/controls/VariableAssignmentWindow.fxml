@@ -8,10 +8,10 @@
          type="edu.kit.iti.formal.psdbg.gui.controls.VariableAssignmentWindow"
          prefHeight="400.0" prefWidth="600.0">
     <tabs>
-        <Tab text="Variables">
+        <Tab text="Script Variables">
             <TableView fx:id="declarative_tableView" ></TableView>
         </Tab>
-        <Tab text="Special Variables">
+        <Tab text="KeY Control Variables">
             <TableView fx:id="special_tableView"></TableView>
         </Tab>
     </tabs>
