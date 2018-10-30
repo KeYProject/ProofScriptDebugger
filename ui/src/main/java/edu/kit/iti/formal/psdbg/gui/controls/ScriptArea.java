@@ -10,8 +10,10 @@ import edu.kit.iti.formal.psdbg.gui.actions.acomplete.Suggestion;
 import edu.kit.iti.formal.psdbg.gui.actions.inline.InlineActionSupplier;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
+import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.Breakpoint;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.lint.LintProblem;
 import edu.kit.iti.formal.psdbg.lint.LinterStrategy;
 import edu.kit.iti.formal.psdbg.parser.Facade;
@@ -89,7 +91,6 @@ import static org.fxmisc.wellbehaved.event.InputMap.*;
 public class ScriptArea extends BorderPane {
     public static final Logger LOGGER = LogManager.getLogger(ScriptArea.class);
     public static final Logger CONSOLE_LOGGER = LogManager.getLogger(ScriptArea.class);
-
     public static final String EXECUTION_MARKER = "\u2316";
 
     public static final FileReloadingService FILE_RELOADING_SERVICE = new FileReloadingService();
@@ -489,10 +490,12 @@ public class ScriptArea extends BorderPane {
     }
 
 
+    @Deprecated
     private boolean hasExecutionMarker() {
         return getText().contains(EXECUTION_MARKER);
     }
 
+    @Deprecated
     public int getExecutionMarkerPosition() {
         return getText().lastIndexOf(EXECUTION_MARKER);
     }
@@ -608,11 +611,13 @@ public class ScriptArea extends BorderPane {
         return dirty;
     }
 
+    @Deprecated
     public void removeExecutionMarker() {
         setText(getTextWithoutMarker());
         //Events.unregister(this);
     }
 
+    @Deprecated
     private String getTextWithoutMarker() {
         return getText().replace("" + EXECUTION_MARKER, "");
     }
@@ -622,6 +627,7 @@ public class ScriptArea extends BorderPane {
      *
      * @param pos
      */
+    @Deprecated
     public void insertExecutionMarker(int pos) {
         LOGGER.debug("ScriptArea.insertExecutionMarker");
         Events.register(this);
@@ -992,6 +998,7 @@ public class ScriptArea extends BorderPane {
             }*/
         }
 
+        @Deprecated
         public void setExecutionMarker(ActionEvent event) {
             LOGGER.debug("ScriptAreaContextMenu.setExecutionMarker");
             int pos = codeArea.getCaretPosition();
