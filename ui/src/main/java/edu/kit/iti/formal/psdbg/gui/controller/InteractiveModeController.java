@@ -220,12 +220,28 @@ public class InteractiveModeController {
                 null : casesStatement;
     }
 
+    /**
+     * Returns true if there are no statements in the CasesStatement, else false
+     * @param casesStatement
+     * @return
+     */
     private boolean casesStatementIsEmpty(CasesStatement casesStatement) {
+        boolean casesEmpty = false;
+        boolean defEmpty = false;
         try {
-            return casesStatement.getCases().size() == 0 && casesStatement.getDefCaseStmt().getBody().size() == 0;
+            casesEmpty = casesStatement.getCases().size() == 0 ;
         } catch (NullPointerException e) {
-            return true;
+            casesEmpty = true;
         }
+
+        try {
+            defEmpty = casesStatement.getDefCaseStmt().getBody().size() == 0;
+        } catch (NullPointerException e) {
+            defEmpty = true;
+        }
+
+        return casesEmpty && defEmpty;
+
     }
 
 
