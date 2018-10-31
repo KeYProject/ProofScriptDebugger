@@ -507,6 +507,7 @@ public class ScriptTreeGraph {
 
     /**
      * Get all Branchlabels from child to parent GoalNode
+     * Order of Branchlabels is from bottom to top
      * @param parent
      * @param child
      * @return
@@ -515,17 +516,23 @@ public class ScriptTreeGraph {
         List<BranchLabelNode> branchlabels = new ArrayList<>();
         Node parentnode = parent.getData().getNode();
         Node childnode = child.getData().getNode();
-        if(childnode.getNodeInfo().getBranchLabel() != null && isBranchLabel(childnode.getNodeInfo().getBranchLabel())) branchlabels.add( new BranchLabelNode(childnode, childnode.getNodeInfo().getBranchLabel()));
+
+        //iterate from bottom to top and check if childnode has siblings -> Branchlabel required
         try {
             while (childnode.parent() != parentnode) {
-                if (childnode.getNodeInfo().getBranchLabel() != null
-                        && isBranchLabel(childnode.getNodeInfo().getBranchLabel()) && !sameBranchlabelBefore(branchlabels, childnode))
-                    branchlabels.add(new BranchLabelNode(childnode, childnode.getNodeInfo().getBranchLabel()));
+                if (childnode.parent().childrenCount() > 1) {
+                    String calcBranchlabel = (childnode.getNodeInfo().getBranchLabel() == null)?
+                            "Case " + childnode.parent().getChildNr(childnode) + 1
+                            : childnode.getNodeInfo().getBranchLabel();
+                    branchlabels.add(new BranchLabelNode(childnode, calcBranchlabel));
+                }
+
                 childnode = childnode.parent();
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+
         return branchlabels;
     }
 

@@ -1,3 +1,7 @@
+script test() {
+  autopilot_prep;
+}
+
 script split_from_quicksort() {
   autopilot_prep;
   foreach{
