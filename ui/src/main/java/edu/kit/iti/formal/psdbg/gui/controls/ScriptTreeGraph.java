@@ -11,7 +11,14 @@ import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
+import javafx.beans.property.MapProperty;
+import javafx.beans.property.SimpleMapProperty;
+import javafx.collections.FXCollections;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.util.StringConverter;
 import lombok.Getter;
 
 import java.util.*;
@@ -36,8 +43,12 @@ public class ScriptTreeGraph {
     private List<PlaceholderNode> placeholderNodes;
 
     private HashMap<Node, PTreeNode> foreachNodes;
-    private final MutableGraph<AbstractTreeNode> graph =
-            GraphBuilder.directed().allowsSelfLoops(false).build();
+
+    /**
+     * Contains color of nodes
+     */
+    private MapProperty<Node, String> colorOfNodes = new SimpleMapProperty<Node, String>(FXCollections.observableHashMap());
+
 
     public void createGraph(PTreeNode<KeyData> rootPTreeNode, Node root) {
 
@@ -62,60 +73,10 @@ public class ScriptTreeGraph {
         computeList();
         compute();
         addGoals();
-        // TODO: replace addParentsAndChildren() with placeholders;
-
-        mapping.size();
-
-        //TODO: remove following
-        System.out.print(front);
-        System.out.println(getMappingString(mapping.get(root)));
-
 
     }
 
-    /**
-     * creates the connection between parent and children in mapping, which haven't been set yet
-     */
-    private void addParentsAndChildren() {
-        Node currentNode;
-        AbstractTreeNode currentTreenode;
 
-        Iterator<PTreeNode<KeyData>> iter = sortedList.listIterator(0);
-
-        //iterate through all ptreenodes in execution order
-        while (iter.hasNext()) {
-            PTreeNode<KeyData> next = iter.next();
-
-            if (next.getStateAfterStmt() != null) {
-                Map.Entry<Node, AbstractTreeNode> entry = getMappingEntry(next); //get entry in mapping
-                if (entry == null) {
-                    continue;
-                }
-                currentTreenode = entry.getValue();
-                currentNode = entry.getKey();
-
-                    //set parent
-                    Node parent = currentNode.parent();
-                    if(parent != null && currentTreenode != null) {
-                    addToSubChildren(searchParentInMapping(parent), mapping.get(currentNode));
-
-                }
-
-                //set children
-                for (GoalNode<KeyData> gn: next.getStateAfterStmt().getGoals()) {
-                        if(mapping.get(gn.getData().getNode()) != null && mapping.get(gn.getData().getNode()).getParent() != null)
-                    mapping.get(gn.getData().getNode()).setParent(currentTreenode);
-                    addToChildren(currentNode, mapping.get(gn.getData().getNode()));
-
-                }
-
-                }
-
-
-            }
-
-
-        }
 
     /**
      * Adds an AbstractTreeNode atn to the children in the mapping list with given key node
@@ -244,6 +205,7 @@ public class ScriptTreeGraph {
             if (children.size() != 0) {
                 children.forEach(k -> treeItem.getChildren().add(rekursiveToView(k)));
             }
+
             return treeItem;
         }
 
@@ -308,7 +270,6 @@ public class ScriptTreeGraph {
 
                             if(branchlabel.size() != 0) {
 
-                                System.out.println("_______Branchlabels");
                                 Lists.reverse(branchlabel).forEach(k ->
                                         System.out.println(k.getNode().serialNr() + " " + k.getLabelName()));
 
@@ -356,7 +317,6 @@ public class ScriptTreeGraph {
                 replacePlaceholder(n, match);
                 putIntoMapping(n, match);
                 addPlaceholder(match, n);
-                //front.remove(n);
                 return null;
             }
 
@@ -370,7 +330,6 @@ public class ScriptTreeGraph {
                 replacePlaceholder(n, match);
                 putIntoMapping(n, match);
                 addPlaceholder(match, n);
-                //front.remove(n);
                 return null;
             }
 
@@ -397,7 +356,6 @@ public class ScriptTreeGraph {
                         : (nextPtreeNode.getStepOver() != null && nextPtreeNode.getStepOver().getStateBeforeStmt() != null) ? nextPtreeNode.getStepOver().getStateBeforeStmt().getGoals()
                         : new ArrayList<>();
                 aftergoals.forEach(k -> foreachNodes.put(k.getData().getNode(), nextPtreeNode));
-                //
                 return null;
 
             }
@@ -522,7 +480,7 @@ public class ScriptTreeGraph {
             while (childnode.parent() != parentnode) {
                 if (childnode.parent().childrenCount() > 1) {
                     String calcBranchlabel = (childnode.getNodeInfo().getBranchLabel() == null)?
-                            "Case " + childnode.parent().getChildNr(childnode) + 1
+                            "Case " + (childnode.parent().getChildNr(childnode) + 1)
                             : childnode.getNodeInfo().getBranchLabel();
                     branchlabels.add(new BranchLabelNode(childnode, calcBranchlabel));
                 }
@@ -617,25 +575,57 @@ public class ScriptTreeGraph {
 
     private void addGoals() {
         front.forEach(k ->  replacePlaceholder(k, new DummyGoalNode(k, k.isClosed())));
-
     }
-        private String getMappingString (AbstractTreeNode node){
-            String s = "";
-            if (node != null) {
-                s += node.toTreeNode().label + "\n";
-                List<AbstractTreeNode> children = node.getChildren();
-                if (children == null) return s;
-                if (children.size() == 1) {
-                    s += getMappingString(children.get(0));
+
+    private TreeCell<TreeNode> cellFactory(TreeView<TreeNode> nodeTreeView) {
+        TextFieldTreeCell<TreeNode> tftc = new TextFieldTreeCell<>();
+        StringConverter<TreeNode> stringConverter = new StringConverter<TreeNode>() {
+            @Override
+            public String toString(TreeNode object) {
+                return object.label;
+            }
+
+            @Override
+            public TreeNode fromString(String string) {
+                return null;
+            }
+        };
+        tftc.setConverter(stringConverter);
+        tftc.itemProperty().addListener((p, o, n) -> {
+            if (n != null)
+                repaint(tftc);
+        });
+
+        //colorOfNodes.addListener((InvalidationListener) o -> repaint(tftc));
+        return tftc;
+    }
+
+    private void repaint(TextFieldTreeCell<TreeNode> tftc) {
+        TreeNode item = tftc.getItem();
+        Node n = item.node;
+        tftc.setStyle("");
+        if (n != null) {
+            if (n.leaf() && !item.label.contains("BRANCH")) {
+                if (n.isClosed()) {
+                    colorOfNodes.putIfAbsent(n, "lightseagreen");
+                    //tftc.setStyle("-fx-background-color: greenyellow");
                 } else {
-                    s += "  Children:\n";
-                    for (AbstractTreeNode child : children) {
-                        s += "  " + getMappingString(child);
-                    }
+                    colorOfNodes.putIfAbsent(n, "indianred");
+                }
+                if (colorOfNodes.containsKey(n)) {
+                    tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
                 }
             }
-            return s;
+            //TODO for Screenshot tftc.setStyle("-fx-font-size: 18pt");
+           /* if (colorOfNodes.containsKey(n)) {
+                tftc.setStyle("-fx-border-color: "+colorOfNodes.get(n)+";");
+            }*/
         }
+
+        //expandRootToItem(tftc.getTreeItem());
+
+    }
+
 
     }
 
