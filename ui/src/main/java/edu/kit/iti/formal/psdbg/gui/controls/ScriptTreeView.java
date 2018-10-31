@@ -3,6 +3,7 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.AbstractTreeNode;
+import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.BranchLabelNode;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.DummyGoalNode;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.ScriptTreeNode;
 import javafx.beans.property.MapProperty;
@@ -53,11 +54,11 @@ public class ScriptTreeView extends BorderPane {
             }
         };
         tftc.setConverter(stringConverter);
-        /*
+
         tftc.itemProperty().addListener((p, o, n) -> {
             if (n != null)
                 repaint(tftc);
-        }); */
+        });
 
         //colorOfNodes.addListener((InvalidationListener) o -> repaint(tftc));
         return tftc;
@@ -132,10 +133,16 @@ public class ScriptTreeView extends BorderPane {
                 } else {
                     colorOfNodes.putIfAbsent(n, "indianred");
                 }
+
+                if(stg.getMapping().get(n) instanceof BranchLabelNode){
+                    colorOfNodes.putIfAbsent(n, "gray");
+                }
+
                 if (colorOfNodes.containsKey(n)) {
                     tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
                 }
             }
+
         }
     }
 }
