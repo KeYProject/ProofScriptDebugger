@@ -47,7 +47,7 @@ public class ScriptTreeGraph {
     /**
      * Contains color of nodes
      */
-    private MapProperty<Node, String> colorOfNodes = new SimpleMapProperty<Node, String>(FXCollections.observableHashMap());
+    public MapProperty<Node, String> colorOfNodes = new SimpleMapProperty<Node, String>(FXCollections.observableHashMap());
 
 
     public void createGraph(PTreeNode<KeyData> rootPTreeNode, Node root) {
@@ -553,6 +553,9 @@ public class ScriptTreeGraph {
                 addToChildren(parent.getNode(), child);
 
             }
+
+             colorOfNodes.putIfAbsent(branchlabels.get(i).getNode(), "gray");
+
 
         }
 

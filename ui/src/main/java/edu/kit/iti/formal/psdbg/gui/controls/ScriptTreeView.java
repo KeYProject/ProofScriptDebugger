@@ -41,6 +41,7 @@ public class ScriptTreeView extends BorderPane {
     }
 
     private TreeCell<TreeNode> cellFactory(TreeView<TreeNode> nodeTreeView) {
+
         TextFieldTreeCell<TreeNode> tftc = new TextFieldTreeCell<>();
         StringConverter<TreeNode> stringConverter = new StringConverter<TreeNode>() {
             @Override
@@ -59,6 +60,7 @@ public class ScriptTreeView extends BorderPane {
             if (n != null)
                 repaint(tftc);
         });
+
 
         //colorOfNodes.addListener((InvalidationListener) o -> repaint(tftc));
         return tftc;
@@ -128,18 +130,14 @@ public class ScriptTreeView extends BorderPane {
         if (n != null) {
             if (n.leaf() && !item.label.contains("BRANCH")) {
                 if (n.isClosed()) {
-                    colorOfNodes.putIfAbsent(n, "lightseagreen");
+                    stg.colorOfNodes.putIfAbsent(n, "lightseagreen");
                     //tftc.setStyle("-fx-background-color: greenyellow");
                 } else {
-                    colorOfNodes.putIfAbsent(n, "indianred");
+                    stg.colorOfNodes.putIfAbsent(n, "indianred");
                 }
 
-                if(stg.getMapping().get(n) instanceof BranchLabelNode){
-                    colorOfNodes.putIfAbsent(n, "gray");
-                }
-
-                if (colorOfNodes.containsKey(n)) {
-                    tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
+                if (stg.colorOfNodes.containsKey(n)) {
+                    tftc.setStyle("-fx-background-color: " + stg.colorOfNodes.get(n) + ";");
                 }
             }
 
