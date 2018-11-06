@@ -20,6 +20,7 @@ import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.fmt.DefaultFormatter;
 import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
 import edu.kit.iti.formal.psdbg.gui.controls.*;
+import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.AbstractTreeNode;
 import edu.kit.iti.formal.psdbg.gui.graph.Graph;
 import edu.kit.iti.formal.psdbg.gui.graph.GraphView;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
@@ -1325,7 +1326,7 @@ public class DebuggerMain implements Initializable {
         if(startnode == null) return;
         stg.createGraph(startnode, FACADE.getProof().root());
 
-        TreeItem<TreeNode> item = (stg.toView());
+        TreeItem<AbstractTreeNode> item = (stg.toView());
 
         scriptTreeView.setTree(item);
 

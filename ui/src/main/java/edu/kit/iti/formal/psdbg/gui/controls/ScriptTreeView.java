@@ -2,10 +2,7 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 
 import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
-import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.AbstractTreeNode;
-import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.BranchLabelNode;
-import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.DummyGoalNode;
-import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.ScriptTreeNode;
+import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.*;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
@@ -26,9 +23,15 @@ public class ScriptTreeView extends BorderPane {
     @Setter
     private ScriptTreeGraph stg;
 
+    /**
+     * Contains color of nodes
+     */
     private MapProperty<Node, String> colorOfNodes = new SimpleMapProperty<Node, String>(FXCollections.observableHashMap());
+
+
     @FXML
-    TreeView<TreeNode> treeView;
+    TreeView<AbstractTreeNode> treeView;
+
 
     public ScriptTreeView(DebuggerMain main) {
         Utils.createWithFXML(this);
@@ -36,21 +39,21 @@ public class ScriptTreeView extends BorderPane {
 
     }
 
-    public void setTree(TreeItem<TreeNode> tree) {
+    public void setTree(TreeItem<AbstractTreeNode> tree) {
         treeView.setRoot(tree);
     }
 
-    private TreeCell<TreeNode> cellFactory(TreeView<TreeNode> nodeTreeView) {
+    private TreeCell<AbstractTreeNode> cellFactory(TreeView<AbstractTreeNode> nodeTreeView) {
 
-        TextFieldTreeCell<TreeNode> tftc = new TextFieldTreeCell<>();
-        StringConverter<TreeNode> stringConverter = new StringConverter<TreeNode>() {
+        TextFieldTreeCell<AbstractTreeNode> tftc = new TextFieldTreeCell<>();
+        StringConverter<AbstractTreeNode> stringConverter = new StringConverter<AbstractTreeNode>() {
             @Override
-            public String toString(TreeNode object) {
-                return object.label;
+            public String toString(AbstractTreeNode object) {
+                return object.toTreeNode().label;
             }
 
             @Override
-            public TreeNode fromString(String string) {
+            public AbstractTreeNode fromString(String string) {
                 return null;
             }
         };
@@ -123,24 +126,35 @@ public class ScriptTreeView extends BorderPane {
         return treeItem;
     }
 */
-    private void repaint(TextFieldTreeCell<TreeNode> tftc) {
-        TreeNode item = tftc.getItem();
-        Node n = item.node;
+    private void repaint(TextFieldTreeCell<AbstractTreeNode> tftc) {
+        AbstractTreeNode item = tftc.getItem();
+        Node n = item.getNode();
         tftc.setStyle("");
         if (n != null) {
-            if (n.leaf() && !item.label.contains("BRANCH")) {
-                if (n.isClosed()) {
-                    stg.colorOfNodes.putIfAbsent(n, "lightseagreen");
-                    //tftc.setStyle("-fx-background-color: greenyellow");
-                } else {
-                    stg.colorOfNodes.putIfAbsent(n, "indianred");
-                }
 
-                if (stg.colorOfNodes.containsKey(n)) {
-                    tftc.setStyle("-fx-background-color: " + stg.colorOfNodes.get(n) + ";");
+            if(item instanceof ScriptTreeNode) {
+                tftc.setStyle("-fx-text-fill: grey");
+            } else if (item instanceof BranchLabelNode) {
+                tftc.setStyle("-fx-text-fill: blue");
+            } else if (item instanceof ForeachTreeNode) {
+
+            } else if (item instanceof DummyGoalNode) {
+                if (n.isClosed()) {
+                    tftc.setStyle("-fx-background-color: lightgreen");
+                } else {
+                    tftc.setStyle("-fx-background-color: indianred");
+                    //colorOfNodes.putIfAbsent(n, "indianred");
                 }
             }
 
-        }
+
+                    //tftc.setStyle("-fx-background-color: greenyellow");
+                    //tftc.setStyle("-fx-background-color: " + stg.colorOfNodes.get(n) + ";");
+
+
+
+            }
+
+
     }
 }
