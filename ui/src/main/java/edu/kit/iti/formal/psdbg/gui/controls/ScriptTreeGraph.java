@@ -244,7 +244,7 @@ public class ScriptTreeGraph {
                 Node callnode = nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
                 ScriptTreeNode sn = new ScriptTreeNode(callnode, nextPtreeNode, nextPtreeNode.getStatement().getStartPosition().getLineNumber());
                 //check if statement was applicable
-                if (nextPtreeNode.getStateBeforeStmt() == nextPtreeNode.getStateAfterStmt()) {
+                if (nextPtreeNode.getStateAfterStmt().getGoals().equals(nextPtreeNode.getStateBeforeStmt().getGoals())) {
                     sn.setSucc(false);
                 }
 
