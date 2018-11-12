@@ -1,20 +1,27 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
+import com.sun.javafx.css.Style;
 import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.*;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.util.StringConverter;
 import lombok.Setter;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +51,7 @@ public class ScriptTreeView extends BorderPane {
     }
 
     private TreeCell<AbstractTreeNode> cellFactory(TreeView<AbstractTreeNode> nodeTreeView) {
+
 
         TextFieldTreeCell<AbstractTreeNode> tftc = new TextFieldTreeCell<>();
         StringConverter<AbstractTreeNode> stringConverter = new StringConverter<AbstractTreeNode>() {
@@ -129,9 +137,9 @@ public class ScriptTreeView extends BorderPane {
     private void repaint(TextFieldTreeCell<AbstractTreeNode> tftc) {
         AbstractTreeNode item = tftc.getItem();
         Node n = item.getNode();
+        tftc.styleProperty().unbind();
         tftc.setStyle("");
         if (n != null) {
-
             if(item instanceof ScriptTreeNode) {
                 tftc.setStyle("-fx-text-fill: grey");
             } else if (item instanceof BranchLabelNode) {
@@ -140,9 +148,14 @@ public class ScriptTreeView extends BorderPane {
 
             } else if (item instanceof DummyGoalNode) {
                 if (n.isClosed()) {
-                    tftc.setStyle("-fx-background-color: lightgreen");
+                    tftc.styleProperty().setValue("-fx-background-color: lightgreen");
+                    //styleProperty().bind(tftc.styleProperty());
+
+
                 } else {
-                    tftc.setStyle("-fx-background-color: indianred");
+                    tftc.styleProperty().setValue("-fx-background-color: indianred");
+                    //styleProperty().bind(tftc.styleProperty());
+                   // tftc.setStyle("-fx-background-color: indianred");
                     //colorOfNodes.putIfAbsent(n, "indianred");
                 }
             }
@@ -154,6 +167,8 @@ public class ScriptTreeView extends BorderPane {
 
 
             }
+
+
 
 
     }

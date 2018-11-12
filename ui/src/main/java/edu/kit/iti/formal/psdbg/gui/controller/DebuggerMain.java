@@ -1406,7 +1406,7 @@ public class DebuggerMain implements Initializable {
                 keyWindow.makePrettyView();
                 keyWindow.setVisible(true);
             } catch (SecurityException e) {
-                e.printStackTrace();
+               // e.printStackTrace();
             }
 
 
@@ -1566,7 +1566,7 @@ public class DebuggerMain implements Initializable {
 
     private class KeYSecurityManager extends SecurityManager {
         @Override public void checkExit(int status) {
-            throw new SecurityException();
+            throw new SecurityException("KeY window closed");
         }
 
         @Override public void checkPermission(Permission perm) {

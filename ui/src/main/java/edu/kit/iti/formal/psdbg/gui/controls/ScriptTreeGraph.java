@@ -43,7 +43,14 @@ public class ScriptTreeGraph {
     private List<PlaceholderNode> placeholderNodes;
 
     private HashMap<Node, PTreeNode> foreachNodes;
+    private HashMap<Node, PTreeNode> repeatNodes;
 
+    /**
+     * statistic of scripttree
+     */
+
+    private int openGoals = 0;
+    private int closedGoals = 0;
 
 
 
@@ -54,6 +61,7 @@ public class ScriptTreeGraph {
         ScriptTreeNode rootNode = new ScriptTreeNode(root, rootPTreeNode, rootPTreeNode.getStatement().getStartPosition().getLineNumber());
         mapping = new HashMap<>();
         foreachNodes = new HashMap<>();
+        repeatNodes = new HashMap<>();
         placeholderNodes = new ArrayList<>();
         front = new ArrayList<>();
         sortedList = new ArrayList<>();
@@ -70,7 +78,8 @@ public class ScriptTreeGraph {
         computeList();
         compute();
         addGoals();
-
+        System.out.println("openGoals = " + openGoals);
+        System.out.println("closedGoals = " + closedGoals);
     }
 
 
@@ -250,6 +259,7 @@ public class ScriptTreeGraph {
                 switch (children.size()) {
                     case 0:
                         putIntoFront(callnode);
+                        checkIfRepeatEnd(callnode);
                         checkIfForeachEnd(callnode);
                         addPlaceholder(sn, sn.getNode());
                         break;
@@ -291,7 +301,10 @@ public class ScriptTreeGraph {
                 }
 
                 if(children.size() > 0) {
-                    children.forEach(k -> checkIfForeachEnd(k.getData().getNode()));
+                    children.forEach(k -> {
+                        checkIfRepeatEnd(k.getData().getNode());
+                        checkIfForeachEnd(k.getData().getNode());
+                    });
                 }
 
                 return null;
@@ -355,6 +368,34 @@ public class ScriptTreeGraph {
                 aftergoals.forEach(k -> foreachNodes.put(k.getData().getNode(), nextPtreeNode));
                 return null;
 
+
+
+            }
+
+            @Override
+            public Void visit(RepeatStatement repeat){
+                List<GoalNode<KeyData>> goals = nextPtreeNode.getStateBeforeStmt().getGoals();
+                if (goals.size() == 0) return null;
+
+                goals.forEach(k -> {
+                    RepeatTreeNode ftn = new RepeatTreeNode(
+                            k.getData().getNode(),
+                            nextPtreeNode,
+                            nextPtreeNode.getStatement().getStartPosition().getLineNumber(),
+                            true);
+
+                    replacePlaceholder(
+                            searchParentInMapping(k.getData().getNode()), ftn);
+
+                    addPlaceholder(ftn, k.getData().getNode());
+                });
+
+                // add to repeat list -> so the end of a repeat can be catched
+                List<GoalNode<KeyData>> aftergoals = (nextPtreeNode.getStateAfterStmt() != null)? nextPtreeNode.getStateAfterStmt().getGoals()
+                        : (nextPtreeNode.getStepOver() != null && nextPtreeNode.getStepOver().getStateBeforeStmt() != null) ? nextPtreeNode.getStepOver().getStateBeforeStmt().getGoals()
+                        : new ArrayList<>();
+                aftergoals.forEach(k -> repeatNodes.put(k.getData().getNode(), nextPtreeNode));
+                return null;
             }
         }
 
@@ -460,6 +501,25 @@ public class ScriptTreeGraph {
         }
     }
 
+    /*
+    checks if given node is the end of a repeat-statement
+ */
+    private void checkIfRepeatEnd(Node n) {
+        if(repeatNodes.containsKey(n)) {
+            PTreeNode ptn = repeatNodes.get(n);
+            RepeatTreeNode ftn = new RepeatTreeNode(
+                    n,
+                    ptn,
+                    ptn.getStatement().getStartPosition().getLineNumber(),
+                    false);
+            replacePlaceholder(n, ftn);
+            addPlaceholder(ftn, n);
+
+            repeatNodes.remove(n);
+
+        }
+    }
+
     /**
      * Get all Branchlabels from child to parent GoalNode
      * Order of Branchlabels is from bottom to top
@@ -489,17 +549,6 @@ public class ScriptTreeGraph {
         }
 
         return branchlabels;
-    }
-
-    private boolean sameBranchlabelBefore(List<BranchLabelNode> branchlabels, Node node) {
-        if(branchlabels.size() == 0) return false;
-        return branchlabels.get(branchlabels.size()-1).getNode().serialNr() == node.serialNr();
-
-    }
-
-    private boolean isBranchLabel(String label) {
-        if (label.contains("rule") || label.contains("rules") || label.equals("Normal Execution")) return false;
-        return true;
     }
 
     /**
@@ -572,7 +621,16 @@ public class ScriptTreeGraph {
     }
 
     private void addGoals() {
-        front.forEach(k ->  replacePlaceholder(k, new DummyGoalNode(k, k.isClosed())));
+        front.forEach(k -> {
+            replacePlaceholder(k, new DummyGoalNode(k, k.isClosed()));
+            
+            //fill statistics
+            if(k.isClosed()) {
+                closedGoals++;
+            } else {
+                openGoals ++;
+            }
+        });
     }
 
 
