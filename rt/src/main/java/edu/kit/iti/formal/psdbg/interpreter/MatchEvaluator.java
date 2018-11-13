@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Evaluator specially for Expressions in a case "declaration".
+ * Evaluator especially for Expressions in a case "declaration".
  * Created by sarah on 5/22/17.
  */
 public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> implements ScopeObservable {
@@ -190,9 +190,13 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
     public List<VariableAssignment> visit(UnaryExpression e) {
         Operator op = e.getOperator();
         Expression expr = e.getExpression();
-        Value exValue = (Value) expr.accept(this);
-        Value ret = op.evaluate(exValue);
-        return null;
+        List<VariableAssignment> exValue = (List<VariableAssignment>) expr.accept(this);
+        if(exValue.isEmpty()){
+            return transformTruthValue(Value.TRUE);
+        }else{
+            return transformTruthValue(Value.FALSE);
+
+        }
     }
 
 
