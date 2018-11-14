@@ -115,7 +115,7 @@ public class InteractiveModeController {
      */
     public void undo(javafx.event.ActionEvent actionEvent) {
         if (lastnodeslist.isEmpty()) {
-            Debug.log("Kein vorheriger Zustand.");
+            Debug.log("No previous state.");
             return;
         }
 
@@ -141,7 +141,6 @@ public class InteractiveModeController {
 
 
         //Set selected goal after prune
-
         GoalNode<KeyData> lastGoalNode = null;
         KeyData kdn;
         if (lastnodeslist.size() == 0) {
@@ -162,8 +161,6 @@ public class InteractiveModeController {
         val pruneStatement = laststatementlist.get(laststatementlist.size() - 1);
         laststatementlist.remove(laststatementlist.size() - 1);
 
-        //TODO: buggy cuz allstatements of same node removed
-
         //remove statement from cases / script
         Statements statements = (cases.get(pruneNode.parent()) == null)? cases.get(pruneNode) : cases.get(pruneNode.parent());
         int i = statements.size()-1;
@@ -173,14 +170,6 @@ public class InteractiveModeController {
             i--;
         }
         statements.remove(i);
-
-
-        /*
-        cases.forEach((k, v) -> {
-                v.remove(pruneStatement);
-
-        });
-        */
 
         String c = getCasesAsString();
         scriptArea.setText("" +
@@ -217,8 +206,8 @@ public class InteractiveModeController {
 
     /**
      * Removes all empty CaseStatements in a CasesStatement
-     * @param casesStatement
-     * @return
+     * @param casesStatement is to be shortened if possible
+     * @return shortened / compact casesStatement
      */
     private CasesStatement prettifyCases(CasesStatement casesStatement) {
         CasesStatement prettified = casesStatement;
@@ -238,7 +227,6 @@ public class InteractiveModeController {
                 int k = 0;
                 while (k < currentStatements.size()) {
                     if (currentStatements.get(k) instanceof CasesStatement) {
-                       // prettified.getCases().get(i).getBody().set(k, prettifyCases((CasesStatement) currentStatements.get(k)));
                         CasesStatement subprettified = prettifyCases((CasesStatement) currentStatements.get(k));
                         if(casesStatementIsEmpty(subprettified)) {
                             currentStatements.remove(k);
@@ -260,8 +248,8 @@ public class InteractiveModeController {
 
     /**
      * Returns true if there are no statements in the CasesStatement, else false
-     * @param casesStatement
-     * @return
+     * @param casesStatement, to be be calc if empty
+     * @return true if there are no statements in the CasesStatement, else false
      */
     private boolean casesStatementIsEmpty(CasesStatement casesStatement) {
         boolean casesEmpty = false;
@@ -426,7 +414,6 @@ public class InteractiveModeController {
             expandedNode = collect.get(0);
 
         }
-        // KeyData kd = g.getData();
         Evaluator eval = new Evaluator(expandedNode.getAssignments(), expandedNode);
 
         Map<String, Object> map = new HashMap<>();
@@ -666,12 +653,8 @@ public class InteractiveModeController {
 
 
     static enum Type {
-        MACRO, RULE, SCRIPT_COMMAND;
+        MACRO, RULE, SCRIPT_COMMAND
     }
 
-    private CasesStatement cleanCasesStatement(CasesStatement casesStatement) {
 
-
-        return null;
-    }
 }
