@@ -186,6 +186,7 @@
                                 </CheckMenuItem>
                                 <CheckMenuItem fx:id="miScriptTree" onAction="#showScriptTree" text="Show Script Tree" accelerator="Ctrl+r">
 
+
                                <graphic>
                                    <ImageView>
                                    <image>
@@ -198,6 +199,8 @@
                                </graphic>
 
                            </CheckMenuItem>
+                                <CheckMenuItem fx:id="miUserInter" onAction="#showUserInteractionW"
+                                               text="Show Userinteraction Window"/>
                            <CheckMenuItem fx:id="miCommandHelp" onAction="#showCommandHelp"
                                           accelerator="F1"
                                           text="Show Command Help">

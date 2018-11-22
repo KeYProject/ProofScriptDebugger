@@ -183,10 +183,7 @@ public class ScriptTreeGraph {
            // mapping.forEach((node, abstractTreeNode) -> System.out.println("node.serialNr() = " + node.serialNr() + " " + abstractTreeNode.toTreeNode().label));
         }
 
-    /**
-     * returns treeItem that represents current Script tree
-     * @return
-     */
+        /*
     public TreeItem<AbstractTreeNode> toView () {
         TreeItem<AbstractTreeNode> treeItem;
         if(rootNode == null) {
@@ -235,6 +232,7 @@ public class ScriptTreeGraph {
             }
             return treeItem;
         }
+        */
 
         private class ScriptVisitor extends DefaultASTVisitor<Void> {
 

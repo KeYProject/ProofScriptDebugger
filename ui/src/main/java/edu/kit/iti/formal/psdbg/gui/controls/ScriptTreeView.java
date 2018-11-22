@@ -4,15 +4,15 @@ import com.sun.javafx.css.Style;
 import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.*;
+import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
+import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
+import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -22,6 +22,7 @@ import javafx.util.StringConverter;
 import lombok.Setter;
 
 import java.awt.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,15 @@ public class ScriptTreeView extends BorderPane {
     @Setter
     private ScriptTreeGraph stg;
 
+    private ContextMenu contextMenu;
+
+    private ScriptTreeNode rootNode;
+    private Map<Node, AbstractTreeNode> mapping;
+
+    @Setter
+    private DebuggerMainModel model;
+    @Setter
+    private KeYProofFacade FACADE;
     /**
      * Contains color of nodes
      */
@@ -43,7 +53,11 @@ public class ScriptTreeView extends BorderPane {
     public ScriptTreeView(DebuggerMain main) {
         Utils.createWithFXML(this);
         treeView.setCellFactory(this::cellFactory);
+        stg = new ScriptTreeGraph();
 
+        setOnContextMenuRequested(evt -> {
+            getContextMenu().show(this, evt.getScreenX(), evt.getScreenY());
+        });
     }
 
     public void setTree(TreeItem<AbstractTreeNode> tree) {
@@ -82,27 +96,46 @@ public class ScriptTreeView extends BorderPane {
      * returns treeItem that represents current Script tree
      * @return
      */
-
-    /*
-    public TreeItem<TreeNode> toView () {
-        TreeItem<TreeNode> treeItem;
-        ScriptTreeNode rootNode = stg.getRootNode();
-        Map<Node, AbstractTreeNode> mapping = stg.getMapping();
-        if(rootNode == null) {
-            treeItem = new TreeItem<>(new TreeNode("Proof", null));
+    public TreeItem<AbstractTreeNode> toView() {
+        TreeItem<AbstractTreeNode> treeItem;
+        PTreeNode startnode;
+        try {
+            startnode = (model.getDebuggerFramework() != null) ?
+                    model.getDebuggerFramework().getPtreeManager().getStartNode() :
+                    null;
+        } catch (NullPointerException e) {
+            treeItem = new TreeItem<>(new AbstractTreeNode(null));
             DummyGoalNode dummy = new DummyGoalNode(null, false);
-            treeItem.getChildren().add(new TreeItem<>(dummy.toTreeNode()));
+            treeItem.getChildren().add(new TreeItem<>(dummy));
+
+            this.setTree(treeItem);
             return treeItem;
         }
-        treeItem = new TreeItem<>(new TreeNode("Proof", rootNode.getNode()));
+
+        //No script executed
+        if (startnode == null) {
+            System.out.println("Entered maybe redundaant toview(inside) method"); //TODO
+            treeItem = new TreeItem<>(new AbstractTreeNode(null));
+            DummyGoalNode dummy = new DummyGoalNode(null, false);
+            treeItem.getChildren().add(new TreeItem<>(dummy));
+
+            this.setTree(treeItem);
+            return treeItem;
+        }
+        stg.createGraph(startnode, FACADE.getProof().root());
+
+        rootNode = stg.getRootNode();
+        mapping = stg.getMapping();
+
+        treeItem = new TreeItem<>(new AbstractTreeNode(null));
 
 
         List<AbstractTreeNode> children = mapping.get(rootNode.getNode()).getChildren();
         if (children == null) return treeItem;
-        treeItem.getChildren().add(new TreeItem<>(mapping.get(rootNode.getNode()).toTreeNode()));
+        treeItem.getChildren().add(new TreeItem<>(mapping.get(rootNode.getNode())));
 
         while (children.size() == 1) {
-            treeItem.getChildren().add(new TreeItem<>(children.get(0).toTreeNode()));
+            treeItem.getChildren().add(new TreeItem<>(children.get(0)));
             children = children.get(0).getChildren();
             if(children == null) return treeItem;
         }
@@ -110,18 +143,20 @@ public class ScriptTreeView extends BorderPane {
         if (children.size() != 0) {
             children.forEach(k -> treeItem.getChildren().add(rekursiveToView(k)));
         }
+
+        this.setTree(treeItem);
         return treeItem;
     }
 
-    private TreeItem<TreeNode> rekursiveToView (AbstractTreeNode current){
-        TreeItem<TreeNode> treeItem = new TreeItem<>(current.toTreeNode()); //
+    private TreeItem<AbstractTreeNode> rekursiveToView(AbstractTreeNode current) {
+        TreeItem<AbstractTreeNode> treeItem = new TreeItem<>(current); //
 
         List<AbstractTreeNode> children = current.getChildren();
 
 
         while (children != null && children.size() == 1) {
             if(children.get(0) == null) return treeItem;
-            treeItem.getChildren().add(new TreeItem<>(children.get(0).toTreeNode()));
+            treeItem.getChildren().add(new TreeItem<>(children.get(0)));
             children = children.get(0).getChildren();
         }
         if (children == null) {
@@ -133,7 +168,7 @@ public class ScriptTreeView extends BorderPane {
         }
         return treeItem;
     }
-*/
+
     private void repaint(TextFieldTreeCell<AbstractTreeNode> tftc) {
         AbstractTreeNode item = tftc.getItem();
         Node n = item.getNode();
@@ -141,7 +176,9 @@ public class ScriptTreeView extends BorderPane {
         tftc.setStyle("");
         if (n != null) {
             if(item instanceof ScriptTreeNode) {
-                tftc.setStyle("-fx-text-fill: grey");
+                if (!item.isSucc()) {
+                    tftc.setStyle("-fx-text-fill: grey");
+                }
             } else if (item instanceof BranchLabelNode) {
                 tftc.setStyle("-fx-text-fill: blue");
             } else if (item instanceof ForeachTreeNode) {
@@ -160,16 +197,13 @@ public class ScriptTreeView extends BorderPane {
                 }
             }
 
-
-                    //tftc.setStyle("-fx-background-color: greenyellow");
-                    //tftc.setStyle("-fx-background-color: " + stg.colorOfNodes.get(n) + ";");
-
-
-
             }
+    }
 
-
-
-
+    public ContextMenu getContextMenu() {
+        if (contextMenu == null) {
+            contextMenu = new ScriptTreeContextMenu(this);
+        }
+        return contextMenu;
     }
 }

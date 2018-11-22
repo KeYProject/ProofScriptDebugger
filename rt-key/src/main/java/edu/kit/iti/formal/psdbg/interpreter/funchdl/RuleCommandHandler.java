@@ -140,6 +140,22 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
                 state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
             }
         } catch (ScriptException e) {
+            //TODO: adding UserinteractionWindow
+            /*TODO: possible cases not applicable, because
+                command not recognized
+                command multiple matches -> need more specification with on + formula
+
+                command not complete -> missig parameters
+                solution:
+                if(e.getMessage().equals("Not a unique \\assumes instantiation")) {
+                    //TODO: open UserinteractionWindow
+
+                    //TODO: apply completed TacletApp
+
+                    //TODO: insert into script
+
+                }
+             */
             if (interpreter.isStrictMode()) {
                 throw new ScriptCommandNotApplicableException(e, c, map);
             } else {
