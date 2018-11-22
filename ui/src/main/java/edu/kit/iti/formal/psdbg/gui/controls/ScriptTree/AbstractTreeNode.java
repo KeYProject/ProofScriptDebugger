@@ -29,7 +29,7 @@ public class AbstractTreeNode {
     }
 
     public TreeNode toTreeNode() {
-        return  new TreeNode("no to string method yet", null);
+        return new TreeNode("Proof", null);
     }
 
 }

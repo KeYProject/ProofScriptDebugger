@@ -43,11 +43,15 @@ public class ScriptTreeGraph {
     private List<PlaceholderNode> placeholderNodes;
 
     private HashMap<Node, PTreeNode> foreachNodes;
+    private HashMap<Node, PTreeNode> repeatNodes;
 
     /**
-     * Contains color of nodes
+     * statistic of scripttree
      */
-    private MapProperty<Node, String> colorOfNodes = new SimpleMapProperty<Node, String>(FXCollections.observableHashMap());
+
+    private int openGoals = 0;
+    private int closedGoals = 0;
+
 
 
     public void createGraph(PTreeNode<KeyData> rootPTreeNode, Node root) {
@@ -57,6 +61,7 @@ public class ScriptTreeGraph {
         ScriptTreeNode rootNode = new ScriptTreeNode(root, rootPTreeNode, rootPTreeNode.getStatement().getStartPosition().getLineNumber());
         mapping = new HashMap<>();
         foreachNodes = new HashMap<>();
+        repeatNodes = new HashMap<>();
         placeholderNodes = new ArrayList<>();
         front = new ArrayList<>();
         sortedList = new ArrayList<>();
@@ -73,7 +78,8 @@ public class ScriptTreeGraph {
         computeList();
         compute();
         addGoals();
-
+        System.out.println("openGoals = " + openGoals);
+        System.out.println("closedGoals = " + closedGoals);
     }
 
 
@@ -174,30 +180,27 @@ public class ScriptTreeGraph {
             }
 
             mapping.size();
-            mapping.forEach((node, abstractTreeNode) -> System.out.println("node.serialNr() = " + node.serialNr() + " " + abstractTreeNode.toTreeNode().label));
+           // mapping.forEach((node, abstractTreeNode) -> System.out.println("node.serialNr() = " + node.serialNr() + " " + abstractTreeNode.toTreeNode().label));
         }
 
-    /**
-     * returns treeItem that represents current Script tree
-     * @return
-     */
-    public TreeItem<TreeNode> toView () {
-        TreeItem<TreeNode> treeItem;
+        /*
+    public TreeItem<AbstractTreeNode> toView () {
+        TreeItem<AbstractTreeNode> treeItem;
         if(rootNode == null) {
-            treeItem = new TreeItem<>(new TreeNode("Proof", null));
+            treeItem = new TreeItem<>(new AbstractTreeNode(null));
             DummyGoalNode dummy = new DummyGoalNode(null, false);
-            treeItem.getChildren().add(new TreeItem<>(dummy.toTreeNode()));
+            treeItem.getChildren().add(new TreeItem<>(dummy));
             return treeItem;
         }
-            treeItem = new TreeItem<>(new TreeNode("Proof", rootNode.getNode()));
+            treeItem = new TreeItem<>(new AbstractTreeNode(null));
 
 
             List<AbstractTreeNode> children = mapping.get(rootNode.getNode()).getChildren();
             if (children == null) return treeItem;
-            treeItem.getChildren().add(new TreeItem<>(mapping.get(rootNode.getNode()).toTreeNode()));
+            treeItem.getChildren().add(new TreeItem<>(mapping.get(rootNode.getNode())));
 
             while (children.size() == 1) {
-                treeItem.getChildren().add(new TreeItem<>(children.get(0).toTreeNode()));
+                treeItem.getChildren().add(new TreeItem<>(children.get(0)));
                 children = children.get(0).getChildren();
                 if(children == null) return treeItem;
             }
@@ -209,15 +212,15 @@ public class ScriptTreeGraph {
             return treeItem;
         }
 
-        private TreeItem<TreeNode> rekursiveToView (AbstractTreeNode current){
-            TreeItem<TreeNode> treeItem = new TreeItem<>(current.toTreeNode()); //
+        private TreeItem<AbstractTreeNode> rekursiveToView (AbstractTreeNode current){
+            TreeItem<AbstractTreeNode> treeItem = new TreeItem<>(current); //
 
             List<AbstractTreeNode> children = current.getChildren();
 
 
             while (children != null && children.size() == 1) {
                 if(children.get(0) == null) return treeItem;
-                    treeItem.getChildren().add(new TreeItem<>(children.get(0).toTreeNode()));
+                    treeItem.getChildren().add(new TreeItem<>(children.get(0)));
                 children = children.get(0).getChildren();
             }
             if (children == null) {
@@ -229,6 +232,7 @@ public class ScriptTreeGraph {
             }
             return treeItem;
         }
+        */
 
         private class ScriptVisitor extends DefaultASTVisitor<Void> {
 
@@ -240,7 +244,7 @@ public class ScriptTreeGraph {
                 Node callnode = nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
                 ScriptTreeNode sn = new ScriptTreeNode(callnode, nextPtreeNode, nextPtreeNode.getStatement().getStartPosition().getLineNumber());
                 //check if statement was applicable
-                if (nextPtreeNode.getStateBeforeStmt() == nextPtreeNode.getStateAfterStmt()) {
+                if (nextPtreeNode.getStateAfterStmt().getGoals().equals(nextPtreeNode.getStateBeforeStmt().getGoals())) {
                     sn.setSucc(false);
                 }
 
@@ -255,6 +259,7 @@ public class ScriptTreeGraph {
                 switch (children.size()) {
                     case 0:
                         putIntoFront(callnode);
+                        checkIfRepeatEnd(callnode);
                         checkIfForeachEnd(callnode);
                         addPlaceholder(sn, sn.getNode());
                         break;
@@ -296,7 +301,10 @@ public class ScriptTreeGraph {
                 }
 
                 if(children.size() > 0) {
-                    children.forEach(k -> checkIfForeachEnd(k.getData().getNode()));
+                    children.forEach(k -> {
+                        checkIfRepeatEnd(k.getData().getNode());
+                        checkIfForeachEnd(k.getData().getNode());
+                    });
                 }
 
                 return null;
@@ -361,6 +369,34 @@ public class ScriptTreeGraph {
                 aftergoals.forEach(k -> foreachNodes.put(k.getData().getNode(), nextPtreeNode));
                 return null;
 
+
+
+            }
+
+            @Override
+            public Void visit(RepeatStatement repeat){
+                List<GoalNode<KeyData>> goals = nextPtreeNode.getStateBeforeStmt().getGoals();
+                if (goals.size() == 0) return null;
+
+                goals.forEach(k -> {
+                    RepeatTreeNode ftn = new RepeatTreeNode(
+                            k.getData().getNode(),
+                            nextPtreeNode,
+                            nextPtreeNode.getStatement().getStartPosition().getLineNumber(),
+                            true);
+
+                    replacePlaceholder(
+                            searchParentInMapping(k.getData().getNode()), ftn);
+
+                    addPlaceholder(ftn, k.getData().getNode());
+                });
+
+                // add to repeat list -> so the end of a repeat can be catched
+                List<GoalNode<KeyData>> aftergoals = (nextPtreeNode.getStateAfterStmt() != null)? nextPtreeNode.getStateAfterStmt().getGoals()
+                        : (nextPtreeNode.getStepOver() != null && nextPtreeNode.getStepOver().getStateBeforeStmt() != null) ? nextPtreeNode.getStepOver().getStateBeforeStmt().getGoals()
+                        : new ArrayList<>();
+                aftergoals.forEach(k -> repeatNodes.put(k.getData().getNode(), nextPtreeNode));
+                return null;
             }
         }
 
@@ -466,6 +502,25 @@ public class ScriptTreeGraph {
         }
     }
 
+    /*
+    checks if given node is the end of a repeat-statement
+ */
+    private void checkIfRepeatEnd(Node n) {
+        if(repeatNodes.containsKey(n)) {
+            PTreeNode ptn = repeatNodes.get(n);
+            RepeatTreeNode ftn = new RepeatTreeNode(
+                    n,
+                    ptn,
+                    ptn.getStatement().getStartPosition().getLineNumber(),
+                    false);
+            replacePlaceholder(n, ftn);
+            addPlaceholder(ftn, n);
+
+            repeatNodes.remove(n);
+
+        }
+    }
+
     /**
      * Get all Branchlabels from child to parent GoalNode
      * Order of Branchlabels is from bottom to top
@@ -495,17 +550,6 @@ public class ScriptTreeGraph {
         }
 
         return branchlabels;
-    }
-
-    private boolean sameBranchlabelBefore(List<BranchLabelNode> branchlabels, Node node) {
-        if(branchlabels.size() == 0) return false;
-        return branchlabels.get(branchlabels.size()-1).getNode().serialNr() == node.serialNr();
-
-    }
-
-    private boolean isBranchLabel(String label) {
-        if (label.contains("rule") || label.contains("rules") || label.equals("Normal Execution")) return false;
-        return true;
     }
 
     /**
@@ -557,6 +601,7 @@ public class ScriptTreeGraph {
 
             }
 
+
         }
 
     }
@@ -577,57 +622,21 @@ public class ScriptTreeGraph {
     }
 
     private void addGoals() {
-        front.forEach(k ->  replacePlaceholder(k, new DummyGoalNode(k, k.isClosed())));
-    }
-
-    private TreeCell<TreeNode> cellFactory(TreeView<TreeNode> nodeTreeView) {
-        TextFieldTreeCell<TreeNode> tftc = new TextFieldTreeCell<>();
-        StringConverter<TreeNode> stringConverter = new StringConverter<TreeNode>() {
-            @Override
-            public String toString(TreeNode object) {
-                return object.label;
+        front.forEach(k -> {
+            replacePlaceholder(k, new DummyGoalNode(k, k.isClosed()));
+            
+            //fill statistics
+            if(k.isClosed()) {
+                closedGoals++;
+            } else {
+                openGoals ++;
             }
-
-            @Override
-            public TreeNode fromString(String string) {
-                return null;
-            }
-        };
-        tftc.setConverter(stringConverter);
-        tftc.itemProperty().addListener((p, o, n) -> {
-            if (n != null)
-                repaint(tftc);
         });
-
-        //colorOfNodes.addListener((InvalidationListener) o -> repaint(tftc));
-        return tftc;
     }
 
-    private void repaint(TextFieldTreeCell<TreeNode> tftc) {
-        TreeNode item = tftc.getItem();
-        Node n = item.node;
-        tftc.setStyle("");
-        if (n != null) {
-            if (n.leaf() && !item.label.contains("BRANCH")) {
-                if (n.isClosed()) {
-                    colorOfNodes.putIfAbsent(n, "lightseagreen");
-                    //tftc.setStyle("-fx-background-color: greenyellow");
-                } else {
-                    colorOfNodes.putIfAbsent(n, "indianred");
-                }
-                if (colorOfNodes.containsKey(n)) {
-                    tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
-                }
-            }
-            //TODO for Screenshot tftc.setStyle("-fx-font-size: 18pt");
-           /* if (colorOfNodes.containsKey(n)) {
-                tftc.setStyle("-fx-border-color: "+colorOfNodes.get(n)+";");
-            }*/
-        }
 
-        //expandRootToItem(tftc.getTreeItem());
 
-    }
+
 
 
     }

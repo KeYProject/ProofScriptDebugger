@@ -20,6 +20,7 @@ import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.fmt.DefaultFormatter;
 import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
 import edu.kit.iti.formal.psdbg.gui.controls.*;
+import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.AbstractTreeNode;
 import edu.kit.iti.formal.psdbg.gui.graph.Graph;
 import edu.kit.iti.formal.psdbg.gui.graph.GraphView;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
@@ -35,6 +36,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ASTDiff;
+import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import edu.kit.iti.formal.psdbg.storage.KeyPersistentFacade;
@@ -50,12 +52,14 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
@@ -1325,14 +1329,29 @@ public class DebuggerMain implements Initializable {
         if(startnode == null) return;
         stg.createGraph(startnode, FACADE.getProof().root());
 
-        TreeItem<TreeNode> item = (stg.toView());
+        scriptTreeView.setModel(model);
+        scriptTreeView.setFACADE(FACADE);
+
+        scriptTreeView.setStg(stg);
+        scriptTreeView.toView();
+
+        /*TreeItem<AbstractTreeNode> item = (stg.toView());
 
         scriptTreeView.setTree(item);
-
+*/
 
 
     }
 
+    @FXML
+    public void showUserInteractionW(ActionEvent actionEvent) {
+        Stage stage = new Stage();
+        stage.setTitle("Userinteraction");
+        Scene scene = new Scene(new UserinteractionWindow());
+        stage.setScene(scene);
+
+        stage.show();
+    }
 
     public DockNode getJavaAreaDock() {
         return javaAreaDock;
@@ -1405,7 +1424,7 @@ public class DebuggerMain implements Initializable {
                 keyWindow.makePrettyView();
                 keyWindow.setVisible(true);
             } catch (SecurityException e) {
-                e.printStackTrace();
+               // e.printStackTrace();
             }
 
 
@@ -1565,7 +1584,7 @@ public class DebuggerMain implements Initializable {
 
     private class KeYSecurityManager extends SecurityManager {
         @Override public void checkExit(int status) {
-            throw new SecurityException();
+            throw new SecurityException("KeY window closed");
         }
 
         @Override public void checkPermission(Permission perm) {
