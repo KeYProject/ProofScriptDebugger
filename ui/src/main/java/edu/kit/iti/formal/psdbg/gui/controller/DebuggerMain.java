@@ -299,6 +299,8 @@ public class DebuggerMain implements Initializable {
 
 
         //marriage key proof facade to proof tree
+
+        //TODO: refresh script tree
         getFacade().proofProperty().addListener(
                 (prop, o, n) -> {
                     if (n == null) {
