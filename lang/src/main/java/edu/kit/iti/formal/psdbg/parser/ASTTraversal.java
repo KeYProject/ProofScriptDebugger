@@ -160,6 +160,7 @@ public interface ASTTraversal<T> extends Visitor<T> {
         return null;
     }
 
+
     @Override
     default T visit(ForeachStatement foreach) {
         foreach.getBody().accept(this);
@@ -208,6 +209,14 @@ public interface ASTTraversal<T> extends Visitor<T> {
         guardedCaseStatement.getBody().accept(this);
         return null;
     }
+
+    @Override
+    default T visit(DerivableCase derivableCase){
+        derivableCase.getExpression().accept(this);
+        derivableCase.getBody().accept(this);
+        return null;
+    }
+
 
     @Override
     default T visit(SubstituteExpression subst) {

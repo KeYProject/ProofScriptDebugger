@@ -807,6 +807,7 @@ public class DebuggerMain implements Initializable {
         if (javaFile != null) {
             model.setJavaFile(javaFile);
             model.setInitialDirectory(javaFile.getParentFile());
+            contractLoaderService.reset();
             contractLoaderService.start();
         }
     }
@@ -1166,7 +1167,6 @@ public class DebuggerMain implements Initializable {
         } else {
             throw new RuntimeException("Something went wrong when reloading");
         }
-
     }
 
   /*  public void handle(Events.TacletApplicationEvent tap){
@@ -1408,7 +1408,31 @@ public class DebuggerMain implements Initializable {
         protected void succeeded() {
             statusBar.publishMessage("Contract loaded");
             List<Contract> contracts = getValue();
-            ContractChooser cc = new ContractChooser(FACADE.getService(), contracts);
+
+            /*
+            String javaFile = model.getJavaFile().getName();
+
+            List<Contract> filteredContracts = new ArrayList<>();
+            for (Contract contract : contracts) {
+                String contractFile = contract.getKJT().getFullName();
+                if (javaFile == contractFile) {
+                    filteredContracts.add(contract);
+                }
+            }
+
+            if (filteredContracts.size() == 0) {
+               Utils.showInfoDialog("No loadable contract", "No loadable contract",
+                       "There's no loadable contract for the chosen java file.");
+                return;
+            }
+            */
+
+            ContractChooser cc = null;
+            try {
+                cc = new ContractChooser(FACADE.getService(), FACADE.getContractsForJavaFile(model.getJavaFile()));
+            } catch (ProblemLoaderException e) {
+                e.printStackTrace();
+            }
 
             cc.showAndWait().ifPresent(result -> {
                 model.setChosenContract(result);

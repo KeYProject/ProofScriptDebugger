@@ -100,9 +100,7 @@ literals :
      </pre>*/
 matchPattern
     :
-       MATCH (
-         derivable=DERIVABLE derivableExpression=expression
-       | (pattern=expression (USING LBRACKET argList RBRACKET)?)
+       MATCH ((pattern=expression (USING LBRACKET argList RBRACKET)?)
        )
     ;
 
@@ -122,8 +120,9 @@ casesStmt
 
 casesList
     :    (TRY |
-            (CASE  (expression
-                | (CLOSES  INDENT closesGuard=stmtList DEDENT) ) ) )
+            (CASE (expression
+                |(CLOSES  INDENT closesGuard=stmtList DEDENT)
+                |(derivable=DERIVABLE derivableExpression=expression) ) ))
                 COLON INDENT? body=stmtList DEDENT?
     ;
 

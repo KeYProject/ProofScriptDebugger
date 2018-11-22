@@ -49,6 +49,13 @@ public class PseudoMatcher implements MatcherApi<String> {
         }
         return Collections.singletonList(va);
     }
+
+    @Override
+    public GoalNode<String> isDerivable(GoalNode<String> currentState, Value v) {
+        return null;
+    }
+
+
 }
 
    
