@@ -305,6 +305,7 @@ public class DebuggerMain implements Initializable {
                         proofTree.setRoot(null);
                     } else {
                         proofTree.setRoot(n.root());
+
                         InspectionViewsController inspectionViewsController = getInspectionViewsController();
                         InspectionView activeInspectionViewTab = inspectionViewsController.getActiveInspectionViewTab();
                         InspectionModel model = activeInspectionViewTab.getModel();

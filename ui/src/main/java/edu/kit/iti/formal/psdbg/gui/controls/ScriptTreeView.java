@@ -82,8 +82,11 @@ public class ScriptTreeView extends BorderPane {
         tftc.setConverter(stringConverter);
 
         tftc.itemProperty().addListener((p, o, n) -> {
-            if (n != null)
+            if (n != null) {
                 repaint(tftc);
+            } else {
+                tftc.setStyle("");
+            }
         });
 
 
