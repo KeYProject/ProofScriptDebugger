@@ -3,6 +3,7 @@ package edu.kit.iti.formal.psdbg.interpreter;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.Signature;
+import edu.kit.iti.formal.psdbg.parser.data.Value;
 
 import java.util.List;
 
@@ -26,5 +27,7 @@ public interface MatcherApi<T> {
      * @return
      */
     List<VariableAssignment> matchSeq(GoalNode<T> currentState, String pattern);
+
+    GoalNode<T> isDerivable(GoalNode<T> currentState, Value v);
 
 }

@@ -93,6 +93,11 @@ public class DefaultASTVisitor<T> implements Visitor<T> {
     }
 
     @Override
+    public T visit(DerivableCase derivableCase) {
+        return defaultVisit(derivableCase);
+    }
+
+    @Override
     public T visit(CaseStatement caseStatement) {
         return defaultVisit(caseStatement);
     }

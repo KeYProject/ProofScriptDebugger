@@ -30,6 +30,8 @@ import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import edu.kit.iti.formal.psdbg.parser.types.TermType;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A match expression contains an argument and a uses clause.
@@ -41,6 +43,7 @@ import lombok.Data;
 public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatternContext> {
     //private Signature signature = new Signature();
     private Expression pattern;
+    @Deprecated @Getter @Setter
     private boolean isDerivable = false;
     @Deprecated
     private Expression derivableTerm;
