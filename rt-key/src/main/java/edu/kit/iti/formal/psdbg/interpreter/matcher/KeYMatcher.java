@@ -3,8 +3,10 @@ package edu.kit.iti.formal.psdbg.interpreter.matcher;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Name;
 import de.uka.ilkd.key.logic.Term;
+import de.uka.ilkd.key.logic.TermBuilder;
 import de.uka.ilkd.key.logic.op.LogicVariable;
 import de.uka.ilkd.key.logic.op.SchemaVariable;
+import de.uka.ilkd.key.parser.ParserException;
 import de.uka.ilkd.key.pp.LogicPrinter;
 import de.uka.ilkd.key.proof.ApplyStrategy;
 import de.uka.ilkd.key.proof.Goal;
@@ -14,14 +16,12 @@ import de.uka.ilkd.key.rule.NoPosTacletApp;
 import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.iti.formal.psdbg.interpreter.MatcherApi;
-import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
-import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
-import edu.kit.iti.formal.psdbg.interpreter.data.SortType;
-import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
+import edu.kit.iti.formal.psdbg.interpreter.data.*;
 import edu.kit.iti.formal.psdbg.parser.ast.Signature;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
 import edu.kit.iti.formal.psdbg.parser.types.TermType;
+import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,12 +54,25 @@ public class KeYMatcher implements MatcherApi<KeyData> {
     }
 
     /**
-     * @param proof
-     * @param kd
-     * @param term
+     *
      * @return null if the term is not derivable or the new state
      */
-    public static GoalNode<KeyData> isDerivable(Proof proof, GoalNode<KeyData> kd, Term term) {
+    public GoalNode<KeyData> isDerivable(GoalNode<KeyData> kd, Value pattern) {
+
+        Proof proof = kd.getData().getProof();
+        TermValue tv = (TermValue) pattern.getData();
+        Term term = tv.getTerm();
+        if(term == null) {
+            Services services = kd.getData().getProof().getServices();
+            try {
+                term = new TermBuilder(services.getTermFactory(), services).parseTerm(tv.getTermRepr());
+
+            } catch (ParserException e) {
+                throw new RuntimeException(e);
+
+            }
+        }
+
         Taclet cut = proof.getEnv().getInitConfigForEnvironment().lookupActiveTaclet(CUT_TACLET_NAME);
         TacletApp app = NoPosTacletApp.createNoPosTacletApp(cut);
         SchemaVariable sv = (SchemaVariable) app.uninstantiatedVars().iterator().next();
@@ -82,7 +95,14 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         boolean isDerivable = proof.getSubtreeGoals(toShow.node()).size() == 0;
 
         if (isDerivable) {
-            KeyData kdataNew = new KeyData(kd.getData(), goalList.head());
+            //find the open goal node
+            Goal toSet= null;
+            if(goalList.head().node().isClosed()){
+                toSet = goalList.tail().head();
+            } else{
+                toSet = goalList.head();
+            }
+            KeyData kdataNew = new KeyData(kd.getData(), toSet);
             GoalNode<KeyData> newGoalNode = new GoalNode<KeyData>(kd, kdataNew, kdataNew.isClosedNode());
             return newGoalNode;
         } else {

@@ -12,7 +12,9 @@ import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.SimpleType;
+import edu.kit.iti.formal.psdbg.parser.types.TermType;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
+import edu.kit.iti.formal.psdbg.parser.types.TypeFacade;
 import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -211,6 +213,35 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         return null;
     }
 
+    @Override
+    public Object visit(DerivableCase derivableCase) {
+        Expression pattern = derivableCase.getExpression();
+        State<T> currentStateToMatch = peekState();
+        GoalNode<T> selectedGoal = currentStateToMatch.getSelectedGoalNode();
+        assert currentStateToMatch.getGoals().contains(selectedGoal);
+        Value v = evaluate(pattern);
+        if(v.getType() == TypeFacade.ANY_TERM){
+            GoalNode<T> newGoalNode= matcherApi.isDerivable(selectedGoal, v);
+            try {
+                enterScope(derivableCase);
+
+                if (newGoalNode != null) {
+                    currentStateToMatch.getGoals().remove(selectedGoal);
+                    currentStateToMatch.getGoals().add(newGoalNode);
+                    currentStateToMatch.setSelectedGoalNode(newGoalNode);
+                    executeBody(derivableCase.getBody(), newGoalNode, new VariableAssignment());
+                    return true;
+                } else {
+                    return false;
+                }
+            } finally {
+                exitScope(derivableCase);
+            }
+        } else {
+            throw new RuntimeException("A derivable expression must contain a term. Received a"+v.getType());
+        }
+    }
+
     /**
      * @param casesStatement
      * @return
@@ -305,7 +336,6 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         GoalNode<T> selectedGoal = currentStateToMatch.getSelectedGoalNode();
         assert currentStateToMatch.getGoals().contains(selectedGoal);
         VariableAssignment va = evaluateMatchInGoal(matchExpression, selectedGoal);
-
         try {
             enterScope(guardedCaseStatement);
             if (va != null) {
