@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class DerivableCase extends CaseStatement{
+public class DerivableCase extends CaseStatement {
 
     private Expression expression;
 
     public DerivableCase(Statements copy, Expression copy1) {
         super(copy);
-        this.expression=copy1;
+        this.expression = copy1;
     }
 
     @Override

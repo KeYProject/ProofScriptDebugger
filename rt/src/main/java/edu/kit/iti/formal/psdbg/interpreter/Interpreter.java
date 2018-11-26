@@ -220,8 +220,8 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
         GoalNode<T> selectedGoal = currentStateToMatch.getSelectedGoalNode();
         assert currentStateToMatch.getGoals().contains(selectedGoal);
         Value v = evaluate(pattern);
-        if(v.getType() == TypeFacade.ANY_TERM){
-            GoalNode<T> newGoalNode= matcherApi.isDerivable(selectedGoal, v);
+        if (v.getType() == TypeFacade.ANY_TERM) {
+            GoalNode<T> newGoalNode = matcherApi.isDerivable(selectedGoal, v);
             try {
                 enterScope(derivableCase);
 
@@ -238,7 +238,7 @@ public class Interpreter<T> extends DefaultASTVisitor<Object>
                 exitScope(derivableCase);
             }
         } else {
-            throw new RuntimeException("A derivable expression must contain a term. Received a"+v.getType());
+            throw new RuntimeException("A derivable expression must contain a term. Received a" + v.getType());
         }
     }
 

@@ -414,8 +414,7 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
             Expression pattern = (Expression) ctx.derivableExpression.accept(this);
             ((DerivableCase) cs).setExpression(pattern);
             pattern.setParent(cs);
-        } else
-        {
+        } else {
             cs = new GuardedCaseStatement();
             Expression<ParserRuleContext> guard = (Expression<ParserRuleContext>) ctx.expression().accept(this);
             ((GuardedCaseStatement) cs).setGuard(guard);

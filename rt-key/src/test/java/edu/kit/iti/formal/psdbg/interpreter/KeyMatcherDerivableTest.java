@@ -34,7 +34,7 @@ public class KeyMatcherDerivableTest {
 
         System.out.println(proof);
 
-       // Assert.assertNotNull(a);
+        // Assert.assertNotNull(a);
 
         Assert.assertEquals(1, proof.getSubtreeGoals(proof.root()).size());
     }

@@ -211,7 +211,7 @@ public interface ASTTraversal<T> extends Visitor<T> {
     }
 
     @Override
-    default T visit(DerivableCase derivableCase){
+    default T visit(DerivableCase derivableCase) {
         derivableCase.getExpression().accept(this);
         derivableCase.getBody().accept(this);
         return null;
