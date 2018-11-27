@@ -165,7 +165,6 @@ public class DebuggerMain implements Initializable {
     private ProofTree proofTree = new ProofTree(this);
     private DockNode proofTreeDock = new DockNode(proofTree, "Proof Tree");
 
-    //TODO: anpassen
     private ScriptTreeGraph scriptTreeGraph = new ScriptTreeGraph();
     private ScriptTreeView scriptTreeView = new ScriptTreeView(this);
     private DockNode scriptTreeDock = new DockNode(scriptTreeView,"Script Tree");
@@ -299,8 +298,6 @@ public class DebuggerMain implements Initializable {
 
 
         //marriage key proof facade to proof tree
-
-        //TODO: refresh script tree
         getFacade().proofProperty().addListener(
                 (prop, o, n) -> {
                     if (n == null) {
@@ -401,6 +398,7 @@ public class DebuggerMain implements Initializable {
         renewThreadStateTimer();
 
         savePointController = new SavePointController(this);
+
     }
 
     /**
@@ -534,7 +532,7 @@ public class DebuggerMain implements Initializable {
     public void executeScript() {
         //execute script without stepwise
         scriptExecutionController.executeScript(false);
-        //executeScript(false);
+
     }
 
 
@@ -617,6 +615,9 @@ public class DebuggerMain implements Initializable {
             assert statePointer != null;
             State<KeyData> lastState = statePointer.getStateAfterStmt();
             getInspectionViewsController().getActiveInspectionViewTab().activate(statePointer, lastState);
+
+            refreshScriptTreeView();
+
             if (lastState.getGoals().isEmpty()) {
                 statusBar.setNumberOfGoals(0);
                 Utils.showClosedProofDialog("the script " + scriptController.getMainScript().getScriptName());
@@ -742,6 +743,7 @@ public class DebuggerMain implements Initializable {
         //execute stepwise from start
         scriptExecutionController.executeScript(true);
         //executeScript(true);
+
     }
 
 
@@ -751,6 +753,7 @@ public class DebuggerMain implements Initializable {
         df.setErrorListener(this::onInterpreterError);
         if (addInitBreakpoint) {
             df.releaseUntil(new Blocker.CounterBlocker(1)); // just execute
+
         }
         df.getBreakpoints().addAll(breakpoints);
         df.getStatePointerListener().add(this::handleStatePointer);
@@ -1197,7 +1200,6 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void selectSavepoint(ActionEvent actionEvent) {
-        //TODO remove highlight of SPs
 
         SavePoint selected = cboSavePoints.getValue();
 
@@ -1283,7 +1285,6 @@ public class DebuggerMain implements Initializable {
         scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
 
 
-
     }
 
 
@@ -1319,29 +1320,48 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void showScriptTree(ActionEvent actionEvent) {
-        //TODO: anpassen
+        if (FACADE.getProofState() == KeYProofFacade.ProofState.EMPTY) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "No proof loaded is loaded yet. If proof loading was invoked, please wait. Loading may take a while.", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+
         if (!scriptTreeDock.isDocked() && !scriptTreeDock.isFloating()) {
             scriptTreeDock.dock(dockStation, DockPos.LEFT);
         }
 
-        // old version of scripttree
+        refreshScriptTreeView();
 
-        ScriptTreeGraph stg = new ScriptTreeGraph();
-        PTreeNode startnode = (model.getDebuggerFramework() != null)?model.getDebuggerFramework().getPtreeManager().getStartNode():null;
-        if(startnode == null) return;
-        stg.createGraph(startnode, FACADE.getProof().root());
+    }
 
-        scriptTreeView.setModel(model);
-        scriptTreeView.setFACADE(FACADE);
+    /**
+     * refreshes the view on the scripttree
+     */
+    public void refreshScriptTreeView() {
+        scriptTreeGraph = new ScriptTreeGraph();
+        PTreeNode startnode = null;
+        try {
+            startnode = model.getDebuggerFramework().getPtreeManager().getStartNode();
+        } finally {
+            scriptTreeGraph.createGraph(startnode, FACADE.getProof().root());
+            scriptTreeView.setStg(scriptTreeGraph);
+            scriptTreeView.toView();
+        }
 
-        scriptTreeView.setStg(stg);
+
+        /*
+        if (model.getDebuggerFramework() != null) {
+            PTreeNode startnode = model.getDebuggerFramework().getPtreeManager().getStartNode();
+            if (startnode != null) {
+                scriptTreeGraph.createGraph(startnode, FACADE.getProof().root());
+            }
+        } else {
+            //No script executed yet
+            scriptTreeGraph = new ScriptTreeGraph();
+        }
+        scriptTreeView.setStg(scriptTreeGraph);
         scriptTreeView.toView();
-
-        /*TreeItem<AbstractTreeNode> item = (stg.toView());
-
-        scriptTreeView.setTree(item);
-*/
-
+        */
 
     }
 
@@ -1515,7 +1535,6 @@ public class DebuggerMain implements Initializable {
                 //traverseProofTreeAndAddSentinelsToLeaves();
             }
 
-
             ptree.expandRootToSentinels();
             DockNode node = new DockNode(ptree, "Proof Tree for Step Into: " +
                     original.getStatement().accept(new ShortCommandPrinter())
@@ -1523,6 +1542,7 @@ public class DebuggerMain implements Initializable {
 
             node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
             node.requestFocus();
+
         }
     }
 

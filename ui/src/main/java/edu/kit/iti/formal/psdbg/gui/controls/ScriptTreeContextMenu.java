@@ -15,24 +15,36 @@ public class ScriptTreeContextMenu extends javafx.scene.control.ContextMenu {
     MenuItem copyBranchLabel = new MenuItem("Branch Label");
     MenuItem copyProgramLines = new MenuItem("Program Lines");
     MenuItem createCases = new MenuItem("Created Case for Open Goals");
-    MenuItem refresh = new MenuItem("Refresh (TOFIX)");
+    MenuItem refresh = new MenuItem("Refresh");
     MenuItem showSequent = new MenuItem("Show Sequent");
     MenuItem showGoal = new MenuItem("Show in Goal List");
+
     MenuItem expandAllNodes = new MenuItem("Expand Tree");
+    MenuItem collapseAllNodes = new MenuItem("Collapse Tree");
+
+    MenuItem expandFromNode = new MenuItem("Expand Tree from here");
+
 
     private ScriptTreeView scriptTreeView;
 
     public ScriptTreeContextMenu(ScriptTreeView scriptTreeView) {
         this.scriptTreeView = scriptTreeView;
 
-        refresh.setOnAction(event -> scriptTreeView.setTree(scriptTreeView.toView()));
-        refresh.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.REFRESH));
-
         expandAllNodes.setOnAction((event) -> {
             expandRootToLeaves(scriptTreeView.treeView.getRoot());
         });
 
-        getItems().setAll(refresh, expandAllNodes); //, new SeparatorMenuItem(), createCases, showSequent, showGoal);
+        collapseAllNodes.setOnAction((event -> {
+            collapseRootToLeaves(scriptTreeView.treeView.getRoot());
+        }));
+
+        /*
+        expandFromNode.setOnAction((event -> {
+            expandTreeFromNode(event.getSource()
+        }));
+        */
+
+        getItems().setAll(expandAllNodes, collapseAllNodes); //, new SeparatorMenuItem(), createCases, showSequent, showGoal);
         setAutoFix(true);
         setAutoHide(true);
         /*
@@ -96,6 +108,17 @@ public class ScriptTreeContextMenu extends javafx.scene.control.ContextMenu {
         if (candidate != null) {
             if (!candidate.isLeaf()) {
                 candidate.setExpanded(true);
+                ObservableList<TreeItem> children = candidate.getChildren();
+                children.forEach(treeItem -> expandRootToLeaves(treeItem));
+
+            }
+        }
+    }
+
+    static void collapseRootToLeaves(TreeItem candidate) {
+        if (candidate != null) {
+            if (!candidate.isLeaf()) {
+                candidate.setExpanded(false);
                 ObservableList<TreeItem> children = candidate.getChildren();
                 children.forEach(treeItem -> expandRootToLeaves(treeItem));
 

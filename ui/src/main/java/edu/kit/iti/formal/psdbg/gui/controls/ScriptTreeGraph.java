@@ -20,14 +20,17 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.util.StringConverter;
 import lombok.Getter;
+import lombok.Setter;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 
 public class ScriptTreeGraph {
 
     @Getter
-    private ScriptTreeNode rootNode;
+    @Setter
+    private AbstractTreeNode rootNode;
 
     @Getter
     private Map<Node, AbstractTreeNode> mapping;
@@ -56,24 +59,28 @@ public class ScriptTreeGraph {
 
     public void createGraph(PTreeNode<KeyData> rootPTreeNode, Node root) {
 
-        this.currentNode = rootPTreeNode;
-        if(currentNode == null) return;
-        ScriptTreeNode rootNode = new ScriptTreeNode(root, rootPTreeNode, rootPTreeNode.getStatement().getStartPosition().getLineNumber());
-        mapping = new HashMap<>();
-        foreachNodes = new HashMap<>();
-        repeatNodes = new HashMap<>();
-        placeholderNodes = new ArrayList<>();
-        front = new ArrayList<>();
-        sortedList = new ArrayList<>();
-        State<KeyData> stateAfterStmt = rootPTreeNode.getStateAfterStmt();
-        if (stateAfterStmt != null) {
-            for (GoalNode<KeyData> g : stateAfterStmt.getGoals()) {
-                putIntoMapping(g.getData().getNode(), null);
-                putIntoFront(g.getData().getNode());
+        AbstractTreeNode rootNode;
+        if (rootPTreeNode != null) {
+            this.currentNode = rootPTreeNode;
+            if (currentNode == null) return;
+            rootNode = new ScriptTreeNode(root, rootPTreeNode, rootPTreeNode.getStatement().getStartPosition().getLineNumber());
+            mapping = new HashMap<>();
+            foreachNodes = new HashMap<>();
+            repeatNodes = new HashMap<>();
+            placeholderNodes = new ArrayList<>();
+            front = new ArrayList<>();
+            sortedList = new ArrayList<>();
+            State<KeyData> stateAfterStmt = rootPTreeNode.getStateAfterStmt();
+            if (stateAfterStmt != null) {
+                for (GoalNode<KeyData> g : stateAfterStmt.getGoals()) {
+                    putIntoMapping(g.getData().getNode(), null);
+                    putIntoFront(g.getData().getNode());
+                }
             }
         } else {
-
+            rootNode = new DummyGoalNode(root, root.isClosed());
         }
+
         this.rootNode = rootNode;
         computeList();
         compute();
@@ -167,6 +174,9 @@ public class ScriptTreeGraph {
      * Fills mapping/Creates model for graph
      */
     public void compute () {
+        if (sortedList == null) {
+            return;
+        }
             Iterator<PTreeNode<KeyData>> iter = sortedList.listIterator(0);
             ScriptVisitor visitor = new ScriptVisitor();
 
@@ -619,6 +629,9 @@ public class ScriptTreeGraph {
     }
 
     private void addGoals() {
+        if (front == null) {
+            return;
+        }
         front.forEach(k -> {
             replacePlaceholder(k, new DummyGoalNode(k, k.isClosed()));
             
