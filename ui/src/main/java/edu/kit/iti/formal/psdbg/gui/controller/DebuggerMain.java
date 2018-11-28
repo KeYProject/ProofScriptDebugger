@@ -1337,32 +1337,15 @@ public class DebuggerMain implements Initializable {
     /**
      * refreshes the view on the scripttree
      */
-    public void refreshScriptTreeView() {
+    private void refreshScriptTreeView() {
         scriptTreeGraph = new ScriptTreeGraph();
         PTreeNode startnode = null;
-        try {
+        if (model.getDebuggerFramework() != null && model.getDebuggerFramework().getPtreeManager() != null) {
             startnode = model.getDebuggerFramework().getPtreeManager().getStartNode();
-        } finally {
-            scriptTreeGraph.createGraph(startnode, FACADE.getProof().root());
-            scriptTreeView.setStg(scriptTreeGraph);
-            scriptTreeView.toView();
         }
-
-
-        /*
-        if (model.getDebuggerFramework() != null) {
-            PTreeNode startnode = model.getDebuggerFramework().getPtreeManager().getStartNode();
-            if (startnode != null) {
-                scriptTreeGraph.createGraph(startnode, FACADE.getProof().root());
-            }
-        } else {
-            //No script executed yet
-            scriptTreeGraph = new ScriptTreeGraph();
-        }
+        scriptTreeGraph.createGraph(startnode, FACADE.getProof().root());
         scriptTreeView.setStg(scriptTreeGraph);
         scriptTreeView.toView();
-        */
-
     }
 
     @FXML

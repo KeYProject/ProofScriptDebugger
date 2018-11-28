@@ -3,6 +3,7 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import com.sun.javafx.css.Style;
 import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
+import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.*;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Displays a Treeview of the ScriptTree, which represents state of proof using only
@@ -40,7 +42,7 @@ public class ScriptTreeView extends BorderPane {
     @Setter
     private ScriptTreeGraph stg;
 
-    private ContextMenu contextMenu;
+    private ScriptTreeContextMenu contextMenu;
 
     private AbstractTreeNode rootNode;
     private Map<Node, AbstractTreeNode> mapping;
@@ -193,5 +195,14 @@ public class ScriptTreeView extends BorderPane {
             contextMenu = new ScriptTreeContextMenu(this);
         }
         return contextMenu;
+    }
+
+    public void consumeNode(Consumer<TreeItem> consumer, String success) {
+        TreeItem<AbstractTreeNode> item = treeView.getSelectionModel().getSelectedItem();
+        if (item != null) {
+            consumer.accept(item);
+        } else {
+            Events.fire(new Events.PublishMessage("Current item does not have a node.", 2));
+        }
     }
 }
