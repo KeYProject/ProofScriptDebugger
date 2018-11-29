@@ -1,14 +1,16 @@
-script full0(){
+script empty(){
+
+}
+
+script full(){
   impRight;
   impRight;
   impLeft;
-   foreach{
-    notLeft;
+  cases {
+	case derivable `p`:
    }
-   foreach{
-   auto;
-   }
-  }
+}
+
 
 script full(){
   impRight;

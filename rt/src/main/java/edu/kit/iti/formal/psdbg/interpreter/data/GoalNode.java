@@ -58,6 +58,11 @@ public class GoalNode<T> {
         this.id = id;
     }
 
+    private GoalNode(int id, GoalNode<T> parent, VariableAssignment ass, T data, boolean isClosed) {
+        this(parent, ass, data, isClosed);
+        this.id = id;
+    }
+
     private GoalNode(int id, T data, boolean isClosed) {
         this(data);
         this.isClosed = isClosed;
@@ -133,7 +138,8 @@ public class GoalNode<T> {
      */
     public GoalNode<T> deepCopy() {
         if (parent != null) {
-            return new GoalNode<T>(id, parent.deepCopy(), data, isClosed);
+            VariableAssignment deepCopy = parent.assignments.deepCopy();
+            return new GoalNode<T>(id, parent.deepCopy(), deepCopy, data, isClosed);
         } else {
             return new GoalNode<T>(id, data, isClosed);
         }

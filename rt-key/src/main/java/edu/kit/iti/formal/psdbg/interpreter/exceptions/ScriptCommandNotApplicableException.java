@@ -1,5 +1,6 @@
 package edu.kit.iti.formal.psdbg.interpreter.exceptions;
 
+import de.uka.ilkd.key.macros.scripts.AbstractCommand;
 import de.uka.ilkd.key.macros.scripts.RuleCommand;
 
 import java.util.Map;
@@ -11,6 +12,9 @@ import java.util.Map;
  */
 public class ScriptCommandNotApplicableException extends InterpreterRuntimeException {
     public ScriptCommandNotApplicableException(Exception e, RuleCommand c) {
+        System.out.println("Call " + c.getName() + " was not applicable");
+    }
+    public ScriptCommandNotApplicableException(Exception e, AbstractCommand c) {
         System.out.println("Call " + c.getName() + " was not applicable");
     }
 

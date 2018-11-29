@@ -370,16 +370,9 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
         MatchExpression match = new MatchExpression();
         match.setRuleContext(ctx);
 
-        if (ctx.derivable != null) {
-            match.setDerivable(true);
-            Expression<ParserRuleContext> e = (Expression<ParserRuleContext>) ctx.derivableExpression.accept(this);
-            e.setParent(match);
-            match.setDerivableTerm(e);
-        } else {
-            Expression<ParserRuleContext> e = (Expression<ParserRuleContext>) ctx.pattern.accept(this);
-            match.setPattern(e);
-            e.setParent(match);
-        }
+        Expression<ParserRuleContext> e = (Expression<ParserRuleContext>) ctx.pattern.accept(this);
+        match.setPattern(e);
+        e.setParent(match);
         return match;
     }
 
@@ -416,7 +409,13 @@ public class TransformAst implements ScriptLanguageVisitor<Object> {
             Statements closes = (Statements) ctx.closesGuard.accept(this);
             ((ClosesCase) cs).setClosesGuard(closes);
             closes.setParent(cs);
-        } else {
+        } else if (ctx.derivable != null) {
+            cs = new DerivableCase();
+            Expression pattern = (Expression) ctx.derivableExpression.accept(this);
+            ((DerivableCase) cs).setExpression(pattern);
+            pattern.setParent(cs);
+        } else
+        {
             cs = new GuardedCaseStatement();
             Expression<ParserRuleContext> guard = (Expression<ParserRuleContext>) ctx.expression().accept(this);
             ((GuardedCaseStatement) cs).setGuard(guard);

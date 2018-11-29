@@ -10,7 +10,6 @@
 
         <!--        <fx:include fx:id="insertHidden" visible="false" source="InsertHiddenMenuView.fxml"/>-->
         <Menu fx:id="moreRules" visible="false" text="More rules"/>
-
         <!-- <SeparatorMenuItem/> -->
 
         <!--  <MenuItem mnemonicParsing="false" onAction="#handleFocussedRuleApplication"
@@ -19,6 +18,9 @@
         <!--
         <fx:include fx:id="proofMacroMenu" source="ProofMacroMenuView.fxml"/>
         -->
+        <SeparatorMenuItem/>
+
+        <Menu fx:id="scriptCommands" visible="true" text="Script Commands"/>
 
         <SeparatorMenuItem/>
 

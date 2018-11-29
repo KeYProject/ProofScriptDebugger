@@ -1,7 +1,7 @@
 @base03: rgb(0, 43, 54);
 @base02: rgb(7, 54, 66);
 @base01: #000000;
-
+//@baseHighlight: rgb(135, 225, 255);
 //@base01: rgb(88, 110, 117);
 @base00: rgb(101, 123, 131);
 @base0: rgb(131, 148, 150);
@@ -39,7 +39,7 @@
   -fx-font-family: "Inconsolata", monospace;
   //-fx-font-family: "Fira Code Medium", monospace;
   -fx-font-size: 12pt;
- // -fx-font-size: 20pt;
+  //-fx-font-size: 16pt;
   -fx-fill: @base00;
 
   .lineno {
@@ -153,7 +153,7 @@
   //  -fx-background-color: @base3;
   -fx-font-family: "Inconsolata", monospace;
   -fx-font-size: 12pt;
-  //-fx-font-size: 20pt;
+  //-fx-font-size: 16pt;
   -fx-fill: @base01;
 
   .ABSTRACT, .ASSERT, .BOOLEAN, .BREAK, .BYTE, .CASE, .CATCH, .CHAR, .CLASS, .CONST,
@@ -249,13 +249,14 @@
 }
 
 .sequent-view {
-  -fx-font-size: 14pt;
-//  -fx-font-size: 20pt;
+  //-fx-font-size: 14pt;
+  -fx-font-size: 16pt;
   -fx-background-color: @basenavy;
   -fx-fill: black;
 
   .sequent-highlight {
-    -rtfx-background-color: @base1;
+//    -rtfx-background-color: @base1;
+    -rtfx-background-color: @screenShotMarkerBase;
     -fx-fill: black;
   }
 

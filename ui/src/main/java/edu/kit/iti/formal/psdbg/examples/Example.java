@@ -4,6 +4,7 @@ import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import lombok.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -24,7 +25,12 @@ public abstract class Example {
     protected MainScriptIdentifier mainScriptIdentifier;
 
     public static File newTempFile(URL url, String filename) throws IOException {
-        File f = new File(FileUtils.getTempDirectoryPath(), filename);
+
+
+        File psdbg = new File(FileUtils.getTempDirectoryPath(), "psdbg");
+        File examplefolder = new File(psdbg.getPath(), FilenameUtils.removeExtension(filename));
+
+        File f = new File(examplefolder, filename);
         FileUtils.copyURLToFile(url, f);
         return f;
     }
