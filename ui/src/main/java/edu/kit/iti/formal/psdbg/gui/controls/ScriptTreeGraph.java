@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import de.uka.ilkd.key.proof.Node;
+import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.*;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -45,14 +46,21 @@ public class ScriptTreeGraph {
 
     private List<PlaceholderNode> placeholderNodes;
 
+    /**
+     * contains last node of a ForeachStatement
+     */
     private HashMap<Node, PTreeNode> foreachNodes;
+    /**
+     * contains last node of RepeatStatement
+     */
     private HashMap<Node, PTreeNode> repeatNodes;
 
     /**
-     * statistic of scripttree
+     * statistics of scripttree
      */
-
+    @Getter
     private int openGoals = 0;
+    @Getter
     private int closedGoals = 0;
 
 
@@ -85,8 +93,6 @@ public class ScriptTreeGraph {
         computeList();
         compute();
         addGoals();
-        System.out.println("openGoals = " + openGoals);
-        System.out.println("closedGoals = " + closedGoals);
     }
 
 
@@ -190,7 +196,6 @@ public class ScriptTreeGraph {
             }
 
             mapping.size();
-           // mapping.forEach((node, abstractTreeNode) -> System.out.println("node.serialNr() = " + node.serialNr() + " " + abstractTreeNode.toTreeNode().label));
         }
 
         /*
@@ -284,10 +289,6 @@ public class ScriptTreeGraph {
                             List<BranchLabelNode> branchlabel = getBranchLabels(nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode(), gn);
 
                             if(branchlabel.size() != 0) {
-
-                                Lists.reverse(branchlabel).forEach(k ->
-                                        System.out.println(k.getNode().serialNr() + " " + k.getLabelName()));
-
                                 insertBranchLabels(callnode, branchlabel);
                                 addPlaceholder(branchlabel.get(0), gn.getData().getNode());
 
@@ -341,6 +342,8 @@ public class ScriptTreeGraph {
             @Override
             public Void visit(DefaultCaseStatement caseStatement) {
                 PTreeNode<KeyData> nextintoptn = nextPtreeNode.getStepInto();
+
+                //TODO: QS throws a Nullpointer at same point, eventhough cript has no Defaultstatement
                 ScriptTreeNode match = new ScriptTreeNode(nextPtreeNode.getStepInto().getStateBeforeStmt().getSelectedGoalNode().getData().getNode(),nextPtreeNode,  nextPtreeNode.getStatement().getStartPosition().getLineNumber());
                 match.setMatchEx(true);
                 match.setSucc(true);
@@ -407,6 +410,7 @@ public class ScriptTreeGraph {
             }
         }
 
+
         private void addPlaceholder(AbstractTreeNode parent, Node current) {
         PlaceholderNode phn = new PlaceholderNode(current);
         phn.setParent(parent);
@@ -417,7 +421,6 @@ public class ScriptTreeGraph {
                 addToSubChildren(parent.getNode(), phn);
 
         }
-
         placeholderNodes.add(phn);
 
         }
@@ -628,13 +631,25 @@ public class ScriptTreeGraph {
         return -1;
     }
 
+
     private void addGoals() {
+        //No script has been executed yet
+        if (rootNode instanceof DummyGoalNode) {
+            //fill statitics
+            if (rootNode.getNode().isClosed()) {
+                closedGoals++;
+            } else {
+                openGoals++;
+            }
+            return;
+        }
+
+        //after script execution
         if (front == null) {
             return;
         }
         front.forEach(k -> {
             replacePlaceholder(k, new DummyGoalNode(k, k.isClosed()));
-            
             //fill statistics
             if(k.isClosed()) {
                 closedGoals++;

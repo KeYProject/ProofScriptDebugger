@@ -20,6 +20,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.util.StringConverter;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.awt.*;
@@ -30,16 +31,17 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Displays a Treeview of the ScriptTree, which represents state of proof using only
- * statements in the script
- * Branching Labels
- * DummyGoalNodes
+ * Displays a Treeview of the ScriptTree, which represents state of proof with
+ *  - statements in the script
+ *  - branching labels
+ *  - goal nodes
  *
- * @author luong
+ * @author An.Luong
  */
 public class ScriptTreeView extends BorderPane {
 
     @Setter
+    @Getter
     private ScriptTreeGraph stg;
 
     private ScriptTreeContextMenu contextMenu;

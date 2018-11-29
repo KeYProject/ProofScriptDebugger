@@ -16,13 +16,16 @@ import lombok.Setter;
 
 import java.util.function.Consumer;
 
+/**
+ * Contextmenu for the ScriptTreevView
+ *
+ * @author An.Luong
+ */
 public class ScriptTreeContextMenu extends javafx.scene.control.ContextMenu {
     MenuItem copyBranchLabel = new MenuItem("Branch Label");
-    MenuItem copyProgramLines = new MenuItem("Program Lines");
-    MenuItem createCases = new MenuItem("Created Case for Open Goals");
 
     MenuItem showSequent = new MenuItem("Show Sequent");
-    MenuItem showGoal = new MenuItem("Show in Goal List");
+    MenuItem showStatistics = new MenuItem("Show Statistics");
 
     MenuItem expandAllNodes = new MenuItem("Expand Tree from here");
     MenuItem collapseAllNodes = new MenuItem("Collapse Tree from here");
@@ -53,30 +56,40 @@ public class ScriptTreeContextMenu extends javafx.scene.control.ContextMenu {
                     LabelFactory.getBranchingLabel(((AbstractTreeNode) n.getValue()).getNode()));
         }, "Copied!"));
 
-        getItems().setAll(expandAllNodes, collapseAllNodes, new SeparatorMenuItem(), showSequent, createCases); //, new SeparatorMenuItem(), createCases, showSequent, showGoal);
+        showStatistics.setOnAction(evt -> Events.fire(
+                new Events.PublishMessage("[ScriptTree statistics] open goals: " + scriptTreeView.getStg().getOpenGoals() + ", closed goals: " +
+                        scriptTreeView.getStg().getClosedGoals(), 1)));
+        getItems().setAll(expandAllNodes, collapseAllNodes, new SeparatorMenuItem(), showSequent, showStatistics);
         setAutoFix(true);
         setAutoHide(true);
     }
 
 
+    /**
+     * Expand all subTreeItems from selected Treeitem
+     * @param candidate selected Treeitem
+     */
     static void expandNodeToLeaves(TreeItem candidate) {
         if (candidate != null) {
             if (!candidate.isLeaf()) {
                 candidate.setExpanded(true);
                 ObservableList<TreeItem> children = candidate.getChildren();
                 children.forEach(treeItem -> expandNodeToLeaves(treeItem));
-
             }
         }
     }
 
+
+    /**
+     * Collapse all subTreeItems from selected Treeitem
+     * @param candidate selected Treeitem
+     */
     static void collapseNodeToLeaves(TreeItem candidate) {
         if (candidate != null) {
             if (!candidate.isLeaf()) {
                 candidate.setExpanded(false);
                 ObservableList<TreeItem> children = candidate.getChildren();
                 children.forEach(treeItem -> expandNodeToLeaves(treeItem));
-
             }
         }
     }
