@@ -15,6 +15,8 @@
         <RadioMenuItem fx:id="rmiNodeNames" text="Show _Node Names " toggleGroup="$toggleProjection"/>
         <RadioMenuItem fx:id="rmiRuleNames" text="Show _Rule Names " toggleGroup="$toggleProjection"/>
 
+        <MenuItem fx:id="showVarAssignment" text="Show _Variable Assignment" />
+
         <Menu fx:id="a" text="Filter by...">
             <MenuItem fx:id="removeFilter" text="Remove Filters"/>
             <SeparatorMenuItem/>

@@ -138,6 +138,8 @@ public class InspectionView extends BorderPane {
         Utils.addDebugListener(model.get().currentInterpreterGoalProperty());
         Utils.addDebugListener(model.get().highlightedJavaLinesProperty());
 
+        goalOptionsMenu.setModel(model.get());
+
         /*TODO redefine CSS bases on selected mode
         mode.addListener(o -> {
             getStyleClass().removeAll(
