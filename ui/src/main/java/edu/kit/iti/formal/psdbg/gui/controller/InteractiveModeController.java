@@ -129,7 +129,7 @@ public class InteractiveModeController {
                 .filter(keyDataGoalNode -> goalsbeforePrune.contains(keyDataGoalNode.getData().getGoal()))
                 .collect(Collectors.toList());
 
-        if(prunedChildren.size() == 0) {
+        if (prunedChildren.size() == 0) {
             //TODO: add Utils.showInfoD
             return;
         }
@@ -162,10 +162,10 @@ public class InteractiveModeController {
         //TODO: buggy cuz allstatements of same node removed
 
         //remove statement from cases / script
-        Statements statements = (cases.get(pruneNode.parent()) == null)? cases.get(pruneNode) : cases.get(pruneNode.parent());
-        int i = statements.size()-1;
+        Statements statements = (cases.get(pruneNode.parent()) == null) ? cases.get(pruneNode) : cases.get(pruneNode.parent());
+        int i = statements.size() - 1;
 
-        while(statements.get(i) != pruneStatement && i >= 0) {
+        while (statements.get(i) != pruneStatement && i >= 0) {
             statements.remove(i);
             i--;
         }
@@ -362,7 +362,7 @@ public class InteractiveModeController {
             ValueInjector valueInjector = ValueInjector.createDefault(kd.getNode());
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
 
-            switch (t){
+            switch (t) {
                 case MACRO:
                     MacroCommand.Parameters cc = new MacroCommand.Parameters();
                     MacroCommand c = new MacroCommand();
@@ -408,6 +408,7 @@ public class InteractiveModeController {
         Class rtclazz = method.getReturnType();
         return (T) rtclazz.newInstance();
     }
+
     private void postStateHandler(CallStatement call, Goal g, ObservableList<GoalNode<KeyData>> goals, GoalNode<KeyData> expandedNode, KeyData kd) {
         ImmutableList<Goal> ngoals = g.proof().getSubtreeGoals(expandedNode.getData().getNode());
 

@@ -1,15 +1,19 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.ProofTreeEvent;
 import de.uka.ilkd.key.proof.ProofTreeListener;
+import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.ProofTreeManager;
+import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -27,6 +31,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.util.StringConverter;
 import lombok.*;
 
+import java.util.*;
 import java.util.function.Consumer;
 
 
@@ -102,18 +107,17 @@ public class ProofTree extends BorderPane {
 
         }
     };
-    private KeyProofTreeTransformation treeCreation;
+    private TreeTransformationKey treeCreation;
     @Getter
     private ScriptTreeTransformation treeScriptCreation;
 
     public ProofTree(DebuggerMain main) {
         Utils.createWithFXML(this);
         //TODO remove this hack for a better solution
-        main.getModel().debuggerFrameworkProperty().addListener((p, n, m) -> {
-            treeScriptCreation = new ScriptTreeTransformation(m.getPtreeManager());
-        });
-
-        treeCreation = new KeyProofTreeTransformation(sentinels);
+        //main.getModel().debuggerFrameworkProperty().addListener((p, n, m) -> {
+        //    treeCreation = new TreeTransformationScript(m.getPtreeManager());
+        //});
+        treeCreation = new TreeTransformationKey();
 
         treeProof.setCellFactory(this::cellFactory);
 
@@ -166,7 +170,7 @@ public class ProofTree extends BorderPane {
         if (getTreeProof().getRoot() == null) {
             if (root.get() != null) {
                 TreeItem<TreeNode> item;
-                if(sentinels.contains(root.get())){
+                if (sentinels.contains(root.get())) {
                     item = treeCreation.itemFactory(root.get());
                 } else {
                     item = treeCreation.populate("Proof", root.get());
@@ -220,7 +224,7 @@ public class ProofTree extends BorderPane {
         tftc.setConverter(stringConverter);
 
         tftc.itemProperty().addListener((p, o, n) -> {
-            if (n != null )
+            if (n != null)
                 repaint(tftc);
         });
         return tftc;
@@ -232,16 +236,16 @@ public class ProofTree extends BorderPane {
         Node n = item.node;
         tftc.setStyle("");
         if (n != null) {
-                if (n.leaf() && !item.label.contains("CASE") ) {
-                    if (n.isClosed()) {
-                        colorOfNodes.putIfAbsent(n, "lightseagreen");
-                    } else {
-                        colorOfNodes.putIfAbsent(n, "indianred");
-                    }
+            if (n.leaf() && !item.label.contains("CASE")) {
+                if (n.isClosed()) {
+                    colorOfNodes.putIfAbsent(n, "lightseagreen");
+                } else {
+                    colorOfNodes.putIfAbsent(n, "indianred");
+                }
 
-                    if (colorOfNodes.containsKey(n)) {
-                        tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
-                    }
+                if (colorOfNodes.containsKey(n)) {
+                    tftc.setStyle("-fx-background-color: " + colorOfNodes.get(n) + ";");
+                }
                 }
             }
             //TODO for Screenshot tftc.setStyle("-fx-font-size: 18pt");
@@ -350,18 +354,19 @@ public class ProofTree extends BorderPane {
         treeProof.refresh();
     }
 
-    private void expandTreeView(TreeItem<TreeNode> item){
-        if(item != null && !item.isLeaf()){
+    private void expandTreeView(TreeItem<TreeNode> item) {
+        if (item != null && !item.isLeaf()) {
             item.setExpanded(true);
-            for(TreeItem<TreeNode> child:item.getChildren()){
+            for (TreeItem<TreeNode> child : item.getChildren()) {
                 expandTreeView(child);
             }
         }
     }
-    private void collapseTreeView(TreeItem<TreeNode> item){
-        if(item != null && !item.isLeaf()){
+
+    private void collapseTreeView(TreeItem<TreeNode> item) {
+        if (item != null && !item.isLeaf()) {
             item.setExpanded(false);
-            for(TreeItem<TreeNode> child:item.getChildren()){
+            for (TreeItem<TreeNode> child : item.getChildren()) {
                 collapseTreeView(child);
             }
         }
@@ -385,8 +390,9 @@ public class ProofTree extends BorderPane {
 
             return self1;
         }
+
         protected TreeItem<TreeNode> itemFactory(Node n, String label) {
-            if(label.equals("")){
+            if (label.equals("")) {
                 return itemFactory(n);
             } else {
                 return new TreeItem<>(new TreeNode(label, n));
@@ -440,10 +446,10 @@ public class ProofTree extends BorderPane {
             Node node = n.child(0);
             if (n.childrenCount() == 1) {
                 currentItem.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
-            while (node.childrenCount() == 1) {
-                node = node.child(0);
-                currentItem.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
-            }
+                while (node.childrenCount() == 1) {
+                    node = node.child(0);
+                    currentItem.getChildren().add(new TreeItem<>(new TreeNode(node.serialNr() + ": " + toString(node), node)));
+                }
 
 
                 /*do {
@@ -479,7 +485,6 @@ public class ProofTree extends BorderPane {
 
 
     }
-
 
 
     @RequiredArgsConstructor
@@ -544,7 +549,7 @@ public class ProofTree extends BorderPane {
 
         //TODO: Reverse ArrayList in the end or nah?
         @Deprecated
-        public ArrayList<String> getBranchLabels (TreeNode node) {
+        public ArrayList<String> getBranchLabels(TreeNode node) {
             TreeItem<TreeNode> proofTree = create(proof.get());
 
             ArrayList<String> branchlabels = new ArrayList<>();
@@ -552,7 +557,7 @@ public class ProofTree extends BorderPane {
             int i = 0;
             branchlabels.set(0, node.label);
             while (node != null) {
-                if(!branchlabels.get(i).equals(node.label)) {
+                if (!branchlabels.get(i).equals(node.label)) {
                     i++;
                     branchlabels.set(i, node.label);
                 }
@@ -562,7 +567,7 @@ public class ProofTree extends BorderPane {
             return branchlabels;
         }
 
-        public  ArrayList<String> getBranchLabels (Node node) {
+        public ArrayList<String> getBranchLabels(Node node) {
             ArrayList<String> branchlabels = new ArrayList<>();
 
             int i = 0;
@@ -570,7 +575,7 @@ public class ProofTree extends BorderPane {
             branchlabels.set(0, node.getNodeInfo().getBranchLabel());
             Node n = node.parent();
             while (n != null) {
-                if(!branchlabels.get(i).equals(n.getNodeInfo().getBranchLabel())) {
+                if (!branchlabels.get(i).equals(n.getNodeInfo().getBranchLabel())) {
                     i++;
                     branchlabels.set(i, n.getNodeInfo().getBranchLabel());
                 }

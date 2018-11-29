@@ -14,6 +14,7 @@ public class ScriptCommandNotApplicableException extends InterpreterRuntimeExcep
     public ScriptCommandNotApplicableException(Exception e, RuleCommand c) {
         System.out.println("Call " + c.getName() + " was not applicable");
     }
+
     public ScriptCommandNotApplicableException(Exception e, AbstractCommand c) {
         System.out.println("Call " + c.getName() + " was not applicable");
     }

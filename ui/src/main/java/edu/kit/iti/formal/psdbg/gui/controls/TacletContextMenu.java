@@ -62,7 +62,6 @@ public class TacletContextMenu extends ContextMenu {
         FILTER_SCRIPT_COMMANDS.add("script");
 
 
-
     }
     static {
         CLUTTER_RULES.add(new Name("cut_direct_r"));
@@ -155,7 +154,7 @@ public class TacletContextMenu extends ContextMenu {
     }
 
     private void createMacroMenu(Collection<ProofScriptCommand> scriptCommandList, Collection<ProofMacro> macros) {
-        for(ProofMacro macro : macros){
+        for (ProofMacro macro : macros) {
             final MenuItem item = new MenuItem(macro.getScriptCommandName());
             item.setOnAction(event -> {
                 handleMacroCommandApplication(macro);
@@ -164,8 +163,8 @@ public class TacletContextMenu extends ContextMenu {
             this.scriptCommands.getItems().add(item);
 
         }
-        for(ProofScriptCommand com : scriptCommandList){
-            if(!FILTER_SCRIPT_COMMANDS.contains(com.getName())) {
+        for (ProofScriptCommand com : scriptCommandList) {
+            if (!FILTER_SCRIPT_COMMANDS.contains(com.getName())) {
                 final MenuItem item = new MenuItem(com.getName());
                 item.setOnAction(event -> {
                     handleCommandApplication(com);
@@ -288,9 +287,9 @@ public class TacletContextMenu extends ContextMenu {
         List<TacletApp> toReturn = new ArrayList<>();
         for (int i = 0; i < findTaclets.size(); i++) {
             TacletApp tacletApp =  findTaclets.get(i);
-            if(!tacletApp.rule().displayName().startsWith("cut")){
+            if (!tacletApp.rule().displayName().startsWith("cut")) {
                 //findTaclets.remove(tacletApp);
-          //      foundCut = true;
+                //      foundCut = true;
                 toReturn.add(tacletApp);
             }
         }
@@ -419,6 +418,7 @@ public class TacletContextMenu extends ContextMenu {
         //System.out.println("event = [" + event + "]");
         Events.fire(new Events.TacletApplicationEvent(event, pos.getPosInOccurrence(), goal));
     }
+
     private void handleCommandApplication(ProofScriptCommand event) {
 
         Events.fire(new Events.CommandApplicationEvent(event, pos.getPosInOccurrence(), goal));

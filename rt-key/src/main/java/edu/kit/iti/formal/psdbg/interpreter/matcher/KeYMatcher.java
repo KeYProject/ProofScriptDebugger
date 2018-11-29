@@ -62,7 +62,7 @@ public class KeYMatcher implements MatcherApi<KeyData> {
         Proof proof = kd.getData().getProof();
         TermValue tv = (TermValue) pattern.getData();
         Term term = tv.getTerm();
-        if(term == null) {
+        if (term == null) {
             Services services = kd.getData().getProof().getServices();
             try {
                 term = new TermBuilder(services.getTermFactory(), services).parseTerm(tv.getTermRepr());
@@ -96,10 +96,10 @@ public class KeYMatcher implements MatcherApi<KeyData> {
 
         if (isDerivable) {
             //find the open goal node
-            Goal toSet= null;
-            if(goalList.head().node().isClosed()){
+            Goal toSet = null;
+            if (goalList.head().node().isClosed()) {
                 toSet = goalList.tail().head();
-            } else{
+            } else {
                 toSet = goalList.head();
             }
             KeyData kdataNew = new KeyData(kd.getData(), toSet);

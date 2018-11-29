@@ -95,15 +95,15 @@ public class KeYProofFacade {
             pma = KeYApi.loadFromKeyFile(problemFile);
             List<Contract> contracts = pma.getProofContracts();
             contracts.forEach(contract1 -> {
-                if(contract.get().getName().equals(contract1.getName())){
-                  contractProperty().set(contract1);
+                if (contract.get().getName().equals(contract1.getName())) {
+                    contractProperty().set(contract1);
                 }
             });
 
-            if(contract.get() != null){
-                try{
+            if (contract.get() != null) {
+                try {
                     activateContract(contract.get());
-                }catch (ProofInputException pie){
+                } catch (ProofInputException pie) {
                     throw new ProofInputException("Contract not reloadable.", pie.getCause());
                 }
             }

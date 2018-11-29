@@ -214,7 +214,7 @@ public class DebuggerMain implements Initializable {
                 if (stateAfterStmt.getSelectedGoalNode() != null) {
                     im.setSelectedGoalNodeToShow(stateAfterStmt.getSelectedGoalNode());
                 } else {
-                    if(goals.size() > 0) {
+                    if (goals.size() > 0) {
                         im.setSelectedGoalNodeToShow(goals.get(0));
                     } else {
                         im.setSelectedGoalNodeToShow(stateBeforeStmt.getSelectedGoalNode());
@@ -570,7 +570,7 @@ public class DebuggerMain implements Initializable {
         iModel.clearHighlightLines();
         iModel.getGoals().clear();
         iModel.setSelectedGoalNodeToShow(null);
-        if(chosen != null) {
+        if (chosen != null) {
             FACADE.contractProperty().set(chosen);
         }
         try {
@@ -1541,7 +1541,7 @@ public class DebuggerMain implements Initializable {
                         .stream()
                         .map(Goal::node)
                         .collect(Collectors.toSet());
-                if(sentinels.size() == 0){
+                if (sentinels.size() == 0) {
                     sentinels = new LinkedHashSet();
                     sentinels.add(pnode);
                     //sentinels.add(stateAfterStmt.get(0).getData().getNode());

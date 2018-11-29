@@ -191,9 +191,9 @@ public class MatchEvaluator extends DefaultASTVisitor<List<VariableAssignment>> 
         Operator op = e.getOperator();
         Expression expr = e.getExpression();
         List<VariableAssignment> exValue = (List<VariableAssignment>) expr.accept(this);
-        if(exValue.isEmpty()){
+        if (exValue.isEmpty()) {
             return transformTruthValue(Value.TRUE);
-        }else{
+        } else {
             return transformTruthValue(Value.FALSE);
 
         }
