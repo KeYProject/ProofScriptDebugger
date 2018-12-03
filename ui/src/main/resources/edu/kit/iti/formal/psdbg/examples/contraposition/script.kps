@@ -12,7 +12,7 @@ script full(){
 }
 
 
-script full(){
+script full2(){
   impRight;
   impRight;
   impLeft;

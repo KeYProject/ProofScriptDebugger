@@ -183,6 +183,12 @@ public class DebuggerMain implements Initializable {
 
     @Subscribe
     public void handle(Events.ShowPostMortem spm) {
+        //No script executed yet
+        if (model.getDebuggerFramework() == null) {
+            Utils.showInfoDialog("No post mortem", "Can't show post mortem", "Please execute a script first.");
+            return;
+        }
+
         FindNearestASTNode fna = new FindNearestASTNode(spm.getPosition());
         List<PTreeNode<KeyData>> result =
                 model.getDebuggerFramework().getPtreeManager().getNodes()
