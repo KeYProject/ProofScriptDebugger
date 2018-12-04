@@ -2,6 +2,7 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -18,6 +19,8 @@ public class SequentOptionsMenu extends ContextMenu {
     private MenuItem openSequentMatcher;
 
 
+
+
     public SequentOptionsMenu(InspectionModel model) {
         Utils.createWithFXML(this);
         this.model = model;
@@ -31,6 +34,9 @@ public class SequentOptionsMenu extends ContextMenu {
 
                     KeyData data = (KeyData) model.getSelectedGoalNodeToShow().getData();
                     SequentMatcher root1 = new SequentMatcher(data.getProof().getServices());
+
+                    root1.getGoalOptionsMenu().setModel(model);
+
                     root1.setGoals(model.getGoals());
                     root1.setSelectedGoalNodeToShow(model.getSelectedGoalNodeToShow());
                     root1.getStyleClass().add("sequent-view");
@@ -57,6 +63,8 @@ public class SequentOptionsMenu extends ContextMenu {
                 }
             }
         });
+
+
 
     }
 

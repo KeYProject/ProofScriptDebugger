@@ -14,6 +14,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
+import javafx.scene.control.Alert;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
@@ -22,6 +23,8 @@ import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -62,7 +65,26 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
                          VariableAssignment params, KeyData data) {
         ProofScriptCommand c = commands.get(call.getCommand());
         State<KeyData> state = interpreter.getCurrentState();
+
+        //multiple goals exist
+        if (state.getGoals().size() > 1) {
+            throw new IllegalStateException("Multiple open goals: Please use a selector.");
+            /*
+            //TODO: Utils showWarning
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Multiple open Goals");
+            alert.setHeaderText("Multiple open Goals");
+            alert.setContentText("There are multiple open goals so its undefined on which goal the command " + call.getCommand() +" should be applied. Please use a selector.");
+            alert.setWidth(400);
+            alert.setHeight(400);
+            alert.setHeight(600);
+            alert.setWidth(400);
+
+            alert.showAndWait();
+*/
+        }
         GoalNode<KeyData> expandedNode = state.getSelectedGoalNode();
+
         KeyData kd = expandedNode.getData();
         Map<String, Object> map = new HashMap<>();
         params.asMap().forEach((k, v) -> {

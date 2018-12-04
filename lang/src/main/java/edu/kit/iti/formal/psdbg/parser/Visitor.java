@@ -53,6 +53,8 @@ public interface Visitor<T> {
 
     T visit(DefaultCaseStatement defCase);
 
+    T visit(DerivableCase derivableCase);
+
     //T visit(CaseStatement case_);
 
     T visit(CallStatement call);

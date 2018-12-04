@@ -1,27 +1,18 @@
+script empty(){
 
-script testfull(){
-  impRight;
-  impRight;
-  impLeft;
-  foreach{
-    notLeft;
-  }
-  auto;
 }
 
-script full0(){
+script full(){
   impRight;
   impRight;
   impLeft;
-   foreach{
-    notLeft;
+  cases {
+	case derivable `p`:
    }
-   foreach{
-   auto;
-   }
-  }
+}
 
-script full(){
+
+script full2(){
   impRight;
   impRight;
   impLeft;
@@ -75,4 +66,32 @@ cases{
         impRight;
     }
     auto;
+}
+
+script varDecl1(){
+    var1 : INT :=  1;
+    var2 : INT :=  2;
+    var3 : INT :=  3;
+}
+
+script varDecl2(){
+  var1 : INT :=  1;
+  impRight;
+  impRight;
+  impLeft;
+  cases {
+	case match `!q ==> p`:
+		notLeft;
+		var2 : INT :=  2;
+		notRight;
+
+
+
+	case match `q==>!p`:
+		notLeft;
+		var3 : INT :=  3;
+   }
+
+
+
 }

@@ -3,6 +3,7 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import com.sun.javafx.css.Style;
 import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
+import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.*;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
@@ -19,32 +20,34 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.util.StringConverter;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
+/**
+ * Displays a Treeview of the ScriptTree, which represents state of proof with
+ *  - statements in the script
+ *  - branching labels
+ *  - goal nodes
+ *
+ * @author An.Luong
+ */
 public class ScriptTreeView extends BorderPane {
 
     @Setter
+    @Getter
     private ScriptTreeGraph stg;
 
-    private ContextMenu contextMenu;
+    private ScriptTreeContextMenu contextMenu;
 
-    private ScriptTreeNode rootNode;
+    private AbstractTreeNode rootNode;
     private Map<Node, AbstractTreeNode> mapping;
-
-    @Setter
-    private DebuggerMainModel model;
-    @Setter
-    private KeYProofFacade FACADE;
-    /**
-     * Contains color of nodes
-     */
-    private MapProperty<Node, String> colorOfNodes = new SimpleMapProperty<Node, String>(FXCollections.observableHashMap());
-
 
     @FXML
     TreeView<AbstractTreeNode> treeView;
@@ -62,6 +65,7 @@ public class ScriptTreeView extends BorderPane {
 
     public void setTree(TreeItem<AbstractTreeNode> tree) {
         treeView.setRoot(tree);
+        treeView.refresh();
     }
 
     private TreeCell<AbstractTreeNode> cellFactory(TreeView<AbstractTreeNode> nodeTreeView) {
@@ -89,66 +93,51 @@ public class ScriptTreeView extends BorderPane {
             }
         });
 
-
-        //colorOfNodes.addListener((InvalidationListener) o -> repaint(tftc));
         return tftc;
     }
 
 
     /**
-     * returns treeItem that represents current Script tree
-     * @return
+     * Build ScriptTreeView with ScriptTreeGraph and displays it in the view
      */
-    public TreeItem<AbstractTreeNode> toView() {
-        TreeItem<AbstractTreeNode> treeItem;
-        PTreeNode startnode;
-        try {
-            startnode = (model.getDebuggerFramework() != null) ?
-                    model.getDebuggerFramework().getPtreeManager().getStartNode() :
-                    null;
-        } catch (NullPointerException e) {
-            treeItem = new TreeItem<>(new AbstractTreeNode(null));
-            DummyGoalNode dummy = new DummyGoalNode(null, false);
-            treeItem.getChildren().add(new TreeItem<>(dummy));
+    public void toView() {
 
-            this.setTree(treeItem);
-            return treeItem;
-        }
-
-        //No script executed
-        if (startnode == null) {
-            System.out.println("Entered maybe redundaant toview(inside) method"); //TODO
-            treeItem = new TreeItem<>(new AbstractTreeNode(null));
-            DummyGoalNode dummy = new DummyGoalNode(null, false);
-            treeItem.getChildren().add(new TreeItem<>(dummy));
-
-            this.setTree(treeItem);
-            return treeItem;
-        }
-        stg.createGraph(startnode, FACADE.getProof().root());
-
+        TreeItem<AbstractTreeNode> treeItem = new TreeItem<>(new AbstractTreeNode(null));
         rootNode = stg.getRootNode();
+
+        if (rootNode instanceof DummyGoalNode) {
+            treeItem.getChildren().add(new TreeItem<>(rootNode));
+            this.setTree(treeItem);
+            return;
+        }
         mapping = stg.getMapping();
 
-        treeItem = new TreeItem<>(new AbstractTreeNode(null));
-
-
         List<AbstractTreeNode> children = mapping.get(rootNode.getNode()).getChildren();
-        if (children == null) return treeItem;
+        if (children == null) {
+            this.setTree(treeItem);
+            return;
+        }
+
         treeItem.getChildren().add(new TreeItem<>(mapping.get(rootNode.getNode())));
 
         while (children.size() == 1) {
             treeItem.getChildren().add(new TreeItem<>(children.get(0)));
             children = children.get(0).getChildren();
-            if(children == null) return treeItem;
+            if (children == null) {
+                this.setTree(treeItem);
+                return;
+            }
         }
 
         if (children.size() != 0) {
-            children.forEach(k -> treeItem.getChildren().add(rekursiveToView(k)));
+            List<TreeItem> subTreeItems = new ArrayList<>();
+            children.forEach(k -> subTreeItems.add(rekursiveToView(k)));
+            for (TreeItem item : subTreeItems) {
+                treeItem.getChildren().add(item);
+            }
         }
 
         this.setTree(treeItem);
-        return treeItem;
     }
 
     private TreeItem<AbstractTreeNode> rekursiveToView(AbstractTreeNode current) {
@@ -195,12 +184,12 @@ public class ScriptTreeView extends BorderPane {
                 } else {
                     tftc.styleProperty().setValue("-fx-background-color: indianred");
                     //styleProperty().bind(tftc.styleProperty());
-                   // tftc.setStyle("-fx-background-color: indianred");
+                    // tftc.setStyle("-fx-background-color: indianred");
                     //colorOfNodes.putIfAbsent(n, "indianred");
                 }
             }
 
-            }
+        }
     }
 
     public ContextMenu getContextMenu() {
@@ -208,5 +197,14 @@ public class ScriptTreeView extends BorderPane {
             contextMenu = new ScriptTreeContextMenu(this);
         }
         return contextMenu;
+    }
+
+    public void consumeNode(Consumer<TreeItem> consumer, String success) {
+        TreeItem<AbstractTreeNode> item = treeView.getSelectionModel().getSelectedItem();
+        if (item != null) {
+            consumer.accept(item);
+        } else {
+            Events.fire(new Events.PublishMessage("Current item does not have a node.", 2));
+        }
     }
 }

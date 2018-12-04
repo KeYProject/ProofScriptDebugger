@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+
+<?import javafx.scene.layout.BorderPane?>
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         type="edu.kit.iti.formal.psdbg.gui.controls.VariableAssignmentWindow"
+         prefHeight="400.0" prefWidth="600.0">
+    <top>
+        <BorderPane>
+            <top>
+                <Label text="Match Variables"></Label>
+            </top>
+            <center>
+                <TextArea fx:id="match_variables" minHeight="0.0" minWidth="0.0" prefHeight="30.0"
+                          prefWidth="639.0"
+                />
+            </center>
+            <bottom>
+                <Button mnemonicParsing="false" text="Start Matching"
+                        onMouseClicked="#startMatch"/>
+            </bottom>
+        </BorderPane>
+    </top>
+    <center>
+        <TabPane>
+            <tabs>
+                <Tab text="Script Variables">
+                    <TableView fx:id="declarative_tableView"></TableView>
+                </Tab>
+                <Tab text="KeY Control Variables">
+                    <TableView fx:id="special_tableView"></TableView>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+
+
+</fx:root>

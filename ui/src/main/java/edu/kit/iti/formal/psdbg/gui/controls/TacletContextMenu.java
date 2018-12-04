@@ -1,11 +1,13 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
+import de.uka.ilkd.key.api.KeYApi;
 import de.uka.ilkd.key.control.ProofControl;
 import de.uka.ilkd.key.gui.nodeviews.TacletMenu.TacletAppComparator;
-import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Name;
 import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Term;
+import de.uka.ilkd.key.macros.ProofMacro;
+import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
 import de.uka.ilkd.key.pp.*;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.*;
@@ -25,7 +27,6 @@ import javafx.scene.text.Text;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public class TacletContextMenu extends ContextMenu {
 
     private static final Set<Name> CLUTTER_RULESETS = new LinkedHashSet<Name>();
     private static final Set<Name> CLUTTER_RULES = new LinkedHashSet<Name>();
-
+    private static final Set<String> FILTER_SCRIPT_COMMANDS = new LinkedHashSet<>();
     static {
         CLUTTER_RULESETS.add(new Name("notHumanReadable"));
         CLUTTER_RULESETS.add(new Name("obsolete"));
@@ -51,6 +52,17 @@ public class TacletContextMenu extends ContextMenu {
         CLUTTER_RULESETS.add(new Name("pullOutQuantifierEx"));
     }
 
+    static {
+        FILTER_SCRIPT_COMMANDS.add("exit");
+        FILTER_SCRIPT_COMMANDS.add("leave");
+        FILTER_SCRIPT_COMMANDS.add("javascript");
+        FILTER_SCRIPT_COMMANDS.add("skip");
+        FILTER_SCRIPT_COMMANDS.add("macro");
+        FILTER_SCRIPT_COMMANDS.add("rule");
+        FILTER_SCRIPT_COMMANDS.add("script");
+
+
+    }
     static {
         CLUTTER_RULES.add(new Name("cut_direct_r"));
         CLUTTER_RULES.add(new Name("cut_direct_l"));
@@ -82,6 +94,8 @@ public class TacletContextMenu extends ContextMenu {
     private Menu moreRules;
     @FXML
     private Menu insertHidden;
+    @FXML
+    private Menu scriptCommands;
     @FXML
     private MenuItem copyToClipboard;
     @FXML
@@ -115,9 +129,12 @@ public class TacletContextMenu extends ContextMenu {
         occ = pos.getPosInOccurrence();
         //MediatorProofControl c = new MediatorProofControl(new DefaultAbstractMediatorUserInterfaceControlAdapter());
         ProofControl c = DebuggerMain.FACADE.getEnvironment().getUi().getProofControl();
+        c.setMinimizeInteraction(true);
         final ImmutableList<BuiltInRule> builtInRules = c.getBuiltInRule(goal, occ);
 
         try {
+            createMacroMenu(KeYApi.getScriptCommandApi().getScriptCommands(), KeYApi.getMacroApi().getMacros());
+
             ImmutableList<TacletApp> findTaclet = c.getFindTaclet(goal, occ);
             createTacletMenu(
                     removeRewrites(findTaclet)
@@ -134,6 +151,28 @@ public class TacletContextMenu extends ContextMenu {
 
         //proofMacroMenuController.initViewController(getMainApp(), getContext());
         //proofMacroMenuController.init(occ);
+    }
+
+    private void createMacroMenu(Collection<ProofScriptCommand> scriptCommandList, Collection<ProofMacro> macros) {
+        for (ProofMacro macro : macros) {
+            final MenuItem item = new MenuItem(macro.getScriptCommandName());
+            item.setOnAction(event -> {
+                handleMacroCommandApplication(macro);
+
+            });
+            this.scriptCommands.getItems().add(item);
+
+        }
+        for (ProofScriptCommand com : scriptCommandList) {
+            if (!FILTER_SCRIPT_COMMANDS.contains(com.getName())) {
+                final MenuItem item = new MenuItem(com.getName());
+                item.setOnAction(event -> {
+                    handleCommandApplication(com);
+                });
+                this.scriptCommands.getItems().add(item);
+            }
+        }
+//        rootMenu.getItems().add(scriptCommands);
     }
 
     /**
@@ -199,16 +238,17 @@ public class TacletContextMenu extends ContextMenu {
                 //compare by name
                 Comparator.comparing(o -> o.taclet().name())
         );
-        //findTaclets = replaceCutOccurrence(findTaclets);
 
         List<TacletApp> toAdd = new ArrayList<>(findTaclets.size() + noFindTaclets.size());
+
         toAdd.addAll(findTaclets);
 
         boolean rulesAvailable = find.size() > 0;
+
         //remove all cut rules from menu and add cut command for that
         if (pos.isSequent()) {
             rulesAvailable |= noFind.size() > 0;
-            toAdd.addAll(noFindTaclets);
+            toAdd.addAll(replaceCutOccurrence(noFindTaclets));
         }
 
 
@@ -223,40 +263,38 @@ public class TacletContextMenu extends ContextMenu {
 
         if (rulesAvailable) {
             createMenuItems(toAdd);
-          //  createCommandMenuItems();
         } else {
             noRules.setVisible(true);
         }
-
         if (occ != null)
             createAbbrevSection(pos.getPosInOccurrence().subTerm());
-
-
-
-
     }
 
-    private void createCommandMenuItems() {
+/*    private void createCommandMenuItems() {
         Text t = new Text("Cut Command");
         MenuItem item = new MenuItem();
         item.setGraphic(t);
         item.setOnAction(event -> {
-            handleCommandApplication("cut");
+
+            handleCommandApplication(KeYApi.getScriptCommandApi().getScriptCommands("cut"));
 
         });
         rootMenu.getItems().add(0, item);
-    }
+    }*/
 
     private List<TacletApp> replaceCutOccurrence(List<TacletApp> findTaclets) {
-        boolean foundCut = false;
+        //boolean foundCut = false;
+        List<TacletApp> toReturn = new ArrayList<>();
         for (int i = 0; i < findTaclets.size(); i++) {
             TacletApp tacletApp =  findTaclets.get(i);
-            if(tacletApp.rule().displayName().startsWith("cut")){
-                findTaclets.remove(tacletApp);
-                foundCut = true;
+            if (!tacletApp.rule().displayName().startsWith("cut")) {
+                //findTaclets.remove(tacletApp);
+                //      foundCut = true;
+                toReturn.add(tacletApp);
             }
         }
-        return findTaclets;
+        return toReturn;
+//        return findTaclets;
     }
 
     private void createDummyMenuItem() {
@@ -341,7 +379,6 @@ public class TacletContextMenu extends ContextMenu {
         /*if (!insertHiddenController.isEmpty())
             insertHiddenController.setVisible(true);
             */
-
     }
 
     /**
@@ -381,9 +418,14 @@ public class TacletContextMenu extends ContextMenu {
         //System.out.println("event = [" + event + "]");
         Events.fire(new Events.TacletApplicationEvent(event, pos.getPosInOccurrence(), goal));
     }
-    private void handleCommandApplication(String event) {
+
+    private void handleCommandApplication(ProofScriptCommand event) {
 
         Events.fire(new Events.CommandApplicationEvent(event, pos.getPosInOccurrence(), goal));
+    }
+
+    private void handleMacroCommandApplication(ProofMacro event) {
+        Events.fire(new Events.MacroApplicationEvent(event, pos.getPosInOccurrence(), goal));
     }
 
     /**

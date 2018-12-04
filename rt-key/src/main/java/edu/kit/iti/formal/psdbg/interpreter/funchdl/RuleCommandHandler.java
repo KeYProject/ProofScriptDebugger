@@ -77,7 +77,7 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         try {
             for (SequentFormula sf : g.node().sequent().succedent()) {
                 ImmutableList<TacletApp> apps = index.getTacletAppAtAndBelow(filter,
-                        new PosInOccurrence(sf, PosInTerm.getTopLevel(), true),
+                        new PosInOccurrence(sf, PosInTerm.getTopLevel(), false),
                         services);
                 apps.forEach(t -> set.add(t.taclet().name().toString()));
             }
@@ -140,17 +140,32 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
                 state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
             }
         } catch (ScriptException e) {
+
             //TODO: adding UserinteractionWindow
             /*TODO: possible cases not applicable, because
-                command not recognized
+                command not recognized (can be ignored)
+
                 command multiple matches -> need more specification with on + formula
+                    if(e.getMessage().equals("More than one applicable occurrence")) {
+                    //TODO: open UserinteractionWindow with selectionbox , need (RuleCommand: 121)
+
+                ImmutableList<TacletApp> allApps = c.findAllTacletApps(cc, state);
+                List<TacletApp> matchingApps = c.filterList(cc, allApps);
+
+                    //TODO: (re)apply completed TacletApp
+
+                    //TODO: insert into script
+
+                }
+
 
                 command not complete -> missig parameters
                 solution:
                 if(e.getMessage().equals("Not a unique \\assumes instantiation")) {
-                    //TODO: open UserinteractionWindow
+                    //TODO: open UserinteractionWindow with selectionbox , need (RuleCommand: 56)
+                    ImmutableList<TacletApp> assumesCandidates = theApp.findIfFormulaInstantiations(state.getFirstOpenGoal().sequent(), proof.getServices());
 
-                    //TODO: apply completed TacletApp
+                    //TODO: (re)apply completed TacletApp
 
                     //TODO: insert into script
 

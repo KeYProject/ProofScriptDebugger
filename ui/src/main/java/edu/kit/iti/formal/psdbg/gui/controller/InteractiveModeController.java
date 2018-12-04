@@ -1,14 +1,13 @@
 package edu.kit.iti.formal.psdbg.gui.controller;
 
 import com.google.common.eventbus.Subscribe;
+import de.uka.ilkd.key.api.KeYApi;
 import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
-import de.uka.ilkd.key.macros.scripts.EngineState;
-import de.uka.ilkd.key.macros.scripts.RuleCommand;
-import de.uka.ilkd.key.macros.scripts.ScriptException;
+import de.uka.ilkd.key.macros.scripts.*;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
@@ -27,6 +26,7 @@ import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.DebuggerFramework;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
+import edu.kit.iti.formal.psdbg.interpreter.funchdl.ProofScriptCommandBuilder;
 import edu.kit.iti.formal.psdbg.parser.PrettyPrinter;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
@@ -43,9 +43,11 @@ import org.key_project.util.collection.ImmutableList;
 import recoder.util.Debug;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Getter
 @Setter
@@ -65,8 +67,8 @@ public class InteractiveModeController {
     private PTreeNode<KeyData> nodeAtInteractionStart;
 
     //needed for Undo-Operation
-    private ArrayList<CallStatement> savepointsstatement;
-    private ArrayList<Node> savepointslist;
+    private ArrayList<CallStatement> laststatementlist;
+    private ArrayList<Node> lastnodeslist;
 
     private Proof currentProof;
     private Services keYServices;
@@ -98,8 +100,8 @@ public class InteractiveModeController {
             gcs.setBody(v);
             casesStatement.getCases().add(gcs);
         });
-        savepointslist = new ArrayList<>();
-        savepointsstatement = new ArrayList<>();
+        lastnodeslist = new ArrayList<>();
+        laststatementlist = new ArrayList<>();
         nodeAtInteractionStart = debuggerFramework.getStatePointer();
 
     }
@@ -109,13 +111,14 @@ public class InteractiveModeController {
      * Undo the application of the last rule
      */
     public void undo(javafx.event.ActionEvent actionEvent) {
-        if (savepointslist.isEmpty()) {
+        if (lastnodeslist.isEmpty()) {
             Debug.log("Kein vorheriger Zustand.");
             return;
         }
 
-        val pruneNode = savepointslist.get(savepointslist.size() - 1);
-        savepointslist.remove(pruneNode);
+        val pruneNode = lastnodeslist.get(lastnodeslist.size() - 1);
+        lastnodeslist.remove(pruneNode);
+
         ImmutableList<Goal> goalsbeforePrune = currentProof.getSubtreeGoals(pruneNode);
 
         currentProof.pruneProof(pruneNode);
@@ -126,19 +129,55 @@ public class InteractiveModeController {
                 .filter(keyDataGoalNode -> goalsbeforePrune.contains(keyDataGoalNode.getData().getGoal()))
                 .collect(Collectors.toList());
 
+        if (prunedChildren.size() == 0) {
+            //TODO: add Utils.showInfoD
+            return;
+        }
         KeyData kd = prunedChildren.get(0).getData();
         goals.removeAll(prunedChildren);
+
+
+        //Set selected goal after prune
+
         GoalNode<KeyData> lastGoalNode = null;
-        for (Goal newGoalNode : goalsafterPrune) {
-            KeyData kdn = new KeyData(kd, newGoalNode.node());
+        KeyData kdn;
+        if (lastnodeslist.size() == 0) {
+            kdn = new KeyData(kd, goalsafterPrune.get(0).node());
             goals.add(
-                    lastGoalNode = new GoalNode<>(prunedChildren.get(0).getParent().getParent(), kdn, kdn.getNode().isClosed()));
+                    lastGoalNode = new GoalNode<>(prunedChildren.get(0).getParent(), kdn, kdn.getNode().isClosed()));
+        } else {
+            for (Goal newGoalNode : goalsafterPrune) {
+                kdn = new KeyData(kd, newGoalNode.node());
+                goals.add(
+                        lastGoalNode = new GoalNode<>(prunedChildren.get(0).getParent().getParent(), kdn, kdn.getNode().isClosed()));
+            }
         }
 
         model.setSelectedGoalNodeToShow(lastGoalNode);
 
-        val pruneStatement = savepointsstatement.get(savepointsstatement.size() - 1);
-        cases.forEach((k, v) -> v.remove(pruneStatement));
+
+        val pruneStatement = laststatementlist.get(laststatementlist.size() - 1);
+        laststatementlist.remove(laststatementlist.size() - 1);
+
+        //TODO: buggy cuz allstatements of same node removed
+
+        //remove statement from cases / script
+        Statements statements = (cases.get(pruneNode.parent()) == null) ? cases.get(pruneNode) : cases.get(pruneNode.parent());
+        int i = statements.size() - 1;
+
+        while (statements.get(i) != pruneStatement && i >= 0) {
+            statements.remove(i);
+            i--;
+        }
+        statements.remove(i);
+
+
+        /*
+        cases.forEach((k, v) -> {
+                v.remove(pruneStatement);
+
+        });
+        */
 
         String c = getCasesAsString();
         scriptArea.setText("" +
@@ -147,6 +186,7 @@ public class InteractiveModeController {
 
     public void stop() {
         Events.unregister(this);
+        //TODO: casesstatement visiten
         String c = getCasesAsString();
         scriptController.getDockNode(scriptArea).undock();
 
@@ -202,7 +242,7 @@ public class InteractiveModeController {
 
         try {
 
-            applyRule(call, g);
+            applyRuleHelper(call, g, Type.RULE);
             // Insert into the right cases
             // Node currentNode = g.node();
             // cases.get(findRoot(currentNode)).add(call);
@@ -231,6 +271,185 @@ public class InteractiveModeController {
     }
 
 
+    @Subscribe
+    public void handle(Events.MacroApplicationEvent map) {
+
+        LOGGER.debug("Handling {}", map);
+        Goal g = map.getGoal();
+        MacroCommand.Parameters params = new MacroCommand.Parameters();
+        Parameters callp = new Parameters();
+        CallStatement call = new CallStatement(map.getMacroName().getScriptCommandName(), callp);
+        try {
+            applyRuleHelper(call, g, Type.MACRO);
+            String c = getCasesAsString();
+            scriptArea.setText("" +
+                    "//Preview \n" + c);
+
+
+        } catch (ScriptCommandNotApplicableException e) {
+            StringBuilder sb = new StringBuilder("The macro command ");
+            sb.append(call.getCommand()).append(" was not applicable.");
+            System.out.println("e = " + e);
+            //sb.append("\nSequent Formula: formula=").append(sfTerm);
+            //sb.append("\nOn Sub Term: on=").append(onTerm);
+
+            Utils.showWarningDialog("Proof Command was not applicable",
+                    "Proof Command was not applicable.",
+                    sb.toString(), e);
+        }
+    }
+
+    @Subscribe
+    public void handle(Events.CommandApplicationEvent map) {
+
+        LOGGER.debug("Handling {}", map);
+        Goal g = map.getCurrentGoal();
+
+        Parameters callp = new Parameters();
+        CallStatement call = new CallStatement(map.getCommandName().getName(), callp);
+        try {
+            applyRuleHelper(call, g, Type.SCRIPT_COMMAND);
+            String c = getCasesAsString();
+            scriptArea.setText("" +
+                    "//Preview \n" + c);
+
+
+        } catch (ScriptCommandNotApplicableException e) {
+            StringBuilder sb = new StringBuilder("The script command ");
+            sb.append(call.getCommand()).append(" was not applicable.");
+            System.out.println("e = " + e);
+            //sb.append("\nSequent Formula: formula=").append(sfTerm);
+            //sb.append("\nOn Sub Term: on=").append(onTerm);
+
+            Utils.showWarningDialog("Proof Command was not applicable",
+                    "Proof Command was not applicable.",
+                    sb.toString(), e);
+        }
+    }
+
+
+    private void applyRuleHelper(CallStatement call, Goal g, Type t) throws ScriptCommandNotApplicableException {
+
+        lastnodeslist.add(g.node());
+        laststatementlist.add(call);
+
+        ObservableList<GoalNode<KeyData>> goals = model.getGoals();
+        GoalNode<KeyData> expandedNode;
+        List<GoalNode<KeyData>> collect = goals.stream().filter(keyDataGoalNode -> keyDataGoalNode.getData().getGoal().equals(g)).collect(Collectors.toList());
+
+        if (collect.isEmpty() || collect.size() > 1) {
+            throw new RuntimeException("Interactive Rule can not be applied, can not find goal in goal list");
+        } else {
+            expandedNode = collect.get(0);
+
+        }
+        // KeyData kd = g.getData();
+        Evaluator eval = new Evaluator(expandedNode.getAssignments(), expandedNode);
+
+        Map<String, Object> map = new HashMap<>();
+        call.getParameters().forEach((variable, expression) -> {
+
+            Value exp = eval.eval(expression);
+            map.put(variable.getIdentifier(), exp.getData());
+        });
+
+        LOGGER.info("Execute {} with {}", call, map);
+
+        try {
+            KeyData kd = expandedNode.getData();
+            map.put("#2", call.getCommand());
+            EngineState estate = new EngineState(g.proof());
+            estate.setGoal(g);
+            ValueInjector valueInjector = ValueInjector.createDefault(kd.getNode());
+            AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
+
+            switch (t) {
+                case MACRO:
+                    MacroCommand.Parameters cc = new MacroCommand.Parameters();
+                    MacroCommand c = new MacroCommand();
+                    cc = valueInjector.inject(c, cc, map);
+                    c.execute(uiControl, cc, estate);
+                    postStateHandler(call, g, goals, expandedNode, kd);
+                    break;
+                case RULE:
+                    RuleCommand.Parameters ccR = new RuleCommand.Parameters();
+                    RuleCommand cR = new RuleCommand();
+                    ccR = valueInjector.inject(cR, ccR, map);
+                    cR.execute(uiControl, ccR, estate);
+                    postStateHandler(call, g, goals, expandedNode, kd);
+                    break;
+                case SCRIPT_COMMAND:
+                    ProofScriptCommandBuilder psb = new ProofScriptCommandBuilder(KeYApi.getScriptCommandApi().getScriptCommands());
+                    ProofScriptCommand ps = psb.getCommands().get(call.getCommand());
+
+                    Object temp = valueInjector.inject(ps, getParameterInstance(ps), map);
+                    ps.execute(uiControl, temp, estate);
+                    postStateHandler(call, g, goals, expandedNode, kd);
+                    break;
+                default:
+                    throw new Exception("Command not found");
+
+            }
+
+        } catch (Exception e) {
+            if (e.getClass().equals(ScriptException.class)) {
+                System.out.println("e.getMessage() = " + e.getMessage());
+                throw new ScriptCommandNotApplicableException(e, null, map);
+
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+    private <T> T getParameterInstance(ProofScriptCommand c) throws NoSuchMethodException, IllegalAccessException,
+            InstantiationException {
+        Method method = c.getClass().getMethod("evaluateArguments", EngineState.class, Map.class);
+        Class rtclazz = method.getReturnType();
+        return (T) rtclazz.newInstance();
+    }
+
+    private void postStateHandler(CallStatement call, Goal g, ObservableList<GoalNode<KeyData>> goals, GoalNode<KeyData> expandedNode, KeyData kd) {
+        ImmutableList<Goal> ngoals = g.proof().getSubtreeGoals(expandedNode.getData().getNode());
+
+        goals.remove(expandedNode);
+        GoalNode<KeyData> last = null;
+
+
+        if (ngoals.size() > 1) {
+
+            cases.get(findRoot(ngoals.get(0).node())).add(call);
+            CasesStatement inner = new CasesStatement();
+            cases.get(findRoot(ngoals.get(0).node())).add(inner);
+
+            for (Goal newGoalNode : ngoals) {
+                KeyData kdn = new KeyData(kd, newGoalNode.node());
+                goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
+                val caseForSubNode = new GuardedCaseStatement();
+                val m = new MatchExpression();
+                m.setPattern(new StringLiteral(
+                        format(LabelFactory.getBranchingLabel(newGoalNode.node()))
+                ));
+                caseForSubNode.setGuard(m);
+                inner.getCases().add(caseForSubNode);
+                cases.put(last.getData().getNode(), caseForSubNode.getBody());
+            }
+        } else {
+            if (ngoals.size() == 0) {
+                cases.get(findRoot(expandedNode.getData().getNode())).add(call);
+            } else {
+                KeyData kdn = new KeyData(kd, ngoals.get(0).node());
+                goals.add(last = new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
+                Node currentNode = last.getData().getNode();
+                cases.get(findRoot(currentNode)).add(call);
+            }
+        }
+        if (last != null)
+            model.setSelectedGoalNodeToShow(last);
+    }
+
+
     private Node findRoot(Node cur) {
         while (cur != null) {
             if (cases.keySet().contains(cur))
@@ -245,10 +464,10 @@ public class InteractiveModeController {
         casesStatement.accept(pp);
         return pp.toString();
     }
-
+/*
     private void applyRule(CallStatement call, Goal g) throws ScriptCommandNotApplicableException {
-        savepointslist.add(g.node());
-        savepointsstatement.add(call);
+        lastnodeslist.add(g.node());
+        laststatementlist.add(call);
 
         ObservableList<GoalNode<KeyData>> goals = model.getGoals();
         GoalNode<KeyData> expandedNode;
@@ -282,6 +501,7 @@ public class InteractiveModeController {
             //System.out.println("formula = " + map.get("formula"));
             //System.out.println("occ = " + map.get("occ"));
             ValueInjector valueInjector = ValueInjector.createDefault(kd.getNode());
+
             RuleCommand.Parameters cc = new RuleCommand.Parameters();
             cc = valueInjector.inject(c, cc, map);
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
@@ -341,7 +561,7 @@ public class InteractiveModeController {
             }
         }
 
-    }
+    }*/
 
     private String format(String branchingLabel) {
         // System.out.println("branchingLabel = " + branchingLabel);
@@ -370,5 +590,9 @@ public class InteractiveModeController {
         this.keYServices = keYServices;
     }
 
+
+    static enum Type {
+        MACRO, RULE, SCRIPT_COMMAND;
+    }
 
 }

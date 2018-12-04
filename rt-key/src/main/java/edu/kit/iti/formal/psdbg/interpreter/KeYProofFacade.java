@@ -8,6 +8,7 @@ import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.init.ProofInputException;
+import de.uka.ilkd.key.proof.init.ProofOblInput;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
@@ -91,8 +92,23 @@ public class KeYProofFacade {
      */
     public void reload(File problemFile) throws ProofInputException, ProblemLoaderException {
         if (contract.get() != null) {// reinstante the contract
-            setProof(getEnvironment().createProof(
-                    contract.get().getProofObl(getEnvironment().getServices())));
+            pma = KeYApi.loadFromKeyFile(problemFile);
+            List<Contract> contracts = pma.getProofContracts();
+            contracts.forEach(contract1 -> {
+                if (contract.get().getName().equals(contract1.getName())) {
+                    contractProperty().set(contract1);
+                }
+            });
+
+            if (contract.get() != null) {
+                try {
+                    activateContract(contract.get());
+                } catch (ProofInputException pie) {
+                    throw new ProofInputException("Contract not reloadable.", pie.getCause());
+                }
+            }
+            /*setProof(getEnvironment().createProof(
+                    contract.get().getProofObl(getEnvironment().getServices())));*/
         } else {
             setProof(KeYApi.loadFromKeyFile(problemFile).getLoadedProof().getProof());
         }

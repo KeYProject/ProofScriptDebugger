@@ -165,7 +165,6 @@ public class DebuggerMain implements Initializable {
     private ProofTree proofTree = new ProofTree(this);
     private DockNode proofTreeDock = new DockNode(proofTree, "Proof Tree");
 
-    //TODO: anpassen
     private ScriptTreeGraph scriptTreeGraph = new ScriptTreeGraph();
     private ScriptTreeView scriptTreeView = new ScriptTreeView(this);
     private DockNode scriptTreeDock = new DockNode(scriptTreeView,"Script Tree");
@@ -184,6 +183,12 @@ public class DebuggerMain implements Initializable {
 
     @Subscribe
     public void handle(Events.ShowPostMortem spm) {
+        //No script executed yet
+        if (model.getDebuggerFramework() == null) {
+            Utils.showInfoDialog("No post mortem", "Can't show post mortem", "Please execute a script first.");
+            return;
+        }
+
         FindNearestASTNode fna = new FindNearestASTNode(spm.getPosition());
         List<PTreeNode<KeyData>> result =
                 model.getDebuggerFramework().getPtreeManager().getNodes()
@@ -191,7 +196,7 @@ public class DebuggerMain implements Initializable {
                         .filter(it -> Objects.equals(fna.childOrMe(it.getStatement()), it.getStatement()))
                         .collect(Collectors.toList());
 
-        System.out.println(result);
+        LOGGER.info(result);
 
 
         for (PTreeNode<KeyData> statePointerToPostMortem : result) {
@@ -215,13 +220,18 @@ public class DebuggerMain implements Initializable {
                 if (stateAfterStmt.getSelectedGoalNode() != null) {
                     im.setSelectedGoalNodeToShow(stateAfterStmt.getSelectedGoalNode());
                 } else {
-                    im.setSelectedGoalNodeToShow(goals.get(0));
+                    if (goals.size() > 0) {
+                        im.setSelectedGoalNodeToShow(goals.get(0));
+                    } else {
+                        im.setSelectedGoalNodeToShow(stateBeforeStmt.getSelectedGoalNode());
+                        statusBar.publishMessage("This goal node was closed by the selected mutator.");
+                    }
                 }
                 inspectionViewsController.newPostMortemInspector(im)
                         .dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
 
             } else {
-                statusBar.publishErrorMessage("There is no post mortem state to show to this node, because this node was not executed.");
+                statusBar.publishErrorMessage("There is no post mortem state to show to this node, because this node was not executed or is a selector statement.");
             }
         }
     }
@@ -400,6 +410,7 @@ public class DebuggerMain implements Initializable {
         renewThreadStateTimer();
 
         savePointController = new SavePointController(this);
+
     }
 
     /**
@@ -533,7 +544,7 @@ public class DebuggerMain implements Initializable {
     public void executeScript() {
         //execute script without stepwise
         scriptExecutionController.executeScript(false);
-        //executeScript(false);
+
     }
 
 
@@ -548,10 +559,11 @@ public class DebuggerMain implements Initializable {
         //save old information and refresh models
         statusBar.publishMessage("Reloading...");
         File lastLoaded;
+        Contract chosen = null;
         if (model.getKeyFile() != null) {
             lastLoaded = model.getKeyFile();
         } else {
-            Contract chosen = model.getChosenContract();
+            chosen = model.getChosenContract();
             lastLoaded = model.getJavaFile();
         }
         //model.reload();
@@ -565,8 +577,11 @@ public class DebuggerMain implements Initializable {
         iModel.clearHighlightLines();
         iModel.getGoals().clear();
         iModel.setSelectedGoalNodeToShow(null);
-
+        if (chosen != null) {
+            FACADE.contractProperty().set(chosen);
+        }
         try {
+
             FACADE.reload(lastLoaded);
             if (iModel.getGoals().size() > 0) {
                 iModel.setSelectedGoalNodeToShow(iModel.getGoals().get(0));
@@ -616,6 +631,9 @@ public class DebuggerMain implements Initializable {
             assert statePointer != null;
             State<KeyData> lastState = statePointer.getStateAfterStmt();
             getInspectionViewsController().getActiveInspectionViewTab().activate(statePointer, lastState);
+
+            refreshScriptTreeView();
+
             if (lastState.getGoals().isEmpty()) {
                 statusBar.setNumberOfGoals(0);
                 Utils.showClosedProofDialog("the script " + scriptController.getMainScript().getScriptName());
@@ -741,6 +759,7 @@ public class DebuggerMain implements Initializable {
         //execute stepwise from start
         scriptExecutionController.executeScript(true);
         //executeScript(true);
+
     }
 
 
@@ -750,6 +769,7 @@ public class DebuggerMain implements Initializable {
         df.setErrorListener(this::onInterpreterError);
         if (addInitBreakpoint) {
             df.releaseUntil(new Blocker.CounterBlocker(1)); // just execute
+
         }
         df.getBreakpoints().addAll(breakpoints);
         df.getStatePointerListener().add(this::handleStatePointer);
@@ -801,6 +821,7 @@ public class DebuggerMain implements Initializable {
         if (javaFile != null) {
             model.setJavaFile(javaFile);
             model.setInitialDirectory(javaFile.getParentFile());
+            contractLoaderService.reset();
             contractLoaderService.start();
         }
     }
@@ -1160,7 +1181,6 @@ public class DebuggerMain implements Initializable {
         } else {
             throw new RuntimeException("Something went wrong when reloading");
         }
-
     }
 
   /*  public void handle(Events.TacletApplicationEvent tap){
@@ -1196,7 +1216,6 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void selectSavepoint(ActionEvent actionEvent) {
-        //TODO remove highlight of SPs
 
         SavePoint selected = cboSavePoints.getValue();
 
@@ -1282,7 +1301,6 @@ public class DebuggerMain implements Initializable {
         scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
 
 
-
     }
 
 
@@ -1318,30 +1336,35 @@ public class DebuggerMain implements Initializable {
 
     @FXML
     public void showScriptTree(ActionEvent actionEvent) {
-        //TODO: anpassen
+        if (FACADE.getProofState() == KeYProofFacade.ProofState.EMPTY) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "No proof loaded is loaded yet. If proof loading was invoked, please wait. Loading may take a while.", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+
         if (!scriptTreeDock.isDocked() && !scriptTreeDock.isFloating()) {
             scriptTreeDock.dock(dockStation, DockPos.LEFT);
         }
 
-        // old version of scripttree
+        refreshScriptTreeView();
 
-        ScriptTreeGraph stg = new ScriptTreeGraph();
-        PTreeNode startnode = (model.getDebuggerFramework() != null)?model.getDebuggerFramework().getPtreeManager().getStartNode():null;
-        if(startnode == null) return;
-        stg.createGraph(startnode, FACADE.getProof().root());
+    }
 
-        scriptTreeView.setModel(model);
-        scriptTreeView.setFACADE(FACADE);
-
-        scriptTreeView.setStg(stg);
-        scriptTreeView.toView();
-
-        /*TreeItem<AbstractTreeNode> item = (stg.toView());
-
-        scriptTreeView.setTree(item);
-*/
-
-
+    /**
+     * refreshes the view on the scripttree
+     */
+    private void refreshScriptTreeView() {
+        //refresh only if ScriptTreeView is visible
+        if (scriptTreeDock.isDocked() || scriptTreeDock.isFloating()) {
+            scriptTreeGraph = new ScriptTreeGraph();
+            PTreeNode startnode = null;
+            if (model.getDebuggerFramework() != null && model.getDebuggerFramework().getPtreeManager() != null) {
+                startnode = model.getDebuggerFramework().getPtreeManager().getStartNode();
+            }
+            scriptTreeGraph.createGraph(startnode, FACADE.getProof().root());
+            scriptTreeView.setStg(scriptTreeGraph);
+            scriptTreeView.toView();
+        }
     }
 
     @FXML
@@ -1441,7 +1464,31 @@ public class DebuggerMain implements Initializable {
         protected void succeeded() {
             statusBar.publishMessage("Contract loaded");
             List<Contract> contracts = getValue();
-            ContractChooser cc = new ContractChooser(FACADE.getService(), contracts);
+
+            /*
+            String javaFile = model.getJavaFile().getName();
+
+            List<Contract> filteredContracts = new ArrayList<>();
+            for (Contract contract : contracts) {
+                String contractFile = contract.getKJT().getFullName();
+                if (javaFile == contractFile) {
+                    filteredContracts.add(contract);
+                }
+            }
+
+            if (filteredContracts.size() == 0) {
+               Utils.showInfoDialog("No loadable contract", "No loadable contract",
+                       "There's no loadable contract for the chosen java file.");
+                return;
+            }
+            */
+
+            ContractChooser cc = null;
+            try {
+                cc = new ContractChooser(FACADE.getService(), FACADE.getContractsForJavaFile(model.getJavaFile()));
+            } catch (ProblemLoaderException e) {
+                e.printStackTrace();
+            }
 
             cc.showAndWait().ifPresent(result -> {
                 model.setChosenContract(result);
@@ -1492,13 +1539,20 @@ public class DebuggerMain implements Initializable {
             ptree.setProof(proof);
             ptree.setRoot(pnode);
             ptree.setNodeColor(pnode, "blueviolet");
-            ptree.setDeactivateRefresh(true);
+            ptree.setDeactivateRefresh(false);
 
             if (stateAfterStmt.size() > 0) {
-                Set<Node> sentinels = proof.getSubtreeGoals(pnode)
+                proof.getSubtreeGoals(pnode).forEach(goal -> System.out.println("goal.node().serialNr() = " + goal.node().serialNr()));
+                Set<Node> sentinels;
+                sentinels = proof.getSubtreeGoals(pnode)
                         .stream()
                         .map(Goal::node)
                         .collect(Collectors.toSet());
+                if (sentinels.size() == 0) {
+                    sentinels = new LinkedHashSet();
+                    sentinels.add(pnode);
+                    //sentinels.add(stateAfterStmt.get(0).getData().getNode());
+                }
                 ptree.getSentinels().addAll(sentinels);
                 sentinels.forEach(node -> ptree.setNodeColor(node, "blueviolet"));
             } else {
@@ -1514,14 +1568,15 @@ public class DebuggerMain implements Initializable {
                 //traverseProofTreeAndAddSentinelsToLeaves();
             }
 
-
             ptree.expandRootToSentinels();
+            System.out.println("ptree = " + ptree.getRoot());
             DockNode node = new DockNode(ptree, "Proof Tree for Step Into: " +
                     original.getStatement().accept(new ShortCommandPrinter())
             );
 
             node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
             node.requestFocus();
+
         }
     }
 

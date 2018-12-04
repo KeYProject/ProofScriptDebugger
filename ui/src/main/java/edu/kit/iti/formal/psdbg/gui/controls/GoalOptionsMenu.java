@@ -2,14 +2,18 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
+import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+import lombok.Setter;
 
 import java.util.function.Function;
 
@@ -20,9 +24,16 @@ public class GoalOptionsMenu extends ContextMenu {
     @FXML
     private RadioMenuItem rmiShowSequent, rmiCFL, rmiCFS, rmiBranchLabels, rmiNodeNames, rmiRuleNames;
 
+    @FXML
+    private MenuItem showVarAssignment;
+
+    @Setter
+    private InspectionModel model;
+
     private ObjectProperty<ViewOption> selectedViewOption = new SimpleObjectProperty<>();
 
     private BiMap<Toggle, ViewOption> optionMap = HashBiMap.create(6);
+
 
     public GoalOptionsMenu() {
         Utils.createWithFXML(this);
@@ -44,6 +55,27 @@ public class GoalOptionsMenu extends ContextMenu {
         });
 
         selectedViewOption.setValue(ViewOption.SEQUENT);
+
+        showVarAssignment.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                if(model == null || model.getSelectedGoalNodeToShow() == null) {
+                    Utils.showInfoDialog("Select a goal", "Select a goal", "Please select a goal first.");
+                    return;
+                }
+                VariableAssignment var_assignm = model.getSelectedGoalNodeToShow().getAssignments();
+
+                Stage stage = new Stage();
+                stage.setTitle("Variable Assignment");
+                VariableAssignmentWindow vaw = new VariableAssignmentWindow(var_assignm);
+
+                Scene scene = new Scene(vaw);
+                stage.setScene(scene);
+
+                stage.show();
+            }
+        });
     }
 
 
@@ -55,9 +87,6 @@ public class GoalOptionsMenu extends ContextMenu {
         return selectedViewOption;
     }
 
-    public void setSelectedViewOption(ViewOption selectedViewOption) {
-        this.selectedViewOption.set(selectedViewOption);
-    }
 
     public enum ViewOption {
         BRANCHING(KeyData::getBranchingLabel),
@@ -66,6 +95,7 @@ public class GoalOptionsMenu extends ContextMenu {
         STATEMENTS(KeyData::getProgramStatementsLabel),
         NAME(KeyData::getNameLabel),
         SEQUENT(item -> item.getNode().sequent().toString());
+
 
         private final Function<KeyData, String> projection;
 
@@ -77,4 +107,6 @@ public class GoalOptionsMenu extends ContextMenu {
             return projection.apply(item);
         }
     }
+
+
 }

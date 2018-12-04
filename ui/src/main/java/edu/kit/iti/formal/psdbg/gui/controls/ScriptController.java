@@ -113,8 +113,6 @@ public class ScriptController {
                         .filter(a -> a.getForce().equals(SavePoint.ForceOption.NO))
                         .collect(Collectors.toList());
                 noForceSp.forEach(e -> getMainScript().getScriptArea().setAlertMarker(e.getLineNumber()));
-
-                loggerConsole.info("Found savepoints: " + list);
             }
         } catch (Exception e) {
 

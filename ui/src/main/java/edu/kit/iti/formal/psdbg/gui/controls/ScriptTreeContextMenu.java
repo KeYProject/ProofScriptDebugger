@@ -3,103 +3,95 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.pp.LogicPrinter;
+import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.LabelFactory;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
+import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.AbstractTreeNode;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TreeItem;
+import lombok.Setter;
 
+import java.util.function.Consumer;
+
+/**
+ * Contextmenu for the ScriptTreevView
+ *
+ * @author An.Luong
+ */
 public class ScriptTreeContextMenu extends javafx.scene.control.ContextMenu {
     MenuItem copyBranchLabel = new MenuItem("Branch Label");
-    MenuItem copyProgramLines = new MenuItem("Program Lines");
-    MenuItem createCases = new MenuItem("Created Case for Open Goals");
-    MenuItem refresh = new MenuItem("Refresh (TOFIX)");
+
     MenuItem showSequent = new MenuItem("Show Sequent");
-    MenuItem showGoal = new MenuItem("Show in Goal List");
-    MenuItem expandAllNodes = new MenuItem("Expand Tree");
+    MenuItem showStatistics = new MenuItem("Show Statistics");
+
+    MenuItem expandAllNodes = new MenuItem("Expand Tree from here");
+    MenuItem collapseAllNodes = new MenuItem("Collapse Tree from here");
+
 
     private ScriptTreeView scriptTreeView;
 
     public ScriptTreeContextMenu(ScriptTreeView scriptTreeView) {
         this.scriptTreeView = scriptTreeView;
 
-        refresh.setOnAction(event -> scriptTreeView.setTree(scriptTreeView.toView()));
-        refresh.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.REFRESH));
-
         expandAllNodes.setOnAction((event) -> {
-            expandRootToLeaves(scriptTreeView.treeView.getRoot());
+            scriptTreeView.consumeNode(n ->
+                    expandNodeToLeaves(n), "");
         });
 
-        getItems().setAll(refresh, expandAllNodes); //, new SeparatorMenuItem(), createCases, showSequent, showGoal);
+        collapseAllNodes.setOnAction((event) -> {
+            scriptTreeView.consumeNode(n ->
+                    collapseNodeToLeaves(n), "");
+        });
+
+        showSequent.setOnAction((event -> {
+            scriptTreeView.consumeNode(n ->
+                    Events.fire(new Events.ShowSequent(((AbstractTreeNode) n.getValue()).getNode())), "");
+        }));
+
+        copyBranchLabel.setOnAction(evt -> scriptTreeView.consumeNode(n -> {
+            Utils.intoClipboard(
+                    LabelFactory.getBranchingLabel(((AbstractTreeNode) n.getValue()).getNode()));
+        }, "Copied!"));
+
+        showStatistics.setOnAction(evt -> Events.fire(
+                new Events.PublishMessage("[ScriptTree statistics] open goals: " + scriptTreeView.getStg().getOpenGoals() + ", closed goals: " +
+                        scriptTreeView.getStg().getClosedGoals(), 1)));
+        getItems().setAll(expandAllNodes, collapseAllNodes, new SeparatorMenuItem(), showSequent, showStatistics);
         setAutoFix(true);
         setAutoHide(true);
-        /*
-        copyBranchLabel.setOnAction(evt -> proofTree.consumeNode(n -> Utils.intoClipboard(
-                LabelFactory.getBranchingLabel(n)), "Copied!"));
-
-        copyProgramLines.setOnAction(evt -> {
-            proofTree.consumeNode(n -> {
-                Utils.intoClipboard(
-                        LabelFactory.getProgramLines(n));
-            }, "Copied!");
-        });
-
-        MenuItem copySequent = new MenuItem("Sequent");
-        copySequent.setOnAction(evt -> {
-            proofTree.consumeNode(n -> {
-                assert proofTree.getServices() != null : "set KeY services!";
-                String s = LogicPrinter.quickPrintSequent(n.sequent(), proofTree.getServices());
-                Utils.intoClipboard(s);
-            }, "Copied!");
-        });
-
-        MenuItem copyRulesLabel = new MenuItem("Rule labels");
-        copyRulesLabel.setOnAction(evt -> {
-            proofTree.consumeNode(n -> {
-                Utils.intoClipboard(
-                        LabelFactory.getRuleLabel(n));
-            }, "Copied!");
-        });
-
-        MenuItem copyProgramStatements = new MenuItem("Statements");
-        copyProgramStatements.setOnAction(event -> {
-            proofTree.consumeNode(n -> {
-                Utils.intoClipboard(
-                        LabelFactory.getProgramStatmentLabel(n));
-            }, "Copied!");
-        });
-
-        Menu copy = new Menu("Copy", new MaterialDesignIconView(MaterialDesignIcon.CONTENT_COPY),
-                copyBranchLabel, copyProgramLines,
-                copyProgramStatements, copyRulesLabel,
-                copySequent);
-
-        createCases.setOnAction(this::onCreateCases);
-
-
-        showSequent.setOnAction((evt) ->
-                proofTree.consumeNode(n -> Events.fire(new Events.ShowSequent(n)), ""));
-
-        showGoal.setOnAction((evt) -> proofTree.consumeNode(n -> Events.fire(new Events.SelectNodeInGoalList(n)), "Found!"));
-
-
-        //TODO SCRIPTTREE ACTION
-        getItems().setAll(refresh, expandAllNodes, new SeparatorMenuItem(), copy, createCases, showSequent, showGoal);
-        setAutoFix(true);
-        setAutoHide(true);
-*/
     }
 
-    static void expandRootToLeaves(TreeItem candidate) {
+
+    /**
+     * Expand all subTreeItems from selected Treeitem
+     * @param candidate selected Treeitem
+     */
+    static void expandNodeToLeaves(TreeItem candidate) {
         if (candidate != null) {
             if (!candidate.isLeaf()) {
                 candidate.setExpanded(true);
                 ObservableList<TreeItem> children = candidate.getChildren();
-                children.forEach(treeItem -> expandRootToLeaves(treeItem));
-
+                children.forEach(treeItem -> expandNodeToLeaves(treeItem));
             }
         }
     }
+
+
+    /**
+     * Collapse all subTreeItems from selected Treeitem
+     * @param candidate selected Treeitem
+     */
+    static void collapseNodeToLeaves(TreeItem candidate) {
+        if (candidate != null) {
+            if (!candidate.isLeaf()) {
+                candidate.setExpanded(false);
+                ObservableList<TreeItem> children = candidate.getChildren();
+                children.forEach(treeItem -> expandNodeToLeaves(treeItem));
+            }
+        }
+    }
+
 }
