@@ -1,0 +1,5 @@
+script s() {
+	impRight;
+	andLeft;
+	impLeft;
+}
