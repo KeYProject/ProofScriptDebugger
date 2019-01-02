@@ -1,231 +1,110 @@
 package edu.kit.iti.formal.psdbg.gui.model;
 
 import de.uka.ilkd.key.speclang.Contract;
+import edu.kit.iti.formal.psdbg.ChangeBean;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.DebuggerFramework;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
-import javafx.beans.property.*;
-import javafx.beans.value.ObservableBooleanValue;
+import lombok.Data;
 
 import java.io.File;
 
-public class DebuggerMainModel {
-    /**
-     * Property: current loaded javaFile
-     */
-    private final ObjectProperty<File> javaFile = new SimpleObjectProperty<>(this, "javaFile");
-
+@Data
+public class DebuggerMainModel extends ChangeBean {
     /**
      * Property: current loaded KeY File
      */
-    private final ObjectProperty<File> keyFile = new SimpleObjectProperty<>(this, "keyFile");
-
+    private File keyFile;
     /**
      * Chosen contract for problem
      */
-    private final ObjectProperty<Contract> chosenContract = new SimpleObjectProperty<>(this, "chosenContract");
-
+    private Contract chosenContract;
+    /**
+     * Property: current loaded javaFile
+     */
+    private File javaFile;
     /**
      * Properties for stepping enabling and disabling
      */
-    private ObjectProperty<DebuggerFramework<KeyData>> debuggerFramework = new SimpleObjectProperty<>();
+    private DebuggerFramework<KeyData> debuggerFramework;
 
-    private ObjectProperty<PTreeNode<KeyData>> statePointer = new SimpleObjectProperty<>();
+    private PTreeNode<KeyData> statePointer;
 
-    private BooleanProperty stepBackPossible = new SimpleBooleanProperty(this, "stepBackPossible", false);
+    private boolean stepBackPossible;
 
-    private BooleanProperty stepOverPossible = new SimpleBooleanProperty(this, "stepOverPossible", false);
+    private boolean stepOverPossible;
 
-    private BooleanProperty stepIntoPossible = new SimpleBooleanProperty(this, "stepIntoPossible", false);
+    private boolean stepIntoPossible;
 
-    private BooleanProperty stepReturnPossible = new SimpleBooleanProperty(this, "stepReturnPossible", false);
+    private boolean stepReturnPossible;
 
-    private ObjectProperty<InterpreterThreadState> interpreterState = new SimpleObjectProperty<>(this, "interpreterState",
-            InterpreterThreadState.NO_THREAD);
+    private InterpreterThreadState interpreterState = InterpreterThreadState.NO_THREAD;
 
     /**
      * True, iff the execution of script is not possible
      */
-    private BooleanProperty executeNotPossible = new SimpleBooleanProperty(true);//proofTreeController.executeNotPossibleProperty().or(FACADE.readyToExecuteProperty().not());
+    private boolean executeNotPossible = true;
 
     /**
      *
      */
-    private ObjectProperty<File> initialDirectory = new SimpleObjectProperty<>(this, "initialDirectory");
+    private File initialDirectory;
 
     /**
      *
      */
-    private StringProperty javaCode = new SimpleStringProperty(this, "javaCode");
+    private String javaCode;
 
-
-    //private BooleanProperty debugMode = new SimpleBooleanProperty(this, "debugMode", false);
-
-    public DebuggerFramework<KeyData> getDebuggerFramework() {
-        return debuggerFramework.get();
-    }
-
-    public void setDebuggerFramework(DebuggerFramework<KeyData> debuggerFramework) {
-        this.debuggerFramework.set(debuggerFramework);
-    }
-
-    public ObjectProperty<DebuggerFramework<KeyData>> debuggerFrameworkProperty() {
-        return debuggerFramework;
-    }
-
-    public PTreeNode<KeyData> getStatePointer() {
-        return statePointer.get();
-    }
-
-    public void setStatePointer(PTreeNode<KeyData> statePointer) {
-        this.statePointer.set(statePointer);
-    }
-
-    public ObjectProperty<PTreeNode<KeyData>> statePointerProperty() {
-        return statePointer;
-    }
-
-    public boolean isStepBackPossible() {
-        return stepBackPossible.get();
-    }
-
-    public void setStepBackPossible(boolean stepBackPossible) {
-        this.stepBackPossible.set(stepBackPossible);
-    }
-
-    public BooleanProperty stepBackPossibleProperty() {
-        return stepBackPossible;
-    }
-
-    public boolean isStepOverPossible() {
-        return stepOverPossible.get();
-    }
-
-    public void setStepOverPossible(boolean stepOverPossible) {
-        this.stepOverPossible.set(stepOverPossible);
-    }
-
-    public BooleanProperty stepOverPossibleProperty() {
-        return stepOverPossible;
-    }
-
-    public boolean isStepIntoPossible() {
-        return stepIntoPossible.get();
-    }
-
-    public void setStepIntoPossible(boolean stepIntoPossible) {
-        this.stepIntoPossible.set(stepIntoPossible);
-    }
-
-    public BooleanProperty stepIntoPossibleProperty() {
-        return stepIntoPossible;
-    }
-
-    public boolean isStepReturnPossible() {
-        return stepReturnPossible.get();
-    }
-
-    public void setStepReturnPossible(boolean stepReturnPossible) {
-        this.stepReturnPossible.set(stepReturnPossible);
-    }
-
-    public BooleanProperty stepReturnPossibleProperty() {
-        return stepReturnPossible;
-    }
-
-    public File getJavaFile() {
-        return javaFile.get();
-    }
-
-    public void setJavaFile(File javaFile) {
-        this.javaFile.set(javaFile);
-    }
-
-    public ObjectProperty<File> javaFileProperty() {
-        return javaFile;
-    }
-
-    public File getKeyFile() {
-        return keyFile.get();
-    }
 
     public void setKeyFile(File keyFile) {
-        this.keyFile.set(keyFile);
-    }
-
-    public ObjectProperty<File> keyFileProperty() {
-        return keyFile;
-    }
-
-    public Contract getChosenContract() {
-        return chosenContract.get();
+        this.keyFile = keyFile;
     }
 
     public void setChosenContract(Contract chosenContract) {
-        this.chosenContract.set(chosenContract);
+        this.chosenContract = chosenContract;
     }
 
-    public ObjectProperty<Contract> chosenContractProperty() {
-        return chosenContract;
+    public void setJavaFile(File javaFile) {
+        this.javaFile = javaFile;
     }
 
-    public Boolean getExecuteNotPossible() {
-        return executeNotPossible.get();
+    public void setDebuggerFramework(DebuggerFramework<KeyData> debuggerFramework) {
+        this.debuggerFramework = debuggerFramework;
     }
 
-    public BooleanProperty executeNotPossibleProperty() {
-        return executeNotPossible;
+    public void setStatePointer(PTreeNode<KeyData> statePointer) {
+        this.statePointer = statePointer;
     }
 
-    public File getInitialDirectory() {
-        return initialDirectory.get();
+    public void setStepBackPossible(boolean stepBackPossible) {
+        this.stepBackPossible = stepBackPossible;
     }
 
-    public void setInitialDirectory(File initialDirectory) {
-        this.initialDirectory.set(initialDirectory);
+    public void setStepOverPossible(boolean stepOverPossible) {
+        this.stepOverPossible = stepOverPossible;
     }
 
-    public ObjectProperty<File> initialDirectoryProperty() {
-        return initialDirectory;
+    public void setStepIntoPossible(boolean stepIntoPossible) {
+        this.stepIntoPossible = stepIntoPossible;
     }
 
-    public String getJavaCode() {
-        return javaCode.get();
-    }
-
-    public void setJavaCode(String javaCode) {
-        this.javaCode.set(javaCode);
-    }
-
-    public StringProperty javaCodeProperty() {
-        return javaCode;
-    }
-
-/*
-    public boolean isDebugMode() {
-        return debugMode.get();
-    }
-
-    public void setDebugMode(boolean debugMode) {
-        this.debugMode.set(debugMode);
-    }
-
-    public BooleanProperty debugModeProperty() {
-        return debugMode;
-    }
-
-*/
-    public InterpreterThreadState getInterpreterState() {
-        return interpreterState.get();
-    }
-
-    public ObjectProperty<InterpreterThreadState> interpreterStateProperty() {
-        return interpreterState;
+    public void setStepReturnPossible(boolean stepReturnPossible) {
+        this.stepReturnPossible = stepReturnPossible;
     }
 
     public void setInterpreterState(InterpreterThreadState interpreterState) {
-        this.interpreterState.set(interpreterState);
+        this.interpreterState = interpreterState;
     }
 
+    public void setExecuteNotPossible(boolean executeNotPossible) {
+        this.executeNotPossible = executeNotPossible;
+    }
 
+    public void setInitialDirectory(File initialDirectory) {
+        this.initialDirectory = initialDirectory;
+    }
+
+    public void setJavaCode(String javaCode) {
+        this.javaCode = javaCode;
+    }
 }

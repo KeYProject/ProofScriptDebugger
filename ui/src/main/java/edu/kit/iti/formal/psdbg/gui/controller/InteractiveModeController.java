@@ -14,9 +14,6 @@ import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.LabelFactory;
 import edu.kit.iti.formal.psdbg.RuleCommandHelper;
 import edu.kit.iti.formal.psdbg.ValueInjector;
-import edu.kit.iti.formal.psdbg.gui.controls.ScriptArea;
-import edu.kit.iti.formal.psdbg.gui.controls.ScriptController;
-import edu.kit.iti.formal.psdbg.gui.controls.Utils;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.Evaluator;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
@@ -30,9 +27,7 @@ import edu.kit.iti.formal.psdbg.interpreter.funchdl.ProofScriptCommandBuilder;
 import edu.kit.iti.formal.psdbg.parser.PrettyPrinter;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.ObservableList;
+import edu.kit.iti.formal.psdbg.util.Utils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -43,6 +38,8 @@ import org.key_project.util.collection.ImmutableList;
 import recoder.util.Debug;
 
 import javax.annotation.Nullable;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.*;
@@ -57,9 +54,9 @@ public class InteractiveModeController {
 
     private final Map<Node, Statements> cases = new HashMap<>();
 
-    private final ScriptController scriptController;
-    private BooleanProperty activated = new SimpleBooleanProperty();
-    private ScriptArea scriptArea;
+    //TODO private final ScriptController scriptController;
+    private boolean activated = false;
+    private JTextArea scriptArea;
 
     private InspectionModel model;
 
@@ -87,7 +84,7 @@ public class InteractiveModeController {
         currentProof.getSubtreeGoals(currentProof.root()).forEach(goal -> {
             cases.put(goal.node(), new Statements());
         });
-        this.scriptArea = scriptController.newScript();
+        //TODO this.scriptArea = scriptController.newScript();
         this.model = model;
         casesStatement = new CasesStatement();
         cases.forEach((k, v) -> {
@@ -110,7 +107,7 @@ public class InteractiveModeController {
     /**
      * Undo the application of the last rule
      */
-    public void undo(javafx.event.ActionEvent actionEvent) {
+    public void undo(ActionEvent actionEvent) {
         if (lastnodeslist.isEmpty()) {
             Debug.log("Kein vorheriger Zustand.");
             return;
@@ -124,7 +121,7 @@ public class InteractiveModeController {
         currentProof.pruneProof(pruneNode);
         ImmutableList<Goal> goalsafterPrune = currentProof.getSubtreeGoals(pruneNode);
 
-        ObservableList<GoalNode<KeyData>> goals = model.getGoals();
+        List<GoalNode<KeyData>> goals = model.getGoals();
         List<GoalNode<KeyData>> prunedChildren = goals.stream()
                 .filter(keyDataGoalNode -> goalsbeforePrune.contains(keyDataGoalNode.getData().getGoal()))
                 .collect(Collectors.toList());
@@ -187,7 +184,7 @@ public class InteractiveModeController {
     public void stop() {
         Events.unregister(this);
         String c = getCasesAsString();
-        scriptController.getDockNode(scriptArea).undock();
+        //TODO scriptController.getDockNode(scriptArea).undock();
 
         if(savepoint == null) {
             Events.fire(new Events.InsertAtTheEndOfMainScript(c));
@@ -332,7 +329,7 @@ public class InteractiveModeController {
         lastnodeslist.add(g.node());
         laststatementlist.add(call);
 
-        ObservableList<GoalNode<KeyData>> goals = model.getGoals();
+        List<GoalNode<KeyData>> goals = model.getGoals();
         GoalNode<KeyData> expandedNode;
         List<GoalNode<KeyData>> collect = goals.stream().filter(keyDataGoalNode -> keyDataGoalNode.getData().getGoal().equals(g)).collect(Collectors.toList());
 
@@ -408,7 +405,7 @@ public class InteractiveModeController {
         Class rtclazz = method.getReturnType();
         return (T) rtclazz.newInstance();
     }
-    private void postStateHandler(CallStatement call, Goal g, ObservableList<GoalNode<KeyData>> goals, GoalNode<KeyData> expandedNode, KeyData kd) {
+    private void postStateHandler(CallStatement call, Goal g, List<GoalNode<KeyData>> goals, GoalNode<KeyData> expandedNode, KeyData kd) {
         ImmutableList<Goal> ngoals = g.proof().getSubtreeGoals(expandedNode.getData().getNode());
 
         goals.remove(expandedNode);
@@ -564,25 +561,7 @@ public class InteractiveModeController {
         return newLabel;
     }
 
-    public boolean isActivated() {
-        return activated.get();
-    }
-
-    public void setActivated(boolean activated) {
-        this.activated.set(activated);
-    }
-
-    public BooleanProperty activatedProperty() {
-        return activated;
-    }
-
-    public void setKeYServices(Services keYServices) {
-        this.keYServices = keYServices;
-    }
-
-
     static enum Type {
         MACRO, RULE, SCRIPT_COMMAND;
     }
-
 }

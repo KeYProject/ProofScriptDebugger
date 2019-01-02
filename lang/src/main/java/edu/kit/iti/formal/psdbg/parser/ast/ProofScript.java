@@ -37,10 +37,10 @@ import java.util.Objects;
 @EqualsAndHashCode(callSuper = false)
 public class ProofScript extends ASTNode<ScriptLanguageParser.ScriptContext> {
     @NonNull
-    @Getter
-    @Setter
     private String name = "_";
+    @NonNull
     private Signature signature = new Signature();
+    @NonNull
     private Statements body = new Statements();
 
     @Override

@@ -1,16 +1,14 @@
 package edu.kit.iti.formal.psdbg.gui.controller;
 
-import alice.tuprolog.InvalidLibraryException;
-import alice.tuprolog.InvalidTheoryException;
-import antlr.collections.AST;
+import bibliothek.gui.Dockable;
+import bibliothek.gui.dock.common.CContentArea;
+import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.DefaultSingleCDockable;
+import bibliothek.gui.dock.common.intern.CDockable;
 import com.google.common.eventbus.Subscribe;
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
-import de.uka.ilkd.key.api.ProofApi;
 import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.gui.MainWindow;
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.SingleProof;
 import de.uka.ilkd.key.proof.init.ProofInputException;
@@ -18,15 +16,10 @@ import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
 import edu.kit.iti.formal.psdbg.examples.Examples;
-import edu.kit.iti.formal.psdbg.fmt.DefaultFormatter;
 import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
-import edu.kit.iti.formal.psdbg.gui.controls.*;
-import edu.kit.iti.formal.psdbg.gui.graph.Graph;
-import edu.kit.iti.formal.psdbg.gui.graph.GraphView;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.gui.model.InterpreterThreadState;
-import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
@@ -35,61 +28,32 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
-import edu.kit.iti.formal.psdbg.parser.ASTDiff;
-import edu.kit.iti.formal.psdbg.parser.Facade;
-import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
-import edu.kit.iti.formal.psdbg.parser.ast.CaseStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
-import edu.kit.iti.formal.psdbg.storage.KeyPersistentFacade;
-import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.binding.BooleanBinding;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
+import edu.kit.iti.formal.psdbg.util.FindNearestASTNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dockfx.DockNode;
-import org.dockfx.DockPane;
-import org.dockfx.DockPos;
 import org.key_project.util.collection.ImmutableList;
-import org.reactfx.util.FxTimer;
-import org.reactfx.util.Timer;
 
 import javax.annotation.Nullable;
+import javax.swing.Timer;
 import javax.swing.*;
-import javax.xml.bind.JAXBException;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowStateListener;
-import java.awt.im.InputContext;
-import java.io.*;
-import java.net.URL;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.security.Permission;
-import java.time.Duration;
+import java.util.List;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
-
-import org.reactfx.util.Timer;
 
 
 /**
@@ -98,7 +62,7 @@ import org.reactfx.util.Timer;
  * @author S.Grebing
  * @author Alexander Weigl
  */
-public class DebuggerMain implements Initializable {
+public class DebuggerMain extends JFrame {
     public static final KeYProofFacade FACADE = new KeYProofFacade();
 
     protected static final Logger LOGGER = LogManager.getLogger(DebuggerMain.class);
@@ -109,76 +73,62 @@ public class DebuggerMain implements Initializable {
 
     @Getter
     private final DebuggerMainModel model = new DebuggerMainModel();
+    /*TODO LATER:
     private final GraphView graphView = new GraphView();
     private final Graph.PTreeGraph graph = graphView.getGraph();
+    private final Dockable graphViewNode = new DockNode(graphView, "Debug graph");
+     */
 
-    private final DockNode graphViewNode = new DockNode(graphView, "Debug graph");
+    private JMenuItem menuExecuteFromSavepoint;
+    private JMenuItem menuRestartFromSavepoint;
+    private JButton buttonStartInterpreter;
 
-    @FXML
-    public Menu menuExecuteFromSavepoint;
+//TODO     private ScriptController scriptController;
 
-    @FXML
-    public Menu menuRestartFromSavepoint;
+    private JComboBox<SavePoint> cboSavePoints;
 
-    @FXML
-    SplitMenuButton buttonStartInterpreter;
-
-    ScriptController scriptController;
-    @FXML
-    ComboBox<SavePoint> cboSavePoints;
-    @FXML
-    Button btnSavePointRollback;
-    private InspectionViewsController inspectionViewsController;
+    private JButton btnSavePointRollback;
+    //TODO private InspectionViewsController inspectionViewsController;
     private SavePointController savePointController;
     private InterpreterBuilder interpreterBuilder;
-    @FXML
-    private DebuggerStatusBar statusBar;
-    @FXML
-    private DockPane dockStation;
-    @FXML
-    private ToggleButton togBtnCommandHelp;
-    @FXML
-    private ToggleButton togBtnProofTree;
-    @FXML
-    private ToggleButton togBtnActiveInspector;
-    @FXML
-    private ToggleButton togBtnWelcome;
-    @FXML
-    private ToggleButton togBtnCodeDock;
-    @FXML
-    private CheckMenuItem miCommandHelp;
-    @FXML
-    private CheckMenuItem miCodeDock;
-    @FXML
-    private CheckMenuItem miWelcomeDock;
-    @FXML
-    private CheckMenuItem miActiveInspector;
-    @FXML
-    private CheckMenuItem miProofTree;
-    @FXML
-    private ToggleButton btnInteractiveMode;
+    //private DebuggerStatusBar statusBar;
+    private JPanel statusBar;
+    private JToggleButton togBtnCommandHelp;
+    private JToggleButton togBtnProofTree;
+    private JToggleButton togBtnActiveInspector;
+    private JToggleButton togBtnWelcome;
+    private JToggleButton togBtnCodeDock;
+    private JCheckBoxMenuItem miCommandHelp;
+    private JCheckBoxMenuItem miCodeDock;
+    private JCheckBoxMenuItem miWelcomeDock;
+    private JCheckBoxMenuItem miActiveInspector;
+    private JCheckBoxMenuItem miProofTree;
+    private JToggleButton btnInteractiveMode;
+    private JButton interactive_undo;
 
-    @FXML
-    private Button interactive_undo;
-
-
-    private JavaArea javaArea = new JavaArea();
-    private DockNode javaAreaDock = new DockNode(javaArea, "Java Source",
-            new MaterialDesignIconView(MaterialDesignIcon.CODEPEN)
-    );
-    //-----------------------------------------------------------------------------------------------------------------
-    private ProofTree proofTree = new ProofTree(this);
-    private DockNode proofTreeDock = new DockNode(proofTree, "Proof Tree");
-    private WelcomePane welcomePane = new WelcomePane(this);
-    private DockNode welcomePaneDock = new DockNode(welcomePane, "Welcome", new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
-    private DockNode activeInspectorDock;
-    private CommandHelp commandHelp = new CommandHelp();
-    private DockNode commandHelpDock = new DockNode(commandHelp, "DebuggerCommand Help");
+    private JTextArea javaArea = new JTextArea();
+    //private JavaArea javaArea = new JavaArea();
+    private Dockable javaAreaDock;
+    private JPanel proofTree = new JPanel();
+    //private ProofTree proofTree = new ProofTree(this);
+    private CDockable proofTreeDock = create(proofTree, "Proof Tree");
+    private JPanel welcomePane = new JPanel();
+    //private WelcomePane welcomePane = new WelcomePane(this);
+    private CDockable welcomePaneDock = create(welcomePane, "Welcome");
+    private CDockable activeInspectorDock;
+    private JPanel commandHelp = new JPanel();
+    //private CommandHelp commandHelp = new CommandHelp();
+    private CDockable commandHelpDock = create(commandHelp, "DebuggerCommand Help");
     private InteractiveModeController interactiveModeController;
     private ScriptExecutionController scriptExecutionController;
-    @FXML
-    private Menu examplesMenu;
+    private JMenu examplesMenu = new JMenu();
     private Timer interpreterThreadTimer;
+    private CControl dockControl;
+    private CContentArea dockContent;
+
+    public static DefaultSingleCDockable create(JPanel content, String title) {
+        return new DefaultSingleCDockable(title, content);
+    }
 
     @Subscribe
     public void handle(Events.ShowPostMortem spm) {
@@ -207,134 +157,160 @@ public class DebuggerMain implements Initializable {
                 list.forEach(keyDataGoalNode -> System.out.println("list = " + keyDataGoalNode.getData().getNode().sequent()));*/
 
                 InspectionModel im = new InspectionModel();
-                ObservableList<GoalNode<KeyData>> goals = FXCollections.observableArrayList(stateAfterStmt.getGoals());
+                List<GoalNode<KeyData>> goals = new ArrayList<>(stateAfterStmt.getGoals());
 
                 im.setGoals(goals);
                 if (stateAfterStmt.getSelectedGoalNode() != null) {
                     im.setSelectedGoalNodeToShow(stateAfterStmt.getSelectedGoalNode());
                 } else {
-                    if(goals.size() > 0) {
+                    if (goals.size() > 0) {
                         im.setSelectedGoalNodeToShow(goals.get(0));
                     } else {
                         im.setSelectedGoalNodeToShow(stateBeforeStmt.getSelectedGoalNode());
-                        statusBar.publishMessage("This goal node was closed by the selected mutator.");
+                        //TODO statusBar.publishMessage("This goal node was closed by the selected mutator.");
                     }
                 }
-                inspectionViewsController.newPostMortemInspector(im)
-                        .dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
 
+                //TODO CDockable ivc = inspectionViewsController.newPostMortemInspector(im);
             } else {
-                statusBar.publishErrorMessage("There is no post mortem state to show to this node, because this node was not executed or is a selector statement.");
+                //TODO statusBar.publishErrorMessage("There is no post mortem state to show to this node, because this node was not executed or is a selector statement.");
             }
         }
+
     }
 
     @Subscribe
     public void handle(Events.ShowSequent ss) {
-        SequentView sv = new SequentView();
-        sv.setKeYProofFacade(FACADE);
-        sv.setNode(ss.getNode());
-        DockNode node = new DockNode(sv, "Sequent Viewer " + ss.getNode().serialNr());
-        node.dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
+        //TODO SequentView sv = new SequentView();
+        //sv.setKeYProofFacade(FACADE);
+        //sv.setNode(ss.getNode());
+        JPanel sv = new JPanel();
+        var node = create(sv, "Sequent Viewer " + ss.getNode().serialNr());
+        dockControl.addDockable(node);
     }
 
     @Subscribe
     public void handle(Events.PublishMessage message) {
-        if (message.getFlash() == 0)
+        /*TODO if (message.getFlash() == 0)
             statusBar.publishMessage(message.getMessage());
         else if (message.getFlash() == 1)
             statusBar.publishSuccessMessage(message.getMessage());
         else
-            statusBar.publishErrorMessage(message.getMessage());
+            statusBar.publishErrorMessage(message.getMessage());*/
     }
 
     @Subscribe
     public void handle(Events.SelectNodeInGoalList evt) {
+        /*TODO
         InspectionModel im = getInspectionViewsController().getActiveInspectionViewTab().getModel();
-        DockNode dockNode = getInspectionViewsController().newPostMortemInspector(im);
-        dockNode.dock(dockStation, DockPos.CENTER, getActiveInspectorDock());
+        var dockNode = getInspectionViewsController().newPostMortemInspector(im);
+        dockControl.addDockable(dockNode);
+        dockNode.setVisible(true);
         for (GoalNode<KeyData> gn : im.getGoals()) {
             if (gn.getData().getNode().equals(evt.getNode())) {
                 im.setSelectedGoalNodeToShow(gn);
-                dockNode.requestFocus();
+                //dockNode.requestFocus();
                 return;
             }
         }
-
         statusBar.publishErrorMessage("Node not present in Goal List");
+        */
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        init();
-    }
-
-    private void init() {
-        Events.register(this);
-        // model.setDebugMode(false);
-        scriptController = new ScriptController(dockStation);
-
-        interactiveModeController = new InteractiveModeController(scriptController);
+    private void setupUI() {
+        setupDocking();
+        //TODO scriptController = new ScriptController(dockControl);
+        //TODO interactiveModeController = new InteractiveModeController(scriptController);
         btnInteractiveMode.setSelected(false);
-        inspectionViewsController = new InspectionViewsController(dockStation);
-        activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
+        //TODO inspectionViewsController = new InspectionViewsController(dockControl);
+        //TODO activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
         //register the welcome dock in the center
-        welcomePaneDock.dock(dockStation, DockPos.LEFT);
 
         marriageJavaCode();
 
-        getFacade().environmentProperty().addListener(
-                (prop, o, n) -> {
-                    scriptController.getAutoCompleter().getRuleCompleter().setEnvironment(n);
-                });
+        //TODO getFacade().addPropertyChangeListener("environment", evt ->
+        //TODO         scriptController.getAutoCompleter().getRuleCompleter().setEnvironment((KeYEnvironment) evt.getNewValue()));
 
-        InvalidationListener invalidationListener = observable -> {
-            Proof p = getFacade().getProof();
+        PropertyChangeListener proofReload = evt -> {
+            Proof p = (Proof) evt.getNewValue();
             KeYEnvironment env = getFacade().getEnvironment();
             if (p == null || env == null) return;
             ImmutableList<Goal> openGoals = p.getSubtreeGoals(p.root());
             KeyData kd = new KeyData(openGoals.get(0), env, p);
-            scriptController.getAutoCompleter().getArgumentCompleter().setDefaultKeyData(kd);
-
+            //TODO scriptController.getAutoCompleter().getArgumentCompleter().setDefaultKeyData(kd);
         };
-        getFacade().environmentProperty().addListener(invalidationListener);
-        getFacade().proofProperty().addListener(invalidationListener);
-
+        getFacade().addPropertyChangeListener("proof", proofReload);
 
         //marriage key proof facade to proof tree
-        getFacade().proofProperty().addListener(
-                (prop, o, n) -> {
+        getFacade().addPropertyChangeListener("proof", evt -> {
+                    Proof n = (Proof) evt.getNewValue();
                     if (n == null) {
-                        proofTree.setRoot(null);
+                        //TODO proofTree.setRoot(null);
                     } else {
-                        proofTree.setRoot(n.root());
+                        /*TODO proofTree.setRoot(n.root());
                         InspectionViewsController inspectionViewsController = getInspectionViewsController();
                         InspectionView activeInspectionViewTab = inspectionViewsController.getActiveInspectionViewTab();
                         InspectionModel model = activeInspectionViewTab.getModel();
-                        ObservableList<GoalNode<KeyData>> goals = model.getGoals();
-                        goals.setAll(FACADE.getPseudoGoals());
+                        List<GoalNode<KeyData>> goals = model.getGoals();
+                        goals.clear();
+                        goals.addAll(FACADE.getPseudoGoals());
                         model.setSelectedGoalNodeToShow(null);
 
                         // frames / contextes zurück setzen
                         activeInspectionViewTab.getModel();
-                        scriptController.getOpenScripts().keySet().forEach(ScriptArea::removeExecutionMarker);
+                        scriptController.getOpenScripts()
+                                .keys()
+                                .forEach(ScriptArea::removeExecutionMarker);
+                    */
                     }
-                    proofTree.setProof(n);
+                    //TODO proofTree.setProof(n);
                 }
         );
 
         //
-        model.statePointerProperty().addListener((prop, o, n) -> {
+        /*TODO model.statePointerProperty().addListener((prop, o, n) -> {
             this.handleStatePointerUI(n);
         });
-
+        */
         //Debugging
-        Utils.addDebugListener(model.javaCodeProperty());
-        Utils.addDebugListener(model.executeNotPossibleProperty(), "executeNotPossible");
-        scriptController.mainScriptProperty().bindBidirectional(statusBar.mainScriptIdentifierProperty());
+        /*TODO scriptController.mainScriptProperty().bindBidirectional(statusBar.mainScriptIdentifierProperty());*/
         initializeExamples();
 
+        //if threadstate finished, stepping should still be possible
+        /*TODO BooleanBinding disableStepping = FACADE.loadingProperty().
+                or(FACADE.proofProperty().isNull()).
+                or(model.interpreterStateProperty().isNotEqualTo(InterpreterThreadState.WAIT));
+*/
+        //set scriptareas to disable if loading is in process, as otherwise the scriptarea jumps
+  /*TODO       FACADE.readyToExecuteProperty().addListener((observable, oldValue, newValue) -> {
+            scriptController.disablePropertyForAreasProperty().set(!newValue);
+        });
+*/
+    /*TODO
+        model.stepBackPossibleProperty().bind(disableStepping);
+        model.stepIntoPossibleProperty().bind(disableStepping);
+        model.stepOverPossibleProperty().bind(disableStepping);
+        model.stepReturnPossibleProperty().bind(disableStepping);
 
+        model.executeNotPossibleProperty().bind(FACADE.loadingProperty().or(FACADE.proofProperty().isNull()));
+
+        statusBar.interpreterStatusModelProperty().bind(model.interpreterStateProperty());
+
+        scriptExecutionController = new ScriptExecutionController(this);
+        renewThreadStateTimer();
+                */
+
+
+        savePointController = new SavePointController(this);
+        Events.register(this);
+    }
+
+    private void setupDocking() {
+        dockControl = new CControl(this);
+        dockContent = dockControl.createContentArea("main");
+        //TODO dockControl.addDockable(javaAreaDock);
+        //TODO welcomePaneDock.dock(dockStation, DockPos.LEFT);
+        /*//TODO
         dockingNodeHandling(togBtnActiveInspector,
                 miActiveInspector,
                 activeInspectorDock,
@@ -359,49 +335,7 @@ public class DebuggerMain implements Initializable {
                 miProofTree,
                 proofTreeDock,
                 DockPos.LEFT);
-
-
-        //if threadstate finished, stepping should still be possible
-        BooleanBinding disableStepping = FACADE.loadingProperty().
-                or(FACADE.proofProperty().isNull()).
-                or(model.interpreterStateProperty().isNotEqualTo(InterpreterThreadState.WAIT));
-
-        //set scriptareas to disable if loading is in process, as otherwise the scriptarea jumps
-        FACADE.readyToExecuteProperty().addListener((observable, oldValue, newValue) -> {
-            scriptController.disablePropertyForAreasProperty().set(!newValue);
-        });
-
-
-      /*  model.statePointerProperty().addListener((observable, oldValue, newValue) -> {
-
-            //set all steppings -> remove binding
-            if(newValue.getStepInvOver() != null)
-                model.setStepReturnPossible(true);
-            if(newValue.getStepOver() != null)
-                model.setStepOverPossible(true);
-
-            if(newValue.getStepInvInto() != null)
-                model.setStepBackPossible(true);
-
-            if(newValue.getStepInto() != null)
-                model.setStepIntoPossible(true);
-
-        });*/
-
-        model.stepBackPossibleProperty().bind(disableStepping);
-        model.stepIntoPossibleProperty().bind(disableStepping);
-        model.stepOverPossibleProperty().bind(disableStepping);
-        model.stepReturnPossibleProperty().bind(disableStepping);
-
-
-        model.executeNotPossibleProperty().bind(FACADE.loadingProperty().or(FACADE.proofProperty().isNull()));
-
-        statusBar.interpreterStatusModelProperty().bind(model.interpreterStateProperty());
-
-        scriptExecutionController = new ScriptExecutionController(this);
-        renewThreadStateTimer();
-
-        savePointController = new SavePointController(this);
+*/
     }
 
     /**
@@ -417,12 +351,12 @@ public class DebuggerMain implements Initializable {
 
     /**
      * <b>Note:</b> This is executed in the Interpreter Thread!
-     * You should listen to the {@link DebuggerMainModel#statePointerProperty}
+     * You should listen to the {@link DebuggerMainModel#}
      *
      * @param node
      */
     private void handleStatePointer(PTreeNode<KeyData> node) {
-        Platform.runLater(() -> model.setStatePointer(node));
+        SwingUtilities.invokeLater(() -> model.setStatePointer(node));
     }
 
     /**
@@ -432,20 +366,20 @@ public class DebuggerMain implements Initializable {
      */
     private void handleStatePointerUI(PTreeNode<KeyData> node) {
         if (node != null) {
-            getInspectionViewsController().getActiveInspectionViewTab().activate(node, node.getStateBeforeStmt());
-            scriptController.getDebugPositionHighlighter().highlight(node.getStatement());
+            //TODO getInspectionViewsController().getActiveInspectionViewTab().activate(node, node.getStateBeforeStmt());
+            //TODO scriptController.getDebugPositionHighlighter().highlight(node.getStatement());
         } else {
-            getInspectionViewsController().getActiveInspectionViewTab().getFrames().getItems().clear();
-            scriptController.getDebugPositionHighlighter().remove();
+            //TODO getInspectionViewsController().getActiveInspectionViewTab().getFrames().getItems().clear();
+            //TODO scriptController.getDebugPositionHighlighter().remove();
         }
-        graph.addPartiallyAndMark(node);
-
+        //TODO graph.addPartiallyAndMark(node);
     }
 
     /**
      * Connect the Javacode area with the model and the rest of the GUI
      */
     private void marriageJavaCode() {
+        /*TODO
         //Listener on chosenContract from
         model.chosenContractProperty().addListener(o -> {
             //javaCode.set(Utils.getJavaCode(chosenContract.get()));
@@ -476,42 +410,36 @@ public class DebuggerMain implements Initializable {
                 LOGGER.catching(e);
             }
         });
-
+        */
     }
 
-    @FXML
+
     private void undo(ActionEvent e) {
         interactiveModeController.undo(e);
     }
-
 
     public KeYProofFacade getFacade() {
         return FACADE;
     }
 
-    public InspectionViewsController getInspectionViewsController() {
-        return inspectionViewsController;
-    }
-
     private void initializeExamples() {
-        examplesMenu.getItems().clear();
+        examplesMenu.removeAll();
         Examples.loadExamples().forEach(example -> {
-            MenuItem item = new MenuItem(example.getName());
-            item.setOnAction(event -> {
-                example.open(this);
-            });
-            examplesMenu.getItems().add(item);
+            JMenuItem item = new JMenuItem(example.getName());
+            item.addActionListener(event -> example.open(this));
+            examplesMenu.add(item);
         });
     }
 
     public void showCodeDock(ActionEvent actionEvent) {
-        if (!javaAreaDock.isDocked()) {
+        /*TODOif (!javaAreaDock.isDocked()) {
             javaAreaDock.dock(dockStation, DockPos.RIGHT);
-        }
+        }*/
     }
 
-    public void dockingNodeHandling(ToggleButton btn, CheckMenuItem cmi, DockNode dn, DockPos defaultPosition) {
-        BooleanBinding prop = dn.dockedProperty().or(dn.floatingProperty());
+    public void dockingNodeHandling(JToggleButton btn, JCheckBoxMenuItem cmi, CDockable dn,
+                                    int defaultPosition) {
+        /*BooleanBinding prop = dn.dockedProperty().or(dn.floatingProperty());
         prop.addListener((p, o, n) -> {
             btn.setSelected(n);
             cmi.setSelected(n);
@@ -528,10 +456,10 @@ public class DebuggerMain implements Initializable {
             }
         };
         btn.setOnAction(handler);
-        cmi.setOnAction(handler);
+        cmi.setOnAction(handler);*/
     }
 
-    @FXML
+
     public void executeScript() {
         //execute script without stepwise
         scriptExecutionController.executeScript(false);
@@ -544,11 +472,11 @@ public class DebuggerMain implements Initializable {
      *
      * @param event
      */
-    @FXML
+
     public void reloadProblem(ActionEvent event) {
         //abort current execution();
         //save old information and refresh models
-        statusBar.publishMessage("Reloading...");
+        //TODO statusBar.publishMessage("Reloading...");
         File lastLoaded;
         Contract chosen = null;
         if (model.getKeyFile() != null) {
@@ -559,28 +487,28 @@ public class DebuggerMain implements Initializable {
         }
         //model.reload();
         abortExecution();
-        Platform.runLater(() -> model.setStatePointer(null));
+        SwingUtilities.invokeLater(() -> model.setStatePointer(null));
         handleStatePointerUI(null);
 
         //reload getInspectionViewsController().getActiveInspectionViewTab().getModel()
-        InspectionModel iModel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
+        //TODO InspectionModel iModel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
         //iModel.setHighlightedJavaLines(FXCollections.emptyObservableSet());
-        iModel.clearHighlightLines();
-        iModel.getGoals().clear();
-        iModel.setSelectedGoalNodeToShow(null);
-        if(chosen != null) {
-            FACADE.contractProperty().set(chosen);
+        //TODO iModel.clearHighlightLines();
+        //TODO iModel.getGoals().clear();
+        //TODO iModel.setSelectedGoalNodeToShow(null);
+        if (chosen != null) {
+            FACADE.setContract(chosen);
         }
         try {
 
             FACADE.reload(lastLoaded);
-            if (iModel.getGoals().size() > 0) {
+            /*//TODO if (iModel.getGoals().size() > 0) {
                 iModel.setSelectedGoalNodeToShow(iModel.getGoals().get(0));
             }
             if (FACADE.getReadyToExecute()) {
                 LOGGER.info("Reloaded Successfully");
                 statusBar.publishMessage("Reloaded Sucessfully");
-            }
+            }*/
         } catch (ProofInputException e) {
             e.printStackTrace();
         } catch (ProblemLoaderException e) {
@@ -590,21 +518,30 @@ public class DebuggerMain implements Initializable {
 
     }
 
-    @FXML
     public void showAbout(ActionEvent event) {
         try {
-            BorderPane content = FXMLLoader.load(AboutDialog.class.getResource("AboutDialog.fxml"));
-            Dialog dialog = new Dialog();
+            JPanel content = new JPanel();
+            Box root = new Box(BoxLayout.Y_AXIS);
+            JLabel lblProgram, lblSubTitle;
+            root.add(lblProgram = new JLabel("${controller.programName}"));
+            lblProgram.setFont(new Font("System", Font.BOLD, 24));
+            root.add(lblSubTitle = new JLabel("${controller.subtitle}"));
+            lblSubTitle.setFont(new Font("System", Font.ITALIC, 18));
+            content.add(root, BorderLayout.NORTH);
+            JTabbedPane tabbedPane = new JTabbedPane();
+            tabbedPane.addTab("About PSDBG", new JEditorPane("${controller.aboutText}"));
+            tabbedPane.addTab("License", new JEditorPane("${controller.license}"));
+            tabbedPane.addTab("KeY License", new JEditorPane("${controller.keyLicense}"));
+            tabbedPane.addTab("Third Party License", new JEditorPane("${controller.thirdPartyLicense}"));
+            content.add(tabbedPane, BorderLayout.CENTER);
+
+            JDialog dialog = new JDialog();
             dialog.setTitle("About PSDBG");
-            DialogPane pane = new DialogPane();
-            pane.setContent(content);
-            pane.getButtonTypes().add(ButtonType.OK);
-            dialog.setDialogPane(pane);
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.setWidth(800);
-            dialog.setHeight(600);
+            dialog.setContentPane(root);
+            dialog.setSize(800, 600);
             dialog.setResizable(true);
-            dialog.showAndWait();
+            dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            dialog.setVisible(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -612,29 +549,30 @@ public class DebuggerMain implements Initializable {
 
 
     private void onInterpreterSucceed(DebuggerFramework<KeyData> keyDataDebuggerFramework) {
-        Platform.runLater(() -> {
-            scriptController.getDebugPositionHighlighter().remove();
-            statusBar.publishSuccessMessage("Interpreter finished.");
-            btnInteractiveMode.setDisable(false);
+        SwingUtilities.invokeLater(() -> {
+            //TODO scriptController.getDebugPositionHighlighter().remove();
+            //TODO statusBar.publishSuccessMessage("Interpreter finished.");
+            //TODO btnInteractiveMode.setDisable(false);
             assert model.getDebuggerFramework() != null;
             btnInteractiveMode.setSelected(false);
             PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
             assert statePointer != null;
             State<KeyData> lastState = statePointer.getStateAfterStmt();
-            getInspectionViewsController().getActiveInspectionViewTab().activate(statePointer, lastState);
+            //TODO getInspectionViewsController().getActiveInspectionViewTab().activate(statePointer, lastState);
             if (lastState.getGoals().isEmpty()) {
-                statusBar.setNumberOfGoals(0);
-                Utils.showClosedProofDialog("the script " + scriptController.getMainScript().getScriptName());
+                //TODO statusBar.setNumberOfGoals(0);
+                //TODO Utils.showClosedProofDialog("the script " + scriptController.getMainScript().getScriptName());
             } else {
-                Utils.showOpenProofNotificationDialog(lastState.getGoals().size());
+                //TODO Utils.showOpenProofNotificationDialog(lastState.getGoals().size());
                 //(lastState.getGoals().size());
             }
 
         });
     }
 
-    @FXML
+
     public void debugGraph(ActionEvent event) {
+        /*//TODO
         if (!graphViewNode.isDocked() && !graphViewNode.isFloating()) {
             graphViewNode.dock(dockStation, DockPos.CENTER);
         }
@@ -662,12 +600,13 @@ public class DebuggerMain implements Initializable {
                 graph.addEdge(n, n.getStepReturn(), "rtrn");
             }
         }
+    */
     }
 
-    @FXML
+
     public void debugPrintDot(@Nullable ActionEvent ae) {
         if (model.getDebuggerFramework() == null) {
-            statusBar.publishErrorMessage("can print debug info, no debugger started!");
+            //TODO statusBar.publishErrorMessage("can print debug info, no debugger started!");
             return;
         }
 
@@ -699,16 +638,16 @@ public class DebuggerMain implements Initializable {
             out.println("}");
 
         } catch (IOException e) {
-            statusBar.publishErrorMessage(e.getMessage());
+            //TODO statusBar.publishErrorMessage(e.getMessage());
         }
     }
 
     private void onInterpreterError(DebuggerFramework<KeyData> keyDataDebuggerFramework, Throwable throwable) {
-        Platform.runLater(() -> {
-            Utils.showExceptionDialog("An error has occurred during execution.", "Error during Script Execution",
+        SwingUtilities.invokeLater(() -> {
+            /*TODO Utils.showExceptionDialog("An error has occurred during execution.", "Error during Script Execution",
                     "Please reload the problem to get a consistent proof state.",
                     throwable
-            );
+            );*/
         });
     }
 
@@ -716,33 +655,34 @@ public class DebuggerMain implements Initializable {
         if (interpreterThreadTimer != null) {
             interpreterThreadTimer.stop();
         }
-        interpreterThreadTimer = FxTimer.runPeriodically(Duration.ofMillis(500),
-                () -> {
-                    if (model.getDebuggerFramework() == null) {
-                        model.setInterpreterState(InterpreterThreadState.NO_THREAD);
-                    } else {
-                        Thread t = model.getDebuggerFramework().getInterpreterThread();
-                        switch (t.getState()) {
-                            case NEW:
-                            case BLOCKED:
-                            case WAITING:
-                            case TIMED_WAITING:
-                                model.setInterpreterState(InterpreterThreadState.WAIT);
-                                break;
-                            case TERMINATED:
-                                if (model.getDebuggerFramework().hasError())
-                                    model.setInterpreterState(InterpreterThreadState.ERROR);
-                                else
-                                    model.setInterpreterState(InterpreterThreadState.FINISHED);
-                                break;
-                            default:
-                                model.setInterpreterState(InterpreterThreadState.RUNNING);
-                        }
-                    }
-                });
+        interpreterThreadTimer = new Timer(500, (evt) -> {
+            if (model.getDebuggerFramework() == null) {
+                model.setInterpreterState(InterpreterThreadState.NO_THREAD);
+            } else {
+                Thread t = model.getDebuggerFramework().getInterpreterThread();
+                switch (t.getState()) {
+                    case NEW:
+                    case BLOCKED:
+                    case WAITING:
+                    case TIMED_WAITING:
+                        model.setInterpreterState(InterpreterThreadState.WAIT);
+                        break;
+                    case TERMINATED:
+                        if (model.getDebuggerFramework().hasError())
+                            model.setInterpreterState(InterpreterThreadState.ERROR);
+                        else
+                            model.setInterpreterState(InterpreterThreadState.FINISHED);
+                        break;
+                    default:
+                        model.setInterpreterState(InterpreterThreadState.RUNNING);
+                }
+            }
+        });
+        interpreterThreadTimer.setRepeats(true);
+        interpreterThreadTimer.start();
     }
 
-    @FXML
+
     public void executeStepwise() {
         //execute stepwise from start
         scriptExecutionController.executeScript(true);
@@ -763,14 +703,15 @@ public class DebuggerMain implements Initializable {
         model.setDebuggerFramework(df);
     }
 
-    @FXML
+
     public void executeToBreakpoint() {
-        Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
+        /*TODO  Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
         if (breakpoints.size() == 0) {
             statusBar.publishMessage("There was is no breakpoint set");
         }
 
         scriptExecutionController.executeScript(false);
+        */
         //executeScript(false);
     }
 
@@ -779,7 +720,7 @@ public class DebuggerMain implements Initializable {
             model.setKeyFile(keyFile);
             model.setInitialDirectory(keyFile.getParentFile());
 
-            Task<ProofApi> task = FACADE.loadKeyFileTask(keyFile);
+            /*//TODO Task<ProofApi> task = FACADE.loadKeyFileTask(keyFile);
             task.setOnSucceeded(event -> {
                 statusBar.publishMessage("Loaded key sourceName: %s", keyFile);
                 statusBar.stopProgress();
@@ -800,6 +741,7 @@ public class DebuggerMain implements Initializable {
             bar.progressProperty().bind(task.progressProperty());
             executorService.execute(task);
             this.showActiveInspector(null);
+            */
         }
     }
 
@@ -807,12 +749,12 @@ public class DebuggerMain implements Initializable {
         if (javaFile != null) {
             model.setJavaFile(javaFile);
             model.setInitialDirectory(javaFile.getParentFile());
-            contractLoaderService.reset();
-            contractLoaderService.start();
+            //TODO contractLoaderService.reset();
+            //TODO contractLoaderService.start();
         }
     }
 
-    @FXML
+
     public void loadKeYFile() {
         File keyFile = openFileChooserOpenDialog("Select KeY File", "KeY Files", "key", "kps");
         openKeyFile(keyFile);
@@ -823,38 +765,51 @@ public class DebuggerMain implements Initializable {
         showCodeDock(null);
     }
 
-    @FXML
+
     protected void loadJavaFile() {
         File javaFile = openFileChooserOpenDialog("Select Java File", "Java Files", "java");
         openJavaFile(javaFile);
     }
 
     private File openFileChooserOpenDialog(String title, String description, String... fileEndings) {
-        FileChooser fileChooser = getFileChooser(title, description, fileEndings);
+        JFileChooser fileChooser = getFileChooser(title, description, fileEndings);
         //File sourceName = fileChooser.showOpenDialog(inspectionViewsController.getInspectionViewTab().getGoalView().getScene().getWindow());
-        File file = fileChooser.showOpenDialog(statusBar.getScene().getWindow());
-        if (file != null) model.setInitialDirectory(file.getParentFile());
-        return file;
+        var c = fileChooser.showOpenDialog(this);
+        if (c == JFileChooser.APPROVE_OPTION) {
+            var file = fileChooser.getSelectedFile();
+            if (file != null) model.setInitialDirectory(file.getParentFile());
+            return file;
+        }
+        return null;
     }
 
-    private FileChooser getFileChooser(String title, String description, String[] fileEndings) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(title);
-        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(description, fileEndings));
+    private JFileChooser getFileChooser(String title, String description, String[] fileEndings) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle(title);
+        fileChooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return Arrays.stream(fileEndings).anyMatch(s -> f.getName().endsWith(s));
+            }
+
+            @Override
+            public String getDescription() {
+                return description;
+            }
+        });
         if (model.getInitialDirectory() == null)
             model.setInitialDirectory(new File("src/test/resources/edu/kit/formal/interpreter/contraposition/"));
 
         if (!model.getInitialDirectory().exists())
             model.setInitialDirectory(new File("."));
 
-        fileChooser.setInitialDirectory(model.getInitialDirectory());
+        fileChooser.setCurrentDirectory(model.getInitialDirectory());
         return fileChooser;
     }
 
-    @FXML
+
     public void executeDiff() {
         //save old PT
-
 
 
         // Calculate top difference between current and last executed script
@@ -866,16 +821,14 @@ public class DebuggerMain implements Initializable {
     }
 
 
-
-
     @Deprecated
-    public  void incremental() {
+    public void incremental() {
         ProofScript oldScript = null; //used to be global var, that was set in selectSavepoint()
 
         if (oldScript == null) {
             return;
         }
-        ProofScript newScript = scriptController.getMainScript().byName(scriptController.getCombinedAST()).get();
+        /*TODO ProofScript newScript = scriptController.getMainScript().byName(scriptController.getCombinedAST()).get();
 
         ASTDiff astDiff = new ASTDiff();
         ProofScript scriptdiff = astDiff.diff(oldScript, newScript);
@@ -885,7 +838,7 @@ public class DebuggerMain implements Initializable {
         Iterator iterator = ptnodes.iterator();
         while (iterator.hasNext()) {
             PTreeNode<KeyData> ptn = (PTreeNode<KeyData>) iterator.next();
-            if(ptn.getStatement().eq(pruneAstNode)) {
+            if (ptn.getStatement().eq(pruneAstNode)) {
                 getFacade().getProof().pruneProof(ptn.getStateBeforeStmt().getSelectedGoalNode().getData().getNode());
                 break;
             }
@@ -893,6 +846,7 @@ public class DebuggerMain implements Initializable {
 
 
         scriptController.setMainScript(oldScript);
+        */
     }
 
     /**
@@ -900,21 +854,21 @@ public class DebuggerMain implements Initializable {
      *
      * @param event
      */
-    @FXML
+
     public void continueAfterRun(ActionEvent event) {
         LOGGER.debug("DebuggerMain.continueAfterBreakpoint");
         try {
             assert model.getDebuggerFramework() != null : "You should have started the prove";
             model.getDebuggerFramework().execute(new ContinueCommand<>());
         } catch (DebuggerException e) {
-            Utils.showWarningDialog("", "", "", e);
+            //TODO Utils.showWarningDialog("", "", "", e);
             LOGGER.error(e);
         }
     }
 
-    @FXML
+
     public void abortExecution() {
-        statusBar.publishMessage("Aborting Execution...");
+        //TODO statusBar.publishMessage("Aborting Execution...");
         if (model.getDebuggerFramework() != null) {
             try {
                 // try to friendly
@@ -932,7 +886,7 @@ public class DebuggerMain implements Initializable {
                 e.printStackTrace();
             } finally {
                 model.setDebuggerFramework(null);
-                statusBar.publishMessage("Execution aborted.");
+                //TODO statusBar.publishMessage("Execution aborted.");
             }
         } else {
             LOGGER.info("no interpreter running");
@@ -940,7 +894,7 @@ public class DebuggerMain implements Initializable {
         assert model.getDebuggerFramework() == null;
     }
 
-    @FXML
+
     public void closeProgram() {
         System.exit(0);
     }
@@ -951,7 +905,7 @@ public class DebuggerMain implements Initializable {
     }
 */
 
-    @FXML
+
     public void openScript() {
         File scriptFile = openFileChooserOpenDialog("Select Script File",
                 "Proof Script File", "kps");
@@ -965,33 +919,33 @@ public class DebuggerMain implements Initializable {
         model.setInitialDirectory(scriptFile.getParentFile());
         try {
             String code = FileUtils.readFileToString(scriptFile, Charset.defaultCharset());
-            ScriptArea area = scriptController.createNewTab(scriptFile);
+            //TODO ScriptArea area = scriptController.createNewTab(scriptFile);
         } catch (IOException e) {
             LOGGER.error(e);
-            Utils.showExceptionDialog("Exception occured", "",
+            /*TODO Utils.showExceptionDialog("Exception occured", "",
                     "Could not load sourceName " + scriptFile, e);
+                    */
         }
     }
 
-    @FXML
+
     public void saveScript() {
-        try {
-            scriptController.saveCurrentScript();
-        } catch (IOException e) {
-            LOGGER.error(e);
-            Utils.showExceptionDialog("Could not save file", "Saving File Error", "Could not save current script", e);
-
-        }
+        //TODO scriptController.saveCurrentScript();
+        //TODO LOGGER.error(e);
+        //TODO Utils.showExceptionDialog("Could not save file", "Saving File Error", "Could not save current script", e);
     }
 
-    @FXML
+
     public void saveAsScript() throws IOException {
-        FileChooser fc = new FileChooser();
-        File file = fc.showSaveDialog(btnInteractiveMode.getScene().getWindow());
-        if (file != null) {
+        JFileChooser fc = getFileChooser("Save as...", "Proof Script", new String[]{"kps"});
+        int c = fc.showSaveDialog(this);
+        if (c == JFileChooser.APPROVE_OPTION) {
+            var file = fc.getSelectedFile();
+            if (file != null) {
                 saveScript(file);
-        } else {
-            Utils.showInfoDialog("","Select a destination", "No valid path has been selected.");
+            } else {
+                //TODO Utils.showInfoDialog("", "Select a destination", "No valid path has been selected.");
+            }
         }
     }
 
@@ -1004,21 +958,22 @@ public class DebuggerMain implements Initializable {
      * @return
      */
     private File openFileChooserSaveDialog(String title, String description, String... fileEndings) {
-        FileChooser fileChooser = getFileChooser(title, description, fileEndings);
+        JFileChooser fileChooser = getFileChooser(title, description, fileEndings);
         // File sourceName = fileChooser.showSaveDialog(inspectionViewsController.getInspectionViewTab().getGoalView().getScene().getWindow());
-        File file = fileChooser.showOpenDialog(statusBar.getScene().getWindow());
-        if (file != null) model.setInitialDirectory(file.getParentFile());
-        return file;
+        int c = fileChooser.showOpenDialog(this);
+        if (c == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            if (file != null) model.setInitialDirectory(file.getParentFile());
+            return file;
+        }
+        return null;
     }
     //endregion
 
     private void saveScript(File scriptFile) {
-        try {
-            scriptController.saveCurrentScriptAs(scriptFile);
-        } catch (IOException e) {
-            LOGGER.error(e);
-            Utils.showExceptionDialog("Could not save file", "Saving File Error", "Could not save to file " + scriptFile.getName(), e);
-        }
+        //TODO scriptController.saveCurrentScriptAs(scriptFile);
+        //TODO LOGGER.error(e);
+        //TODO Utils.showExceptionDialog("Could not save file", "Saving File Error", "Could not save to file " + scriptFile.getName(), e);
     }
 
 
@@ -1028,13 +983,16 @@ public class DebuggerMain implements Initializable {
      * @param actionEvent
      */
     public void saveProof(ActionEvent actionEvent) {
-        FileChooser fc = new FileChooser();
-        File file = fc.showSaveDialog(btnInteractiveMode.getScene().getWindow());
-        if (file != null) {
-            try {
-                saveProof(file);
-            } catch (IOException e) {
-                e.printStackTrace();
+        var fc = getFileChooser("Save Proof", "Proof files", new String[]{"kps"});
+        var c = fc.showSaveDialog(this);
+        if (c == JFileChooser.APPROVE_OPTION) {
+            var file = fc.getSelectedFile();
+            if (file != null) {
+                try {
+                    saveProof(file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -1056,7 +1014,7 @@ public class DebuggerMain implements Initializable {
             assert model.getDebuggerFramework() != null : "You should have started the prove";
             model.getDebuggerFramework().execute(new StepOverCommand<>());
         } catch (DebuggerException e) {
-            Utils.showExceptionDialog("", "", "", e);
+            //TODO Utils.showExceptionDialog("", "", "", e);
             LOGGER.error(e);
         }
     }
@@ -1076,7 +1034,7 @@ public class DebuggerMain implements Initializable {
             }
             model.getDebuggerFramework().execute(new StepIntoCommand<>());
         } catch (DebuggerException e) {
-            Utils.showExceptionDialog("", "", "", e);
+            //TODO Utils.showExceptionDialog("", "", "", e);
             LOGGER.error(e);
         }
     }
@@ -1098,7 +1056,7 @@ public class DebuggerMain implements Initializable {
         try {
             model.getDebuggerFramework().execute(new StepBackCommand<>());
         } catch (DebuggerException e) {
-            Utils.showExceptionDialog("", "", "", e);
+            //TODO Utils.showExceptionDialog("", "", "", e);
             LOGGER.error(e);
         }
     }
@@ -1108,7 +1066,7 @@ public class DebuggerMain implements Initializable {
         try {
             model.getDebuggerFramework().execute(new StepOverReverseCommand<>());
         } catch (DebuggerException e) {
-            Utils.showExceptionDialog("", "", "", e);
+            //TODO Utils.showExceptionDialog("", "", "", e);
             LOGGER.error(e);
         }
     }
@@ -1134,7 +1092,7 @@ public class DebuggerMain implements Initializable {
                 }
             }
         } catch (DebuggerException e) {
-            Utils.showExceptionDialog("", "", "", e);
+            //TODO Utils.showExceptionDialog("", "", "", e);
             LOGGER.error(e);
         }
 
@@ -1149,7 +1107,7 @@ public class DebuggerMain implements Initializable {
     }
 
     public void stopDebugMode(ActionEvent actionEvent) {
-        scriptController.getDebugPositionHighlighter().remove();
+        /*TODO scriptController.getDebugPositionHighlighter().remove();
         Button stop = (Button) actionEvent.getSource();
         javafx.scene.Node graphic = stop.getGraphic();
         if (graphic instanceof MaterialDesignIconView) {
@@ -1167,23 +1125,13 @@ public class DebuggerMain implements Initializable {
         } else {
             throw new RuntimeException("Something went wrong when reloading");
         }
+        */
     }
-
-  /*  public void handle(Events.TacletApplicationEvent tap){
-        TacletApp app = tap.getApp();
-        Goal currentGoal = tap.getCurrentGoal();
-        ImmutableList<Goal> apply = currentGoal.apply(app);
-
-
-
-    }*/
 
     public void newScript(ActionEvent actionEvent) {
-        scriptController.newScript();
+        //TODO scriptController.newScript();
     }
 
-
-    @FXML
     public void interactiveMode(ActionEvent actionEvent) {
         if (btnInteractiveMode.isSelected()) {
             assert model.getDebuggerFramework() != null;
@@ -1191,45 +1139,48 @@ public class DebuggerMain implements Initializable {
             interactiveModeController.setKeYServices(this.getFacade().getService());
             interactiveModeController.setActivated(true);
 
-            interactiveModeController.start(getFacade().getProof(), getInspectionViewsController().getActiveInspectionViewTab().getModel());
+            //TODO interactiveModeController.start(getFacade().getProof(),
+            //        getInspectionViewsController().getActiveInspectionViewTab().getModel());
 
-            interactive_undo.setDisable(false);
+            //TODO interactive_undo.setDisable(false);
         } else {
             interactiveModeController.stop();
-            interactive_undo.setDisable(true);
+            //TODO interactive_undo.setDisable(true);
         }
     }
 
-    @FXML
+
     public void selectSavepoint(ActionEvent actionEvent) {
         //TODO remove highlight of SPs
 
-        SavePoint selected = cboSavePoints.getValue();
+        /*TODO SavePoint selected = cboSavePoints.getValue();
 
         if (selected == null) {
-            Utils.showInfoDialog("Select Savepoint", "Select Savepoint", "There is no selected Savepoint. Select a Savepoint first.");
+            //TODO Utils.showInfoDialog("Select Savepoint", "Select Savepoint", "There is no selected Savepoint. Select a Savepoint first.");
             return;
         }
+        */
 
         //prune to savepoint if possible
         boolean pruneable = false;
-        try{
+        try {
             Iterator<PTreeNode<KeyData>> iterator = model.getDebuggerFramework().getPtreeManager().getNodes().iterator();
             PTreeNode<KeyData> pTreeNodeOfSave;
             while (iterator.hasNext()) {
                 pTreeNodeOfSave = iterator.next();
 
-                if (pTreeNodeOfSave.getStatement().getStartPosition().getLineNumber() == selected.getLineNumber()) {
+                /*TODO  if (pTreeNodeOfSave.getStatement().getStartPosition().getLineNumber() == selected.getLineNumber()) {
                     FACADE.getProof().pruneProof(pTreeNodeOfSave.getStateBeforeStmt().getSelectedGoalNode().getData().getNode());
                     inspectionViewsController.getActiveInspectionViewTab().activate(pTreeNodeOfSave, pTreeNodeOfSave.getStateAfterStmt());
                     break;
                 }
+                */
             }
 
             //TODO: refresh GUI (Context + Script)
             //State<KeyData> proofstate = KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(), new StringReader());
 
-        } catch (Exception ex){
+        } catch (Exception ex) {
 
             //Hard Loading of Savepoint
             stopDebugMode(actionEvent);
@@ -1242,18 +1193,15 @@ public class DebuggerMain implements Initializable {
             /**
              * reload with selected savepoint
              */
-            Platform.runLater(() -> model.setStatePointer(null));
+            SwingUtilities.invokeLater(() -> model.setStatePointer(null));
             handleStatePointerUI(null);
             //reload getInspectionViewsController().getActiveInspectionViewTab().getModel()
-            InspectionModel iModel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
-
-            //iModel.setHighlightedJavaLines(FXCollections.emptyObservableSet());
-            iModel.clearHighlightLines();
-            iModel.getGoals().clear();
-            iModel.setSelectedGoalNodeToShow(null);
-            try {
-                File dir = FACADE.getFilepath().getAbsoluteFile().getParentFile();
-                File proofFile = selected.getProofFile(dir);
+            //TODO InspectionModel iModel = getInspectionViewsController().getActiveInspectionViewTab().getModel();
+            //TODO iModel.clearHighlightLines();
+            //TODO iModel.getGoals().clear();
+            //TODO iModel.setSelectedGoalNodeToShow(null);
+            File dir = FACADE.getFilepath().getAbsoluteFile().getParentFile();
+                /*TODO File proofFile = selected.getProofFile(dir);
                 FACADE.reload(proofFile);
                 if (iModel.getGoals().size() > 0) {
                     iModel.setSelectedGoalNodeToShow(iModel.getGoals().get(0));
@@ -1262,75 +1210,54 @@ public class DebuggerMain implements Initializable {
                     LOGGER.info("Reloaded Successfully");
                     statusBar.publishMessage("Reloaded Sucessfully");
                 }
+                */
 
-
-            } catch (ProofInputException | ProblemLoaderException e) {
-                LOGGER.error(e);
-                Utils.showExceptionDialog("Loading Error", "Could not clear Environment",
-                        "There was an error when clearing old environment",
-                        e
-                );
-            }
         }
 
         //Update Gui
-        MainScriptIdentifier msi = scriptController.getMainScript();
-        msi.getScriptArea().setSavepointMarker(selected.getLineNumber());
-        scriptController.getMainScript().getScriptArea().underlineSavepoint(selected);
+        //TODO MainScriptIdentifier msi = scriptController.getMainScript();
+        //TODO msi.getScriptArea().setSavepointMarker(selected.getLineNumber());
+        //TODO scriptController.getMainScript().getScriptArea().underlineSavepoint(selected);
 
-
+        /*TODO
         try {
-            KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(), new StringReader(selected.getPersistedStateFile(FACADE.getFilepath()).toString()));
+            KeyPersistentFacade.read(FACADE.getEnvironment(), FACADE.getProof(),
+                    new StringReader(selected.getPersistedStateFile(FACADE.getFilepath()).toString()));
         } catch (JAXBException e) {
             e.printStackTrace();
         }
         scriptExecutionController.executeScriptFromSavePoint(interpreterBuilder, selected);
-
-
-
+        */
     }
 
 
-    @FXML
     public void showWelcomeDock(ActionEvent actionEvent) {
-        if (!welcomePaneDock.isDocked() && !welcomePaneDock.isFloating()) {
-            welcomePaneDock.dock(dockStation, DockPos.CENTER);
-        }
+        //TODO if (!welcomePaneDock.isDocked() && !welcomePaneDock.isFloating()) {
+        // TODO     welcomePaneDock.dock(dockStation, DockPos.CENTER);
+        //TODO }
     }
 
-    @FXML
+
     public void showActiveInspector(ActionEvent actionEvent) {
-        if (!activeInspectorDock.isDocked() &&
-                !activeInspectorDock.isFloating()) {
-
+        /*TODO if (!activeInspectorDock.isDocked() &&
+            !activeInspectorDock.isFloating()) {
             activeInspectorDock.dock(dockStation, DockPos.RIGHT);
-        }
+        }*/
     }
 
-    @FXML
+
     public void showCommandHelp(ActionEvent event) {
-        if (!commandHelpDock.isDocked() && !commandHelpDock.isFloating()) {
+        /*TODO if (!commandHelpDock.isDocked() && !commandHelpDock.isFloating()) {
             commandHelpDock.dock(dockStation, DockPos.LEFT);
-        }
+        }*/
     }
 
-    @FXML
+
     public void showProofTree(ActionEvent actionEvent) {
-        if (!proofTreeDock.isDocked() && !proofTreeDock.isFloating()) {
+       /*TODO  if (!proofTreeDock.isDocked() && !proofTreeDock.isFloating()) {
             proofTreeDock.dock(dockStation, DockPos.CENTER);
         }
-    }
-
-    public DockNode getJavaAreaDock() {
-        return javaAreaDock;
-    }
-
-    public DockNode getWelcomePaneDock() {
-        return welcomePaneDock;
-    }
-
-    public DockNode getActiveInspectorDock() {
-        return activeInspectorDock;
+        */
     }
 
     public void showHelpText() {
@@ -1339,30 +1266,26 @@ public class DebuggerMain implements Initializable {
     }
 
     public void showHelpText(String url) {
-        WebView browser = new WebView();
+        /*WebView browser = new WebView();
         WebEngine webEngine = browser.getEngine();
         webEngine.load(url);
         DockNode dn = new DockNode(browser);
         dn.setTitle("ScriptLanguage Description");
         //this.dockStation.getChildren().addCell(dn);
-        dn.dock(dockStation, DockPos.LEFT);
+        dn.dock(dockStation, DockPos.LEFT);*/
     }
 
     public void openNewHelpDock(String title, String content) {
-        WebView browser = new WebView();
+        /*TODO WebView browser = new WebView();
         WebEngine webEngine = browser.getEngine();
         webEngine.loadContent(content);
         DockNode dn = new DockNode(browser, title);
         dn.dock(dockStation, DockPos.LEFT);
+        */
     }
 
-    public ScriptController getScriptController() {
-        return scriptController;
-    }
-
-    @FXML
     public void reformatCurrentEditor(ActionEvent event) {
-        scriptController.getOpenScripts().values().forEach(ed -> {
+        /*TODO scriptController.getOpenScripts().values().forEach(ed -> {
             try {
                 DefaultFormatter df = new DefaultFormatter();
                 ((ScriptArea) ed.getContents()).setText(
@@ -1371,12 +1294,14 @@ public class DebuggerMain implements Initializable {
                 LOGGER.debug(e);
             }
         });
+   */
     }
 
     public void openInKey(@Nullable ActionEvent event) {
         if (FACADE.getProofState() == KeYProofFacade.ProofState.EMPTY) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "No proof is loaded yet. If loading a proof was invoked, proof state loading may take a while.", ButtonType.OK);
+            /*TODO Alert alert = new Alert(Alert.AlertType.INFORMATION, "No proof is loaded yet. If loading a proof was invoked, proof state loading may take a while.", ButtonType.OK);
             alert.show();
+            */
             return;
         }
 
@@ -1394,20 +1319,18 @@ public class DebuggerMain implements Initializable {
             } catch (SecurityException e) {
                 e.printStackTrace();
             }
-
-
-
         });
-
     }
 
-
-
-    public class ContractLoaderService extends Service<List<Contract>> {
+    public class ContractLoaderService extends SwingWorker<List<Contract>, Integer> {
         @Override
-        protected void succeeded() {
-            statusBar.publishMessage("Contract loaded");
-            List<Contract> contracts = getValue();
+        protected void done() {
+            //TODO statusBar.publishMessage("Contract loaded");
+            try {
+                List<Contract> contracts = get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
 
             /*
             String javaFile = model.getJavaFile().getName();
@@ -1434,27 +1357,32 @@ public class DebuggerMain implements Initializable {
                 e.printStackTrace();
             }
 
-            cc.showAndWait().ifPresent(result -> {
+            /*TODO cc.showAndWait().ifPresent(result -> {
                 model.setChosenContract(result);
                 try {
                     FACADE.activateContract(result);
-                    getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(FACADE.getPseudoGoals());
+                    //TODO getInspectionViewsController().getActiveInspectionViewTab().getModel().getGoals().setAll(FACADE.getPseudoGoals());
                 } catch (ProofInputException e) {
                     LOGGER.error(e);
-                    Utils.showExceptionDialog("", "", "", e);
+                    //TODO Utils.showExceptionDialog("", "", "", e);
                 }
-            });
+            });*/
         }
 
-        @Override
+        /*TODO @Override
         protected void failed() {
             LOGGER.error(exceptionProperty().get());
             Utils.showExceptionDialog("", "", "", exceptionProperty().get());
-        }
+        }*/
 
         @Override
-        protected Task<List<Contract>> createTask() {
-            return FACADE.getContractsForJavaFileTask(model.getJavaFile());
+        protected List<Contract> doInBackground() {
+            try {
+                return FACADE.getContractsForJavaFile(model.getJavaFile());
+            } catch (ProblemLoaderException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
     //endregion
@@ -1466,7 +1394,7 @@ public class DebuggerMain implements Initializable {
 
         @Override
         public void accept(PTreeNode<KeyData> keyDataPTreeNode) {
-            Platform.runLater(this::acceptUI);
+            SwingUtilities.invokeLater(this::acceptUI);
         }
 
         public void acceptUI() {
@@ -1474,7 +1402,7 @@ public class DebuggerMain implements Initializable {
             GoalNode<KeyData> beforeNode = original.getStateBeforeStmt().getSelectedGoalNode();
             List<GoalNode<KeyData>> stateAfterStmt = original.getStateAfterStmt().getGoals();
 
-            ProofTree ptree = new ProofTree(DebuggerMain.this);
+            /*TODO ProofTree ptree = new ProofTree(DebuggerMain.this);
             Proof proof = beforeNode.getData().getProof();
 
             Node pnode = beforeNode.getData().getNode();
@@ -1492,7 +1420,7 @@ public class DebuggerMain implements Initializable {
                         .stream()
                         .map(Goal::node)
                         .collect(Collectors.toSet());
-                if(sentinels.size() == 0){
+                if (sentinels.size() == 0) {
                     sentinels = new LinkedHashSet();
                     sentinels.add(pnode);
                     //sentinels.add(stateAfterStmt.get(0).getData().getNode());
@@ -1520,6 +1448,7 @@ public class DebuggerMain implements Initializable {
 
             node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
             node.requestFocus();
+            */
         }
     }
 
@@ -1529,7 +1458,7 @@ public class DebuggerMain implements Initializable {
 
         @Override
         public void accept(PTreeNode<KeyData> keyDataPTreeNode) {
-            Platform.runLater(this::acceptUI);
+            SwingUtilities.invokeLater(this::acceptUI);
         }
 
         public void acceptUI() {
@@ -1538,6 +1467,7 @@ public class DebuggerMain implements Initializable {
             GoalNode<KeyData> beforeNode = stepInvOver.getStateBeforeStmt().getSelectedGoalNode();
             List<GoalNode<KeyData>> stateAfterStmt = stepInvOver.getStateAfterStmt().getGoals();
 
+            /*TODO
             ProofTree ptree = new ProofTree(DebuggerMain.this);
             Proof proof = beforeNode.getData().getProof();
 
@@ -1576,166 +1506,20 @@ public class DebuggerMain implements Initializable {
             );
 
             node.dock(dockStation, DockPos.CENTER, scriptController.getOpenScripts().get(getScriptController().getMainScript().getScriptArea()));
-
+            */
         }
     }
 
-
     private class KeYSecurityManager extends SecurityManager {
-        @Override public void checkExit(int status) {
+        @Override
+        public void checkExit(int status) {
             throw new SecurityException();
         }
 
-        @Override public void checkPermission(Permission perm) {
+        @Override
+        public void checkPermission(Permission perm) {
             // Allow other activities by default
         }
     }
-
     //endregion
 }
-//deprecated
-   /* @FXML
-    public void executeScriptFromCursor() {
-        InterpreterBuilder ib = FACADE.buildInterpreter();
-        //b.inheritState(interpreterService.interpreterProperty().get());
-
-        // Get State before cursor
-        // use goalnode to build new interpreter in proof tree controller.
-        //
-        //LineMapping lm = new LineMapping(scriptArea.getText());
-        //int line = lm.getLine(scriptArea.getCaretPosition());
-        //int inLine = lm.getCharInLine(scriptArea.getCaretPosition());
-
-        //ib.ignoreLinesUntil(scriptController.getSelectedScriptArea().getCaretPosition());
-        //executeScript(ib, true);
-    }*/
-
-   /*  private void executeScript(boolean addInitBreakpoint) {
-        if (model.getDebuggerFramework() != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Interpreter is already running \nDo you want to abort it?",
-                    ButtonType.CANCEL, ButtonType.YES);
-            Optional<ButtonType> ans = alert.showAndWait();
-            ans.ifPresent(a -> {
-                if (a == ButtonType.OK) abortExecution();
-            });
-
-            if (ans.isPresent() && ans.get() == ButtonType.CANCEL) {
-                return;
-            }
-        }
-
-        assert model.getDebuggerFramework() == null : "There should not be any interpreter running.";
-
-        if (FACADE.getProofState() == KeYProofFacade.ProofState.EMPTY) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "No proof loaded is loaded yet. If proof loading was onvoked, please wait. Loading may take a while.", ButtonType.OK);
-            alert.showAndWait();
-            return;
-        }
-
-        if (FACADE.getProofState() == KeYProofFacade.ProofState.DIRTY) {
-            try {
-                FACADE.reload(model.getKeyFile());
-            } catch (ProofInputException | ProblemLoaderException e) {
-                LOGGER.error(e);
-                Utils.showExceptionDialog("Loading Error", "Could not clear Environment", "There was an error when clearing old environment",
-                        e
-                );
-            }
-        }
-
-        // else getProofState() == VIRGIN!
-        executeScript(FACADE.buildInterpreter(), addInitBreakpoint);
-    }
-  /**
-     * Execute the script that with using the interpreter that is build using the interpreterbuilder
-     *
-     * @param ib
-     * @param
-     */
-/*   private void executeScript(InterpreterBuilder ib, boolean addInitBreakpoint) {
-       try {
-
-           Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
-           // get possible scripts and the main script!
-           List<ProofScript> scripts = scriptController.getCombinedAST();
-           if (scriptController.getMainScript() == null) {
-               scriptController.setMainScript(scripts.get(0));
-           }
-           Optional<ProofScript> mainScript = scriptController.getMainScript().find(scripts);
-           ProofScript ms;
-           if (!mainScript.isPresent()) {
-               scriptController.setMainScript(scripts.get(0));
-               ms = scripts.get(0);
-           } else {
-               ms = mainScript.get();
-           }
-
-           LOGGER.debug("Parsed Scripts, found {}", scripts.size());
-           LOGGER.debug("MainScript: {}", ms.getName());
-
-           ib.setScripts(scripts);
-           executeScript0(ib, breakpoints, ms, addInitBreakpoint);
-       } catch (RecognitionException e) {
-           LOGGER.error(e);
-           Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
-       }
-
-   }
-
-
-
-    private void executeScriptFromSavePoint(InterpreterBuilder ib, SavePoint point) {
-        try {
-            Set<Breakpoint> breakpoints = scriptController.getBreakpoints();
-            // get possible scripts and the main script!
-            List<ProofScript> scripts = scriptController.getCombinedAST();
-            if (scriptController.getMainScript() == null) {
-                scriptController.setMainScript(scripts.get(0));
-            }
-            Optional<ProofScript> mainScript = scriptController.getMainScript().find(scripts);
-            ProofScript ms;
-            if (!mainScript.isPresent()) {
-                scriptController.setMainScript(scripts.get(0));
-                ms = scripts.get(0);
-            } else {
-                ms = mainScript.get();
-            }
-
-            Statements body = new Statements();
-            boolean flag =false;
-            for (int i = 0; i < ms.getBody().size(); i++) {
-                if(flag) {body.add(ms.getBody().get(i));
-                    continue;}
-                flag = point.isThisStatement(ms.getBody().get(i));
-            }
-
-            ms.setBody(body);
-
-            LOGGER.debug("Parsed Scripts, found {}", scripts.size());
-            LOGGER.debug("MainScript: {}", ms.getName());
-            //ib.setDirectory(model.getKeyFile() != null ? model.getKeyFile() : model.getJavaFile());
-            ib.setScripts(scripts);
-            executeScript0(ib, breakpoints, ms, false);
-        } catch (RecognitionException e) {
-            LOGGER.error(e);
-            Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
-        }
-
-    }
-
-
-    private void executeScript0(InterpreterBuilder ib,
-                                Collection<? extends Breakpoint> breakpoints,
-                                ProofScript ms, boolean addInitBreakpoint) {
-        KeyInterpreter interpreter = ib.build();
-        DebuggerFramework<KeyData> df = new DebuggerFramework<>(interpreter, ms, null);
-        df.setSucceedListener(this::onInterpreterSucceed);
-        df.setErrorListener(this::onInterpreterError);
-        if (addInitBreakpoint) {
-            df.releaseUntil(new Blocker.CounterBlocker(1)); // just execute
-        }
-        df.getBreakpoints().addAll(breakpoints);
-        df.getStatePointerListener().add(this::handleStatePointer);
-        df.start();
-        model.setDebuggerFramework(df);
-    } */

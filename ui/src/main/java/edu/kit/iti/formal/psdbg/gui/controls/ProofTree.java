@@ -48,7 +48,7 @@ public class ProofTree extends BorderPane {
     private ObjectProperty<Node> root = new SimpleObjectProperty<>();
     private SetProperty<Node> sentinels = new SimpleSetProperty<>(FXCollections.observableSet());
     private MapProperty<Node, String> colorOfNodes = new SimpleMapProperty<Node, String>(FXCollections.observableHashMap());
-    @FXML
+
     private TreeView<TreeNode> treeProof;
     private ContextMenu contextMenu;
     private BooleanProperty deactivateRefresh = new SimpleBooleanProperty();

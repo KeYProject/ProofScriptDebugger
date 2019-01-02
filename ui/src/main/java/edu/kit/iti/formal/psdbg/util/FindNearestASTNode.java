@@ -1,4 +1,4 @@
-package edu.kit.iti.formal.psdbg.gui.controls;
+package edu.kit.iti.formal.psdbg.util;
 
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;

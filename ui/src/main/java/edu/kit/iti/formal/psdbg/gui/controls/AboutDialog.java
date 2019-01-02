@@ -25,7 +25,7 @@ public class AboutDialog implements Initializable {
     private SimpleStringProperty keyLicense = new SimpleStringProperty();
     private SimpleStringProperty thridPartyLicense = new SimpleStringProperty();
     private SimpleStringProperty aboutText = new SimpleStringProperty();
-    @FXML
+
     private WebView webView;
 
     @Override

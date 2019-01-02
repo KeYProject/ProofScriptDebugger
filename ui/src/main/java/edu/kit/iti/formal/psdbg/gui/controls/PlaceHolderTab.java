@@ -11,13 +11,13 @@ public class PlaceHolderTab extends BorderPane {
     /**
      * Button to open a new script
      */
-    @FXML
+
     private Button newScript;
 
     /**
      * Button to open a script
      */
-    @FXML
+
     private Button openScript;
 
 

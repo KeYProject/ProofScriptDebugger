@@ -1,11 +1,11 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
-import javafx.application.Platform;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -36,7 +36,7 @@ public class FileReloadingService extends TimerTask {
         try {
             wService = FileSystems.getDefault().newWatchService();
             timer = new Timer("filereloading", true);
-          //  timer.schedule(this, 500, 500);
+            //  timer.schedule(this, 500, 500);
         } catch (IOException e) {
             LOGGER.error(e);
             CONSOLE_LOGGER.error("Auto-reloading is not available. See log file for more details");
@@ -102,10 +102,10 @@ public class FileReloadingService extends TimerTask {
 
                 try {
                     File file = child.toFile();
-                    if(file != null) {
+                    if (file != null) {
                         String content = FileUtils.readFileToString(file, Charset.defaultCharset());
                         CONSOLE_LOGGER.info("Auto-reload {}", child);
-                        Platform.runLater(() -> {
+                        SwingUtilities.invokeLater(() -> {
                             if (callbacks.get(child) != null) {
                                 callbacks.get(child).fileChanged(content);
                             }
@@ -113,7 +113,7 @@ public class FileReloadingService extends TimerTask {
                     }
                 } catch (IOException e) {
                     CONSOLE_LOGGER.catching(e);
-                } catch (NullPointerException npe){
+                } catch (NullPointerException npe) {
                     CONSOLE_LOGGER.catching(npe);
                 }
             }

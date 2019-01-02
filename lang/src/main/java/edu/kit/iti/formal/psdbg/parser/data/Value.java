@@ -13,15 +13,14 @@ import java.math.BigInteger;
 /**
  * Class representing the values our variables may have
  *
- * @param T internal data
  * @author S.Grebing
  * @author A. Weigl
  *         //TODO alle restlichen typen ergaenzen
  */
 @RequiredArgsConstructor
 public class Value<T> {
-    public static final Value TRUE = new Value<>(SimpleType.BOOL, true);
-    public static final Value FALSE = new Value<>(SimpleType.BOOL, false);
+    public static final Value<Boolean> TRUE = new Value<>(SimpleType.BOOL, true);
+    public static final Value<Boolean> FALSE = new Value<>(SimpleType.BOOL, false);
 
     @Getter
     private final Type type;

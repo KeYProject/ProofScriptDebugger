@@ -1,14 +1,14 @@
 package edu.kit.iti.formal.psdbg.gui.model;
 
+import edu.kit.iti.formal.psdbg.ChangeBean;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
-import javafx.collections.ObservableSet;
-import javafx.scene.paint.Color;
+import lombok.Getter;
+
+import java.awt.*;
+import java.util.List;
+import java.util.*;
 
 /**
  * Model for the inspection view
@@ -16,154 +16,77 @@ import javafx.scene.paint.Color;
  * @author S.Grebing
  * @author Alexander Weigl
  */
-public class InspectionModel {
-
-    private final ObjectProperty<ASTNode> node = new SimpleObjectProperty<>(this, "node");
+@Getter
+public class InspectionModel extends ChangeBean {
+    private ASTNode node;
 
     //alle aktuellen nicht geschlossene Ziele -> alle leaves später (open+closed)
-    private final ListProperty<GoalNode<KeyData>> goals = new SimpleListProperty<>(this, "goals");
+    private List<GoalNode<KeyData>> goals = new LinkedList<>();
 
     //sicht user selected
-    private final ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShow = new SimpleObjectProperty<>(this, "selectedGoalNodeToShow");
+    private GoalNode<KeyData> selectedGoalNodeToShow;
 
     //aktuell im Interpreter aktives Goal
-    private final ObjectProperty<GoalNode<KeyData>> currentInterpreterGoal = new SimpleObjectProperty<>(this, "currentInterpreterGoal");
+    private GoalNode<KeyData> currentInterpreterGoal;
 
-    private final MapProperty<GoalNode, Color> colorofEachGoalNodeinListView = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    private Map<GoalNode, Color> colorofEachGoalNodeinListView = new HashMap<>();
 
     //private final StringProperty javaString = new SimpleStringProperty();
-    private final SetProperty<Integer> highlightedJavaLines = new SimpleSetProperty<>(FXCollections.observableSet(), "highlightedJavaLines");
+    private Set<Integer> highlightedJavaLines = new HashSet<>();
 
-    private final BooleanProperty closable = new SimpleBooleanProperty(this, "InspectionViewClosableProperty");
+    private boolean closable;
 
-    private final BooleanProperty isInterpreterTab = new SimpleBooleanProperty();
+    private boolean isInterpreterTab;
 
-    private ObjectProperty<Mode> mode = new SimpleObjectProperty<>();
-
-
-    public GoalNode<KeyData> getCurrentInterpreterGoal() {
-        return currentInterpreterGoal.get();
-    }
+    private Mode mode = Mode.DEAD;
 
     public void setCurrentInterpreterGoal(GoalNode<KeyData> currentInterpreterGoal) {
-        this.currentInterpreterGoal.set(currentInterpreterGoal);
-    }
-
-    public ObjectProperty<GoalNode<KeyData>> currentInterpreterGoalProperty() {
-        return currentInterpreterGoal;
-    }
-
-    public Mode getMode() {
-        return mode.get();
-    }
-
-    public void setMode(Mode mode) {
-        this.mode.set(mode);
-    }
-
-    public ObjectProperty<Mode> modeProperty() {
-        return mode;
-    }
-
-    public ASTNode getNode() {
-        return node.get();
-    }
-
-    public void setNode(ASTNode node) {
-        this.node.set(node);
-    }
-
-    public ObjectProperty<ASTNode> nodeProperty() {
-        return node;
-    }
-
-    public ObservableList<GoalNode<KeyData>> getGoals() {
-        return goals.get();
-    }
-
-    public void setGoals(ObservableList<GoalNode<KeyData>> goals) {
-        this.goals.set(goals);
-    }
-
-    public ListProperty<GoalNode<KeyData>> goalsProperty() {
-        return goals;
-    }
-
-    public GoalNode getSelectedGoalNodeToShow() {
-        return selectedGoalNodeToShow.get();
-    }
-
-    public void setSelectedGoalNodeToShow(GoalNode selectedGoalNodeToShow) {
-        this.selectedGoalNodeToShow.set(selectedGoalNodeToShow);
-    }
-
-    public ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShowProperty() {
-        return selectedGoalNodeToShow;
-    }
-
-    public ObservableMap<GoalNode, Color> getColorofEachGoalNodeinListView() {
-        return colorofEachGoalNodeinListView.get();
-    }
-
-    public void setColorofEachGoalNodeinListView(ObservableMap<GoalNode, Color> colorofEachGoalNodeinListView) {
-        this.colorofEachGoalNodeinListView.set(colorofEachGoalNodeinListView);
-    }
-
-    public MapProperty<GoalNode, Color> colorofEachGoalNodeinListViewProperty() {
-        return colorofEachGoalNodeinListView;
-    }
-
-    /*
-        public String getJavaString() {
-            return javaString.get();
-        }
-
-        public StringProperty javaStringProperty() {
-            return javaString;
-        }
-
-        public void setJavaString(String javaString) {
-            this.javaString.set(javaString);
-        }
-    */
-    public ObservableSet<Integer> getHighlightedJavaLines() {
-        return highlightedJavaLines.get();
-    }
-
-    public void setHighlightedJavaLines(ObservableSet<Integer> highlightedJavaLines) {
-        this.highlightedJavaLines.set(highlightedJavaLines);
-    }
-
-    public SetProperty<Integer> highlightedJavaLinesProperty() {
-        return highlightedJavaLines;
-    }
-
-    public boolean isClosable() {
-        return closable.get();
-    }
-
-    public void setClosable(boolean closable) {
-        this.closable.set(closable);
-    }
-
-    public BooleanProperty closableProperty() {
-        return closable;
-    }
-
-    public boolean isIsInterpreterTab() {
-        return isInterpreterTab.get();
-    }
-
-    public void setIsInterpreterTab(boolean isInterpreterTab) {
-        this.isInterpreterTab.set(isInterpreterTab);
-    }
-
-    public BooleanProperty isInterpreterTabProperty() {
-        return isInterpreterTab;
+        firePropertyChange("currentInterpreterGoal", this.currentInterpreterGoal, currentInterpreterGoal);
+        this.currentInterpreterGoal = currentInterpreterGoal;
     }
 
     public void clearHighlightLines() {
-        highlightedJavaLinesProperty().clear();
+        setHighlightedJavaLines(new HashSet<>());
+    }
+
+    public void setNode(ASTNode node) {
+        firePropertyChange("node", this.node, node);
+        this.node = node;
+    }
+
+    public void setGoals(List<GoalNode<KeyData>> goals) {
+        firePropertyChange("goals", this.goals, goals);
+        this.goals = goals;
+    }
+
+    public void setSelectedGoalNodeToShow(GoalNode<KeyData> selectedGoalNodeToShow) {
+        firePropertyChange("selectedGoalNodeToShow", this.selectedGoalNodeToShow, selectedGoalNodeToShow);
+        this.selectedGoalNodeToShow = selectedGoalNodeToShow;
+    }
+
+    public void setColorofEachGoalNodeinListView(Map<GoalNode, Color> colorofEachGoalNodeinListView) {
+        firePropertyChange("colorofEachGoalNodeinListView", this.colorofEachGoalNodeinListView, colorofEachGoalNodeinListView);
+        this.colorofEachGoalNodeinListView = colorofEachGoalNodeinListView;
+    }
+
+    public void setHighlightedJavaLines(Set<Integer> highlightedJavaLines) {
+        firePropertyChange("highlightedJavaLines", this.highlightedJavaLines, highlightedJavaLines);
+        this.highlightedJavaLines = highlightedJavaLines;
+    }
+
+    public void setClosable(boolean closable) {
+        firePropertyChange("closeable", this.closable, closable);
+        this.closable = closable;
+    }
+
+    public void setInterpreterTab(boolean interpreterTab) {
+        firePropertyChange("interpreterTab", this.isInterpreterTab, interpreterTab);
+        isInterpreterTab = interpreterTab;
+    }
+
+    public void setMode(Mode mode) {
+        firePropertyChange("mode", this.mode, mode);
+        this.mode = mode;
     }
 
     enum Mode {

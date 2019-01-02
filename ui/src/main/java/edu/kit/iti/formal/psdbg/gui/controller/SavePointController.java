@@ -1,16 +1,9 @@
 package edu.kit.iti.formal.psdbg.gui.controller;
 
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.ListProperty;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.util.StringConverter;
-import lombok.RequiredArgsConstructor;
 
+import javax.swing.*;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,30 +11,30 @@ import java.util.List;
  * @author Alexander Weigl
  * @version 1 (17.05.18)
  */
-@RequiredArgsConstructor
 public class SavePointController {
     private final DebuggerMain debuggerMain;
-    private final ListProperty<SavePoint> savePoints;
+    private List<SavePoint> savePoints;
 
-    private final List<MenuItem> menuItemsExecuteFrom = new ArrayList<>();
-    private final List<MenuItem> menuItemsRollbackTo = new ArrayList<>();
+    private final List<JMenuItem> menuItemsExecuteFrom = new ArrayList<>();
+    private final List<JMenuItem> menuItemsRollbackTo = new ArrayList<>();
 
-    private final BooleanBinding rollbackEnabled;
+    private boolean rollbackEnabled;
 
     public SavePointController(DebuggerMain main) {
         debuggerMain = main;
-        savePoints = main.scriptController.mainScriptSavePointsProperty();
+        //TODO savePoints = main.scriptController.mainScriptSavePointsProperty();
 
-        rollbackEnabled = savePoints.emptyProperty().not()
+        //TODO rollbackEnabled = savePoints.emptyProperty().not()
 /*                .and(main.getModel().debuggerFrameworkProperty().isNotNull())
                 .and(main.getModel().interpreterStateProperty().isNotEqualTo(
                         InterpreterThreadState.RUNNING
-                ))*/;
+                ))*/
+        ;
 
-        main.btnSavePointRollback.disableProperty().bind(rollbackEnabled.not());
-        main.cboSavePoints.setDisable(false);
+        //TODO main.btnSavePointRollback.disableProperty().bind(rollbackEnabled.not());
+        //TODO main.cboSavePoints.setDisable(false);
 
-        main.cboSavePoints.setConverter(new StringConverter<SavePoint>() {
+        /*TODO main.cboSavePoints.setConverter(new StringConverter<SavePoint>() {
             @Override
             public String toString(SavePoint object) {
                 if(object != null) {
@@ -58,61 +51,48 @@ public class SavePointController {
                 return null;
             }
         });
+        */
+        //TODO         main.cboSavePoints.setPlaceholder(new Label("No savepoint inside main script, or no main script selected."));
 
-        /*savePoints.emptyProperty().addListener((prop, old, empty) -> {
-            debuggerMain.btnSavePointRollback.setDisable(empty);
-            debuggerMain.cboSavePoints.setDisable(empty);
-        });*/
+        //TODO main.cboSavePoints.itemsProperty().bind(savePoints);
 
-        main.cboSavePoints.setPlaceholder(new Label("No savepoint inside main script, or no main script selected."));
+        //TODO savePoints.addListener((a, b, c) -> updateStartInterpreter());
 
-        main.cboSavePoints.itemsProperty().bind(savePoints);
-
-        savePoints.addListener((a, b, c) -> updateStartInterpreter());
-
-        debuggerMain.buttonStartInterpreter.getItems().add(new SeparatorMenuItem());
+        //TODO debuggerMain.buttonStartInterpreter.getItems().add(new SeparatorMenuItem());
     }
 
     private void updateStartInterpreter() {
-        debuggerMain.buttonStartInterpreter.getItems().removeAll(menuItemsExecuteFrom);
+        //TODO debuggerMain.buttonStartInterpreter.getItems().removeAll(menuItemsExecuteFrom);
         menuItemsRollbackTo.clear();
         menuItemsExecuteFrom.clear();
 
         int i = 0;
-        KeyCode[] quickStart = new KeyCode[]{
-                KeyCode.DIGIT1,
-                KeyCode.DIGIT2,
-                KeyCode.DIGIT3,
-                KeyCode.DIGIT4,
-                KeyCode.DIGIT5,
-                KeyCode.DIGIT6,
-                KeyCode.DIGIT7,
-                KeyCode.DIGIT8,
-                KeyCode.DIGIT9,
-                KeyCode.DIGIT0,
+        int[] quickStart = new int[]{
+                KeyEvent.VK_1,
+                KeyEvent.VK_2,
+                KeyEvent.VK_3,
+                KeyEvent.VK_4,
+                KeyEvent.VK_5,
+                KeyEvent.VK_6,
         };
 
         for (SavePoint sp : savePoints) {
-            MenuItem mi = new MenuItem(String.format("%s (from line %d)", sp.getName(), sp.getLineNumber()));
+            JMenuItem mi = new JMenuItem(String.format("%s (from line %d)", sp.getName(), sp.getLineNumber()));
             menuItemsExecuteFrom.add(mi);
 
-            MenuItem mirollback = new MenuItem(String.format("%s (from line %d)", sp.getName(), sp.getLineNumber()));
+            JMenuItem mirollback = new JMenuItem(String.format("%s (from line %d)", sp.getName(), sp.getLineNumber()));
             menuItemsRollbackTo.add(mirollback);
 
             if (i < 10) {
-                mi.setAccelerator(new KeyCodeCombination(quickStart[i],
-                        KeyCodeCombination.CONTROL_DOWN,
-                        KeyCodeCombination.SHIFT_DOWN
-                        ));
-
-                mirollback.setAccelerator(new KeyCodeCombination(quickStart[i],
-                        KeyCodeCombination.ALT_DOWN));
+                mi.setAccelerator(KeyStroke.getKeyStroke(quickStart[i],
+                        KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
+                mirollback.setAccelerator(KeyStroke.getKeyStroke(quickStart[i],
+                        KeyEvent.ALT_DOWN_MASK));
             }
-
             i++;
         }
-        debuggerMain.buttonStartInterpreter.getItems().addAll(menuItemsExecuteFrom);
-        debuggerMain.menuExecuteFromSavepoint.getItems().setAll(menuItemsExecuteFrom);
-        debuggerMain.menuRestartFromSavepoint.getItems().setAll(menuItemsRollbackTo);
+        //TODO debuggerMain.buttonStartInterpreter.getItems().addAll(menuItemsExecuteFrom);
+        //TODO debuggerMain.menuExecuteFromSavepoint.getItems().setAll(menuItemsExecuteFrom);
+        //TODO debuggerMain.menuRestartFromSavepoint.getItems().setAll(menuItemsRollbackTo);
     }
 }

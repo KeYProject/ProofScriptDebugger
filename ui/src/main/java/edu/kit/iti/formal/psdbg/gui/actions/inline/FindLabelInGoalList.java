@@ -1,11 +1,9 @@
 package edu.kit.iti.formal.psdbg.gui.actions.inline;
 
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.StringLiteral;
-import javafx.event.ActionEvent;
 
+import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -24,13 +22,11 @@ public class FindLabelInGoalList implements InlineActionSupplier {
 
     public static class FindLabelInGoalListAction extends InlineAction {
         public FindLabelInGoalListAction() {
-            setName(getClass().getSimpleName());
-            setGraphics(new MaterialDesignIconView(MaterialDesignIcon.ACCOUNT));
-            setPriority(2);
-            setEventHandler(this::handle);
+            super("Find Label in Goals", 2, null);
         }
 
-        private void handle(ActionEvent event) {
+        @Override
+        public void actionPerformed(ActionEvent e) {
             System.out.println("FindLabelInGoalListAction.handle");
         }
     }

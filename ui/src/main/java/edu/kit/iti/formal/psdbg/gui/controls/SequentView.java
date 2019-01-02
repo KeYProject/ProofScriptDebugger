@@ -25,6 +25,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
+import javax.swing.*;
 import java.io.StringWriter;
 import java.util.Collections;
 
@@ -32,7 +33,7 @@ import java.util.Collections;
  * @author Alexander Weigl
  * @version 1 (03.06.17)
  */
-public class SequentView extends CodeArea {
+public class SequentView extends JTextArea {
     private Services services;
 
     private LogicPrinter lp;
@@ -41,11 +42,11 @@ public class SequentView extends CodeArea {
 
     private LogicPrinter.PosTableStringBackend backend;
 
-    private SimpleObjectProperty<de.uka.ilkd.key.proof.Goal> goal = new SimpleObjectProperty<>();
+    private Goal goal;
 
-    private SimpleObjectProperty<de.uka.ilkd.key.proof.Node> node = new SimpleObjectProperty<>();
+    private Node node;
 
-    private ObservableBooleanValue rulesAvailable = goal.isNotNull();
+    private boolean rulesAvailable;
 
     private KeYProofFacade keYProofFacade;
 

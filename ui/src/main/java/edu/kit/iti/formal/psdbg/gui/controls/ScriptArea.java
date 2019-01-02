@@ -844,16 +844,16 @@ public class ScriptArea extends BorderPane {
     }
 
     public static class BreakpointDialog extends BorderPane {
-        @FXML
+
         private CheckBox enabled;
 
-        @FXML
+
         private TextField condition;
 
-        @FXML
+
         private Label title;
 
-        @FXML
+
         private boolean accepted = false;
 
         public BreakpointDialog() {
@@ -956,7 +956,7 @@ public class ScriptArea extends BorderPane {
             Utils.createWithFXML(this);
         }
 
-        @FXML
+
         public void setMainScript(ActionEvent event) {
             LOGGER.debug("ScriptAreaContextMenu.setMainScript");
 
@@ -980,7 +980,7 @@ public class ScriptArea extends BorderPane {
 
         }
 
-        @FXML
+
         public void showPostMortem(ActionEvent event) {
             LOGGER.debug("ScriptAreaContextMenu.showPostMortem " + event);
 

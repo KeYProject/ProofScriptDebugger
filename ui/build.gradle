@@ -1,41 +1,37 @@
-plugins {
-    id "com.github.voplex95.lesscompiler" version "1.0.3"
-}
-
 apply plugin: 'antlr'
 
 description = 'ui'
+
+sourceSets{
+    main{
+        java{
+            exclude "edu.kit.iti.formal.psdbg.controller"
+            exclude "edu.kit.iti.formal.psdbg.controls"
+            exclude "edu.kit.iti.formal.psdbg.graphs"
+        }
+    }
+}
 
 generateGrammarSource {
     arguments += ["-long-messages", "-package","antlrgrammars"]
 }
 
-lessCompile {
-    source = file('src/main/resources/edu/kit/iti/formal/psdbg/gui/debugger-ui.less')
-    target = file('build/resources/main/edu/kit/iti/formal/psdbg/gui/')
-    //compress = true
-}
-
-processResources.dependsOn lessCompile
-
 dependencies {
-    compile group: 'de.jensd', name: 'fontawesomefx-materialdesignfont', version: '1.7.22-4'
-    compile group: 'de.jensd', name: 'fontawesomefx-commons', version: '8.15'
-
-//    compile group: 'de.jensd', name: 'fontawesomefx-materialdesignfont', version: '2.0.26-9.1.2'
-//    compile group: 'de.jensd', name: 'fontawesomefx-commons', version: '9.1.2'
-    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.9.0'
-    //compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '1.0.0-SNAPSHOT'
-    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.12'
-
     compile group: 'org.antlr', name: 'antlr4', version: '4.7'
+    compile group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '2.6.1'
+    compile group: 'com.fifesoft', name: 'autocomplete', version: '2.6.1'
+    compile group: 'com.fifesoft', name: 'rstaui', version: '2.6.1'
+
     antlr group: 'org.antlr', name: 'antlr4', version: '4.7'
 
-    //compile files("$rootDir/DockFX/build/libs/DockFX.jar")
-
     compile project(':rt-key')
-    compile project(':DockFX')
     compile project(':lint')
+    compile 'com.github.jiconfont:jiconfont-swing:1.0.0'
+
+    compile files('libs/docking-frames-common.jar', 
+            'libs/docking-frames-core.jar',
+            'libs/docking-frames-ext-toolbar.jar',
+            'libs/docking-frames-ext-toolbar-common.jar')
 }
 
 def mainClassName = 'edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger'

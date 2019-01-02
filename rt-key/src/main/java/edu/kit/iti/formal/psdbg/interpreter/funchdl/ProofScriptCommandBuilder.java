@@ -14,7 +14,6 @@ import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
-import javafx.scene.control.Alert;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
@@ -23,8 +22,6 @@ import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;

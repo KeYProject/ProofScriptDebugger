@@ -1,22 +1,21 @@
 package edu.kit.iti.formal.psdbg.gui.actions.inline;
 
-import javafx.beans.DefaultProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.swing.*;
 
-@Data
-@AllArgsConstructor
+
 @NoArgsConstructor
-public class InlineAction implements Comparable<InlineAction> {
-    private String name;
+public abstract class InlineAction extends AbstractAction implements Comparable<InlineAction> {
+    @Getter
     private int priority;
-    private Node graphics;
-    private EventHandler<ActionEvent> eventHandler;
+
+    public InlineAction(String name, int priority, Icon graphics) {
+        super(name, graphics);
+        this.priority = priority;
+    }
 
     @Override
     public int compareTo(InlineAction o) {

@@ -1,5 +1,7 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
+import bibliothek.gui.Dockable;
+import bibliothek.gui.dock.common.intern.CDockable;
 import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
@@ -40,12 +42,12 @@ public class InspectionViewsController {
         return this.activeInterpreterTab;
     }
 
-    public DockNode getActiveInterpreterTabDock() {
+    public CDockable getActiveInterpreterTabDock() {
         return activeInterpreterTabDock;
     }
 
 
-    public DockNode newPostMortemInspector(InspectionModel im) {
+    public Dockable newPostMortemInspector(InspectionModel im) {
         InspectionView iv = new InspectionView();
         iv.getGoalView().setItems(im.getGoals());
         iv.getModel().setSelectedGoalNodeToShow(im.getSelectedGoalNodeToShow());

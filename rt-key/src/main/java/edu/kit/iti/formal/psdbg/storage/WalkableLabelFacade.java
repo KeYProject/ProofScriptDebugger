@@ -2,7 +2,7 @@ package edu.kit.iti.formal.psdbg.storage;
 
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
-import javafx.util.Pair;
+import edu.kit.iti.formal.psdbg.Pair;
 import lombok.val;
 
 import java.util.*;

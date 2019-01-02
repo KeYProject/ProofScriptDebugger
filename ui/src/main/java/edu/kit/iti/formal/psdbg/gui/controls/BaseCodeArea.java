@@ -1,15 +1,11 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleMapProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
+import lombok.Getter;
+import lombok.Setter;
 import org.antlr.v4.runtime.Token;
-import org.fxmisc.richtext.CodeArea;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -18,10 +14,16 @@ import java.util.Map;
  *
  * @author Alexander Weigl
  */
-public class BaseCodeArea extends CodeArea {
-    protected MapProperty<Integer, String> lineToClass = new SimpleMapProperty<>(FXCollections.observableHashMap());
-    protected BooleanProperty enableLineHighlighting = new SimpleBooleanProperty();
-    protected BooleanProperty enableCurrentLineHighlighting = new SimpleBooleanProperty();
+public class BaseCodeArea extends RSyntaxTextArea {
+    @Getter
+    @Setter
+    protected Map<Integer, String> lineToClass = new HashMap<>();
+    @Getter
+    @Setter
+    protected boolean enableLineHighlighting = false;
+    @Getter
+    @Setter
+    protected boolean enableCurrentLineHighlighting = false;
 
     public BaseCodeArea() {
         init();
@@ -32,25 +34,20 @@ public class BaseCodeArea extends CodeArea {
         init();
     }
 
-    private void init() {
-
-    }
-
-    public void setText(String text) {
-        replaceText(text);
+    protected void init() {
     }
 
     protected void highlightLines() {
-        if (enableLineHighlighting.get() || enableCurrentLineHighlighting.get()) {
+        if (enableLineHighlighting || enableCurrentLineHighlighting) {
             LineMapping lm = new LineMapping(getText());
 
-            if (enableLineHighlighting.get()) {
+            if (enableLineHighlighting) {
                 for (Map.Entry<Integer, String> entry : lineToClass.entrySet()) {
                     hightlightLine(lm, entry.getKey(), entry.getValue());
                 }
             }
 
-            if (enableCurrentLineHighlighting.get()) {
+            if (enableCurrentLineHighlighting) {
                 int caret = getCaretPosition();
                 hightlightLine(lm, lm.getLine(caret), "current-line");
             }
@@ -65,46 +62,9 @@ public class BaseCodeArea extends CodeArea {
         try {
             final int start = lm.getLineStart(line);
             final int end = lm.getLineEnd(line);
-            setStyle(start, end, Collections.singleton(clazz));
+            //TODO swing: setStyle(start, end, Collections.singleton(clazz));
         } catch (IndexOutOfBoundsException e) {
 
         }
-
-    }
-
-    public ObservableMap<Integer, String> getLineToClass() {
-        return lineToClass.get();
-    }
-
-    public MapProperty<Integer, String> lineToClassProperty() {
-        return lineToClass;
-    }
-
-    public void setLineToClass(ObservableMap<Integer, String> lineToClass) {
-        this.lineToClass.set(lineToClass);
-    }
-
-    public boolean isEnableLineHighlighting() {
-        return enableLineHighlighting.get();
-    }
-
-    public BooleanProperty enableLineHighlightingProperty() {
-        return enableLineHighlighting;
-    }
-
-    public void setEnableLineHighlighting(boolean enableLineHighlighting) {
-        this.enableLineHighlighting.set(enableLineHighlighting);
-    }
-
-    public boolean isEnableCurrentLineHighlighting() {
-        return enableCurrentLineHighlighting.get();
-    }
-
-    public BooleanProperty enableCurrentLineHighlightingProperty() {
-        return enableCurrentLineHighlighting;
-    }
-
-    public void setEnableCurrentLineHighlighting(boolean enableCurrentLineHighlighting) {
-        this.enableCurrentLineHighlighting.set(enableCurrentLineHighlighting);
     }
 }

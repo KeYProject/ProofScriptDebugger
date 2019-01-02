@@ -1,9 +1,10 @@
 package edu.kit.iti.formal.psdbg.gui.actions.acomplete;
 
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+
+import javax.swing.*;
 
 /**
  * @author Alexander Weigl
@@ -43,13 +44,13 @@ public class Suggestion implements Comparable<Suggestion> {
 
     @RequiredArgsConstructor
     public static enum Category {
-        COMMAND((MaterialDesignIcon.APPLE_KEYBOARD_COMMAND)),
-        RULE((MaterialDesignIcon.RULER)),
-        MACRO((MaterialDesignIcon.PHARMACY)),
-        ATTRIBUTE((MaterialDesignIcon.ATTACHMENT)),
-        KEYWORD((MaterialDesignIcon.KEY_VARIANT));
+        COMMAND(null),
+        RULE((null)),
+        MACRO((null)),
+        ATTRIBUTE((null)),
+        KEYWORD((null));
 
         @Getter
-        public final MaterialDesignIcon icon;
+        public final Icon icon;
     }
 }

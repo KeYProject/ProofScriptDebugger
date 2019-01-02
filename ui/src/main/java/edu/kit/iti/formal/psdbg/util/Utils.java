@@ -1,7 +1,5 @@
-package edu.kit.iti.formal.psdbg.gui.controls;
+package edu.kit.iti.formal.psdbg.util;
 
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.IProgramMethod;
@@ -13,30 +11,18 @@ import de.uka.ilkd.key.speclang.Contract;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.parser.ScriptLanguageLexer;
-import javafx.beans.property.Property;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.util.Pair;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URL;
-import java.util.Collections;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -139,22 +125,6 @@ public class Utils {
         return (ADJECTIVES[r.nextInt(ADJECTIVES.length)] + "_" + ANIMALS[r.nextInt(ANIMALS.length)]).toLowerCase();
     }
 
-    public static void createWithFXML(Object node) {
-        URL resource = node.getClass().getResource(node.getClass().getSimpleName() + ".fxml");
-        if (resource == null) {
-            throw new IllegalArgumentException("Could not find FXML resource: " + node.getClass().getSimpleName() + ".fxml");
-        }
-
-        FXMLLoader loader = new FXMLLoader(resource);
-        loader.setController(node);
-        loader.setRoot(node);
-        try {
-            loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load fxml", e);
-        }
-    }
-
     public static String getJavaCode(Contract c) {
         IProgramMethod method = (IProgramMethod) c.getTarget();
         StringWriter writer = new StringWriter();
@@ -170,7 +140,8 @@ public class Utils {
     }
 
     public static void showExceptionDialog(String title, String headerText, String contentText, Throwable ex) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        JOptionPane.showMessageDialog(null, contentText + ex.toString(), title, JOptionPane.ERROR_MESSAGE);
+        /*Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
         alert.setContentText(contentText);
@@ -200,10 +171,13 @@ public class Utils {
         alert.setHeight(600);
         alert.setWidth(400);
 
-        alert.showAndWait();
+        alert.showAndWait();*/
+
     }
 
     public static void showWarningDialog(String title, String headerText, String contentText, Throwable ex) {
+        JOptionPane.showMessageDialog(null, contentText + ex.toString(), title, JOptionPane.WARNING_MESSAGE);
+        /*
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
@@ -221,10 +195,13 @@ public class Utils {
         alert.setHeight(600);
         alert.setWidth(400);
 
-        alert.showAndWait();
+        alert.showAndWait();*/
     }
 
     public static void showInfoDialog(String title, String headerText, String contentText) {
+        JOptionPane.showMessageDialog(null,
+                contentText, title, JOptionPane.INFORMATION_MESSAGE);
+        /*
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
@@ -239,30 +216,7 @@ public class Utils {
         alert.setHeight(600);
         alert.setWidth(400);
 
-        alert.showAndWait();
-    }
-
-    public static void addDebugListener(Property<?> property) {
-        property.addListener((ChangeListener<Object>) (observable, oldValue, newValue) -> {
-            String simpleName = property.getBean() != null ? property.getBean().getClass().getSimpleName() : "<n/a>";
-            logger.debug("Property '{}' of '{}' changed from {} to {}",
-                    property.getName(), simpleName, oldValue, newValue);
-        });
-    }
-
-    public static <T> void addDebugListener(Property<T> property, java.util.function.Function<T, String> conv) {
-        property.addListener((observable, oldValue, newValue) -> {
-            String simpleName = property.getBean() != null ? property.getBean().getClass().getSimpleName() : "<n/a>";
-            logger.debug("Property '{}' of '{}' changed from {} to {}", property.getName(),
-                    simpleName,
-                    oldValue == null ? "<null>" : conv.apply(oldValue),
-                    newValue == null ? "<null>" : conv.apply(newValue));
-        });
-    }
-
-    public static void addDebugListener(ObservableValue<?> o, String id) {
-        o.addListener((ChangeListener<Object>) (observable, oldValue, newValue) ->
-                logger.debug("Observable {} changed from {} to {}", id, oldValue, newValue));
+        alert.showAndWait();*/
     }
 
     public static Token findToken(String text, int insertionIndex) {
@@ -279,7 +233,7 @@ public class Utils {
         return null;
     }
 
-    public static String reprKeyDataList(ObservableList<GoalNode<KeyData>> kd) {
+    public static String reprKeyDataList(Collection<GoalNode<KeyData>> kd) {
         return kd.stream()
                 .map(Utils::reprKeyData)
                 .reduce((a, b) -> a + b)
@@ -291,20 +245,14 @@ public class Utils {
     }
 
     public static void showClosedProofDialog(String scriptName) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-
-        alert.setTitle("Proof Closed");
-        alert.setHeaderText("The proof is closed");
-        alert.setContentText("The proof using " + scriptName + " is closed");
-        alert.setWidth(500);
-        alert.setHeight(400);
-        alert.setResizable(true);
-
-        alert.showAndWait();
+        JOptionPane.showMessageDialog(null,
+                "The proof using " + scriptName + " is closed",
+                "The proof is closed", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public static void showOpenProofNotificationDialog(int noOfGoals) {
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        JOptionPane.showMessageDialog(null, "TODO: showOpenProofNotificationDialog");
+        /*Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Interpreter Finished Successfully");
         dialog.setHeaderText("Interactive Mode Possible");
         dialog.setGraphic(new MaterialDesignIconView(MaterialDesignIcon.HAND_POINTING_RIGHT, "24.0"));
@@ -328,32 +276,34 @@ public class Utils {
         ta.setWrapText(true);
         Pane p = new VBox(grid, ta);
         dialog.getDialogPane().setContent(p);
-        dialog.showAndWait();
+        dialog.showAndWait();*/
 
     }
 
 
-
     public static void intoClipboard(String s) {
-        Map<DataFormat, Object> map = Collections.singletonMap(DataFormat.PLAIN_TEXT, s);
-        Clipboard.getSystemClipboard().setContent(map);
-        logger.info("Clipboard "+s);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection ss = new StringSelection(s);
+        clipboard.setContents(ss, ss);
+        logger.info("Clipboard " + s);
     }
 
     /**
      * Prints a KeY-parsable String representation of a term
+     *
      * @param term to print
      * @param goal containing namespaces
      * @return
      */
-    public static String printParsableTerm(Term term, Goal goal){
+    public static String printParsableTerm(Term term, Goal goal) {
         Services services = goal.proof().getInitConfig().getServices();
         return printParsableTerm(term, services);
     }
 
     /**
      * Prints a KeY-parsable String representation of a term
-     * @param term to print
+     *
+     * @param term     to print
      * @param services object containing namespaces
      * @return
      */

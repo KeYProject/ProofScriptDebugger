@@ -41,16 +41,16 @@ public class SequentMatcher extends BorderPane {
     //sicht user selected
     private final ObjectProperty<GoalNode<KeyData>> selectedGoalNodeToShow = new SimpleObjectProperty<>(this, "selectedGoalNodeToShow");
     public GoalOptionsMenu goalOptionsMenu = new GoalOptionsMenu();
-    @FXML
+
     private SequentViewForMatcher sequentView;
 
-    @FXML
+
     private ListView<GoalNode<KeyData>> goalView;
-    @FXML
+
     private TextArea matchpattern;
-    @FXML
+
     private ListView<Match> matchingsView;
-    @FXML
+
     private Label nomatchings; //only shown when no matchings found, else always hidden
     private Map<PosInOccurrence, Range> cursorPosition = new HashMap<>();
 

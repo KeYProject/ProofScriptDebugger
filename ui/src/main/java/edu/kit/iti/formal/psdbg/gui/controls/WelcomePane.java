@@ -2,15 +2,15 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 
 import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.layout.AnchorPane;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * Welcome pane that allows for a more usable entry point
  * Created by weigl on 7/7/17.
  */
-public class WelcomePane extends AnchorPane {
+public class WelcomePane extends JPanel {
     private final DebuggerMain proofScriptDebugger;
 
     public WelcomePane(DebuggerMain debugger) {
@@ -43,6 +43,7 @@ public class WelcomePane extends AnchorPane {
 
     /**
      * Load a test example
+     *
      * @param event
      */
     public void loadJavaTest(ActionEvent event) {
@@ -52,6 +53,7 @@ public class WelcomePane extends AnchorPane {
 
     /**
      * Load teh help page documentation
+     *
      * @param event
      */
     public void loadHelpPage(ActionEvent event) {
@@ -64,6 +66,7 @@ public class WelcomePane extends AnchorPane {
 
     /**
      * Load a Java problem with an existing script
+     *
      * @param event
      */
     public void loadJavaProblem(ActionEvent event) {
@@ -105,7 +108,7 @@ public class WelcomePane extends AnchorPane {
 
     }
 
-    @FXML
+
     public void loadKeyProblem(ActionEvent event) {
         proofScriptDebugger.getWelcomePaneDock().close();
         proofScriptDebugger.showActiveInspector(event);

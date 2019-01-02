@@ -1,10 +1,12 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
 import antlrgrammars.Java8Lexer;
-import javafx.beans.property.SimpleSetProperty;
-import javafx.collections.ObservableSet;
+import lombok.Getter;
+import lombok.Setter;
 import org.antlr.v4.runtime.CharStreams;
-import org.fxmisc.richtext.LineNumberFactory;
+
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Alexander Weigl
@@ -13,29 +15,20 @@ import org.fxmisc.richtext.LineNumberFactory;
 public class JavaArea extends BaseCodeArea {
     private ANTLR4LexerHighlighter highlighter = new ANTLR4LexerHighlighter((s) -> new Java8Lexer(CharStreams.fromString(s)));
     //set with current lines to highlight
-    private SimpleSetProperty<Integer> linesToHighlight = new SimpleSetProperty<>(this, "JavaLinesToHighlight");
-    public JavaArea() {
-        init();
-    }
+    @Getter
+    @Setter
+    private Set<Integer> linesToHighlight = new TreeSet<>();
 
-    public JavaArea(String text) {
-        super(text);
-        init();
-    }
-
-    private void init() {
+    protected void init() {
         setEditable(false);
-        setParagraphGraphicFactory(LineNumberFactory.get(this));
-        setWrapText(true);
-        getStyleClass().add("java-area");
-        textProperty().addListener(
-                (a, b, c) -> updateView());
-        linesToHighlightProperty().addListener((observable, oldValue, newValue) -> {
-            setEnableLineHighlighting(true);
-            unHighlightOldSet(oldValue);
-            highlightLineSet();
-        });
-
+        setLineWrap(true);
+        setWrapStyleWord(true);
+        //TODO swing: setParagraphGraphicFactory(LineNumberFactory.get(this));
+        //TODO swing: textProperty().addListener((a, b, c) -> updateView());
+        //TODO swing: linesToHighlightProperty().addListener((observable, oldValue, newValue) -> {setEnableLineHighlighting(true);
+        // unHighlightOldSet(oldValue);
+        //    highlightLineSet();
+        //});
     }
 
     /**
@@ -43,7 +36,7 @@ public class JavaArea extends BaseCodeArea {
      *
      * @param oldValue
      */
-    private void unHighlightOldSet(ObservableSet<Integer> oldValue) {
+    private void unHighlightOldSet(Set<Integer> oldValue) {
         if (oldValue != null) {
             oldValue.forEach(integer -> {
                 lineToClass.put(integer - 1, "un-highlight-line");
@@ -56,33 +49,17 @@ public class JavaArea extends BaseCodeArea {
      * highlight new lines
      */
     private void highlightLineSet() {
-        if (!linesToHighlight.get().isEmpty()) {
-            linesToHighlightProperty().get().forEach(integer -> {
-                lineToClassProperty().get().put(integer - 1, "line-highlight");
-            });
+        if (!linesToHighlight.isEmpty()) {
+            //TODO swing: linesToHighlightProperty().forEach(integer -> {
+            //    lineToClassProperty().put(integer - 1, "line-highlight");
+            //});
             highlightLines();
         }
     }
 
     private void updateView() {
-        clearStyle(0, getText().length());
-        setStyleSpans(0, highlighter.highlight(textProperty().getValue()));
+        //TODO swing: clearStyle(0, getText().length());
+        //TODO swing: setStyleSpans(0, highlighter.highlight(textProperty().getValue()));
         highlightLines();
     }
-
-
-    public ObservableSet<Integer> getLinesToHighlight() {
-        return linesToHighlight.get();
-    }
-
-    public void setLinesToHighlight(ObservableSet<Integer> linesToHighlight) {
-        this.linesToHighlight.set(linesToHighlight);
-    }
-
-    public SimpleSetProperty<Integer> linesToHighlightProperty() {
-        return linesToHighlight;
-    }
-
-
-
 }

@@ -1,62 +1,28 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.model.InterpreterThreadState;
 import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
-import javafx.animation.Animation;
-import javafx.animation.Interpolator;
-import javafx.animation.Transition;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.Separator;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
-import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.controlsfx.control.StatusBar;
 
-import java.util.function.DoubleFunction;
+import javax.swing.*;
 
 /**
  * Created on 09.06.2017
  *
  * @author Alexander Weigl
  */
-public class DebuggerStatusBar extends StatusBar {
+public class DebuggerStatusBar extends JPanel {
     private static final Logger LOGGER = LogManager.getLogger(DebuggerStatusBar.class);
+    private InterpreterThreadState interpreterStatusModel;
+    private MainScriptIdentifier mainScriptIdentifier;
+    private int numberOfGoals;
+    private JLabel lblCurrentNodes = new JLabel("#open goals: " + numberOfGoals);
+    private JLabel lblMainscript = new JLabel();
+    private JLabel interpreterStatusView = new JLabel();
 
-    //private final Dialog<Void> loggerDialog = createDialog();
-    //private final ContextMenu contextMenu = createContextMenu();
-    //private final Appender loggerHandler = createAppender();
-    //private LogCatchHandlerFX logCatchHandler = new LogCatchHandlerFX();
-    private ObjectProperty<InterpreterThreadState> interpreterStatusModel = new SimpleObjectProperty<>();
-
-    private ObjectProperty<MainScriptIdentifier> mainScriptIdentifier = new SimpleObjectProperty<>();
-
-    private IntegerProperty numberOfGoals = new SimpleIntegerProperty(0);
-
-    private Label lblCurrentNodes = new Label("#open goals: " + numberOfGoals.intValue());
-
-    private Label lblMainscript = new Label();
-
-    private MaterialDesignIconView interpreterStatusView =
-            new MaterialDesignIconView(MaterialDesignIcon.MATERIAL_UI, "2.3em");
-
-
-    private ProgressIndicator progressIndicator = new ProgressIndicator();
+    //TODO swing: private ProgressIndicator progressIndicator = new ProgressIndicator();
 
     private EventHandler<MouseEvent> toolTipHandler = event ->
             publishMessage(((Control) event.getTarget()).getTooltip().getText());

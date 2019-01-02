@@ -89,14 +89,6 @@ public abstract class ASTNode<T extends ParserRuleContext>
         ruleContext = c;
     }
 
-    public Position getStartPosition() {
-        return startPosition;
-    }
-
-    public Position getEndPosition() {
-        return endPosition;
-    }
-
     /**
      * <p>getNodeName.</p>
      *

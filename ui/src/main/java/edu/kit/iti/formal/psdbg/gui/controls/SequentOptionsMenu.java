@@ -14,7 +14,7 @@ public class SequentOptionsMenu extends ContextMenu {
 
 
     private final InspectionModel model;
-    @FXML
+
     private MenuItem openSequentMatcher;
 
 

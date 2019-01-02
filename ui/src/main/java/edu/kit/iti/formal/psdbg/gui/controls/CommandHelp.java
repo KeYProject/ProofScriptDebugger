@@ -21,31 +21,26 @@ import lombok.Data;
 import org.controlsfx.control.textfield.TextFields;
 import org.key_project.util.collection.ImmutableList;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommandHelp extends BorderPane {
-    @FXML
+public class CommandHelp extends JPanel {
     private WebView webView;
-
-    @FXML
-    private ComboBox<CommandEntry> comboBox;
-
-    private SimpleObjectProperty<CommandLookup> commandLookup = new SimpleObjectProperty<>();
-    private SimpleObjectProperty<Goal> goal = new SimpleObjectProperty<>();
+    private JComboBox<CommandEntry> comboBox;
+    private CommandLookup commandLookup;
+    private Goal goal;
 
     private List<CommandEntry> fixed = new ArrayList<>();
 
     public CommandHelp() {
-        Utils.createWithFXML(this);
-        TextFields.bindAutoCompletion(comboBox.getEditor(), comboBox.getItems());
-
+        super(new BorderLayout());
         //create default lookup, should later be replaced by the interpreter lookup
         DefaultLookup dl = new DefaultLookup();
         dl.getBuilders().add(new MacroCommandHandler(KeYApi.getMacroApi().getMacros()));
         dl.getBuilders().add(new ProofScriptCommandBuilder(KeYApi.getScriptCommandApi().getScriptCommands()));
         setCommandLookup(dl);
-
         KeYApi.getMacroApi().getMacros().forEach(proofMacro -> {
             fixed.add(new CommandEntry(proofMacro.getScriptCommandName(), "macro"));
         });

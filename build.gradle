@@ -5,16 +5,15 @@ plugins {
 allprojects {
     apply plugin: 'maven'
     group = 'edu.kit.iti.formal.psdbg'
-    version = '1.2-experimental'
+    version = '1.3-swing'
 }
 
 subprojects {
-  //  apply plugin: 'io.franzbecker.gradle-lombok'
     apply plugin: 'java'
     apply plugin: 'idea'
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 11
+    targetCompatibility = 11
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
     }
@@ -27,10 +26,8 @@ subprojects {
     }
 
     task printClasspath {
-        doLast {//            sourceSets.test.runtimeClasspath.
-
+        doLast {
             sourceSets.test.runtimeClasspath.each {println it}
-
         }
     }
 
@@ -42,6 +39,6 @@ subprojects {
         compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.0'
         compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
         testCompile group: 'junit', name: 'junit', version: '4.12'
-        compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+        compileOnly 'org.projectlombok:lombok:1.18.4'
     }
 }

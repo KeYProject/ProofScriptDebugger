@@ -14,10 +14,10 @@ import javafx.scene.control.ToggleGroup;
 import java.util.function.Function;
 
 public class GoalOptionsMenu extends ContextMenu {
-    @FXML
+
     private ToggleGroup toggleProjection;
 
-    @FXML
+
     private RadioMenuItem rmiShowSequent, rmiCFL, rmiCFS, rmiBranchLabels, rmiNodeNames, rmiRuleNames;
 
     private ObjectProperty<ViewOption> selectedViewOption = new SimpleObjectProperty<>();

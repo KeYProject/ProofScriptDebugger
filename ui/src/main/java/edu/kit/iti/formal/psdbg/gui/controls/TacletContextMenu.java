@@ -8,25 +8,24 @@ import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
-import de.uka.ilkd.key.pp.*;
+import de.uka.ilkd.key.pp.AbbrevMap;
+import de.uka.ilkd.key.pp.NotationInfo;
+import de.uka.ilkd.key.pp.PosInSequent;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.*;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,11 +39,11 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @see de.uka.ilkd.key.gui.nodeviews.TacletMenu
  */
-public class TacletContextMenu extends ContextMenu {
-
+public class TacletContextMenu extends JPopupMenu {
     private static final Set<Name> CLUTTER_RULESETS = new LinkedHashSet<Name>();
     private static final Set<Name> CLUTTER_RULES = new LinkedHashSet<Name>();
     private static final Set<String> FILTER_SCRIPT_COMMANDS = new LinkedHashSet<>();
+
     static {
         CLUTTER_RULESETS.add(new Name("notHumanReadable"));
         CLUTTER_RULESETS.add(new Name("obsolete"));
@@ -62,8 +61,8 @@ public class TacletContextMenu extends ContextMenu {
         FILTER_SCRIPT_COMMANDS.add("script");
 
 
-
     }
+
     static {
         CLUTTER_RULES.add(new Name("cut_direct_r"));
         CLUTTER_RULES.add(new Name("cut_direct_l"));
@@ -86,40 +85,25 @@ public class TacletContextMenu extends ContextMenu {
     }
 
     private PosInSequent pos;
-
-    @FXML
-    private ContextMenu rootMenu;
-    @FXML
-    private MenuItem noRules;
-    @FXML
-    private Menu moreRules;
-    @FXML
-    private Menu insertHidden;
-    @FXML
-    private Menu scriptCommands;
-    @FXML
-    private MenuItem copyToClipboard;
-    @FXML
-    private MenuItem createAbbr;
-    @FXML
-    private MenuItem enableAbbr;
-    @FXML
-    private MenuItem disableAbbr;
-    @FXML
-    private MenuItem changeAbbr;
-
+    private JMenu rootMenu;
+    private JMenuItem noRules;
+    private JMenu moreRules;
+    private JMenu insertHidden;
+    private JMenu scriptCommands;
+    private JMenuItem copyToClipboard;
+    private JMenuItem createAbbr;
+    private JMenuItem enableAbbr;
+    private JMenuItem disableAbbr;
+    private JMenuItem changeAbbr;
 
     private Goal goal;
     private PosInOccurrence occ;
     private NotationInfo notationInfo = new NotationInfo();
 
     public TacletContextMenu(KeYProofFacade keYProofFacade, PosInSequent pos, Goal goal) {
-        Utils.createWithFXML(this);
-
         /*mediator = getContext().getKeYMediator();
         comp = new TacletAppComparator();
-        insertHiddenController.initViewController(getMainApp(), getContext());
-    */
+        insertHiddenController.initViewController(getMainApp(), getContext()); */
 
         if (pos == null)
             throw new IllegalArgumentException(
@@ -145,35 +129,13 @@ public class TacletContextMenu extends ContextMenu {
             createDummyMenuItem();
         }
 
-      //  copyToClipboard = new MenuItem("Copy To Clipboad");
-      //  copyToClipboard.setOnAction(event -> handleCopyToClipboard(goal, pos, event));
+        //  copyToClipboard = new MenuItem("Copy To Clipboad");
+        //  copyToClipboard.setOnAction(event -> handleCopyToClipboard(goal, pos, event));
 
-      //  rootMenu.getItems().add(copyToClipboard);
+        //  rootMenu.getItems().add(copyToClipboard);
 
         //proofMacroMenuController.initViewController(getMainApp(), getContext());
         //proofMacroMenuController.init(occ);
-    }
-
-    private void createMacroMenu(Collection<ProofScriptCommand> scriptCommandList, Collection<ProofMacro> macros) {
-        for(ProofMacro macro : macros){
-            final MenuItem item = new MenuItem(macro.getScriptCommandName());
-            item.setOnAction(event -> {
-                handleMacroCommandApplication(macro);
-
-            });
-            this.scriptCommands.getItems().add(item);
-
-        }
-        for(ProofScriptCommand com : scriptCommandList){
-            if(!FILTER_SCRIPT_COMMANDS.contains(com.getName())) {
-                final MenuItem item = new MenuItem(com.getName());
-                item.setOnAction(event -> {
-                    handleCommandApplication(com);
-                });
-                this.scriptCommands.getItems().add(item);
-            }
-        }
-//        rootMenu.getItems().add(scriptCommands);
     }
 
     /**
@@ -222,6 +184,22 @@ public class TacletContextMenu extends ContextMenu {
         }
 
         return result;
+    }
+
+    private void createMacroMenu(Collection<ProofScriptCommand> scriptCommandList, Collection<ProofMacro> macros) {
+        for (ProofMacro macro : macros) {
+            final JMenuItem item = new JMenuItem(macro.getScriptCommandName());
+            item.addActionListener(event -> handleMacroCommandApplication(macro));
+            this.scriptCommands.add(item);
+        }
+        for (ProofScriptCommand com : scriptCommandList) {
+            if (!FILTER_SCRIPT_COMMANDS.contains(com.getName())) {
+                final JMenuItem item = new JMenuItem(com.getName());
+                item.addActionListener(event -> handleCommandApplication(com));
+                this.scriptCommands.add(item);
+            }
+        }
+//        rootMenu.getItems().add(scriptCommands);
     }
 
     /**
@@ -287,10 +265,10 @@ public class TacletContextMenu extends ContextMenu {
         //boolean foundCut = false;
         List<TacletApp> toReturn = new ArrayList<>();
         for (int i = 0; i < findTaclets.size(); i++) {
-            TacletApp tacletApp =  findTaclets.get(i);
-            if(!tacletApp.rule().displayName().startsWith("cut")){
+            TacletApp tacletApp = findTaclets.get(i);
+            if (!tacletApp.rule().displayName().startsWith("cut")) {
                 //findTaclets.remove(tacletApp);
-          //      foundCut = true;
+                //      foundCut = true;
                 toReturn.add(tacletApp);
             }
         }
@@ -299,13 +277,11 @@ public class TacletContextMenu extends ContextMenu {
     }
 
     private void createDummyMenuItem() {
-        Text t = new Text("This is not a goal state.\nSelect a goal state from the list.");
-        t.setFill(Color.RED);
-
+        JLabel t = new JLabel("This is not a goal state.\nSelect a goal state from the list.");
+        t.setBackground(Color.RED);
         MenuItem item = new MenuItem();
-        item.setGraphic(t);
-        rootMenu.getItems().add(0, item);
-
+        //TODO swing: item.setGraphic(t);
+        //TODO swing: rootMenu.add(0, item);
     }
 
     /**
@@ -419,6 +395,7 @@ public class TacletContextMenu extends ContextMenu {
         //System.out.println("event = [" + event + "]");
         Events.fire(new Events.TacletApplicationEvent(event, pos.getPosInOccurrence(), goal));
     }
+
     private void handleCommandApplication(ProofScriptCommand event) {
 
         Events.fire(new Events.CommandApplicationEvent(event, pos.getPosInOccurrence(), goal));
@@ -433,7 +410,7 @@ public class TacletContextMenu extends ContextMenu {
      *
      * @param event
      */
-    @FXML
+
     private void handleFocussedRuleApplication(ActionEvent event) {
         // Synchronization for StaticSequentView
         // parentController.setLastTacletActionID(parentController.getOwnID());
@@ -444,7 +421,7 @@ public class TacletContextMenu extends ContextMenu {
     /**
      * Handles action of the 'Copy to clipboard' menu item.
      */
-    @FXML
+
     private void handleCopyToClipboard(ActionEvent event) {
         final Clipboard clipboard = Clipboard.getSystemClipboard();
         final ClipboardContent content = new ClipboardContent();
@@ -457,7 +434,6 @@ public class TacletContextMenu extends ContextMenu {
         //        .substring(pos.getBounds().start(), pos.getBounds().end()));
         clipboard.setContent(content);
     }
-
 
 
     /**
@@ -485,7 +461,7 @@ public class TacletContextMenu extends ContextMenu {
      *
      * @param event
      */
-    @FXML
+
     private void handleCreateAbbreviation(ActionEvent event) {
         if (occ.posInTerm() != null) {
             final String oldTerm = occ.subTerm().toString();
@@ -501,7 +477,7 @@ public class TacletContextMenu extends ContextMenu {
      *
      * @param event
      */
-    @FXML
+
     private void handleChangeAbbreviation(ActionEvent event) {
         if (occ.posInTerm() != null) {
             abbreviationDialog("Change Abbreviation",
@@ -562,7 +538,7 @@ public class TacletContextMenu extends ContextMenu {
      *
      * @param event
      */
-    @FXML
+
     private void handleEnableAbbreviation(ActionEvent event) {
         if (occ.posInTerm() != null) {
             notationInfo.getAbbrevMap().setEnabled(occ.subTerm(), true);
@@ -575,7 +551,7 @@ public class TacletContextMenu extends ContextMenu {
      *
      * @param event
      */
-    @FXML
+
     private void handleDisableAbbreviation(ActionEvent event) {
         if (occ.posInTerm() != null) {
             notationInfo.getAbbrevMap().setEnabled(occ.subTerm(), false);

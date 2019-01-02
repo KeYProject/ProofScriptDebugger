@@ -1,5 +1,8 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
+import bibliothek.gui.Dockable;
+import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.intern.CDockable;
 import com.google.common.eventbus.Subscribe;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
@@ -64,9 +67,9 @@ public class ScriptController {
     /**
      * Property to globally disable or enable scriptareas
      */
-    private SimpleBooleanProperty disablePropertyForAreas = new SimpleBooleanProperty(true);
+    private boolean disablePropertyForAreas = true;
 
-    private final ObservableMap<ScriptArea, DockNode> openScripts = FXCollections.observableMap(new HashMap<>());
+    private final Map<ScriptArea, Dockable> openScripts = new HashMap<>();
     private final ListProperty<SavePoint> mainScriptSavePoints
             = new SimpleListProperty<>(FXCollections.observableArrayList());
     private ObjectProperty<MainScriptIdentifier> mainScript = new SimpleObjectProperty<>();
@@ -79,7 +82,7 @@ public class ScriptController {
     @Setter
     private DefaultAutoCompletionController autoCompleter = new DefaultAutoCompletionController();
 
-    public ScriptController(DockPane parent) {
+    public ScriptController(CControl parent) {
         this.parent = parent;
         Events.register(this);
         addDefaultInlineActions();
@@ -186,7 +189,7 @@ public class ScriptController {
                 .orElse(null);
     }
 
-    public ObservableMap<ScriptArea, DockNode> getOpenScripts() {
+    public Map<ScriptArea, CDockable> getOpenScripts() {
         return openScripts;
     }
 
