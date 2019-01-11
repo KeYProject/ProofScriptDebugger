@@ -209,7 +209,11 @@
                                </graphic>
                            </CheckMenuItem>
                                 <CheckMenuItem fx:id="miViewSettings" onAction="#showViewSettings"
-                                               text="View Settings"/>
+                                               text="View Settings">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="SETTINGS_BOX" size="24.0"/>
+                                    </graphic>
+                                </CheckMenuItem>
 
                             </items>
                    </Menu>

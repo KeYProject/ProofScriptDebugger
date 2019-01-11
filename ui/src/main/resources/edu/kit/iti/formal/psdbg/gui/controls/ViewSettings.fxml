@@ -6,6 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
 <?import javafx.geometry.Insets?>
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
 <fx:root type="javafx.scene.layout.BorderPane" xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane"
          xmlns="http://javafx.com/javafx/8.0.112 ">
 
@@ -19,19 +20,86 @@
                   GridPane.rowIndex="0"></Text>
             <TextField fx:id="allSizes" GridPane.columnIndex="1" GridPane.rowIndex="0"></TextField>
 
+            <Button GridPane.columnIndex="2"
+                    GridPane.rowIndex="0" onMouseClicked="#increaseAll">
+                <graphic>
+                    <MaterialDesignIconView glyphName="MENU_UP_OUTLINE" size="15.0"/>
+                </graphic>
+            </Button>
+
+            <Button GridPane.columnIndex="3"
+                    GridPane.rowIndex="0" onMouseClicked="#decreaseAll">
+                <graphic>
+                    <MaterialDesignIconView glyphName="MENU_DOWN_OUTLINE" size="15.0"/>
+                </graphic>
+            </Button>
+
             <Text text="Edit font size" style="-fx-font-weight: bold;" GridPane.rowIndex="2"></Text>
 
             <Text text="Script Area:" GridPane.columnIndex="0" GridPane.rowIndex="3"></Text>
             <TextField fx:id="scriptAreaSize" GridPane.columnIndex="1" GridPane.rowIndex="3"></TextField>
 
+            <Button GridPane.columnIndex="2"
+                    GridPane.rowIndex="3" onMouseClicked="#increaseScriptArea">
+                <graphic>
+                    <MaterialDesignIconView glyphName="MENU_UP_OUTLINE" size="15.0"/>
+                </graphic>
+            </Button>
+
+            <Button GridPane.columnIndex="3"
+                    GridPane.rowIndex="3" onMouseClicked="#decreaseScriptArea">
+                <graphic>
+                    <MaterialDesignIconView glyphName="MENU_DOWN_OUTLINE" size="15.0"/>
+                </graphic>
+            </Button>
+
             <Text text="Context Area:" GridPane.columnIndex="0" GridPane.rowIndex="4"></Text>
             <TextField fx:id="contextAreaSize" GridPane.columnIndex="1" GridPane.rowIndex="4"></TextField>
+            <Button GridPane.columnIndex="2"
+                    GridPane.rowIndex="4" onMouseClicked="#increaseContextArea">
+                <graphic>
+                    <MaterialDesignIconView glyphName="MENU_UP_OUTLINE" size="15.0"/>
+                </graphic>
+            </Button>
+
+            <Button GridPane.columnIndex="3"
+                    GridPane.rowIndex="4" onMouseClicked="#decreaseContextArea">
+                <graphic>
+                    <MaterialDesignIconView glyphName="MENU_DOWN_OUTLINE" size="15.0"/>
+                </graphic>
+            </Button>
 
             <Text text="Sequent:" GridPane.columnIndex="0" GridPane.rowIndex="5"></Text>
             <TextField fx:id="sequentSize" GridPane.columnIndex="1" GridPane.rowIndex="5"></TextField>
+            <Button GridPane.columnIndex="2"
+                    GridPane.rowIndex="5" onMouseClicked="#increaseSequent">
+                <graphic>
+                    <MaterialDesignIconView glyphName="MENU_UP_OUTLINE" size="15.0"/>
+                </graphic>
+            </Button>
+
+            <Button GridPane.columnIndex="3"
+                    GridPane.rowIndex="5" onMouseClicked="#decreaseSequent">
+                <graphic>
+                    <MaterialDesignIconView glyphName="MENU_DOWN_OUTLINE" size="15.0"/>
+                </graphic>
+            </Button>
 
             <Text text="Java Code:" GridPane.columnIndex="0" GridPane.rowIndex="6"></Text>
             <TextField fx:id="javaCodeSize" GridPane.columnIndex="1" GridPane.rowIndex="6"></TextField>
+            <Button GridPane.columnIndex="2"
+                    GridPane.rowIndex="6" onMouseClicked="#increaseJavaCode">
+                <graphic>
+                    <MaterialDesignIconView glyphName="MENU_UP_OUTLINE" size="15.0"/>
+                </graphic>
+            </Button>
+
+            <Button GridPane.columnIndex="3"
+                    GridPane.rowIndex="6" onMouseClicked="#decreaseJavaCode">
+                <graphic>
+                    <MaterialDesignIconView glyphName="MENU_DOWN_OUTLINE" size="15.0"/>
+                </graphic>
+            </Button>
 
         </GridPane>
 
@@ -41,11 +109,14 @@
             <padding>
                 <Insets top="5" right="25" bottom="15" left="25"/>
             </padding>
+            <top>
+                <Text text="Minimum: 5 ;     Maximum = 30 \n"></Text>
+            </top>
             <left>
-                <Button fx:id="reset" text="Reset"></Button>
+                <Button fx:id="reset" text="Reset" onMouseClicked="#resetChanges"></Button>
             </left>
             <right>
-                <Button fx:id="apply" text="Apply"></Button>
+                <Button fx:id="apply" text="Apply" onMouseClicked="#applyChanges"></Button>
             </right>
         </BorderPane>
     </bottom>

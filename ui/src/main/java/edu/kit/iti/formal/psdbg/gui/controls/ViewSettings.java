@@ -33,13 +33,6 @@ public class ViewSettings extends BorderPane {
     @FXML
     private TextField allSizes;
 
-
-    @FXML
-    private Button apply;
-
-    @FXML
-    private Button reset;
-
     private DebuggerMain dm;
 
     final private float OLD_SCRIPTSIZE = 16; // -fx-font-size: 16pt;
@@ -47,6 +40,8 @@ public class ViewSettings extends BorderPane {
     final private float OLD_SEQUENTSIZE = 21;
     final private float OLD_JAVACODESIZE = 16;
 
+    final private float MINIMUM_SIZE = 5;
+    final private float MAXIMUM_SIZE = 30;
     public ViewSettings(DebuggerMain dm) {
         Utils.createWithFXML(this);
         this.dm = dm;
@@ -55,24 +50,9 @@ public class ViewSettings extends BorderPane {
         contextAreaSize.setText(Float.toString(OLD_CONTEXTMENUSIZE));
         sequentSize.setText(Float.toString(OLD_SEQUENTSIZE));
         javaCodeSize.setText(Float.toString(OLD_JAVACODESIZE));
-
-        // add action listeners
-        apply.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                applyChanges();
-            }
-        });
-
-        reset.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                resetChanges();
-            }
-        });
-
     }
 
+    @FXML
     private void applyChanges() {
         float allSizes_f;
         float scriptAreaSize_f;
@@ -109,9 +89,6 @@ public class ViewSettings extends BorderPane {
             setFontSizes(allSizes_f, allSizes_f, allSizes_f, allSizes_f);
         }
 
-        /*TODO:
-        what if flaot = 4.5654234 or 1230
-         */
     }
 
 
@@ -119,10 +96,14 @@ public class ViewSettings extends BorderPane {
         final String SETFONT_START = "-fx-font-size: ";
         final String SETFONT_END = " pt;";
 
+        contextmenu_f = getInInterval(contextmenu_f);
+        sequent_f = getInInterval(sequent_f);
+        javacode_f = getInInterval(javacode_f);
+
         // Set font size for open script areas
         Set<ScriptArea> scriptareas = dm.getScriptController().getOpenScripts().keySet();
         if (scriptareas.size() != 0) {
-            scriptareas.forEach(k -> k.setStyle(SETFONT_START + scriptarea_f + SETFONT_END));
+            scriptareas.forEach(k -> k.setStyle(SETFONT_START + getInInterval(scriptarea_f) + SETFONT_END));
         }
 
         // Set font size for the context menu
@@ -142,6 +123,13 @@ public class ViewSettings extends BorderPane {
 
     }
 
+    private float getInInterval(float input) {
+        if (input < MINIMUM_SIZE) return MINIMUM_SIZE;
+        if (input > MAXIMUM_SIZE) return MAXIMUM_SIZE;
+        return input;
+    }
+
+    @FXML
     private void resetChanges() {
         allSizes.setText("");
 
@@ -149,5 +137,92 @@ public class ViewSettings extends BorderPane {
         contextAreaSize.setText(Float.toString(OLD_CONTEXTMENUSIZE));
         sequentSize.setText(Float.toString(OLD_SEQUENTSIZE));
         javaCodeSize.setText(Float.toString(OLD_JAVACODESIZE));
+    }
+
+    private void increaseByOne(TextField textField) {
+        float currentvalue;
+        try {
+            currentvalue = Float.parseFloat(textField.getText());
+            if (currentvalue + 1 > 30) {
+                textField.setText(Float.toString(30));
+            } else {
+                textField.setText(Float.toString(currentvalue + 1));
+            }
+        } catch (NumberFormatException e) {
+            Utils.showInfoDialog("Not a float", "Not a float", "At least one entry is not a float. \n " +
+                    "Hint: Decimal points are declared with '.' .");
+        }
+    }
+
+
+    private void decreaseByOne(TextField textField) {
+        float currentvalue;
+        try {
+            currentvalue = Float.parseFloat(textField.getText());
+            if (currentvalue - 1 < 5) {
+                textField.setText(Float.toString(5));
+            } else {
+                textField.setText(Float.toString(currentvalue - 1));
+            }
+        } catch (NumberFormatException e) {
+            Utils.showInfoDialog("Not a float", "Not a float", "At least one entry is not a float. \n " +
+                    "Hint: Decimal points are declared with '.' .");
+        }
+    }
+
+    @FXML
+    private void increaseAll() {
+        increaseByOne(scriptAreaSize);
+        increaseByOne(contextAreaSize);
+        increaseByOne(sequentSize);
+        increaseByOne(javaCodeSize);
+    }
+
+    @FXML
+    private void decreaseAll() {
+        decreaseByOne(scriptAreaSize);
+        decreaseByOne(contextAreaSize);
+        decreaseByOne(sequentSize);
+        decreaseByOne(javaCodeSize);
+    }
+
+    @FXML
+    private void increaseScriptArea() {
+        increaseByOne(scriptAreaSize);
+    }
+
+    @FXML
+    private void decreaseScriptArea() {
+        decreaseByOne(scriptAreaSize);
+    }
+
+    @FXML
+    private void increaseContextArea() {
+        increaseByOne(contextAreaSize);
+    }
+
+    @FXML
+    private void decreaseContextArea() {
+        decreaseByOne(contextAreaSize);
+    }
+
+    @FXML
+    private void increaseSequent() {
+        increaseByOne(sequentSize);
+    }
+
+    @FXML
+    private void decreaseSequent() {
+        decreaseByOne(sequentSize);
+    }
+
+    @FXML
+    private void increaseJavaCode() {
+        increaseByOne(javaCodeSize);
+    }
+
+    @FXML
+    private void decreaseJavaCode() {
+        decreaseByOne(javaCodeSize);
     }
 }
