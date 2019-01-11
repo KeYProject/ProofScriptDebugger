@@ -33,10 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Alexander Weigl
@@ -77,7 +74,7 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         try {
             for (SequentFormula sf : g.node().sequent().succedent()) {
                 ImmutableList<TacletApp> apps = index.getTacletAppAtAndBelow(filter,
-                        new PosInOccurrence(sf, PosInTerm.getTopLevel(), false),
+                        new PosInOccurrence(sf, PosInTerm.getTopLevel(), true),
                         services);
                 apps.forEach(t -> set.add(t.taclet().name().toString()));
             }
@@ -120,11 +117,13 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
 
         params.asMap().forEach((k, v) -> map.put(k.getIdentifier(), v.getData()));
         LOGGER.info("Execute {} with {}", call, map);
+
+        RuleCommand.Parameters cc;
         try {
             map.put("#2", call.getCommand());
             EngineState estate = new EngineState(kd.getProof());
             estate.setGoal(kd.getNode());
-            RuleCommand.Parameters cc = new RuleCommand.Parameters();
+            cc = new RuleCommand.Parameters();
             ValueInjector valueInjector = ValueInjector.createDefault(kd.getNode());
             cc = valueInjector.inject(c, cc, map);
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
