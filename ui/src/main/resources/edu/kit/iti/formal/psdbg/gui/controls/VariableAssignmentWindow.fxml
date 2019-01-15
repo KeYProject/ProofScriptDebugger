@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <fx:root xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
          type="edu.kit.iti.formal.psdbg.gui.controls.VariableAssignmentWindow"
@@ -19,19 +20,27 @@
                 />
             </center>
             <bottom>
-                <Button mnemonicParsing="false" text="Start Matching"
-                        onMouseClicked="#startMatch"/>
+                <HBox>
+                    <Button mnemonicParsing="false" text="Start Matching"
+                            onMouseClicked="#startMatch"/>
+                    <Button mnemonicParsing="false" text="Evaluate"
+                            onMouseClicked="#evaluate"/>
+                </HBox>
+
             </bottom>
         </BorderPane>
     </top>
     <center>
-        <TabPane>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
             <tabs>
                 <Tab text="Script Variables">
                     <TableView fx:id="declarative_tableView"></TableView>
                 </Tab>
                 <Tab text="KeY Control Variables">
                     <TableView fx:id="special_tableView"></TableView>
+                </Tab>
+                <Tab text="History">
+                    <TableView fx:id="history_tableView"></TableView>
                 </Tab>
             </tabs>
         </TabPane>

@@ -1,3 +1,8 @@
+script interaction() {
+    impRight;
+    cut;
+}
+
 script empty(){
 
 }

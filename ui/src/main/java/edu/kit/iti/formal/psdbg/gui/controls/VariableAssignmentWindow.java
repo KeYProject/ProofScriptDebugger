@@ -32,6 +32,9 @@ public class VariableAssignmentWindow extends BorderPane {
     TableView special_tableView;
 
     @FXML
+    TableView history;
+
+    @FXML
     TextArea match_variables;
 
     private VariableAssignment assignment;
@@ -49,6 +52,7 @@ public class VariableAssignmentWindow extends BorderPane {
 
     private List<VariableModel> matchlist_declarative = new ArrayList<>();
     private List<VariableModel> matchlist_special = new ArrayList<>();
+    private List<VariableModel> historylist = new ArrayList<>();
 
     private Evaluator evaluator;
 
@@ -177,10 +181,13 @@ public class VariableAssignmentWindow extends BorderPane {
         if (matchexp.equals("")) return;
 
         Value value = evaluator.visit(new StringLiteral(matchexp));
+
         new StringLiteral(matchexp).accept(evaluator);
         System.out.println("Value of Evaluator: " + value);
         System.out.println("Visit " + new StringLiteral(matchexp).accept(evaluator));
         System.out.println("Eval: " + evaluator.eval(new StringLiteral(matchexp)));
+
+
 
         /*
         matchlist_declarative = getVariableMatches(declarativeModel);
@@ -193,6 +200,20 @@ public class VariableAssignmentWindow extends BorderPane {
         if (matchlist_declarative != null)
             System.out.println("matchlist_declarative = " + matchlist_declarative.size());
         if (matchlist_special != null) System.out.println("matchlist_special = " + matchlist_special.size());
+    }
+
+
+    @FXML
+    private void evaluate() {
+        matchexp = match_variables.getText();
+        if (matchexp.equals("")) return;
+
+        Value value = evaluator.visit(new StringLiteral(matchexp));
+
+        new StringLiteral(matchexp).accept(evaluator);
+        System.out.println("Value of Evaluator: " + value);
+        System.out.println("Visit " + new StringLiteral(matchexp).accept(evaluator));
+        System.out.println("Eval: " + evaluator.eval(new StringLiteral(matchexp)));
     }
 
     /**

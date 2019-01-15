@@ -13,17 +13,17 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.interpreter.data.TermValue;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 import java.io.StringReader;
 import java.lang.annotation.Retention;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Alexander Weigl
@@ -86,8 +86,8 @@ public class ValueInjector {
         vi.addConverter(Long.TYPE, Long::parseLong);
         vi.addConverter(Double.TYPE, Double::parseDouble);
         vi.addConverter(Float.TYPE, Float::parseFloat);
-        vi.addConverter(BigInteger.class,Integer.class, (BigInteger b) -> b.intValue());
-        vi.addConverter(BigInteger.class,Integer.TYPE, (BigInteger b) -> b.intValue());
+        vi.addConverter(BigInteger.class, Integer.class, (BigInteger b) -> b.intValue());
+        vi.addConverter(BigInteger.class, Integer.TYPE, (BigInteger b) -> b.intValue());
 
         return vi;
     }
@@ -111,7 +111,7 @@ public class ValueInjector {
                 return s.getTerm();
             } else {
                 NamespaceSet nss = null;
-                if(s.getNs() !=null) {
+                if (s.getNs() != null) {
                     nss = s.getNs();
 
                 }
@@ -149,7 +149,7 @@ public class ValueInjector {
                 ns = node.proof().getNamespaces();
             }
 
-            if(additionalNamespace!=null) {
+            if (additionalNamespace != null) {
                 ns = ns.copy();
                 ns.add(additionalNamespace);
             }
@@ -160,7 +160,8 @@ public class ValueInjector {
         }
     }
 
-    @Value public static class SortConverter implements Converter<String, Sort>{
+    @Value
+    public static class SortConverter implements Converter<String, Sort> {
         private Proof proof;
 
         @Override
@@ -241,12 +242,43 @@ public class ValueInjector {
         final Object val = args.get(meta.getName());
         if (val == null) {
             if (meta.isRequired()) {
-                throw new ArgumentRequiredException(
-                        String.format("Argument %s:%s is required, but %s was given. " +
-                                        "For comamnd class: '%s'",
-                                meta.getName(), meta.getField().getType(), val,
-                                meta.getCommand().getClass()), meta);
+
+                //TODO MissingInstWindow:
+                String userinput = "p -> q";
+                DefaultTermParser dtp = new DefaultTermParser();
+                TermConverter tc = (TermConverter) getConverter(String.class, Term.class);
+                Term t;
+                try {
+                    t = tc.convert(userinput);
+                } catch (ParserException pe) {
+                    System.out.println("edu/kit/iti/formal/psdbg/ValueInjector.java:250 ParserException");
+                    throw new ArgumentRequiredException(
+                            String.format("Argument %s:%s is required, but %s was given. " +
+                                            "For comamnd class: '%s'",
+                                    meta.getName(), meta.getField().getType(), val,
+                                    meta.getCommand().getClass()), meta);
+                }
+
+                //TODO: inject t into meta?
+                meta.setRequired(false);
+                args.put("#2", t);
+                Object valnew = args.get(meta.getName());
+
+                Object value = convert(meta, valnew);
+                try {
+                    //if (meta.getType() != value.getClass())
+                    //    throw new ConversionException("The typed returned '" + val.getClass()
+                    //            + "' from the converter mismtached with the
+                    // type of the field " + meta.getType(), meta);
+                    meta.getField().set(obj, value);
+
+                } catch (IllegalAccessException e) {
+                    throw new InjectionReflectionException("Could not inject values via reflection",
+                            e, meta);
+                }
             }
+
+
         } else {
             Object value = convert(meta, val);
             try {
@@ -255,6 +287,7 @@ public class ValueInjector {
                 //            + "' from the converter mismtached with the
                 // type of the field " + meta.getType(), meta);
                 meta.getField().set(obj, value);
+
             } catch (IllegalAccessException e) {
                 throw new InjectionReflectionException("Could not inject values via reflection",
                         e, meta);
@@ -282,24 +315,24 @@ public class ValueInjector {
     /**
      * Registers the given converter for the specified class.
      *
-     * @param conv  a converter for the given class
-     * @param <T>   an arbitrary type
+     * @param conv a converter for the given class
+     * @param <T>  an arbitrary type
      */
-    public <T,R> void addConverter(Class<T> from, Class<R> to, Converter<T,R> conv) {
-        converters.add(new ConverterWrapper<T,R>(from, to, conv));
+    public <T, R> void addConverter(Class<T> from, Class<R> to, Converter<T, R> conv) {
+        converters.add(new ConverterWrapper<T, R>(from, to, conv));
     }
 
-    public <R> void addConverter(Class<R> to, Converter<String,R> conv) {
+    public <R> void addConverter(Class<R> to, Converter<String, R> conv) {
         addConverter(String.class, to, conv);
     }
 
-    public <T,R> void addConverter(Converter<T,R> conv) {
+    public <T, R> void addConverter(Converter<T, R> conv) {
         Method[] ms = conv.getClass().getMethods();
         for (Method m : ms) {
             if (m.getParameterCount() == 1) {
                 Class<T> t = (Class<T>) m.getParameterTypes()[0];
                 Class<R> c = (Class<R>) m.getReturnType();
-                addConverter(t,c, conv);
+                addConverter(t, c, conv);
             }
         }
 
@@ -307,26 +340,27 @@ public class ValueInjector {
 
     /**
      * Finds a converter for the given class.
+     *
      * @return null or a suitable converter (registered) converter for the requested class.
      */
     @SuppressWarnings("unchecked")
-    public <T,R> Converter<T,R> getConverter(Class<T> from, Class<R> to) {
-        for (ConverterWrapper c: converters) {
-                if(c.getFrom().equals(from) && c.getTo().equals(to))
-                    return c.getConverter();
-       }
+    public <T, R> Converter<T, R> getConverter(Class<T> from, Class<R> to) {
+        for (ConverterWrapper c : converters) {
+            if (c.getFrom().equals(from) && c.getTo().equals(to))
+                return c.getConverter();
+        }
         throw new RuntimeException("Could not find a suitable converter for types " + from + " to " + to);
     }
 
 
     @Value
-    private static class ConverterWrapper<T,R> {
+    private static class ConverterWrapper<T, R> {
         Class<T> from;
         Class<R> to;
-        Converter<T,R> converter;
+        Converter<T, R> converter;
     }
 
-    interface  Converter<T, R> {
+    interface Converter<T, R> {
         R convert(T o) throws Exception;
     }
 }
