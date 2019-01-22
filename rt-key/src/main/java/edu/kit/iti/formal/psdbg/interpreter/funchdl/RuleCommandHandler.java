@@ -149,6 +149,8 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
 
+
+            //TODO auslagern / finally
             ImmutableList<Goal> ngoals = kd.getProof().getSubtreeGoals(kd.getNode());
             state.getGoals().remove(expandedNode);
             if (state.getSelectedGoalNode().equals(expandedNode)) {
@@ -177,7 +179,7 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
                     System.out.flush();
                     // User input
                     try {
-                        inputindex = System.in.read(new byte[System.in.available()]);
+                        inputindex = System.in.read();
 
                     } catch (IOException ioe) {
                         System.out.println("No valid input");

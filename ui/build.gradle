@@ -41,6 +41,7 @@ dependencies {
 def mainClassName = 'edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger'
 
 task runApp(type: JavaExec) {
+    standardInput = System.in
     jvmArgs << '-Dsun.awt.disablegrab=true' << '-Dglass.disableGrab=true'
     /*applicationDefaultJvmArgs = [
             // For accessing VirtualFlow field from the base class in GridViewSkin
