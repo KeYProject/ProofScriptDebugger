@@ -30,6 +30,7 @@ import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
+import edu.kit.iti.formal.psdbg.interpreter.TacletAppSelectionDialogService;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
@@ -179,6 +180,9 @@ public class DebuggerMain implements Initializable {
     private InteractiveModeController interactiveModeController;
     private ScriptExecutionController scriptExecutionController;
 
+
+    private TacletAppSelectionDialogService tacletAppSelectionDialogService = new TacletAppSelectionDialogService() {
+    };
     private ViewSettings viewSettings;
 
     @FXML
@@ -415,6 +419,8 @@ public class DebuggerMain implements Initializable {
         savePointController = new SavePointController(this);
 
         viewSettings = new ViewSettings(this);
+
+        FACADE.setTacletAppSelectionDialogService(tacletAppSelectionDialogService);
 
     }
 

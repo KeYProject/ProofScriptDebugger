@@ -19,7 +19,9 @@ import de.uka.ilkd.key.rule.Rule;
 import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.rule.TacletApp;
 import edu.kit.iti.formal.psdbg.ValueInjector;
+import edu.kit.iti.formal.psdbg.interpreter.IndistinctWindow;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
+import edu.kit.iti.formal.psdbg.interpreter.TacletAppSelectionDialogService;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
@@ -28,9 +30,9 @@ import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicabl
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDeclaredException;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDefinedException;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
-import edu.kit.iti.formal.psdbg.parser.ast.Statement;
 import edu.kit.iti.formal.psdbg.parser.ast.Variable;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -44,14 +46,12 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
-import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Alexander Weigl
@@ -68,6 +68,10 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
     private final Map<String, Rule> rules;
 
     private Scanner scanner = new Scanner(System.in);
+
+    @Getter
+    @Setter
+    private TacletAppSelectionDialogService tacletAppSelectionDialogService;
 
     public RuleCommandHandler() {
         this(new HashMap<>());
@@ -150,26 +154,24 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
             c.execute(uiControl, cc, estate);
 
 
-            //TODO auslagern / finally
-            ImmutableList<Goal> ngoals = kd.getProof().getSubtreeGoals(kd.getNode());
-            state.getGoals().remove(expandedNode);
-            if (state.getSelectedGoalNode().equals(expandedNode)) {
-                state.setSelectedGoalNode(null);
-            }
-            for (Goal g : ngoals) {
-                KeyData kdn = new KeyData(kd, g.node());
-                state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
-            }
         } catch (ScriptException e) {
 
             boolean exceptionsolved = false;
 
             if (e instanceof ScriptException.IndistinctFormula) {
+
                 List<TacletApp> matchingapps = ((ScriptException.IndistinctFormula) e).getMatchingApps();
+                ObservableList<String> obsMatchApps = FXCollections.observableArrayList();
+                matchingapps.forEach(k -> obsMatchApps.add(k.toString()));
+                //TODO: open window here
+                IndistinctWindow indistinctWindow = new IndistinctWindow(obsMatchApps);
+                tacletAppSelectionDialogService.setPane(indistinctWindow);
+                tacletAppSelectionDialogService.showDialog();
 
                 //IndistinctPrompt prompt = new IndistinctPrompt(matchingapps);
                 //TacletApp chosen = prompt.getChosen();
 
+                /*
                 int inputindex = -1;
 
                 while (true) {
@@ -179,10 +181,10 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
                     System.out.flush();
                     // User input
                     try {
-                        inputindex = System.in.read();
+                        inputindex = scanner.nextInt(); //System.in.read();
 
-                    } catch (IOException ioe) {
-                        System.out.println("No valid input");
+                    } catch (InputMismatchException ime) {
+                        System.out.println("InputMismatchException thrown: edu/kit/iti/formal/psdbg/interpreter/funchdl/RuleCommandHandler.java:176");
                         continue;
                     }
                     if (0 <= inputindex && inputindex <= matchingapps.size() - 1) {
@@ -192,12 +194,18 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
                         System.out.println("No valid input");
                     }
                 }
-                TacletApp chosenApp = matchingapps.get(inputindex);
+                */
+                try {
+                    tacletAppSelectionDialogService.latch.await();
+                } catch (InterruptedException ie) {
+                    System.out.println("latch await got interrupted");
+                }
+                TacletApp chosenApp = matchingapps.get(tacletAppSelectionDialogService.getUserIndexInput());
 
-                TacletInstantiationModel tim = new TacletInstantiationModel(chosenApp, data.getGoal().sequent(), data.getGoal().getLocalNamespaces(), null, data.getGoal());
+                TacletInstantiationModel tim = new TacletInstantiationModel(chosenApp, kd.getGoal().sequent(), kd.getGoal().getLocalNamespaces(), null, kd.getGoal());
                 try {
                     TacletApp newTA = tim.createTacletApp();
-                    newTA.execute(data.getGoal(), data.getProof().getServices());
+                    newTA.execute(kd.getGoal(), kd.getProof().getServices());
 
                     int linenr = call.getStartPosition().getLineNumber();
                     exceptionsolved = true;
@@ -205,19 +213,31 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
 
                 }
             }
-            if (exceptionsolved) return;
 
 
-            if (interpreter.isStrictMode()) {
-                throw new ScriptCommandNotApplicableException(e, c, map);
-            } else {
-                //Utils necessary oder schmeißen
-                LOGGER.error("Command " + call.getCommand() + " is not applicable in line " + call.getRuleContext().getStart().getLine());
+            if (!exceptionsolved) {
+                if (interpreter.isStrictMode()) {
+                    throw new ScriptCommandNotApplicableException(e, c, map);
+                } else {
+                    //Utils necessary oder schmeißen
+                    LOGGER.error("Command " + call.getCommand() + " is not applicable in line " + call.getRuleContext().getStart().getLine());
+                }
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        //refreshes Debuggermainmodel
+        ImmutableList<Goal> ngoals = kd.getProof().getSubtreeGoals(kd.getNode());
+        state.getGoals().remove(expandedNode);
+        if (state.getSelectedGoalNode().equals(expandedNode)) {
+            state.setSelectedGoalNode(null);
+        }
+        for (Goal g : ngoals) {
+            KeyData kdn = new KeyData(kd, g.node());
+            state.getGoals().add(new GoalNode<>(expandedNode, kdn, kdn.getNode().isClosed()));
         }
     }
 

@@ -17,6 +17,8 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
@@ -73,6 +75,9 @@ public class KeYProofFacade {
 
     private File filepath;
 
+    @Getter
+    @Setter
+    private TacletAppSelectionDialogService tacletAppSelectionDialogService;
     /**
      *
      */
@@ -204,6 +209,7 @@ public class KeYProofFacade {
                 .scriptSearchPath(new File("."));
         //getProof().getProofIndependentSettings().getGeneralSettings().setOneStepSimplification(false);
 
+        interpreterBuilder.setTacletappSelectionDialogService(tacletAppSelectionDialogService);
         return interpreterBuilder;
     }
     //endregion
