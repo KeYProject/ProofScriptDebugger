@@ -43,6 +43,10 @@ public class KeyInterpreter extends Interpreter<KeyData> {
 //                    .put(SimpleType.SEQ, VariableAssignments.VarType.SEQ)
                     .build();
 
+    @Getter
+    @Setter
+    private TacletAppSelectionDialogService tacletAppSelectionDialogService;
+
 
     public KeyInterpreter(CommandLookup lookup) {
         super(lookup);

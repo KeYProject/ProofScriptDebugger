@@ -19,6 +19,7 @@ import edu.kit.iti.formal.psdbg.parser.Visitor;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import lombok.Getter;
+import lombok.Setter;
 import org.key_project.util.collection.ImmutableList;
 
 import java.io.File;
@@ -42,6 +43,11 @@ public class InterpreterBuilder {
     private ProofScriptCommandBuilder pmc = new ProofScriptCommandBuilder();
     @Getter
     private BuiltInCommandHandler bich = new BuiltInCommandHandler();
+
+    @Getter
+    @Setter
+    private TacletAppSelectionDialogService tacletappSelectionDialogService;
+
     @Getter
     private ProofScript entryPoint;
     @Getter
@@ -82,6 +88,8 @@ public class InterpreterBuilder {
     public KeyInterpreter build() {
         interpreter.getVariableHooks().add(keyHooks);
         interpreter.getVariableHooks().add(optionsHook);
+        interpreter.setTacletAppSelectionDialogService(tacletappSelectionDialogService);
+        pmr.setTacletAppSelectionDialogService(tacletappSelectionDialogService);
         return interpreter;
     }
 
