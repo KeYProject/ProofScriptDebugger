@@ -2,6 +2,7 @@ package edu.kit.iti.formal.psdbg.interpreter.funchdl;
 
 import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
+import de.uka.ilkd.key.control.instantiation_model.TacletInstantiationModel;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.PosInTerm;
@@ -12,6 +13,7 @@ import de.uka.ilkd.key.macros.scripts.ScriptException;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.RuleAppIndex;
+import de.uka.ilkd.key.proof.SVInstantiationException;
 import de.uka.ilkd.key.proof.rulefilter.TacletFilter;
 import de.uka.ilkd.key.rule.Rule;
 import de.uka.ilkd.key.rule.Taclet;
@@ -26,17 +28,30 @@ import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicabl
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDeclaredException;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDefinedException;
 import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
+import edu.kit.iti.formal.psdbg.parser.ast.Statement;
 import edu.kit.iti.formal.psdbg.parser.ast.Variable;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Alexander Weigl
@@ -51,6 +66,8 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
     private static final Logger LOGGER = LogManager.getLogger(RuleCommandHandler.class);
     @Getter
     private final Map<String, Rule> rules;
+
+    private Scanner scanner = new Scanner(System.in);
 
     public RuleCommandHandler() {
         this(new HashMap<>());
@@ -77,7 +94,7 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         try {
             for (SequentFormula sf : g.node().sequent().succedent()) {
                 ImmutableList<TacletApp> apps = index.getTacletAppAtAndBelow(filter,
-                        new PosInOccurrence(sf, PosInTerm.getTopLevel(), false),
+                        new PosInOccurrence(sf, PosInTerm.getTopLevel(), true),
                         services);
                 apps.forEach(t -> set.add(t.taclet().name().toString()));
             }
@@ -120,16 +137,20 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
 
         params.asMap().forEach((k, v) -> map.put(k.getIdentifier(), v.getData()));
         LOGGER.info("Execute {} with {}", call, map);
+
+        RuleCommand.Parameters cc;
         try {
             map.put("#2", call.getCommand());
             EngineState estate = new EngineState(kd.getProof());
             estate.setGoal(kd.getNode());
-            RuleCommand.Parameters cc = new RuleCommand.Parameters();
+            cc = new RuleCommand.Parameters();
             ValueInjector valueInjector = ValueInjector.createDefault(kd.getNode());
             cc = valueInjector.inject(c, cc, map);
             AbstractUserInterfaceControl uiControl = new DefaultUserInterfaceControl();
             c.execute(uiControl, cc, estate);
 
+
+            //TODO auslagern / finally
             ImmutableList<Goal> ngoals = kd.getProof().getSubtreeGoals(kd.getNode());
             state.getGoals().remove(expandedNode);
             if (state.getSelectedGoalNode().equals(expandedNode)) {
@@ -141,36 +162,52 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
             }
         } catch (ScriptException e) {
 
-            //TODO: adding UserinteractionWindow
-            /*TODO: possible cases not applicable, because
-                command not recognized (can be ignored)
+            boolean exceptionsolved = false;
 
-                command multiple matches -> need more specification with on + formula
-                    if(e.getMessage().equals("More than one applicable occurrence")) {
-                    //TODO: open UserinteractionWindow with selectionbox , need (RuleCommand: 121)
+            if (e instanceof ScriptException.IndistinctFormula) {
+                List<TacletApp> matchingapps = ((ScriptException.IndistinctFormula) e).getMatchingApps();
 
-                ImmutableList<TacletApp> allApps = c.findAllTacletApps(cc, state);
-                List<TacletApp> matchingApps = c.filterList(cc, allApps);
+                //IndistinctPrompt prompt = new IndistinctPrompt(matchingapps);
+                //TacletApp chosen = prompt.getChosen();
 
-                    //TODO: (re)apply completed TacletApp
+                int inputindex = -1;
 
-                    //TODO: insert into script
+                while (true) {
+                    System.out.println("Taclet " + matchingapps.get(0).taclet().displayName() + " is applicable on multiple formulas, " +
+                            "please choose one of the following by entering a number from 0 to " + (matchingapps.size() - 1) + " :");
+                    matchingapps.forEach(k -> System.out.println(k));
+                    System.out.flush();
+                    // User input
+                    try {
+                        inputindex = System.in.read();
+
+                    } catch (IOException ioe) {
+                        System.out.println("No valid input");
+                        continue;
+                    }
+                    if (0 <= inputindex && inputindex <= matchingapps.size() - 1) {
+                        System.out.println("Acceptable inputindex = " + inputindex);
+                        break;
+                    } else {
+                        System.out.println("No valid input");
+                    }
+                }
+                TacletApp chosenApp = matchingapps.get(inputindex);
+
+                TacletInstantiationModel tim = new TacletInstantiationModel(chosenApp, data.getGoal().sequent(), data.getGoal().getLocalNamespaces(), null, data.getGoal());
+                try {
+                    TacletApp newTA = tim.createTacletApp();
+                    newTA.execute(data.getGoal(), data.getProof().getServices());
+
+                    int linenr = call.getStartPosition().getLineNumber();
+                    exceptionsolved = true;
+                } catch (SVInstantiationException svie) {
 
                 }
+            }
+            if (exceptionsolved) return;
 
 
-                command not complete -> missig parameters
-                solution:
-                if(e.getMessage().equals("Not a unique \\assumes instantiation")) {
-                    //TODO: open UserinteractionWindow with selectionbox , need (RuleCommand: 56)
-                    ImmutableList<TacletApp> assumesCandidates = theApp.findIfFormulaInstantiations(state.getFirstOpenGoal().sequent(), proof.getServices());
-
-                    //TODO: (re)apply completed TacletApp
-
-                    //TODO: insert into script
-
-                }
-             */
             if (interpreter.isStrictMode()) {
                 throw new ScriptCommandNotApplicableException(e, c, map);
             } else {
@@ -196,4 +233,66 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         return params;
     }
 
+    private class IndistinctPrompt {
+        private final TacletApp chosen = null;
+
+        IndistinctPrompt(List<TacletApp> matchingapps) {
+
+            final Stage dialog = new Stage();
+            dialog.setTitle("Select a Tacletapp");
+            dialog.initStyle(StageStyle.UTILITY);
+            dialog.initModality(Modality.WINDOW_MODAL);
+
+            ListView listView = new ListView(FXCollections.observableArrayList(matchingapps));
+            final TextField textField = new TextField();
+            final Button submitButton = new Button("Submit");
+
+            submitButton.setDefaultButton(true);
+            submitButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent t) {
+                    String userinput = textField.getText();
+
+                    if (userinput.equals("")) {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
+
+                    int index;
+                    try {
+                        index = Integer.parseInt(userinput);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
+
+                    if (0 < index && index < matchingapps.size()) {
+                        final TacletApp chosen = matchingapps.get(index);
+                        dialog.close();
+                    } else {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
+
+                }
+            });
+
+            final VBox layout = new VBox(10);
+            layout.setAlignment(Pos.CENTER_RIGHT);
+            layout.setStyle("-fx-background-color: azure; -fx-padding: 10;");
+            layout.getChildren().setAll(
+                    listView,
+                    textField,
+                    submitButton
+            );
+
+            dialog.setScene(new Scene(layout));
+            dialog.showAndWait();
+
+        }
+
+        private TacletApp getChosen() {
+            return chosen;
+        }
+    }
 }

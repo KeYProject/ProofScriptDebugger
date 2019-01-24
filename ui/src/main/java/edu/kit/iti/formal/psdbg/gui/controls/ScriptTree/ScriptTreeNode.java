@@ -4,10 +4,7 @@ import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.gui.controls.TreeNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
-import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
-import edu.kit.iti.formal.psdbg.parser.ast.GuardedCaseStatement;
-import edu.kit.iti.formal.psdbg.parser.ast.MatchExpression;
-import edu.kit.iti.formal.psdbg.parser.ast.TermLiteral;
+import edu.kit.iti.formal.psdbg.parser.ast.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -42,8 +39,20 @@ public class ScriptTreeNode extends AbstractTreeNode {
         String label;
         if (isMatchEx()) {
 
-            String matchexpression = (scriptState.getStatement() instanceof GuardedCaseStatement)?((TermLiteral) ((MatchExpression) ((GuardedCaseStatement) scriptState.getStatement()).getGuard()).getPattern()).getContent()
-                    : "default";
+            String matchexpression = "";
+            if (scriptState.getStatement() instanceof GuardedCaseStatement) {
+                MatchExpression me = (MatchExpression) ((GuardedCaseStatement) scriptState.getStatement()).getGuard();
+                try {
+                    matchexpression = ((TermLiteral) me.getPattern()).getContent();
+                } catch (ClassCastException cce) {
+                    //not a Termliteral but a Stringliteral
+                    matchexpression = ((StringLiteral) me.getPattern()).getText();
+                }
+
+            } else { //default case statement
+                matchexpression = "default";
+            }
+
             label = "match ("+ matchexpression +") in line " + linenr;
         } else {
             label = ((CallStatement)scriptState.getStatement()).getCommand() + " (line " + linenr + ")";

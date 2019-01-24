@@ -208,7 +208,14 @@
                                    <MaterialDesignIconView glyphName="STACKEXCHANGE" size="24.0"/>
                                </graphic>
                            </CheckMenuItem>
-                       </items>
+                                <CheckMenuItem fx:id="miViewSettings" onAction="#showViewSettings"
+                                               text="View Settings">
+                                    <graphic>
+                                        <MaterialDesignIconView glyphName="SETTINGS_BOX" size="24.0"/>
+                                    </graphic>
+                                </CheckMenuItem>
+
+                            </items>
                    </Menu>
                    <Menu fx:id="examplesMenu" text="_Examples">
                        <items>

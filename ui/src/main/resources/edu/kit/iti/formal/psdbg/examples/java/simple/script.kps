@@ -1,3 +1,17 @@
+script example(x:INT){
+ symbex;  //Mutator
+
+ foreach{ //Kontrollfluss
+   simp_heap;
+ }
+
+ cases{   //Selektoren
+  case match '==> ?X>0':
+     tryclose;
+  default: auto;
+  }
+}
+
 script t1(){
     symbex;
     foreach{

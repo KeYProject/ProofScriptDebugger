@@ -1,15 +1,15 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
-import alice.tuprolog.Var;
-import edu.kit.iti.formal.psdbg.gui.controls.Utils;
-import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
-import edu.kit.iti.formal.psdbg.interpreter.assignhook.DefaultAssignmentHook;
+import de.uka.ilkd.key.macros.scripts.ScriptException;
+import edu.kit.iti.formal.psdbg.interpreter.Evaluator;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
-import edu.kit.iti.formal.psdbg.interpreter.matcher.KeyMatcherFacade;
-import edu.kit.iti.formal.psdbg.parser.ast.Variable;
+import edu.kit.iti.formal.psdbg.parser.NotWelldefinedException;
+import edu.kit.iti.formal.psdbg.parser.Visitor;
+import edu.kit.iti.formal.psdbg.parser.ast.Expression;
+import edu.kit.iti.formal.psdbg.parser.ast.Signature;
+import edu.kit.iti.formal.psdbg.parser.ast.StringLiteral;
+import edu.kit.iti.formal.psdbg.parser.data.Value;
 import edu.kit.iti.formal.psdbg.parser.types.Type;
-import javafx.beans.Observable;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,11 +17,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,6 +32,9 @@ public class VariableAssignmentWindow extends BorderPane {
     TableView special_tableView;
 
     @FXML
+    TableView history;
+
+    @FXML
     TextArea match_variables;
 
     private VariableAssignment assignment;
@@ -44,14 +45,16 @@ public class VariableAssignmentWindow extends BorderPane {
     /** Variables that start with __ **/
     private ObservableList<VariableModel> specialModel;
 
-    private String numeric_matchexp;
-    private String var; //var in numeric_matchexp
+    private String matchexp;
 
     private ScriptEngineManager mgr = new ScriptEngineManager();
     private ScriptEngine engine = mgr.getEngineByName("JavaScript");
 
     private List<VariableModel> matchlist_declarative = new ArrayList<>();
     private List<VariableModel> matchlist_special = new ArrayList<>();
+    private List<VariableModel> historylist = new ArrayList<>();
+
+    private Evaluator evaluator;
 
     public VariableAssignmentWindow(VariableAssignment assignment) {
 
@@ -133,6 +136,8 @@ public class VariableAssignmentWindow extends BorderPane {
                 }
             }
         });
+
+        evaluator = new Evaluator(assignment, null);
 }
 
     /**
@@ -172,19 +177,22 @@ public class VariableAssignmentWindow extends BorderPane {
      */
     private void startMatch() {
         clearHighlights();
-        numeric_matchexp = match_variables.getText();
-        if (numeric_matchexp.equals("")) return;
+        matchexp = match_variables.getText();
+        if (matchexp.equals("")) return;
 
-        var = getVariable(numeric_matchexp);
-        if (var.equals("")) {
-            Utils.showInfoDialog("Variable not found", "Explicit variable not found",
-                    "Please declare exactly one variable starting with \"?\". ");
-            return;
-        }
+        Value value = evaluator.visit(new StringLiteral(matchexp));
 
+        new StringLiteral(matchexp).accept(evaluator);
+        System.out.println("Value of Evaluator: " + value);
+        System.out.println("Visit " + new StringLiteral(matchexp).accept(evaluator));
+        System.out.println("Eval: " + evaluator.eval(new StringLiteral(matchexp)));
+
+
+
+        /*
         matchlist_declarative = getVariableMatches(declarativeModel);
         matchlist_special = getVariableMatches(specialModel);
-
+*/
         highlight(matchlist_declarative);
         highlight(matchlist_special);
 
@@ -192,6 +200,20 @@ public class VariableAssignmentWindow extends BorderPane {
         if (matchlist_declarative != null)
             System.out.println("matchlist_declarative = " + matchlist_declarative.size());
         if (matchlist_special != null) System.out.println("matchlist_special = " + matchlist_special.size());
+    }
+
+
+    @FXML
+    private void evaluate() {
+        matchexp = match_variables.getText();
+        if (matchexp.equals("")) return;
+
+        Value value = evaluator.visit(new StringLiteral(matchexp));
+
+        new StringLiteral(matchexp).accept(evaluator);
+        System.out.println("Value of Evaluator: " + value);
+        System.out.println("Visit " + new StringLiteral(matchexp).accept(evaluator));
+        System.out.println("Eval: " + evaluator.eval(new StringLiteral(matchexp)));
     }
 
     /**
@@ -243,12 +265,16 @@ public class VariableAssignmentWindow extends BorderPane {
     /**
      * Calculate matching results of matchexpression with given list
      *
-     * @param varlist
+     * @param
      * @return list of matching VariableModels
+     *
      */
+   /*
     private List<VariableModel> getVariableMatches(ObservableList<VariableModel> varlist) {
+
+
         //Contains numbers
-        if (!Pattern.compile("[0-9]+").matcher(numeric_matchexp).find()) return null;
+        if (!Pattern.compile("[0-9]+").matcher(matchexp).find()) return null;
 
         List<VariableModel> matchlist = new ArrayList<>();
 
@@ -256,7 +282,7 @@ public class VariableAssignmentWindow extends BorderPane {
         String new_var = "\\" + var;
 
         for (VariableModel vm : varlist) {
-            String boolexpression = numeric_matchexp.replaceAll(new_var, vm.getVarval());
+            String boolexpression = matchexp.replaceAll(new_var, vm.getVarval());
             try {
                 if (vm.getVartype().equals("int")) {
                     if ((Boolean) engine.eval(boolexpression.toLowerCase())) {
@@ -270,6 +296,7 @@ public class VariableAssignmentWindow extends BorderPane {
 
         return matchlist;
     }
+    */
 
 
     public static class VariableModel {

@@ -1,3 +1,10 @@
+script mock_interaction() {
+    impRight;
+    andLeft;
+    andLeft;
+    applyEq;
+}
+
 script interaction() {
     impRight;
     andLeft;
@@ -5,12 +12,7 @@ script interaction() {
     // apply 'applyEq' on 'a' in 'a = d'
 }
 
-script mock_interaction() {
-    impRight;
-    andLeft;
-    andLeft;
-    applyEq;
-}
+
 
 script mock_interaction_1() {
     impRight;

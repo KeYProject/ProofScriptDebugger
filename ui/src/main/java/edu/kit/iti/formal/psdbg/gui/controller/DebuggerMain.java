@@ -151,6 +151,8 @@ public class DebuggerMain implements Initializable {
     @FXML
     private CheckMenuItem miScriptTree;
     @FXML
+    private CheckMenuItem miViewSettings;
+    @FXML
     private ToggleButton btnInteractiveMode;
 
     @FXML
@@ -176,6 +178,8 @@ public class DebuggerMain implements Initializable {
     private DockNode commandHelpDock = new DockNode(commandHelp, "DebuggerCommand Help");
     private InteractiveModeController interactiveModeController;
     private ScriptExecutionController scriptExecutionController;
+
+    private ViewSettings viewSettings;
 
     @FXML
     private Menu examplesMenu;
@@ -410,6 +414,8 @@ public class DebuggerMain implements Initializable {
         renewThreadStateTimer();
 
         savePointController = new SavePointController(this);
+
+        viewSettings = new ViewSettings(this);
 
     }
 
@@ -1376,6 +1382,16 @@ public class DebuggerMain implements Initializable {
 
         stage.show();
     }
+
+    @FXML
+    public void showViewSettings(ActionEvent actionEvent) {
+        Stage stage = new Stage();
+        stage.setTitle("View Settings");
+        Scene scene = (viewSettings.getScene() == null) ? new Scene(viewSettings) : viewSettings.getScene();
+        stage.setScene(scene);
+        stage.show();
+    }
+
 
     public DockNode getJavaAreaDock() {
         return javaAreaDock;

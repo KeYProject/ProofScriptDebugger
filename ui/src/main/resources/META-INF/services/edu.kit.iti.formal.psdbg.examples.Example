@@ -1,6 +1,7 @@
 edu.kit.iti.formal.psdbg.examples.contraposition.ContrapositionExample
 edu.kit.iti.formal.psdbg.examples.fol.FirstOrderLogicExample
 edu.kit.iti.formal.psdbg.examples.applyEq.ApplyEqExample
+edu.kit.iti.formal.psdbg.examples.impLeft.ImpLeftExample
 edu.kit.iti.formal.psdbg.examples.java.simple.JavaSimpleExample
 edu.kit.iti.formal.psdbg.examples.java.maxtriplet.MaxTripletExample
 #edu.kit.iti.formal.psdbg.examples.java.transitive.PaperExample
