@@ -67,7 +67,7 @@ public class ProofScriptCommandBuilder implements CommandHandler<KeyData> {
         State<KeyData> state = interpreter.getCurrentState();
 
         //multiple goals exist
-        if(state.getGoals().size() > 1) {
+        if (state.getGoals().size() > 1) {
             throw new IllegalStateException("Multiple open goals: Please use a selector.");
             /*
             //TODO: Utils showWarning

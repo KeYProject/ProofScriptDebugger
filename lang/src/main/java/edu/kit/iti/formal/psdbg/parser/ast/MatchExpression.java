@@ -43,7 +43,9 @@ import lombok.Setter;
 public class MatchExpression extends Expression<ScriptLanguageParser.MatchPatternContext> {
     //private Signature signature = new Signature();
     private Expression pattern;
-    @Deprecated @Getter @Setter
+    @Deprecated
+    @Getter
+    @Setter
     private boolean isDerivable = false;
     @Deprecated
     private Expression derivableTerm;

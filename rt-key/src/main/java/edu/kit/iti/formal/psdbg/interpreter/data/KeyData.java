@@ -123,6 +123,9 @@ public class KeyData {
         return programStatementsLabel;
     }
 
+    public void getVarAssignment() {
+
+    }
 
     public Goal getGoal() {
         return goal;
