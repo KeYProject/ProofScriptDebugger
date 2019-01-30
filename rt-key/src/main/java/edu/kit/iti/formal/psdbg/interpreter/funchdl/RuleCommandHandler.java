@@ -4,20 +4,24 @@ import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.control.instantiation_model.TacletInstantiationModel;
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.PosInOccurrence;
-import de.uka.ilkd.key.logic.PosInTerm;
-import de.uka.ilkd.key.logic.SequentFormula;
+import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.RuleCommand;
 import de.uka.ilkd.key.macros.scripts.ScriptException;
+import de.uka.ilkd.key.pp.LogicPrinter;
+import de.uka.ilkd.key.pp.NotationInfo;
+import de.uka.ilkd.key.pp.ProgramPrinter;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.RuleAppIndex;
 import de.uka.ilkd.key.proof.SVInstantiationException;
 import de.uka.ilkd.key.proof.rulefilter.TacletFilter;
+import de.uka.ilkd.key.rule.IfFormulaInstantiation;
 import de.uka.ilkd.key.rule.Rule;
 import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.rule.TacletApp;
+import de.uka.ilkd.key.rule.inst.SVInstantiations;
+import edu.kit.iti.formal.psdbg.RuleCommandHelper;
 import edu.kit.iti.formal.psdbg.ValueInjector;
 import edu.kit.iti.formal.psdbg.interpreter.IndistinctWindow;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
@@ -29,8 +33,8 @@ import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDeclaredException;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDefinedException;
-import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
-import edu.kit.iti.formal.psdbg.parser.ast.Variable;
+import edu.kit.iti.formal.psdbg.parser.Facade;
+import edu.kit.iti.formal.psdbg.parser.ast.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -51,6 +55,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.key_project.util.collection.ImmutableList;
 
+import java.io.IOException;
+import java.math.BigInteger;
 import java.util.*;
 
 /**
@@ -158,48 +164,18 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
 
             boolean exceptionsolved = false;
 
+            //Exception thown when multiple TacletApp possible
             if (e instanceof ScriptException.IndistinctFormula) {
 
                 List<TacletApp> matchingapps = ((ScriptException.IndistinctFormula) e).getMatchingApps();
                 ObservableList<String> obsMatchApps = FXCollections.observableArrayList();
-                matchingapps.forEach(k -> obsMatchApps.add(k.toString()));
+                int linenr = call.getStartPosition().getLineNumber();
+                matchingapps.forEach(k -> obsMatchApps.add(tacletAppIntoString(k, kd.getGoal(), linenr)));
                 //TODO: open window here
                 IndistinctWindow indistinctWindow = new IndistinctWindow(obsMatchApps);
                 tacletAppSelectionDialogService.setPane(indistinctWindow);
                 tacletAppSelectionDialogService.showDialog();
 
-                //IndistinctPrompt prompt = new IndistinctPrompt(matchingapps);
-                //TacletApp chosen = prompt.getChosen();
-
-                /*
-                int inputindex = -1;
-
-                while (true) {
-                    System.out.println("Taclet " + matchingapps.get(0).taclet().displayName() + " is applicable on multiple formulas, " +
-                            "please choose one of the following by entering a number from 0 to " + (matchingapps.size() - 1) + " :");
-                    matchingapps.forEach(k -> System.out.println(k));
-                    System.out.flush();
-                    // User input
-                    try {
-                        inputindex = scanner.nextInt(); //System.in.read();
-
-                    } catch (InputMismatchException ime) {
-                        System.out.println("InputMismatchException thrown: edu/kit/iti/formal/psdbg/interpreter/funchdl/RuleCommandHandler.java:176");
-                        continue;
-                    }
-                    if (0 <= inputindex && inputindex <= matchingapps.size() - 1) {
-                        System.out.println("Acceptable inputindex = " + inputindex);
-                        break;
-                    } else {
-                        System.out.println("No valid input");
-                    }
-                }
-                */
-                try {
-                    tacletAppSelectionDialogService.latch.await();
-                } catch (InterruptedException ie) {
-                    System.out.println("latch await got interrupted");
-                }
                 TacletApp chosenApp = matchingapps.get(tacletAppSelectionDialogService.getUserIndexInput());
 
                 TacletInstantiationModel tim = new TacletInstantiationModel(chosenApp, kd.getGoal().sequent(), kd.getGoal().getLocalNamespaces(), null, kd.getGoal());
@@ -207,7 +183,6 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
                     TacletApp newTA = tim.createTacletApp();
                     newTA.execute(kd.getGoal(), kd.getProof().getServices());
 
-                    int linenr = call.getStartPosition().getLineNumber();
                     exceptionsolved = true;
                 } catch (SVInstantiationException svie) {
 
@@ -253,66 +228,57 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         return params;
     }
 
-    private class IndistinctPrompt {
-        private final TacletApp chosen = null;
+    private String tacletAppIntoString(TacletApp tacletApp, Goal g, int linenumber) {
+        String tacletAppString = "";
 
-        IndistinctPrompt(List<TacletApp> matchingapps) {
+        String tapName = tacletApp.taclet().name().toString();
+        PosInOccurrence pio = tacletApp.posInOccurrence();
+        SequentFormula seqForm = pio.sequentFormula();
 
-            final Stage dialog = new Stage();
-            dialog.setTitle("Select a Tacletapp");
-            dialog.initStyle(StageStyle.UTILITY);
-            dialog.initModality(Modality.WINDOW_MODAL);
+        Services keYServices = g.proof().getServices();
 
-            ListView listView = new ListView(FXCollections.observableArrayList(matchingapps));
-            final TextField textField = new TextField();
-            final Button submitButton = new Button("Submit");
+        Sequent seq = g.sequent();
+        String sfTerm = printParsableTerm(seqForm.formula(), keYServices);
+        String onTerm = printParsableTerm(pio.subTerm(), keYServices);
 
-            submitButton.setDefaultButton(true);
-            submitButton.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent t) {
-                    String userinput = textField.getText();
+        RuleCommand.Parameters params = new RuleCommand.Parameters();
+        params.formula = seqForm.formula();
+        params.rulename = tacletApp.taclet().name().toString();
+        params.on = pio.subTerm();
 
-                    if (userinput.equals("")) {
-                        System.out.println("Invalid input!");
-                        return;
-                    }
+        RuleCommandHelper rch = new RuleCommandHelper(g, params);
+        int occ = rch.getOccurence(tacletApp);
 
-                    int index;
-                    try {
-                        index = Integer.parseInt(userinput);
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid input!");
-                        return;
-                    }
 
-                    if (0 < index && index < matchingapps.size()) {
-                        final TacletApp chosen = matchingapps.get(index);
-                        dialog.close();
-                    } else {
-                        System.out.println("Invalid input!");
-                        return;
-                    }
+        tacletAppString = String.format("%s formula=' %s ' on=' %s ' occ=%d;",
+                tapName,
+                sfTerm.trim(),
+                onTerm.trim(),
+                occ);
 
-                }
-            });
-
-            final VBox layout = new VBox(10);
-            layout.setAlignment(Pos.CENTER_RIGHT);
-            layout.setStyle("-fx-background-color: azure; -fx-padding: 10;");
-            layout.getChildren().setAll(
-                    listView,
-                    textField,
-                    submitButton
-            );
-
-            dialog.setScene(new Scene(layout));
-            dialog.showAndWait();
-
+        // add missing instantiations
+        if (!tacletApp.ifInstsComplete()) {
+            SVInstantiations sv = tacletApp.instantiations();
+            //TODO:
         }
 
-        private TacletApp getChosen() {
-            return chosen;
+        tacletAppString += String.format("(linenumber = %d)", linenumber);
+
+        return tacletAppString;
+    }
+
+    public static String printParsableTerm(Term term, Services services) {
+
+        NotationInfo ni = new NotationInfo();
+        LogicPrinter p = new LogicPrinter(new ProgramPrinter(), ni, services);
+        ni.refresh(services, false, false);
+        String termString = "";
+        try {
+            p.printTerm(term);
+        } catch (IOException ioe) {
+            // t.toString();
         }
+        termString = p.toString();
+        return termString;
     }
 }

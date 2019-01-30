@@ -28,7 +28,7 @@ public abstract class TacletAppSelectionDialogService {
     @Getter
     int userIndexInput;
 
-    public CountDownLatch latch = new CountDownLatch(1);
+    private CountDownLatch latch = new CountDownLatch(1);
 
     public void showDialog() {
         Platform.runLater(new Runnable() {
@@ -50,8 +50,6 @@ public abstract class TacletAppSelectionDialogService {
                     }
                 });
                 stage.showAndWait();
-
-
                 latch.countDown();
             }
         });
@@ -61,5 +59,6 @@ public abstract class TacletAppSelectionDialogService {
     private void getIndex() {
         userIndexInput = ((IndistinctWindow) pane).getIndexOfSelected();
     }
+
 
 }

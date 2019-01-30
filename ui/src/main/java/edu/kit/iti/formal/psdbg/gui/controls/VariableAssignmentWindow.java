@@ -1,15 +1,11 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
-import de.uka.ilkd.key.macros.scripts.ScriptException;
 import edu.kit.iti.formal.psdbg.interpreter.Evaluator;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
-import edu.kit.iti.formal.psdbg.parser.NotWelldefinedException;
-import edu.kit.iti.formal.psdbg.parser.Visitor;
-import edu.kit.iti.formal.psdbg.parser.ast.Expression;
-import edu.kit.iti.formal.psdbg.parser.ast.Signature;
+import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDefinedException;
+import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.StringLiteral;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
-import edu.kit.iti.formal.psdbg.parser.types.Type;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -32,7 +28,7 @@ public class VariableAssignmentWindow extends BorderPane {
     TableView special_tableView;
 
     @FXML
-    TableView history;
+    TableView history_tableView;
 
     @FXML
     TextArea match_variables;
@@ -45,6 +41,8 @@ public class VariableAssignmentWindow extends BorderPane {
     /** Variables that start with __ **/
     private ObservableList<VariableModel> specialModel;
 
+    private ObservableList<VariableModel> historyModel = FXCollections.observableArrayList();
+
     private String matchexp;
 
     private ScriptEngineManager mgr = new ScriptEngineManager();
@@ -52,7 +50,6 @@ public class VariableAssignmentWindow extends BorderPane {
 
     private List<VariableModel> matchlist_declarative = new ArrayList<>();
     private List<VariableModel> matchlist_special = new ArrayList<>();
-    private List<VariableModel> historylist = new ArrayList<>();
 
     private Evaluator evaluator;
 
@@ -67,6 +64,7 @@ public class VariableAssignmentWindow extends BorderPane {
 
         declarative_tableView.setEditable(false);
         special_tableView.setEditable(false);
+        history_tableView.setEditable(false);
 
         //Table Colums for declarative_tableView
         TableColumn decl_varCol = new TableColumn("Variable");
@@ -113,6 +111,30 @@ public class VariableAssignmentWindow extends BorderPane {
 
         special_tableView.setItems(specialModel);
         special_tableView.getColumns().addAll(spec_varCol, spec_typeCol, spec_valCol);
+
+
+        //Table Colums for history_tableView
+        TableColumn hist_varCol = new TableColumn("Variable");
+        TableColumn hist_typeCol = new TableColumn("Type");
+        TableColumn hist_valCol = new TableColumn("Value");
+
+        //Set Colums width proportional to windows with
+        hist_varCol.prefWidthProperty().bind(history_tableView.widthProperty().divide(3));
+        hist_typeCol.prefWidthProperty().bind(history_tableView.widthProperty().divide(3));
+        hist_valCol.prefWidthProperty().bind(history_tableView.widthProperty().divide(3));
+
+        hist_varCol.setCellValueFactory(
+                new PropertyValueFactory<VariableModel, String>("varname")
+        );
+        hist_typeCol.setCellValueFactory(
+                new PropertyValueFactory<VariableModel, String>("vartype")
+        );
+        hist_valCol.setCellValueFactory(
+                new PropertyValueFactory<VariableModel, String>("varval")
+        );
+
+        history_tableView.setItems(historyModel);
+        history_tableView.getColumns().addAll(hist_varCol, hist_typeCol, hist_valCol);
 
         //Row factory added
         declarative_tableView.setRowFactory(tv -> new TableRow<VariableModel>() {
@@ -180,19 +202,9 @@ public class VariableAssignmentWindow extends BorderPane {
         matchexp = match_variables.getText();
         if (matchexp.equals("")) return;
 
-        Value value = evaluator.visit(new StringLiteral(matchexp));
-
-        new StringLiteral(matchexp).accept(evaluator);
-        System.out.println("Value of Evaluator: " + value);
-        System.out.println("Visit " + new StringLiteral(matchexp).accept(evaluator));
-        System.out.println("Eval: " + evaluator.eval(new StringLiteral(matchexp)));
-
-
-
-        /*
         matchlist_declarative = getVariableMatches(declarativeModel);
         matchlist_special = getVariableMatches(specialModel);
-*/
+
         highlight(matchlist_declarative);
         highlight(matchlist_special);
 
@@ -207,13 +219,20 @@ public class VariableAssignmentWindow extends BorderPane {
     private void evaluate() {
         matchexp = match_variables.getText();
         if (matchexp.equals("")) return;
+        Value value;
+        try {
+            value = evaluator.eval(Facade.parseExpression(matchexp));
 
-        Value value = evaluator.visit(new StringLiteral(matchexp));
+            VariableModel vm = new VariableModel(matchexp,
+                    value.getType().toString(),
+                    value.getData().toString());
 
-        new StringLiteral(matchexp).accept(evaluator);
-        System.out.println("Value of Evaluator: " + value);
-        System.out.println("Visit " + new StringLiteral(matchexp).accept(evaluator));
-        System.out.println("Eval: " + evaluator.eval(new StringLiteral(matchexp)));
+            historyModel.add(vm);
+            history_tableView.refresh();
+
+        } catch (Exception e) {
+            System.out.println("No evaluable expression");
+        }
     }
 
     /**
@@ -269,34 +288,19 @@ public class VariableAssignmentWindow extends BorderPane {
      * @return list of matching VariableModels
      *
      */
-   /*
+
     private List<VariableModel> getVariableMatches(ObservableList<VariableModel> varlist) {
-
-
-        //Contains numbers
-        if (!Pattern.compile("[0-9]+").matcher(matchexp).find()) return null;
 
         List<VariableModel> matchlist = new ArrayList<>();
 
-        //append with \\ to escape '?' of variable declaration -> e.g.: \\?X
-        String new_var = "\\" + var;
-
         for (VariableModel vm : varlist) {
-            String boolexpression = matchexp.replaceAll(new_var, vm.getVarval());
-            try {
-                if (vm.getVartype().equals("int")) {
-                    if ((Boolean) engine.eval(boolexpression.toLowerCase())) {
-                        matchlist.add(vm);
-                    }
-                }
-            } catch (ScriptException e) {
-                continue;
+            if (vm.getVarname().matches(matchexp)) {
+                matchlist.add(vm);
             }
         }
 
         return matchlist;
     }
-    */
 
 
     public static class VariableModel {
