@@ -92,11 +92,11 @@ public class ExecuteTest {
 
 
     }
-
+//with current version not working anymore...
     @Test
     public void testInstantiate() throws IOException, ParseException, ParserException {
-        File proof = new File("/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/bigIntProof/compareMagnitude_openCases.key.proof");
-        File script = new File("/home/sarah/Documents/KIT_Mitarbeiter/ProofScriptingLanguage/bigIntProof/instAll.kps");
+        File proof = new File("../bigIntProof/compareMagnitude_openCases.key.proof");
+        File script = new File("../bigIntProof/instAll.kps");
         Assume.assumeTrue(proof.exists()); //
         Execute exec = create(proof.getAbsolutePath(), "-s", script.getAbsolutePath());
         Interpreter<KeyData> i = exec.run();

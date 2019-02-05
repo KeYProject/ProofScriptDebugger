@@ -44,11 +44,13 @@ public class KeyEvaluator extends Evaluator<KeyData> {
             while (m.find()) {
                 String name = m.group().substring(1); // remove trailing '?'
                 Expression t = expr.getSubstitution().get(m.group());
-
-                //either evalute the substitent or find ?X in the
+                System.out.println("t = " + t);
+                //either evaluate the substitent or find ?X in the
                 String newVal = "";
-                if (t != null)
+                if (t != null) {
                     newVal = ((Value) t.accept(this)).getData().toString();
+                    m.appendReplacement(newTerm, newVal);
+                }
                 else
                     // newVal = state.getValue(new Variable(name)).getData().toString();
                     m.appendReplacement(newTerm, newVal);
