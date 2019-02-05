@@ -2,31 +2,30 @@ package edu.kit.iti.formal.psdbg.examples;
 
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import org.apache.commons.io.IOUtils;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 
 /**
  * Under construction!!!!!!
+ *
  * @author Alexander Weigl
  */
 public class JavaExample extends Example {
 
 
+    protected URL javaFile;
+    protected URL settingsFile;
+    //public void setProjectFile(URL projectFile){this.projectFile = projectFile;}
     private URL projectFile;
 
     public void setJavaFile(URL javaFile) {
         this.javaFile = javaFile;
     }
-    //public void setProjectFile(URL projectFile){this.projectFile = projectFile;}
-
-    protected URL javaFile;
-
-    protected URL settingsFile;
 
     public void setSettingsFile(URL settingsFile) {
         this.settingsFile = settingsFile;
@@ -41,7 +40,7 @@ public class JavaExample extends Example {
 
             File script = newTempFile(scriptFile, getName() + ".kps");
             debuggerMain.openScript(script);
-            debuggerMain.getWelcomePaneDock().close();
+            //TODO debuggerMain.getWelcomePaneDock().close();
             //File key = newTempFile(keyFile, "project.key");
             File java = newTempFile(javaFile, getName() + ".java");
             //System.out.println(java.getAbsolutePath());
@@ -50,7 +49,7 @@ public class JavaExample extends Example {
             if (settingsFile != null) {
                 File settings = newTempFile(settingsFile, getName() + ".props");
                 ProofListener pl = new ProofListener(debuggerMain, settings);
-                debuggerMain.getFacade().proofProperty().addListener(pl);
+                //TODO debuggerMain.getFacade().proofProperty().addListener(pl);
             }
             debuggerMain.showActiveInspector(null);
             if (helpText != null) {
@@ -62,7 +61,7 @@ public class JavaExample extends Example {
         }
     }
 
-    public class ProofListener implements ChangeListener<Proof> {
+    public class ProofListener implements PropertyChangeListener {
         File settingsFile;
         DebuggerMain debuggerMain;
 
@@ -73,7 +72,8 @@ public class JavaExample extends Example {
         }
 
         @Override
-        public void changed(ObservableValue<? extends Proof> observable, Proof oldValue, Proof newValue) {
+        public void propertyChange(PropertyChangeEvent evt) {
+            Proof newValue = (Proof) evt.getNewValue();
             if (newValue != null) {
                 try {
                     BufferedReader reader = new BufferedReader(new FileReader(settingsFile));
@@ -81,9 +81,7 @@ public class JavaExample extends Example {
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-                debuggerMain.getFacade().proofProperty().removeListener(this);
-
-
+                //TODO debuggerMain.getFacade().proofProperty().removeListener(this);
             }
         }
     }

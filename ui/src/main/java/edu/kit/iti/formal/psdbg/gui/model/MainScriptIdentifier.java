@@ -1,6 +1,5 @@
 package edu.kit.iti.formal.psdbg.gui.model;
 
-import edu.kit.iti.formal.psdbg.gui.controls.ScriptArea;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import javax.annotation.Nonnull;
+import javax.swing.*;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -25,7 +25,8 @@ public class MainScriptIdentifier {
     private String sourceName;
     private int lineNumber;
     private String scriptName;
-    private ScriptArea scriptArea;
+    //TODO private ScriptArea scriptArea;
+    private JTextArea scriptArea;
 
 
     /**

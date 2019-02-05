@@ -63,9 +63,8 @@ import java.util.stream.Collectors;
  * @author Alexander Weigl
  */
 public class DebuggerMain extends JFrame {
-    public static final KeYProofFacade FACADE = new KeYProofFacade();
-
-    protected static final Logger LOGGER = LogManager.getLogger(DebuggerMain.class);
+    private static final KeYProofFacade FACADE = new KeYProofFacade();
+    private static final Logger LOGGER = LogManager.getLogger(DebuggerMain.class);
 
     public final ContractLoaderService contractLoaderService = new ContractLoaderService();
 
@@ -73,39 +72,54 @@ public class DebuggerMain extends JFrame {
 
     @Getter
     private final DebuggerMainModel model = new DebuggerMainModel();
+
     /*TODO LATER:
     private final GraphView graphView = new GraphView();
     private final Graph.PTreeGraph graph = graphView.getGraph();
     private final Dockable graphViewNode = new DockNode(graphView, "Debug graph");
      */
+    @Getter
+    private Action actStepOut = new DummyAction("Step Out"),
+            actShowProofTree = new DummyAction("Show Proof Tree"),
+            actShowCommandHelp = new DummyAction("Show command help"),
+            actShowWelcomeDock = new DummyAction("Show Welcome Dock"),
+            actShowActiveInspector = new DummyAction("AI"),
+            actShowCodeDock = new DummyAction("Show code dock"),
+            actStopDebugMode = new DummyAction("Stop debug mode"),
+            actExecuteStepwise = new DummyAction("execute stepwise"),
+            actStepInto = new DummyAction("Step into"),
+            actStepOver = new DummyAction(""),
+            actStepOverReverse = new DummyAction(""),
+            actStepIntoReverse = new DummyAction(""),
+            actNewScript = new DummyAction(""),
+            actExecuteScript = new DummyAction(""),
+            actOpenScript = new DummyAction(""),
+            actSaveProof = new DummyAction(""),
+            actClose = new DummyAction(""),
+            actLoadKeYFile = new DummyAction(""),
+            actLoadJavaFile = new DummyAction(""),
+            actSaveScript = new DummyAction(""),
+            actSaveAsScript = new DummyAction(""),
+            actOpenInKey = new DummyAction(""),
+            actReformat = new DummyAction(""),
+            actDebugPrintDot = new DummyAction(""),
+            actExecuteFromSavepoint = new DummyAction(""),
+            actRestartFromSavepoint = new DummyAction(""),
+            actSavePointRollback = new DummyAction(""),
+            actStartInterpreter = new DummyAction("");
 
-    private JMenuItem menuExecuteFromSavepoint;
-    private JMenuItem menuRestartFromSavepoint;
-    private JButton buttonStartInterpreter;
 
-//TODO     private ScriptController scriptController;
-
-    private JComboBox<SavePoint> cboSavePoints;
-
-    private JButton btnSavePointRollback;
+    //TODO private ScriptController scriptController;
+    private JComboBox<SavePoint> cboSavePoints = new JComboBox<>();
     //TODO private InspectionViewsController inspectionViewsController;
     private SavePointController savePointController;
     private InterpreterBuilder interpreterBuilder;
     //private DebuggerStatusBar statusBar;
     private JPanel statusBar;
-    private JToggleButton togBtnCommandHelp;
-    private JToggleButton togBtnProofTree;
-    private JToggleButton togBtnActiveInspector;
-    private JToggleButton togBtnWelcome;
-    private JToggleButton togBtnCodeDock;
-    private JCheckBoxMenuItem miCommandHelp;
-    private JCheckBoxMenuItem miCodeDock;
-    private JCheckBoxMenuItem miWelcomeDock;
-    private JCheckBoxMenuItem miActiveInspector;
-    private JCheckBoxMenuItem miProofTree;
-    private JToggleButton btnInteractiveMode;
-    private JButton interactive_undo;
-
+    private ToggleViewAction actToggleCommandHelp, actToggleProofTree, actToggleActiveInspector,
+            actToggleWelcome, actToggleCode;
+    private Action actInteractiveMode = new DummyAction("Interactive Mode");
+    private Action actInteractiveUndo = new DummyAction("Interactive Undo");
     private JTextArea javaArea = new JTextArea();
     //private JavaArea javaArea = new JavaArea();
     private Dockable javaAreaDock;
@@ -125,6 +139,11 @@ public class DebuggerMain extends JFrame {
     private Timer interpreterThreadTimer;
     private CControl dockControl;
     private CContentArea dockContent;
+    private Action actShowAbout;
+
+    public DebuggerMain() {
+        setupUI();
+    }
 
     public static DefaultSingleCDockable create(JPanel content, String title) {
         return new DefaultSingleCDockable(title, content);
@@ -218,10 +237,12 @@ public class DebuggerMain extends JFrame {
     }
 
     private void setupUI() {
+        setupMenu();
+        setupToolbar();
         setupDocking();
         //TODO scriptController = new ScriptController(dockControl);
         //TODO interactiveModeController = new InteractiveModeController(scriptController);
-        btnInteractiveMode.setSelected(false);
+        //TODO btnInteractiveMode.setSelected(false);
         //TODO inspectionViewsController = new InspectionViewsController(dockControl);
         //TODO activeInspectorDock = inspectionViewsController.getActiveInterpreterTabDock();
         //register the welcome dock in the center
@@ -303,6 +324,65 @@ public class DebuggerMain extends JFrame {
 
         savePointController = new SavePointController(this);
         Events.register(this);
+    }
+
+    private void setupMenu() {
+        JMenuBar menubar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        fileMenu.add(actNewScript);
+        fileMenu.add(actOpenScript);
+        fileMenu.add(actLoadKeYFile);
+        fileMenu.add(actLoadJavaFile);
+        fileMenu.add(actSaveScript);
+        fileMenu.add(actSaveAsScript);
+        fileMenu.add(actSaveProof);
+        fileMenu.add(actClose);
+
+        var fileEdit = new JMenu("Edit");
+        fileEdit.add(actOpenInKey);
+        fileEdit.add(actReformat);
+        fileEdit.add(actDebugPrintDot);
+
+        var runMenu = new JMenu("Debug");
+        runMenu.add(actExecuteScript);
+        runMenu.add(actExecuteFromSavepoint);
+        runMenu.add(actRestartFromSavepoint);
+
+        runMenu.add(actExecuteStepwise);
+        runMenu.add(actStepInto);
+        runMenu.add(actStepOver);
+        runMenu.add(actStepOverReverse);
+        runMenu.add(actStepIntoReverse);
+        runMenu.add(actStepOut);
+        runMenu.add(actStopDebugMode);
+        JMenu viewMenu = new JMenu("View");
+        viewMenu.add(actShowCodeDock);
+        viewMenu.add(actShowWelcomeDock);
+        viewMenu.add(actShowActiveInspector);
+        viewMenu.add(actShowProofTree);
+        viewMenu.add(actShowCommandHelp);
+        JMenu examplesMenu = new JMenu();
+        JMenu helpMenu = new JMenu("Help");
+        helpMenu.add(actShowAbout);
+        menubar.add(fileMenu);
+        menubar.add(fileEdit);
+        menubar.add(runMenu);
+        menubar.add(examplesMenu);
+        menubar.add(viewMenu);
+        setJMenuBar(menubar);
+    }
+
+    private void setupToolbar() {
+        JToolBar toolBar = new JToolBar();
+        toolBar.add(actStartInterpreter);
+        toolBar.add(actExecuteStepwise);
+        toolBar.addSeparator();
+        toolBar.add(cboSavePoints);
+        toolBar.add(actExecuteFromSavepoint);
+        toolBar.addSeparator();
+
+
+        add(toolBar, BorderLayout.NORTH);
     }
 
     private void setupDocking() {
@@ -554,7 +634,7 @@ public class DebuggerMain extends JFrame {
             //TODO statusBar.publishSuccessMessage("Interpreter finished.");
             //TODO btnInteractiveMode.setDisable(false);
             assert model.getDebuggerFramework() != null;
-            btnInteractiveMode.setSelected(false);
+            //TODO btnInteractiveMode.setSelected(false);
             PTreeNode<KeyData> statePointer = model.getDebuggerFramework().getStatePointer();
             assert statePointer != null;
             State<KeyData> lastState = statePointer.getStateAfterStmt();
@@ -1133,7 +1213,7 @@ public class DebuggerMain extends JFrame {
     }
 
     public void interactiveMode(ActionEvent actionEvent) {
-        if (btnInteractiveMode.isSelected()) {
+        /*TODO if (btnInteractiveMode.isSelected()) {
             assert model.getDebuggerFramework() != null;
             interactiveModeController.setDebuggerFramework(model.getDebuggerFramework());
             interactiveModeController.setKeYServices(this.getFacade().getService());
@@ -1146,7 +1226,7 @@ public class DebuggerMain extends JFrame {
         } else {
             interactiveModeController.stop();
             //TODO interactive_undo.setDisable(true);
-        }
+        }*/
     }
 
 
@@ -1350,12 +1430,8 @@ public class DebuggerMain extends JFrame {
             }
             */
 
-            ContractChooser cc = null;
-            try {
-                cc = new ContractChooser(FACADE.getService(), FACADE.getContractsForJavaFile(model.getJavaFile()));
-            } catch (ProblemLoaderException e) {
-                e.printStackTrace();
-            }
+            //TODO ContractChooser cc = null;
+            //TODO cc = new ContractChooser(FACADE.getService(), FACADE.getContractsForJavaFile(model.getJavaFile()));
 
             /*TODO cc.showAndWait().ifPresent(result -> {
                 model.setChosenContract(result);
@@ -1519,6 +1595,25 @@ public class DebuggerMain extends JFrame {
         @Override
         public void checkPermission(Permission perm) {
             // Allow other activities by default
+        }
+    }
+    //endregion
+
+    //region: Actions
+    public class DummyAction extends AbstractAction {
+        public DummyAction(String name) {
+            super(name);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JOptionPane.showMessageDialog(DebuggerMain.this, "TODO!");
+        }
+    }
+
+    private class ToggleViewAction extends DummyAction {
+        public ToggleViewAction(String name) {
+            super(name);
         }
     }
     //endregion

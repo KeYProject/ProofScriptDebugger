@@ -1,21 +1,21 @@
 package edu.kit.iti.formal.psdbg.gui.model;
 
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import javax.swing.*;
 
 public enum InterpreterThreadState {
-    NO_THREAD(MaterialDesignIcon.FLASK_EMPTY),
-    WAIT(MaterialDesignIcon.CLOCK_ALERT),
-    RUNNING(MaterialDesignIcon.RUN),
-    ERROR(MaterialDesignIcon.EXCLAMATION),
-    FINISHED(MaterialDesignIcon.CHECK);
+    NO_THREAD(null),
+    WAIT(null),
+    RUNNING(null),
+    ERROR(null),
+    FINISHED(null);
 
-    private final MaterialDesignIcon icon;
+    private final Icon icon;
 
-    InterpreterThreadState(MaterialDesignIcon icon) {
+    InterpreterThreadState(Icon icon) {
         this.icon = icon;
     }
 
-    public MaterialDesignIcon getIcon() {
+    public Icon getIcon() {
         return icon;
     }
 }

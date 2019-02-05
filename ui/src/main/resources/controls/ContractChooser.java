@@ -3,13 +3,13 @@ package edu.kit.iti.formal.psdbg.gui.controller;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.speclang.Contract;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -23,18 +23,14 @@ import java.util.List;
  * @author S. Grebing
  * @author A. Weigl
  */
-public class ContractChooser extends Dialog<Contract> {
+public class ContractChooser extends JDialog {
+    private final List<Contract> items;
 
-    private final MultipleSelectionModel<Contract> selectionModel;
-
-    private final ObjectProperty<ObservableList<Contract>> items;
-
-    private final ListView<Contract> listOfContractsView = new ListView<>();
+    private final JList<Contract> listOfContractsView = new JList<>();
 
     private final Services services;
 
-    public ContractChooser(Services services,
-                           SimpleListProperty<Contract> contracts) {
+    public ContractChooser(Services services, List<Contract> contracts) {
         this(services);
         listOfContractsView.itemsProperty().bind(contracts);
     }

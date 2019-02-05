@@ -2,7 +2,6 @@ package edu.kit.iti.formal.psdbg.gui.controller;
 
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
-import edu.kit.iti.formal.psdbg.gui.controls.Utils;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
@@ -36,7 +35,7 @@ public class ScriptExecutionController {
      * @param addInitBreakpoint
      */
     public void executeScript(boolean addInitBreakpoint) {
-
+        /*TODO
         if (mainCtrl.getModel().getDebuggerFramework() != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Interpreter is already running \nDo you want to abort it?",
                     ButtonType.CANCEL, ButtonType.YES);
@@ -70,6 +69,7 @@ public class ScriptExecutionController {
 
         // else getProofState() == VIRGIN!
         executeScript(mainCtrl.FACADE.buildInterpreter(), addInitBreakpoint);
+        */
     }
     /**
      * Execute the script that with using the interpreter that is build using the interpreterbuilder
@@ -78,8 +78,8 @@ public class ScriptExecutionController {
      * @param
      */
     private void executeScript(InterpreterBuilder ib, boolean addInitBreakpoint) {
+        /*TODO
         try {
-
             Set<Breakpoint> breakpoints = mainCtrl.getScriptController().getBreakpoints();
             // get possible scripts and the main script!
             List<ProofScript> scripts = mainCtrl.getScriptController().getCombinedAST();
@@ -104,13 +104,13 @@ public class ScriptExecutionController {
             LOGGER.error(e);
             Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
-
+*/
     }
 
 
 
     public void executeScriptFromSavePoint(InterpreterBuilder ib, SavePoint point) {
-        try {
+  /*TODO      try {
             Set<Breakpoint> breakpoints = mainCtrl.getScriptController().getBreakpoints();
             // get possible scripts and the main script!
             List<ProofScript> scripts = mainCtrl.getScriptController().getCombinedAST();
@@ -145,7 +145,7 @@ public class ScriptExecutionController {
             LOGGER.error(e);
             Utils.showExceptionDialog("Antlr Exception", "", "Could not parse scripts.", e);
         }
-
+*/
     }
 
 
@@ -159,7 +159,6 @@ public class ScriptExecutionController {
 
 
     private ASTNode calculateDiff (ASTDiff dff) {
-
         return null;
     }
 

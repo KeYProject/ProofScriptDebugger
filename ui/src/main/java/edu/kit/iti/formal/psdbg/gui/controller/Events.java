@@ -4,11 +4,9 @@ import com.google.common.eventbus.EventBus;
 import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.scripts.ProofScriptCommand;
-import de.uka.ilkd.key.macros.scripts.ScriptCommand;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.rule.TacletApp;
-import edu.kit.iti.formal.psdbg.gui.controls.ScriptArea;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
@@ -17,8 +15,8 @@ import edu.kit.iti.formal.psdbg.parser.ast.CallStatement;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.Token;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -44,7 +42,7 @@ public class Events {
     @Data
     @RequiredArgsConstructor
     public static class FocusScriptArea {
-        private final ScriptArea scriptArea;
+        private final /*TODO ScriptArea */ JTextArea scriptArea;
 
     }
 
