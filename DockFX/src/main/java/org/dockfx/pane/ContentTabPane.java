@@ -2,6 +2,7 @@ package org.dockfx.pane;
 
 import java.util.Comparator;
 import javafx.scene.control.Skin;
+import javafx.scene.control.skin.TabPaneSkin;
 import org.dockfx.DockNode;
 import org.dockfx.DockPos;
 
@@ -13,7 +14,6 @@ import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.TabPane;
-import org.dockfx.pane.skin.ContentTabPaneSkin;
 
 /**
  * ContentTabPane holds multiple tabs
@@ -29,7 +29,7 @@ public class ContentTabPane extends TabPane implements ContentPane {
 
   /** {@inheritDoc} */
   @Override protected Skin<?> createDefaultSkin() {
-	return new ContentTabPaneSkin(this);
+	return new /*weigl:Content*/TabPaneSkin(this);
   }
 
   public Type getType() {

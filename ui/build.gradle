@@ -1,10 +1,16 @@
 plugins {
     id "com.github.voplex95.lesscompiler" version "1.0.3"
+    id 'org.openjfx.javafxplugin' version '0.0.7'
 }
 
 apply plugin: 'antlr'
 
 description = 'ui'
+
+
+javafx {
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.graphics', 'javafx.web' ]
+}
 
 generateGrammarSource {
     arguments += ["-long-messages", "-package","antlrgrammars"]
