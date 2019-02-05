@@ -2,6 +2,7 @@ package edu.kit.iti.formal.psdbg.lint;
 
 import edu.kit.iti.formal.psdbg.lint.checkers.IssuesId;
 
+import javax.naming.spi.ObjectFactory;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;

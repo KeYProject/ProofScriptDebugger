@@ -1,31 +1,21 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
-import com.sun.javafx.css.Style;
 import de.uka.ilkd.key.proof.Node;
 import edu.kit.iti.formal.psdbg.gui.controller.DebuggerMain;
 import edu.kit.iti.formal.psdbg.gui.controller.Events;
 import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.*;
-import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
-import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
-import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.SimpleMapProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
 import javafx.util.StringConverter;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;

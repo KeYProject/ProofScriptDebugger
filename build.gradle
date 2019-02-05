@@ -1,5 +1,8 @@
 plugins {
     id "com.github.ben-manes.versions" version "0.17.0"
+    id 'io.franzbecker.gradle-lombok' version '2.0' apply false
+    id 'org.openjfx.javafxplugin' version '0.0.7'
+    id "org.jetbrains.gradle.plugin.idea-ext" version "0.5"
 }
 
 allprojects {
@@ -9,15 +12,23 @@ allprojects {
 }
 
 subprojects {
-  //  apply plugin: 'io.franzbecker.gradle-lombok'
     apply plugin: 'java'
     apply plugin: 'idea'
+    apply plugin: 'io.franzbecker.gradle-lombok'
+    apply plugin: 'org.openjfx.javafxplugin'
+    apply plugin: "org.jetbrains.gradle.plugin.idea-ext"
 
     sourceCompatibility = 11
     targetCompatibility = 11
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
     }
+
+    lombok { // optional: values below are the defaults
+        version = "1.18.4"
+        sha256 = "39f3922deb679b1852af519eb227157ef2dd0a21eec3542c8ce1b45f2df39742"
+    }
+
 
     repositories {
         mavenLocal()
@@ -28,8 +39,7 @@ subprojects {
 
     task printClasspath {
         doLast {//            sourceSets.test.runtimeClasspath.
-
-            sourceSets.test.runtimeClasspath.each {println it}
+            sourceSets.test.runtimeClasspath.each { println it }
 
         }
     }
@@ -44,4 +54,24 @@ subprojects {
         testCompile group: 'junit', name: 'junit', version: '4.12'
         compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
     }
+
+
+    def javaExports = ["--add-exports", "javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED",
+                       "--add-exports", "javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED",
+                       "--add-exports", "javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
+    ]
+
+    javafx {
+        modules = ['javafx.controls', 'javafx.fxml', 'javafx.graphics', 'javafx.web']
+    }
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs = javaExports
+        options.compilerArgs << "-Xlint:none" << "-nowarn"
+
+        options.fork = true
+        options.forkOptions.executable = "javac"
+    }
+
+
 }

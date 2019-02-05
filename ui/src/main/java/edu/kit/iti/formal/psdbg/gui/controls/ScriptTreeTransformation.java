@@ -2,8 +2,6 @@ package edu.kit.iti.formal.psdbg.gui.controls;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.graph.Graph;
-import com.google.common.graph.GraphBuilder;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import edu.kit.iti.formal.psdbg.ShortCommandPrinter;
@@ -14,12 +12,13 @@ import edu.kit.iti.formal.psdbg.interpreter.dbg.ProofTreeManager;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import javafx.scene.control.TreeItem;
 import javafx.util.Pair;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import sun.reflect.generics.tree.Tree;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author A. Weigl, S.Grebing
