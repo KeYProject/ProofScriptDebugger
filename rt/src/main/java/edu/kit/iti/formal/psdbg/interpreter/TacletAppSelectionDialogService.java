@@ -16,9 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 
 public abstract class TacletAppSelectionDialogService {
 
@@ -28,10 +26,18 @@ public abstract class TacletAppSelectionDialogService {
     @Getter
     int userIndexInput;
 
-    private CountDownLatch latch = new CountDownLatch(1);
+    private Runnable runnable;
+
+    @Setter
+    private CyclicBarrier cyclicBarrier;
 
     public void showDialog() {
-        Platform.runLater(new Runnable() {
+        runnable = getRunnable();
+        Platform.runLater(runnable);
+    }
+
+    public Runnable getRunnable() {
+        return new Runnable() {
             @Override
             public void run() {
                 Stage stage = new Stage();
@@ -45,14 +51,21 @@ public abstract class TacletAppSelectionDialogService {
                     public void handle(MouseEvent event) {
                         getIndex();
                         if (userIndexInput != -1) {
-                            stage.close();
+                            try {
+                                stage.close();
+                                cyclicBarrier.await();
+                            } catch (InterruptedException ex) {
+
+                            } catch (BrokenBarrierException ex) {
+
+                            }
+
                         }
                     }
                 });
                 stage.showAndWait();
-                latch.countDown();
             }
-        });
+        };
 
     }
 

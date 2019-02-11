@@ -1,21 +1,24 @@
 package edu.kit.iti.formal.psdbg.gui.controls;
 
+import edu.kit.iti.formal.psdbg.gui.model.InspectionModel;
 import edu.kit.iti.formal.psdbg.interpreter.Evaluator;
+import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
+import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
-import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDefinedException;
 import edu.kit.iti.formal.psdbg.parser.Facade;
-import edu.kit.iti.formal.psdbg.parser.ast.StringLiteral;
 import edu.kit.iti.formal.psdbg.parser.data.Value;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import lombok.Getter;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,10 +31,18 @@ public class VariableAssignmentWindow extends BorderPane {
     TableView special_tableView;
 
     @FXML
-    TableView history_tableView;
+    TableView watches_tableView;
 
     @FXML
     TextArea match_variables;
+
+    @FXML
+    TabPane tabPane;
+
+    @FXML
+    Tab watchesTab;
+
+    private ContextMenu contextMenu;
 
     private VariableAssignment assignment;
 
@@ -41,30 +52,27 @@ public class VariableAssignmentWindow extends BorderPane {
     /** Variables that start with __ **/
     private ObservableList<VariableModel> specialModel;
 
-    private ObservableList<VariableModel> historyModel = FXCollections.observableArrayList();
+    private ObservableList<VariableModel> watchesModel = FXCollections.observableArrayList();
 
     private String matchexp;
-
-    private ScriptEngineManager mgr = new ScriptEngineManager();
-    private ScriptEngine engine = mgr.getEngineByName("JavaScript");
 
     private List<VariableModel> matchlist_declarative = new ArrayList<>();
     private List<VariableModel> matchlist_special = new ArrayList<>();
 
     private Evaluator evaluator;
 
-    public VariableAssignmentWindow(VariableAssignment assignment) {
+    private InspectionModel inspectionModel;
+
+    public VariableAssignmentWindow(InspectionModel inspectionModel) {
 
         //TODO: reduce size of constructor
         Utils.createWithFXML(this);
 
-        if (assignment != null) {
-            fillInVariableModelsLists(assignment);
-        }
+        this.inspectionModel = inspectionModel;
 
         declarative_tableView.setEditable(false);
         special_tableView.setEditable(false);
-        history_tableView.setEditable(false);
+        watches_tableView.setEditable(false);
 
         //Table Colums for declarative_tableView
         TableColumn decl_varCol = new TableColumn("Variable");
@@ -86,7 +94,6 @@ public class VariableAssignmentWindow extends BorderPane {
                 new PropertyValueFactory<VariableModel,String>("varval")
         );
 
-        declarative_tableView.setItems(declarativeModel);
         declarative_tableView.getColumns().addAll(decl_varCol, decl_typeCol, decl_valCol);
 
         //Table Colums for special_tableView
@@ -109,19 +116,18 @@ public class VariableAssignmentWindow extends BorderPane {
                 new PropertyValueFactory<VariableModel,String>("varval")
         );
 
-        special_tableView.setItems(specialModel);
         special_tableView.getColumns().addAll(spec_varCol, spec_typeCol, spec_valCol);
 
 
-        //Table Colums for history_tableView
+        //Table Colums for watches_tableView
         TableColumn hist_varCol = new TableColumn("Variable");
         TableColumn hist_typeCol = new TableColumn("Type");
         TableColumn hist_valCol = new TableColumn("Value");
 
         //Set Colums width proportional to windows with
-        hist_varCol.prefWidthProperty().bind(history_tableView.widthProperty().divide(3));
-        hist_typeCol.prefWidthProperty().bind(history_tableView.widthProperty().divide(3));
-        hist_valCol.prefWidthProperty().bind(history_tableView.widthProperty().divide(3));
+        hist_varCol.prefWidthProperty().bind(watches_tableView.widthProperty().divide(3));
+        hist_typeCol.prefWidthProperty().bind(watches_tableView.widthProperty().divide(3));
+        hist_valCol.prefWidthProperty().bind(watches_tableView.widthProperty().divide(3));
 
         hist_varCol.setCellValueFactory(
                 new PropertyValueFactory<VariableModel, String>("varname")
@@ -133,8 +139,8 @@ public class VariableAssignmentWindow extends BorderPane {
                 new PropertyValueFactory<VariableModel, String>("varval")
         );
 
-        history_tableView.setItems(historyModel);
-        history_tableView.getColumns().addAll(hist_varCol, hist_typeCol, hist_valCol);
+        watches_tableView.setItems(watchesModel);
+        watches_tableView.getColumns().addAll(hist_varCol, hist_typeCol, hist_valCol);
 
         //Row factory added
         declarative_tableView.setRowFactory(tv -> new TableRow<VariableModel>() {
@@ -159,7 +165,17 @@ public class VariableAssignmentWindow extends BorderPane {
             }
         });
 
-        evaluator = new Evaluator(assignment, null);
+        inspectionModel.currentInterpreterGoalProperty().addListener(new ChangeListener<GoalNode<KeyData>>() {
+            @Override
+            public void changed(ObservableValue<? extends GoalNode<KeyData>> observable, GoalNode<KeyData> oldValue, GoalNode<KeyData> newValue) {
+                refresh();
+            }
+        });
+
+        watches_tableView.setOnContextMenuRequested(evt -> {
+            getContextMenu().show(this, evt.getScreenX(), evt.getScreenY());
+        });
+        refresh();
 }
 
     /**
@@ -215,6 +231,9 @@ public class VariableAssignmentWindow extends BorderPane {
     }
 
 
+    /**
+     * Evaluates String in Textfield matchexp as Expression and puts it into the Tab tabWatches
+     */
     @FXML
     private void evaluate() {
         matchexp = match_variables.getText();
@@ -227,8 +246,12 @@ public class VariableAssignmentWindow extends BorderPane {
                     value.getType().toString(),
                     value.getData().toString());
 
-            historyModel.add(vm);
-            history_tableView.refresh();
+            watchesModel.add(vm);
+            watches_tableView.refresh();
+
+            //focus on tab
+            SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+            selectionModel.select(watchesTab);
 
         } catch (Exception e) {
             System.out.println("No evaluable expression");
@@ -257,29 +280,6 @@ public class VariableAssignmentWindow extends BorderPane {
         special_tableView.refresh();
     }
 
-    /**
-     * Extracts variable from given string, though only 1 variable is possibla
-     *
-     * @param expression string to extract variable
-     * @return variable starting with ? only if there's only 1 match, else ""
-     */
-    private String getVariable(String expression) {
-        Pattern pattern = Pattern.compile("\\?\\w+");
-        Matcher matcher = pattern.matcher(expression);
-
-        List<String> variables_matches = new ArrayList<>();
-        while (matcher.find()) {
-            if (!variables_matches.contains(matcher.group())) {
-                variables_matches.add(matcher.group());
-            }
-        }
-
-        //if there are multiple variables return null
-        if (variables_matches.size() != 1) {
-            return "";
-        }
-        return variables_matches.get(0);
-    }
 
     /**
      * Calculate matching results of matchexpression with given list
@@ -302,6 +302,42 @@ public class VariableAssignmentWindow extends BorderPane {
         return matchlist;
     }
 
+    public ContextMenu getContextMenu() {
+        if (contextMenu == null) {
+            contextMenu = new ContextMenu();
+            MenuItem deleteWatch = new MenuItem("Delete Watch");
+            deleteWatch.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    try {
+                        int selected = watches_tableView.getSelectionModel().getFocusedIndex();
+
+                        if (0 <= selected && selected < watchesModel.size()) {
+                            watchesModel.remove(selected);
+                            watches_tableView.refresh();
+                        }
+                    } catch (Exception e) {
+
+                    }
+                }
+            });
+            contextMenu.getItems().add(deleteWatch);
+        }
+        return contextMenu;
+    }
+
+    private void refresh() {
+        assignment = inspectionModel.getCurrentInterpreterGoal().getAssignments();
+        evaluator = new Evaluator(assignment, null);
+        if (assignment != null) {
+            fillInVariableModelsLists(assignment);
+        }
+        declarative_tableView.setItems(declarativeModel);
+        special_tableView.setItems(specialModel);
+        declarative_tableView.refresh();
+        special_tableView.refresh();
+    }
+
 
     public static class VariableModel {
         @Getter
@@ -317,4 +353,5 @@ public class VariableAssignmentWindow extends BorderPane {
             this.varval = varval;
         }
     }
+
 }

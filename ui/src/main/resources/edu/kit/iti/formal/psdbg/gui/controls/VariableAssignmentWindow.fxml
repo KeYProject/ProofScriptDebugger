@@ -31,7 +31,7 @@
         </BorderPane>
     </top>
     <center>
-        <TabPane tabClosingPolicy="UNAVAILABLE">
+        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
             <tabs>
                 <Tab text="Script Variables">
                     <TableView fx:id="declarative_tableView"></TableView>
@@ -39,8 +39,8 @@
                 <Tab text="KeY Control Variables">
                     <TableView fx:id="special_tableView"></TableView>
                 </Tab>
-                <Tab text="History">
-                    <TableView fx:id="history_tableView"></TableView>
+                <Tab fx:id="watchesTab" text="Watches">
+                    <TableView fx:id="watches_tableView"></TableView>
                 </Tab>
             </tabs>
         </TabPane>

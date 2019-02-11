@@ -5,6 +5,7 @@ import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.control.instantiation_model.TacletInstantiationModel;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.*;
+import de.uka.ilkd.key.logic.op.SchemaVariable;
 import de.uka.ilkd.key.macros.scripts.EngineState;
 import de.uka.ilkd.key.macros.scripts.RuleCommand;
 import de.uka.ilkd.key.macros.scripts.ScriptException;
@@ -20,6 +21,7 @@ import de.uka.ilkd.key.rule.IfFormulaInstantiation;
 import de.uka.ilkd.key.rule.Rule;
 import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.rule.TacletApp;
+import de.uka.ilkd.key.rule.inst.InstantiationEntry;
 import de.uka.ilkd.key.rule.inst.SVInstantiations;
 import edu.kit.iti.formal.psdbg.RuleCommandHelper;
 import edu.kit.iti.formal.psdbg.ValueInjector;
@@ -53,11 +55,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.key_project.util.collection.DefaultImmutableMap;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableMap;
+import org.key_project.util.collection.ImmutableMapEntry;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 /**
  * @author Alexander Weigl
@@ -74,6 +81,7 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
     private final Map<String, Rule> rules;
 
     private Scanner scanner = new Scanner(System.in);
+
 
     @Getter
     @Setter
@@ -138,7 +146,6 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         if (!rules.containsKey(call.getCommand())) {
             throw new IllegalStateException();
         }
-        //FIXME duplicate of ProofScriptCommandBuilder
         RuleCommand c = new RuleCommand();
         State<KeyData> state = interpreter.getCurrentState();
         GoalNode<KeyData> expandedNode = state.getSelectedGoalNode();
@@ -168,27 +175,48 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
             if (e instanceof ScriptException.IndistinctFormula) {
 
                 List<TacletApp> matchingapps = ((ScriptException.IndistinctFormula) e).getMatchingApps();
+                List<TacletApp> completed_matchingapps = new ArrayList<>();
+
+                for (TacletApp tacletApp : matchingapps) {
+                    try {
+                        TacletInstantiationModel tim = new TacletInstantiationModel(tacletApp, kd.getGoal().sequent(), kd.getGoal().getLocalNamespaces(), null, kd.getGoal());
+                        TacletApp newTA = tim.createTacletApp();
+                        completed_matchingapps.add(newTA);
+
+                    } catch (SVInstantiationException svie) {
+                        // Not buildable tacletapps
+                    }
+                }
+
+
+
                 ObservableList<String> obsMatchApps = FXCollections.observableArrayList();
                 int linenr = call.getStartPosition().getLineNumber();
-                matchingapps.forEach(k -> obsMatchApps.add(tacletAppIntoString(k, kd.getGoal(), linenr)));
-                //TODO: open window here
+                completed_matchingapps.forEach(k -> obsMatchApps.add(tacletAppIntoString(k, kd.getGoal(), linenr)));
+
+                //open window here
+                CyclicBarrier cyclicBarrier = new CyclicBarrier(2, tacletAppSelectionDialogService.getRunnable());
                 IndistinctWindow indistinctWindow = new IndistinctWindow(obsMatchApps);
+
+                tacletAppSelectionDialogService.setCyclicBarrier(cyclicBarrier);
                 tacletAppSelectionDialogService.setPane(indistinctWindow);
                 tacletAppSelectionDialogService.showDialog();
 
-                TacletApp chosenApp = matchingapps.get(tacletAppSelectionDialogService.getUserIndexInput());
-
-                TacletInstantiationModel tim = new TacletInstantiationModel(chosenApp, kd.getGoal().sequent(), kd.getGoal().getLocalNamespaces(), null, kd.getGoal());
                 try {
-                    TacletApp newTA = tim.createTacletApp();
-                    newTA.execute(kd.getGoal(), kd.getProof().getServices());
+                    cyclicBarrier.await();
+                } catch (InterruptedException ex) {
 
-                    exceptionsolved = true;
-                } catch (SVInstantiationException svie) {
+                } catch (BrokenBarrierException ex) {
 
                 }
-            }
 
+                TacletApp chosenApp = completed_matchingapps.get(tacletAppSelectionDialogService.getUserIndexInput());
+
+                System.out.println("chosenapp = " + tacletAppIntoString(chosenApp, kd.getGoal(), linenr));
+
+                chosenApp.execute(kd.getGoal(), kd.getProof().getServices());
+                exceptionsolved = true;
+            }
 
             if (!exceptionsolved) {
                 if (interpreter.isStrictMode()) {
@@ -250,18 +278,27 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
         int occ = rch.getOccurence(tacletApp);
 
 
-        tacletAppString = String.format("%s formula=' %s ' on=' %s ' occ=%d;",
+        tacletAppString = String.format("%s formula='%s' on='%s' occ=%d ",
                 tapName,
                 sfTerm.trim(),
                 onTerm.trim(),
                 occ);
 
+
         // add missing instantiations
-        if (!tacletApp.ifInstsComplete()) {
-            SVInstantiations sv = tacletApp.instantiations();
-            //TODO:
+        String ifInstString = "";
+        if (tacletApp.ifInstsComplete()) {
+
+            Iterator<ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>>> iterator = tacletApp.instantiations().pairIterator();
+            while (iterator.hasNext()) {
+                ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>> mapentry = iterator.next();
+                ifInstString += String.format("inst_%s ='%s' ", mapentry.key().name(), mapentry.value().getInstantiation());
+                //"inst_" + mapentry.key().name() + "=" + mapentry.value().getInstantiation();
+            }
         }
 
+        tacletAppString += ifInstString;
+        tacletAppString += "; ";
         tacletAppString += String.format("(linenumber = %d)", linenumber);
 
         return tacletAppString;

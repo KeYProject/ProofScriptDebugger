@@ -64,11 +64,10 @@ public class GoalOptionsMenu extends ContextMenu {
                     Utils.showInfoDialog("Select a goal", "Select a goal", "Please select a goal first.");
                     return;
                 }
-                VariableAssignment var_assignm = model.getSelectedGoalNodeToShow().getAssignments();
-
+                //VariableAssignment var_assignm = model.getSelectedGoalNodeToShow().getAssignments();
                 Stage stage = new Stage();
                 stage.setTitle("Variable Assignment");
-                VariableAssignmentWindow vaw = new VariableAssignmentWindow(var_assignm);
+                VariableAssignmentWindow vaw = new VariableAssignmentWindow(model);
 
                 Scene scene = new Scene(vaw);
                 stage.setScene(scene);
