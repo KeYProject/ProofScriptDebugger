@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -16,12 +17,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.*;
 
 public abstract class TacletAppSelectionDialogService {
 
     @Setter
-    Pane pane;
+    IndistinctWindow pane;
 
     @Getter
     int userIndexInput;
@@ -37,33 +39,18 @@ public abstract class TacletAppSelectionDialogService {
     }
 
     public Runnable getRunnable() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                Stage stage = new Stage();
+        return () -> {
+            if (pane != null) {
+                Dialog<Object> stage = new Dialog<>();
                 stage.setTitle("TacletAppSelectionDialog");
-                if (pane != null) {
-                    Scene scene = new Scene(pane);
-                    stage.setScene(scene);
+                //Scene scene = new Scene(pane);
+                stage.getDialogPane().setContent(pane);
+                Optional<Object> app = stage.showAndWait();
+                try {
+                    stage.close();
+                    cyclicBarrier.await();
+                } catch (InterruptedException | BrokenBarrierException ignored) {
                 }
-                ((IndistinctWindow) pane).accept.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        getIndex();
-                        if (userIndexInput != -1) {
-                            try {
-                                stage.close();
-                                cyclicBarrier.await();
-                            } catch (InterruptedException ex) {
-
-                            } catch (BrokenBarrierException ex) {
-
-                            }
-
-                        }
-                    }
-                });
-                stage.showAndWait();
             }
         };
 

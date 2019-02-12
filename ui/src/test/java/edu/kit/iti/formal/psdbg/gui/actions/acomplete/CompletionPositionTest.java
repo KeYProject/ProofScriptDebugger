@@ -1,6 +1,7 @@
 package edu.kit.iti.formal.psdbg.gui.actions.acomplete;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -25,7 +26,7 @@ public class CompletionPositionTest {
         assertEquals("abc",
                 CompletionPosition.find("abc\ndef\n|\nghi\n", "\\s*(\\w+)\\s", 0));
     }
-
+    @Ignore
     @Test
     public void getCommand() {
         assertEquals("abc", a.getCommand());
@@ -49,7 +50,7 @@ public class CompletionPositionTest {
         g = create("abc;\n\nmultiLineRule   a=\n2 abc  =  1|        \ndef=2\n;");
         h = create("foreach{\n\nmultiLineRule   a=\n2 abc  =  1|       \ndef=2\n; }");
     }
-
+    @Ignore
     @Test
     public void getPrefix() throws Exception {
         assertEquals("abc", a.getPrefix());
