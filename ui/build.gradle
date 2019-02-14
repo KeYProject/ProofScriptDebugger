@@ -1,8 +1,11 @@
 plugins {
     id "com.github.voplex95.lesscompiler" version "1.0.3"
+
 }
 
 apply plugin: 'antlr'
+apply plugin: 'application'
+
 
 description = 'ui'
 
@@ -38,7 +41,7 @@ dependencies {
     compile project(':lint')
 }
 
-def mainClassName = 'edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger'
+mainClassName = 'edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger'
 
 task runApp(type: JavaExec) {
     standardInput = System.in
