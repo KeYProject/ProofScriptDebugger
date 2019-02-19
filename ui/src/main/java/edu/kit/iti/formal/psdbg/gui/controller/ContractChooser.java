@@ -102,7 +102,9 @@ public class ContractChooser extends Dialog<Contract> {
         private void render() {
             if (getItem() != null) {
                 text.getChildren().clear();
-                String content = getItem().getPlainText(services);
+                System.out.println(getItem().getName());
+                String content = content = getItem().getPlainText(services);
+
                 Text contract = new Text("Contract for method: ");
                 Text name = new Text(getItem().getTarget().toString());
                 Text tcontent = new Text(content);
@@ -116,7 +118,7 @@ public class ContractChooser extends Dialog<Contract> {
                 text.getChildren().add(new Text("\n"));
                 //text.getChildren().addCell(tcontent);
 
-                for (String line : content.split("\n")) {
+               for (String line : content.split("\n")) {
                     if (line.contains(":")) {
                         String[] a = line.split(":", 2);
                         Text s = new Text(String.format("%-15s", a[0] + ":"));

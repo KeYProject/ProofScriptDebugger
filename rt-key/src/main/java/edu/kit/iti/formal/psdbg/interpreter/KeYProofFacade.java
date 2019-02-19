@@ -132,7 +132,7 @@ public class KeYProofFacade {
             @Override
             protected void succeeded() {
                 System.out.println("KeYProofFacade.succeeded");
-                environment.set(getValue().getEnv());
+                setEnvironment(getValue().getEnv());
                 //SaG: this needs to be set to filter inapplicable rules
                 getEnvironment().getProofControl().setMinimizeInteraction(true);
                 proof.set(getValue().getProof());
@@ -183,13 +183,17 @@ public class KeYProofFacade {
     public List<Contract> getContractsForJavaFile(File javaFile)
             throws ProblemLoaderException {
         pma = KeYApi.loadFromKeyFile(javaFile);
+        setEnvironment(pma.getCurrentEnv());
         //TODO relax key api setEnvironment(pma.getEnvironment());
-        return pma.getProofContracts();
+        List<Contract> contracts =  pma.getProofContracts();
+
+//        environment.set(pma.getCurrentEnv());
+        return contracts;
     }
 
     public void activateContract(Contract c) throws ProofInputException {
         ProofApi pa = pma.startProof(c);
-        environment.set(pa.getEnv());
+        setEnvironment(pa.getEnv());
         proof.set(pa.getProof());
         contract.set(null);
     }
@@ -226,6 +230,7 @@ public class KeYProofFacade {
 
     //region Getter and Setters
     public Services getService() {
+
         //FIXME if key api relaxed
         return pma != null ? pma.getServices() : getEnvironment().getServices();
     }

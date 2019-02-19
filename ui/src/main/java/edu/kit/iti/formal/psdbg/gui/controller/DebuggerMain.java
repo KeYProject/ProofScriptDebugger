@@ -833,6 +833,7 @@ public class DebuggerMain implements Initializable {
         if (javaFile != null) {
             model.setJavaFile(javaFile);
             model.setInitialDirectory(javaFile.getParentFile());
+
             contractLoaderService.reset();
             contractLoaderService.start();
         }
@@ -1507,7 +1508,10 @@ public class DebuggerMain implements Initializable {
 
             ContractChooser cc = null;
             try {
-                cc = new ContractChooser(FACADE.getService(), FACADE.getContractsForJavaFile(model.getJavaFile()));
+                //SaG: Never refactor these two calls, as otherwise the service object is not set. The contracts have to be loaded first.
+                //In case they are loaded the right service object is set
+                List<Contract> contractsForJavaFile = FACADE.getContractsForJavaFile(model.getJavaFile());
+                cc = new ContractChooser(FACADE.getEnvironment().getServices(), contractsForJavaFile);
             } catch (ProblemLoaderException e) {
                 e.printStackTrace();
             }
