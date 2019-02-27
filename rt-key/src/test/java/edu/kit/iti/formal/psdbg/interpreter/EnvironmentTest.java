@@ -6,6 +6,7 @@ import de.uka.ilkd.key.api.ProofManagementApi;
 import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.java.abstraction.KeYJavaType;
 import de.uka.ilkd.key.logic.op.IObserverFunction;
+import de.uka.ilkd.key.parser.ParserException;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
@@ -16,10 +17,13 @@ import de.uka.ilkd.key.strategy.StrategyProperties;
 import de.uka.ilkd.key.util.KeYTypeUtil;
 import de.uka.ilkd.key.util.MiscTools;
 import static edu.kit.iti.formal.psdbg.TestHelper.getFile;
+import org.apache.commons.cli.ParseException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.key_project.util.collection.ImmutableSet;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -88,12 +92,6 @@ public class EnvironmentTest {
     @Test
     public void bigInt2() {
         File location  = new File(getFile(getClass(), "javaTestFiles/BigInteger.java"));
-
-
-        List<File> classPaths = null; // Optionally: Additional specifications for API classes
-        File bootClassPath = null; // Optionally: Different default specifications for Java API
-        List<File> includes = null; // Optionally: Additional includes to consider
-
         try {
             KeYProofFacade facade = new KeYProofFacade();
            // ProofApi proofApi = facade.loadKeyFile(location);
@@ -106,6 +104,31 @@ public class EnvironmentTest {
             facade.setEnvironment(pma.getCurrentEnv());
             List<Contract> proofContracts = pma.getProofContracts();
             proofContracts.forEach(contract -> System.out.println(contract.getPlainText(facade.getService())));
+
+
+        } catch (ProblemLoaderException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testLoadQuickSortSplit() throws IOException, ParseException, ParserException {
+        File javaFile = new File(getFile(getClass(), "javaTestFiles/quicksort/Quicksort.java" ));
+        File scriptFile = new File(getFile(getClass(), "javaTestFiles/quicksort/script.kps" ));
+        String contractName= "Quicksort[Quicksort::split([I,int,int)].JML normal_behavior operation contract";
+
+        try {
+            KeYProofFacade facade = new KeYProofFacade();
+            ProofManagementApi pma = KeYApi.loadFromKeyFile(javaFile);
+            facade.setEnvironment(pma.getCurrentEnv());
+            List<Contract> proofContracts = pma.getProofContracts();
+            Contract chosen = null;
+            for (Contract c : proofContracts) {
+                if(c.getTypeName().equals(contractName)){
+                    chosen = c;
+                }
+            }
+            Assert.assertNotNull("We were able to find the contract", chosen);
 
 
         } catch (ProblemLoaderException e) {

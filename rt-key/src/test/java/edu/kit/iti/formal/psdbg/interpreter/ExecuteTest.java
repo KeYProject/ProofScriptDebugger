@@ -104,4 +104,17 @@ public class ExecuteTest {
         System.out.println(currentState);
     }
 
+    @Test
+    public void testQuickSortSplit() throws IOException, ParseException, ParserException {
+        File keyFile = new File(getFile(getClass(), "javaTestFiles/quicksort/problem.key" ));
+        File scriptFile = new File(getFile(getClass(), "javaTestFiles/quicksort/script.kps" ));
+        String contractName= "Quicksort[Quicksort::split([I,int,int)].JML normal_behavior operation contract";
+
+        Execute exec = create(getFile(getClass(), "javaTestFiles/quicksort/problem.key" ),
+                "-s", getFile(getClass(), "javaTestFiles/quicksort/script.kps" ));
+
+        Interpreter<KeyData> run = exec.run();
+        Assert.assertTrue(run.getCurrentGoals().isEmpty());
+    }
+
 }
