@@ -115,6 +115,7 @@ public class ExecuteTest {
 
         Interpreter<KeyData> run = exec.run();
         Assert.assertTrue(run.getCurrentGoals().isEmpty());
+        System.out.println("The proof of Quicksorts split method was closed");
     }
 
 }

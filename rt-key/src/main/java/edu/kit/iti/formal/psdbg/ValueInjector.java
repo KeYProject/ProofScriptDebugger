@@ -251,7 +251,7 @@ public class ValueInjector {
                 try {
                     t = tc.convert(userinput);
                 } catch (ParserException pe) {
-                    System.out.println("edu/kit/iti/formal/psdbg/ValueInjector.java:250 ParserException");
+                    //System.out.println("edu/kit/iti/formal/psdbg/ValueInjector.java:250 ParserException");
                     throw new ArgumentRequiredException(
                             String.format("Argument %s:%s is required, but %s was given. " +
                                             "For comamnd class: '%s'",

@@ -289,6 +289,7 @@ public class InteractiveModeController {
         } catch (ScriptCommandNotApplicableException e) {
             StringBuilder sb = new StringBuilder("The macro command ");
             sb.append(call.getCommand()).append(" was not applicable.");
+            LOGGER.error(e);
             System.out.println("e = " + e);
             //sb.append("\nSequent Formula: formula=").append(sfTerm);
             //sb.append("\nOn Sub Term: on=").append(onTerm);

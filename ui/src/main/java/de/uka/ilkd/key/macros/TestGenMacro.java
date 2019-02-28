@@ -6,7 +6,7 @@ import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.proof.ProverTaskListener;
+import de.uka.ilkd.key.prover.ProverTaskListener;
 import org.key_project.util.collection.ImmutableList;
 
 public class TestGenMacro implements ProofMacro {
@@ -28,6 +28,21 @@ public class TestGenMacro implements ProofMacro {
     @Override
     public String getDescription() {
         return null;
+    }
+
+    @Override
+    public boolean hasParameter(String s) {
+        return false;
+    }
+
+    @Override
+    public void setParameter(String s, String s1) throws IllegalArgumentException {
+
+    }
+
+    @Override
+    public void resetParams() {
+
     }
 
     @Override
