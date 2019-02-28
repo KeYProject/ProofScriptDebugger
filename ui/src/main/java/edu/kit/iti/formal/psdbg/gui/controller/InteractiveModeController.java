@@ -547,13 +547,7 @@ public class InteractiveModeController {
         } catch (Exception e) {
             if (e.getClass().equals(ScriptException.class)) {
                 if (e.getMessage().equals("Not a unique \\assumes instantiation")) {
-                    //TODO: open UserinteractionWindow
 
-                    //TODO: apply completed TacletApp
-
-                    //TODO: insert into script
-
-                }
                 System.out.println("e.getMessage() = " + e.getMessage());
                 throw new ScriptCommandNotApplicableException(e, c, map);
 

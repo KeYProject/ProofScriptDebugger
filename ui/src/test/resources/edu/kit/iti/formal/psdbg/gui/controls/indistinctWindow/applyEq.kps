@@ -1,0 +1,14 @@
+// for testing the IndistinctWindow
+script indistinct() {
+    impRight;
+    andLeft;
+    andLeft;
+    applyEq;
+}
+
+script distinct() {
+    impRight;
+    andLeft;
+    andLeft;
+    applyEq formula='a = b' on='a' occ=0 inst_t1 ='b' inst_s ='a';
+}

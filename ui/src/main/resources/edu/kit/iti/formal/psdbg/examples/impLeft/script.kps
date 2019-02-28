@@ -1,3 +1,4 @@
+//for testing IndistinctWindow
 script s() {
 	impRight;
 	andLeft;

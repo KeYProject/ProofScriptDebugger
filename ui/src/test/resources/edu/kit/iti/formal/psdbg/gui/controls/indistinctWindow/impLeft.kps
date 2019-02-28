@@ -1,0 +1,12 @@
+//for testing IndistinctWindow
+script indistinct() {
+	impRight;
+	andLeft;
+	impLeft;
+}
+
+script distinct() {
+	impRight;
+	andLeft;
+	impLeft formula='a -> c' on='a -> c' occ=0 inst_c ='c' inst_b ='a' ;
+}

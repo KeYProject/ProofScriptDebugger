@@ -65,7 +65,6 @@ public class VariableAssignmentWindow extends BorderPane {
 
     public VariableAssignmentWindow(InspectionModel inspectionModel) {
 
-        //TODO: reduce size of constructor
         Utils.createWithFXML(this);
 
         this.inspectionModel = inspectionModel;
@@ -165,6 +164,13 @@ public class VariableAssignmentWindow extends BorderPane {
             }
         });
 
+        watches_tableView.setRowFactory(tv -> new TableRow<VariableModel>() {
+            @Override
+            protected void updateItem(VariableModel vm, boolean empty) {
+                setStyle("-fx-background-color: white;");
+            }
+        });
+
         inspectionModel.currentInterpreterGoalProperty().addListener(new ChangeListener<GoalNode<KeyData>>() {
             @Override
             public void changed(ObservableValue<? extends GoalNode<KeyData>> observable, GoalNode<KeyData> oldValue, GoalNode<KeyData> newValue) {
@@ -239,23 +245,31 @@ public class VariableAssignmentWindow extends BorderPane {
         matchexp = match_variables.getText();
         if (matchexp.equals("")) return;
         Value value;
+        VariableModel vm;
         try {
             value = evaluator.eval(Facade.parseExpression(matchexp));
 
-            VariableModel vm = new VariableModel(matchexp,
+            vm = new VariableModel(matchexp,
                     value.getType().toString(),
                     value.getData().toString());
 
-            watchesModel.add(vm);
-            watches_tableView.refresh();
-
-            //focus on tab
-            SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
-            selectionModel.select(watchesTab);
 
         } catch (Exception e) {
+
             System.out.println("No evaluable expression");
+
+            vm = new VariableModel(matchexp,
+                    "NOT DEFINED",
+                    "NOT DEFINED");
+
         }
+
+        watchesModel.add(vm);
+        watches_tableView.refresh();
+
+        //focus on tab
+        SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+        selectionModel.select(watchesTab);
     }
 
     /**

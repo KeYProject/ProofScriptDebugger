@@ -1,22 +1,7 @@
+// for testing the IndistinctWindow
 script mock_interaction() {
     impRight;
     andLeft;
     andLeft;
     applyEq;
-}
-
-script interaction() {
-    impRight;
-    andLeft;
-    andLeft;
-    // apply 'applyEq' on 'a' in 'a = d'
-}
-
-
-
-script mock_interaction_1() {
-    impRight;
-    andLeft;
-    andLeft;
-    applyEq formula=`a = d` occ=0 on=`a`;
 }

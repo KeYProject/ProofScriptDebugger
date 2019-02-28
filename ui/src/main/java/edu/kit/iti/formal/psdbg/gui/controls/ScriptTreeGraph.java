@@ -12,18 +12,10 @@ import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.PTreeNode;
 import edu.kit.iti.formal.psdbg.parser.DefaultASTVisitor;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.SimpleMapProperty;
-import javafx.collections.FXCollections;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.control.cell.TextFieldTreeCell;
-import javafx.util.StringConverter;
+
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 
@@ -142,7 +134,7 @@ public class ScriptTreeGraph {
                 }
                 List<AbstractTreeNode> subchild = new ArrayList<>();
                 subchild.add(atn);
-                //TODO: Hack for double foreach-end recognition
+
                 if(atn.getParent() == childlist.get(0).getParent()) return;
                 childlist.get(0).setChildren(subchild);
                 }
@@ -171,8 +163,14 @@ public class ScriptTreeGraph {
      */
     private void computeList () {
             while (currentNode != null) {
-                sortedList.add(currentNode);
-                currentNode = currentNode.getNextPtreeNode(currentNode);
+                // already executed by interpreter
+                if (currentNode.getStateAfterStmt() != null) {
+                    sortedList.add(currentNode);
+                    currentNode = currentNode.getNextPtreeNode(currentNode);
+                } else { // not executed by interpreter yet
+                    break;
+                }
+
             }
         }
 
@@ -198,57 +196,6 @@ public class ScriptTreeGraph {
             mapping.size();
         }
 
-        /*
-    public TreeItem<AbstractTreeNode> toView () {
-        TreeItem<AbstractTreeNode> treeItem;
-        if(rootNode == null) {
-            treeItem = new TreeItem<>(new AbstractTreeNode(null));
-            DummyGoalNode dummy = new DummyGoalNode(null, false);
-            treeItem.getChildren().add(new TreeItem<>(dummy));
-            return treeItem;
-        }
-            treeItem = new TreeItem<>(new AbstractTreeNode(null));
-
-
-            List<AbstractTreeNode> children = mapping.get(rootNode.getNode()).getChildren();
-            if (children == null) return treeItem;
-            treeItem.getChildren().add(new TreeItem<>(mapping.get(rootNode.getNode())));
-
-            while (children.size() == 1) {
-                treeItem.getChildren().add(new TreeItem<>(children.get(0)));
-                children = children.get(0).getChildren();
-                if(children == null) return treeItem;
-            }
-
-            if (children.size() != 0) {
-                children.forEach(k -> treeItem.getChildren().add(rekursiveToView(k)));
-            }
-
-            return treeItem;
-        }
-
-        private TreeItem<AbstractTreeNode> rekursiveToView (AbstractTreeNode current){
-            TreeItem<AbstractTreeNode> treeItem = new TreeItem<>(current); //
-
-            List<AbstractTreeNode> children = current.getChildren();
-
-
-            while (children != null && children.size() == 1) {
-                if(children.get(0) == null) return treeItem;
-                    treeItem.getChildren().add(new TreeItem<>(children.get(0)));
-                children = children.get(0).getChildren();
-            }
-            if (children == null) {
-                return treeItem;
-            }
-
-            if (children.size() != 0) {
-                children.forEach(k -> treeItem.getChildren().add(rekursiveToView(k)));
-            }
-            return treeItem;
-        }
-        */
-
         private class ScriptVisitor extends DefaultASTVisitor<Void> {
 
             @Override
@@ -259,6 +206,7 @@ public class ScriptTreeGraph {
                 Node callnode = nextPtreeNode.getStateBeforeStmt().getSelectedGoalNode().getData().getNode();
                 ScriptTreeNode sn = new ScriptTreeNode(callnode, nextPtreeNode, nextPtreeNode.getStatement().getStartPosition().getLineNumber());
                 //check if statement was applicable
+
                 if (nextPtreeNode.getStateAfterStmt().getGoals().equals(nextPtreeNode.getStateBeforeStmt().getGoals())) {
                     sn.setSucc(false);
                 }
@@ -279,7 +227,7 @@ public class ScriptTreeGraph {
                         addPlaceholder(sn, sn.getNode());
                         break;
                     case 1:
-                       // putIntoMapping(children.get(0).getData().getNode(), null);
+
                         putIntoFront(children.get(0).getData().getNode());
                         addPlaceholder(sn, children.get(0).getData().getNode());
                         break;
@@ -344,8 +292,6 @@ public class ScriptTreeGraph {
             @Override
             public Void visit(DefaultCaseStatement caseStatement) {
                 PTreeNode<KeyData> nextintoptn = nextPtreeNode.getStepInto();
-
-                //TODO: QS throws a Nullpointer at same point, eventhough cript has no Defaultstatement
                 ScriptTreeNode match = new ScriptTreeNode(nextPtreeNode.getStepInto().getStateBeforeStmt().getSelectedGoalNode().getData().getNode(),nextPtreeNode,  nextPtreeNode.getStatement().getStartPosition().getLineNumber());
                 match.setMatchEx(true);
                 match.setSucc(true);
@@ -634,11 +580,14 @@ public class ScriptTreeGraph {
         return -1;
     }
 
-
+    /**
+     * Replace all placeholders with Dummygoals and count number of open and closed goals for statistics
+     * Count number of oben
+     */
     private void addGoals() {
         //No script has been executed yet
         if (rootNode instanceof DummyGoalNode) {
-            //fill statitics
+            //fill statistics
             if (rootNode.getNode().isClosed()) {
                 closedGoals++;
             } else {

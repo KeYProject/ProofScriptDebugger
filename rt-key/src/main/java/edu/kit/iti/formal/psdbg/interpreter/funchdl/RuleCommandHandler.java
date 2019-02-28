@@ -17,17 +17,14 @@ import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.RuleAppIndex;
 import de.uka.ilkd.key.proof.SVInstantiationException;
 import de.uka.ilkd.key.proof.rulefilter.TacletFilter;
-import de.uka.ilkd.key.rule.IfFormulaInstantiation;
 import de.uka.ilkd.key.rule.Rule;
 import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.rule.TacletApp;
 import de.uka.ilkd.key.rule.inst.InstantiationEntry;
-import de.uka.ilkd.key.rule.inst.SVInstantiations;
 import edu.kit.iti.formal.psdbg.RuleCommandHelper;
 import edu.kit.iti.formal.psdbg.ValueInjector;
-import edu.kit.iti.formal.psdbg.interpreter.IndistinctWindow;
+import edu.kit.iti.formal.psdbg.interpreter.IndistinctInformation;
 import edu.kit.iti.formal.psdbg.interpreter.Interpreter;
-import edu.kit.iti.formal.psdbg.interpreter.TacletAppSelectionDialogService;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
@@ -35,36 +32,20 @@ import edu.kit.iti.formal.psdbg.interpreter.data.VariableAssignment;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.ScriptCommandNotApplicableException;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDeclaredException;
 import edu.kit.iti.formal.psdbg.interpreter.exceptions.VariableNotDefinedException;
-import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.key_project.util.collection.DefaultImmutableMap;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableMap;
 import org.key_project.util.collection.ImmutableMapEntry;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Alexander Weigl
@@ -194,20 +175,19 @@ public class RuleCommandHandler implements CommandHandler<KeyData> {
                 int linenr = call.getStartPosition().getLineNumber();
                 completed_matchingapps.forEach(k -> obsMatchApps.add(tacletAppIntoString(k, kd.getGoal(), linenr)));
 
-                //open window here
-                CyclicBarrier cyclicBarrier = new CyclicBarrier(2, tacletAppSelectionDialogService.getRunnable());
-                IndistinctWindow indistinctWindow = new IndistinctWindow(obsMatchApps);
+                CountDownLatch countDownLatch = new CountDownLatch(1);
 
-                tacletAppSelectionDialogService.setCyclicBarrier(cyclicBarrier);
-                tacletAppSelectionDialogService.setPane(indistinctWindow);
+                //open window here
+                tacletAppSelectionDialogService.makeRunnable();
+                tacletAppSelectionDialogService.setCountDownLatch(countDownLatch);
+                IndistinctInformation indistinctInformation = new IndistinctInformation(obsMatchApps);
+                tacletAppSelectionDialogService.setErrorInformation(indistinctInformation);
                 tacletAppSelectionDialogService.showDialog();
 
                 try {
-                    cyclicBarrier.await();
-                } catch (InterruptedException ex) {
-
-                } catch (BrokenBarrierException ex) {
-
+                    countDownLatch.await();
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
                 }
 
                 TacletApp chosenApp = completed_matchingapps.get(tacletAppSelectionDialogService.getUserIndexInput());

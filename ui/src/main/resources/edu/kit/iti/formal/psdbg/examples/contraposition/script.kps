@@ -73,12 +73,14 @@ cases{
     auto;
 }
 
+// for testing of the VariableAssignmentWindow
 script varDecl1(){
     var1 : INT :=  1;
     var2 : INT :=  2;
     var3 : INT :=  3;
 }
 
+// for testing of the VariableAssignmentWindow
 script varDecl2(){
   var1 : INT :=  1;
   impRight;

@@ -104,15 +104,23 @@ public class ScriptTreeView extends BorderPane {
 
         TreeItem<AbstractTreeNode> treeItem = new TreeItem<>(new AbstractTreeNode(null));
         rootNode = stg.getRootNode();
+        mapping = stg.getMapping();
 
         if (rootNode instanceof DummyGoalNode) {
             treeItem.getChildren().add(new TreeItem<>(rootNode));
             this.setTree(treeItem);
             return;
         }
-        mapping = stg.getMapping();
+
+        // first scriptcommand not executed yet
+        if (mapping.get(rootNode.getNode()) == null) {
+            treeItem.getChildren().add(new TreeItem<>(new DummyGoalNode(rootNode.getNode(), rootNode.getNode().isClosed())));
+            this.setTree(treeItem);
+            return;
+        }
 
         List<AbstractTreeNode> children = mapping.get(rootNode.getNode()).getChildren();
+
         if (children == null) {
             this.setTree(treeItem);
             return;

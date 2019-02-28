@@ -20,7 +20,6 @@ import edu.kit.iti.formal.psdbg.examples.Examples;
 import edu.kit.iti.formal.psdbg.fmt.DefaultFormatter;
 import edu.kit.iti.formal.psdbg.gui.ProofScriptDebugger;
 import edu.kit.iti.formal.psdbg.gui.controls.*;
-import edu.kit.iti.formal.psdbg.gui.controls.ScriptTree.AbstractTreeNode;
 import edu.kit.iti.formal.psdbg.gui.graph.Graph;
 import edu.kit.iti.formal.psdbg.gui.graph.GraphView;
 import edu.kit.iti.formal.psdbg.gui.model.DebuggerMainModel;
@@ -30,20 +29,21 @@ import edu.kit.iti.formal.psdbg.gui.model.MainScriptIdentifier;
 import edu.kit.iti.formal.psdbg.interpreter.InterpreterBuilder;
 import edu.kit.iti.formal.psdbg.interpreter.KeYProofFacade;
 import edu.kit.iti.formal.psdbg.interpreter.KeyInterpreter;
-import edu.kit.iti.formal.psdbg.interpreter.TacletAppSelectionDialogService;
+import edu.kit.iti.formal.psdbg.interpreter.funchdl.TacletAppSelectionDialogService;
 import edu.kit.iti.formal.psdbg.interpreter.data.GoalNode;
 import edu.kit.iti.formal.psdbg.interpreter.data.KeyData;
 import edu.kit.iti.formal.psdbg.interpreter.data.SavePoint;
 import edu.kit.iti.formal.psdbg.interpreter.data.State;
 import edu.kit.iti.formal.psdbg.interpreter.dbg.*;
 import edu.kit.iti.formal.psdbg.parser.ASTDiff;
-import edu.kit.iti.formal.psdbg.parser.Facade;
 import edu.kit.iti.formal.psdbg.parser.ast.ASTNode;
 import edu.kit.iti.formal.psdbg.parser.ast.ProofScript;
 import edu.kit.iti.formal.psdbg.storage.KeyPersistentFacade;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -417,6 +417,12 @@ public class DebuggerMain implements Initializable {
         scriptExecutionController = new ScriptExecutionController(this);
         renewThreadStateTimer();
 
+        model.statePointerProperty().addListener(new ChangeListener<PTreeNode<KeyData>>() {
+            @Override
+            public void changed(ObservableValue<? extends PTreeNode<KeyData>> observable, PTreeNode<KeyData> oldValue, PTreeNode<KeyData> newValue) {
+                refreshScriptTreeView();
+            }
+        });
         savePointController = new SavePointController(this);
 
         viewSettings = new ViewSettings(this);
@@ -1378,16 +1384,6 @@ public class DebuggerMain implements Initializable {
             scriptTreeView.setStg(scriptTreeGraph);
             scriptTreeView.toView();
         }
-    }
-
-    @FXML
-    public void showUserInteractionW(ActionEvent actionEvent) {
-        Stage stage = new Stage();
-        stage.setTitle("Userinteraction");
-        Scene scene = new Scene(new UserinteractionWindow());
-        stage.setScene(scene);
-
-        stage.show();
     }
 
     @FXML

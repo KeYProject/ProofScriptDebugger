@@ -51,6 +51,8 @@ public class ProofTreeTest {
 
         ScriptTreeGraph stg = new ScriptTreeGraph();
         stg.createGraph(df.getPtreeManager().getStartNode(), facade.getProof().root());
+        assert stg.getClosedGoals() == 2;
+        assert stg.getOpenGoals() == 0;
         System.out.println("stg = " + stg);
 
 
