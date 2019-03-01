@@ -77,7 +77,7 @@ public class SaveCommand implements CommandHandler<KeyData> {
 
             if(execute.get())
                 interpreter.getSelectedNode().getData().getProof().saveToFile(newFile);
-                KeyPersistentFacade.write(interpreter.getCurrentState(), new FileWriter(sp.getPersistedStateFile(newFile)));
+            KeyPersistentFacade.write(interpreter.getCurrentState(), new FileWriter(sp.getPersistedStateFile(newFile.getParentFile())));
             System.out.println();
 
         } catch (IOException e) {
