@@ -11,6 +11,13 @@ import org.apache.commons.io.IOUtils;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Alexander Weigl
@@ -26,6 +33,9 @@ public class JavaExample extends Example {
     @Setter
     private URL projectFile;
 
+    @Getter
+    @Setter
+    private Path directoryPath;
     @Override
     public void open(DebuggerMain debuggerMain) {
         //TODO should be reworked if we have an example
@@ -40,6 +50,23 @@ public class JavaExample extends Example {
             File java = newTempFile(javaFile, getName() + ".java");
             //System.out.println(java.getAbsolutePath());
             //debuggerMain.openKeyFile(key);
+            if(directoryPath != null){
+                try (Stream<Path> paths = Files.walk(directoryPath)) {
+                    List<Path> collect = paths.filter(Files::isRegularFile).collect(Collectors.toList());
+                    List<String> files = new LinkedList<>();
+                    collect.forEach(path -> {
+                        File f = path.toFile();
+                        if(f.getName().endsWith(".java") && !f.getName().equals(getName()+".java")){
+                            try {
+                                File temp = newTempFile(f, getName()+".java");
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }});
+                    files.forEach(path -> System.out.println("path = " + path));
+                }
+            }
             debuggerMain.openJavaFile(java);
             if (settingsFile != null) {
                 File settings = newTempFile(settingsFile, getName() + ".props");

@@ -14,10 +14,8 @@ import edu.kit.iti.formal.psdbg.interpreter.dbg.ProofTreeManager;
 import edu.kit.iti.formal.psdbg.parser.ast.*;
 import javafx.scene.control.TreeItem;
 import javafx.util.Pair;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import sun.reflect.generics.tree.Tree;
 
 import java.util.*;
 

@@ -15,7 +15,7 @@ public class AbstractTreeNode {
     @Getter @Setter
     private List<AbstractTreeNode> children;
 
-    @Getter @Setter
+    @Getter
     private final Node node;
 
     @Getter @Setter

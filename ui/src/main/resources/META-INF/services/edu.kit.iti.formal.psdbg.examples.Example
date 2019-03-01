@@ -9,6 +9,7 @@ edu.kit.iti.formal.psdbg.examples.java.maxtriplet.MaxTripletExample
 edu.kit.iti.formal.psdbg.examples.java.quicksort.QuickSort
 edu.kit.iti.formal.psdbg.examples.java.sumPositive.SumPositiveExample
 edu.kit.iti.formal.psdbg.examples.agatha.AgathaExample
+edu.kit.iti.formal.psdbg.examples.java.bigInteger.BigIntegerExample
 #edu.kit.iti.formal.psdbg.examples.java.bubbleSort.BubbleSortExample
 #edu.kit.iti.formal.psdbg.examples.java.sumAndMax.SumAndMaxExample
 #edu.kit.iti.formal.psdbg.examples.lulu.LuLuDoubleLinkedList

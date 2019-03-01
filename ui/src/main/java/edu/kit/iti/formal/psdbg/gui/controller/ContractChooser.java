@@ -102,7 +102,6 @@ public class ContractChooser extends Dialog<Contract> {
         private void render() {
             if (getItem() != null) {
                 text.getChildren().clear();
-                System.out.println(getItem().getName());
                 String content = content = getItem().getPlainText(services);
 
                 Text contract = new Text("Contract for method: ");

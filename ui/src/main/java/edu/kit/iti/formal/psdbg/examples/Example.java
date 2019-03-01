@@ -31,7 +31,20 @@ public abstract class Example {
         File examplefolder = new File(psdbg.getPath(), FilenameUtils.removeExtension(filename));
 
         File f = new File(examplefolder, filename);
+
         FileUtils.copyURLToFile(url, f);
+        return f;
+    }
+
+    public static File newTempFile(File file, String filename) throws IOException {
+
+
+        File psdbg = new File(FileUtils.getTempDirectoryPath(), "psdbg");
+        File examplefolder = new File(psdbg.getPath(), FilenameUtils.removeExtension(filename));
+
+        File f = new File(examplefolder, file.getName());
+
+        FileUtils.copyFile(file, f);
         return f;
     }
 

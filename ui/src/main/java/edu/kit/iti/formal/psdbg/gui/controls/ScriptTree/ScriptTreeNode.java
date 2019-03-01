@@ -18,7 +18,7 @@ public class ScriptTreeNode extends AbstractTreeNode {
     @Getter
     private final PTreeNode<KeyData> scriptState;
 
-    @Getter @Setter
+    @Getter
     private final int linenr;
 
 

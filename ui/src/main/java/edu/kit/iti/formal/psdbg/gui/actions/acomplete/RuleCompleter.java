@@ -14,7 +14,7 @@ import java.util.stream.Stream;
  */
 public class RuleCompleter implements AutoCompleter {
     @Getter
-    @Setter
+
     private KeYEnvironment environment;
     private List<Suggestion> suggestions = new ArrayList<>(2048);
 
