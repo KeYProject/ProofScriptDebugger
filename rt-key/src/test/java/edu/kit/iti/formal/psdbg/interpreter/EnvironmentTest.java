@@ -113,8 +113,8 @@ public class EnvironmentTest {
 
     @Test
     public void testLoadQuickSortSplit() throws IOException, ParseException, ParserException {
-        File javaFile = new File(getFile(getClass(), "javaTestFiles/quicksort/Quicksort.java" ));
-        File scriptFile = new File(getFile(getClass(), "javaTestFiles/quicksort/script.kps" ));
+        File javaFile = new File(getFile(getClass(), "javaTestFiles/quicksort/split/Quicksort.java"));
+        File scriptFile = new File(getFile(getClass(), "javaTestFiles/quicksort/split/script.kps"));
         String contractName= "Quicksort[Quicksort::split([I,int,int)].JML normal_behavior operation contract";
 
         try {

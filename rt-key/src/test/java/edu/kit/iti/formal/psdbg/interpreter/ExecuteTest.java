@@ -106,16 +106,30 @@ public class ExecuteTest {
 
     @Test
     public void testQuickSortSplit() throws IOException, ParseException, ParserException {
-        File keyFile = new File(getFile(getClass(), "javaTestFiles/quicksort/problem.key" ));
-        File scriptFile = new File(getFile(getClass(), "javaTestFiles/quicksort/script.kps" ));
+        File keyFile = new File(getFile(getClass(), "javaTestFiles/quicksort/split/problem.key"));
+        File scriptFile = new File(getFile(getClass(), "javaTestFiles/quicksort/split/script.kps"));
         String contractName= "Quicksort[Quicksort::split([I,int,int)].JML normal_behavior operation contract";
 
-        Execute exec = create(getFile(getClass(), "javaTestFiles/quicksort/problem.key" ),
-                "-s", getFile(getClass(), "javaTestFiles/quicksort/script.kps" ));
+        Execute exec = create(getFile(getClass(), "javaTestFiles/quicksort/split/problem.key"),
+                "-s", getFile(getClass(), "javaTestFiles/quicksort/split/script.kps"));
 
         Interpreter<KeyData> run = exec.run();
         Assert.assertTrue(run.getCurrentGoals().isEmpty());
         System.out.println("The proof of Quicksorts split method was closed");
+    }
+
+    @Test
+    public void testQuickSortSort() throws IOException, ParseException, ParserException {
+        File keyFile = new File(getFile(getClass(), "javaTestFiles/quicksort/sort/problem.key"));
+        File scriptFile = new File(getFile(getClass(), "javaTestFiles/quicksort/sort/script.kps"));
+        String contractName = "Quicksort[Quicksort::sort([I,int,int)].JML normal_behavior operation contract";
+
+        Execute exec = create(getFile(getClass(), "javaTestFiles/quicksort/sort/problem.key"),
+                "-s", getFile(getClass(), "javaTestFiles/quicksort/sort/script.kps"));
+
+        Interpreter<KeyData> run = exec.run();
+        Assert.assertTrue(run.getCurrentGoals().isEmpty());
+        System.out.println("The proof of Quicksorts sort method was closed");
     }
 
 }
