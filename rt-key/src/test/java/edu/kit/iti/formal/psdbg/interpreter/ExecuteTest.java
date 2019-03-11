@@ -132,4 +132,17 @@ public class ExecuteTest {
         System.out.println("The proof of Quicksorts sort method was closed");
     }
 
+    @Test
+    public void dualsplit() throws IOException, ParseException, ParserException {
+        Execute execute = create(
+                getFile(getClass(), "testCasesKeYFiles/dualsplit/dualsplit.proof"),
+                "-s", getFile(getClass(), "testCasesKeYFiles/dualsplit/dualsplit.kps"));
+        Interpreter<KeyData> i = execute.run();
+        Assert.assertTrue(i.getCurrentGoals().size() == 10);
+
+        System.out.println("The proof of Dualsplit method has 10 open goals, like it should.");
+        //This revealed a bug in the interpreter for body of a case
+
+
+    }
 }
